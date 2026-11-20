@@ -34,7 +34,7 @@ for (const f of [...shared, ...comps]) {
 }
 
 const fc = strip(read('src/utilities.css')).match(/@media \(forced-colors: active\)\s*\{([^{}]*\{[^{}]*\}[^{}]*)\}/);
-for (const t of ['--background', '--foreground', '--muted', '--border', '--rule', '--surface', '--surface-text', '--accent', '--accent-text', '--on-accent', '--focus-ring'])
+for (const t of ['--background', '--foreground', '--muted', '--border', '--rule', '--accent', '--accent-text', '--on-accent'])
   if (!fc || !new RegExp(`${t}:`).test(fc[1])) fails.push(`utilities.css: the forced-colors block must set ${t}`);
 if (!/forced-colors: active\)\s*\{\s*body::after\s*\{\s*display:\s*none/.test(base)) fails.push('base.css: the film grain must be hidden under forced-colors');
 

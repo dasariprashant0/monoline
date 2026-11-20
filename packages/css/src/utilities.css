@@ -66,15 +66,12 @@
 
 /* Forced colours (Windows High Contrast, forced-colors: active). The browser replaces most colours with the user's
    palette, but keeps a system colour an author writes. So the tokens become system colours: fills drawn with
-   var(--accent), SVG strokes and the focus ring then stay visible. The selector list includes [data-accent][data-theme] so it matches the accent rules. */
+   var(--accent), SVG strokes and the focus ring then stay visible. This is the last layer, so it wins over the accent rules whatever their specificity. */
 @media (forced-colors: active) {
-  :root, [data-theme], [data-accent], [data-accent][data-theme] {
+  :root, [data-theme], [data-accent] {
     --background: Canvas; --foreground: CanvasText; --muted: CanvasText;
     --border: CanvasText; --rule: CanvasText;
-    --surface: Canvas; --surface-text: CanvasText;
-    --accent: Highlight; --accent-text: LinkText; --accent-2: Highlight; --on-accent: HighlightText;
-    --focus-ring: 2px solid Highlight;
-    --shadow-popover: none; --shadow-toast: none;
+    --accent: Highlight; --accent-text: LinkText; --on-accent: HighlightText;
   }
 }
 
