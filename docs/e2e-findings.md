@@ -33,11 +33,11 @@ Not run here: `node scripts/audit.mjs` (default, 3 accents x pages) and `--visua
 
 | ID | Item | Component | WCAG | Sev | Status | Evidence (probe output) | Suggested fix | Files |
 |---|---|---|---|---|---|---|---|---|
-| T4 | Context menu has no keyboard path in the demo | context-menu | 2.1.1 | M | **still open** | `{"tag":"span","tabIndex":-1,"role":null,"focusable":false}` | Demo with a focusable trigger; docs sentence that the trigger must be focusable | `context-menu.demo.tsx` |
-| T5 | Tooltip does not show when Tab scrolls its trigger into view | tooltip | 1.4.13, 2.1.1 | M | **still open** | focus on `button "Save"`, trigger started at y=1903 in a 400 px viewport, tooltip in DOM: false. Control (trigger already visible): true | Do not close on scroll caused by focus; close on user scroll only | `tooltip`, `popover/float.tsx` |
-| T6 | Combobox opens on focus | combobox | 3.2.1 | L | **still open** | `aria-expanded` after focus: `true` | Open on typing or ArrowDown; keep an opt-in prop | `combobox` |
+| T4 | Context menu has no keyboard path in the demo | context-menu | 2.1.1 | M | **fixed** (probe F7a passes, 2026-11-20) | `{"tag":"span","tabIndex":-1,"role":null,"focusable":false}` | Demo with a focusable trigger; docs sentence that the trigger must be focusable | `context-menu.demo.tsx` |
+| T5 | Tooltip does not show when Tab scrolls its trigger into view | tooltip | 1.4.13, 2.1.1 | M | **fixed** (probe F7c passes, 2026-11-20) | focus on `button "Save"`, trigger started at y=1903 in a 400 px viewport, tooltip in DOM: false. Control (trigger already visible): true | Do not close on scroll caused by focus; close on user scroll only | `tooltip`, `popover/float.tsx` |
+| T6 | Combobox opens on focus | combobox | 3.2.1 | L | **fixed** (probe F7d passes, 2026-11-20) | `aria-expanded` after focus: `true` | Open on typing or ArrowDown; keep an opt-in prop | `combobox` |
 | F7b | Drawer has no visible close | drawer | 2.5.8 | - | **stale, fixed** | buttons inside the open drawer: `["Close"]` | none | - |
-| T7 | No `forced-colors` or `prefers-contrast` rules | all CSS | 1.4.11, 2.4.7 | M | **open** | 0 forced-colors rules, 0 prefers-contrast rules. Focus ring survives forced-colors today (2px solid outline on button, checkbox, input) | add rules for borders, checked/selected/pressed; see WP4 | `base.css`, component CSS |
+| T7 | No `forced-colors` or `prefers-contrast` rules | all CSS | 1.4.11, 2.4.7 | M | **fixed** (probe F5a passes, 2026-11-20) | 0 forced-colors rules, 0 prefers-contrast rules. Focus ring survives forced-colors today (2px solid outline on button, checkbox, input) | add rules for borders, checked/selected/pressed; see WP4 | `base.css`, component CSS |
 
 Radix menus not looping and Tab not closing a dropdown menu are still asserted by the e2e suite.
 

@@ -10,7 +10,7 @@ Last updated 2026-11-20. Status is checked against this tree (measured 2026-11-2
 | Tests | 1,467 unit tests with axe and keyboard checks; every demo renders in a test | `npm test` |
 | Real-browser checks | axe, overflow and console errors on every docs page in 3 themes at desktop and 375 px; e2e suite in Chrome (`scripts/e2e/tests`); Firefox and WebKit smoke (`scripts/e2e/cross-browser`) | `scripts/audit.mjs`, `scripts/e2e` |
 | Look options | 8 accents, 3 fonts, 3 corner styles, 3 densities, RTL | `packages/css/src/options.css`, `docs/rtl.md` |
-| Accessibility proof | axe and an accessibility-tree check for 41 components. No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
+| Accessibility proof | axe and an accessibility-tree check for 41 components (0 fail, 10 open findings). No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
 | Docs | page per component, search, playground, themes, blocks, compare | `apps/docs` |
 | AI-readable | `meta.json`, `registry/`, `llms.txt`, `llms-full.txt`, Markdown per page, MCP server, `AGENTS.md` | generated |
 | Size | Button 0.7 KB gzip, Dialog 1.8, Select 5.4, everything 98.5 of 100; all CSS 20.6 of 21. `npm run size` passes | `npm run size`, `docs/bundle-report.md`, ADR 0002 |

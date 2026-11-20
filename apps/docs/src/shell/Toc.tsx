@@ -5,9 +5,9 @@ import type {Heading} from './headings';
 
 export function Toc({headings, extra}: {headings: Heading[]; extra?: ReactNode}) {
   return (
-    <aside className="docs-rail">
+    <div className="docs-rail">
       <OnThisPage items={headings} offset={140} />
       {extra}
-    </aside>
+    </div>
   );
 }
