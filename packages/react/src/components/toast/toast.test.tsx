@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {useState} from 'react';
@@ -41,6 +41,18 @@ describe('Toast', () => {
     await user.click(screen.getByRole('button', {name: 'Save'}));
     await user.click(await screen.findByRole('button', {name: 'Undo'}));
     expect(fn).toHaveBeenCalled();
+  });
+  it('leaves no silent focus proxies in the Tab order, and Tab still reaches the toast buttons (a11y-report open finding)', async () => {
+    const user = userEvent.setup();
+    render(<Demo />);
+    await user.click(screen.getByRole('button', {name: 'Save'}));
+    await screen.findByText('Draft stored.');
+    const region = screen.getByRole('region', {name: /notifications/i});
+    await waitFor(() => expect(region.querySelectorAll(':scope > [tabindex="0"]')).toHaveLength(0));
+    expect(region.querySelectorAll(':scope > span[tabindex="-1"]').length).toBe(2);
+    const seen = new Set<string>();
+    for (let i = 0; i < 4; i++) { await user.tab(); seen.add(document.activeElement?.textContent ?? ''); }
+    expect(seen.has('Undo') && seen.has('Dismiss')).toBe(true);
   });
   it('has no axe violations when open', async () => {
     const user = userEvent.setup();

@@ -14,7 +14,7 @@ describe('Combobox', () => {
     expect(input).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
-  it('opens on focus and filters as you type', async () => {
+  it('opens on click and filters as you type', async () => {
     const user = userEvent.setup();
     render(<Combobox aria-label="Person" options={options} />);
     await user.click(screen.getByRole('combobox'));
@@ -23,6 +23,22 @@ describe('Combobox', () => {
     await user.type(screen.getByRole('combobox'), 'gra');
     expect(screen.getAllByRole('option')).toHaveLength(1);
     expect(screen.getByRole('option', {name: 'Grace Hopper'})).toBeInTheDocument();
+  });
+  it('does not open on focus alone; opens on typing or ArrowDown (WAI-ARIA, e2e F7)', async () => {
+    const user = userEvent.setup();
+    render(<Combobox aria-label="Person" options={options} />);
+    const input = screen.getByRole('combobox');
+    await user.tab();
+    expect(input).toHaveFocus();
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    await user.keyboard('{ArrowDown}');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    await user.keyboard('{Escape}');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    await user.keyboard('gra');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getAllByRole('option')).toHaveLength(1);
   });
   it('names the list after the field label', async () => {
     const user = userEvent.setup();
