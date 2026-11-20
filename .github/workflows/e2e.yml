@@ -19,3 +19,30 @@ jobs:
       - run: npm run e2e -- --retries 1
         env:
           CHROME: /usr/bin/google-chrome
+  # Firefox and WebKit: five flows (dialog, menu, select, combobox, tabs) with real key input via Playwright. Chrome above stays the full suite.
+  cross-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - run: npm run build
+      - run: npm ci
+        working-directory: scripts/e2e/cross-browser
+      - run: npx playwright install --with-deps firefox webkit
+        working-directory: scripts/e2e/cross-browser
+      - run: node scripts/e2e/cross-browser/smoke.mjs --browsers firefox,webkit
+  # Known barriers (docs/e2e-findings.md). Informational until WP2/WP4 fixes land; then drop continue-on-error.
+  probe:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/e2e/probe.mjs
+        env:
+          CHROME: /usr/bin/google-chrome
