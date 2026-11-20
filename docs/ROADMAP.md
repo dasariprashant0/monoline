@@ -48,9 +48,9 @@ Skip on purpose: 3D, WebGL and glow effects; enterprise-only widgets (Transfer, 
 | 1.1 API audit | done | `docs/api-audit.md`; prop-name aliases left out on purpose |
 | 1.2 State attributes | partial | rule in `AGENTS.md`; `packages/react/src/api-consistency.test.tsx` covers some |
 | 1.3 Slot and class naming | partial | rule in `AGENTS.md`; not audited page by page |
-| 1.4 Token completeness | done, unreleased | `CHANGELOG.md` Unreleased; forced-colors and more-contrast tokens in `packages/css/src/utilities.css` (b195a52). The `--bp-*` tokens are not used by any media query |
+| 1.4 Token completeness | done, unreleased | `CHANGELOG.md` Unreleased; forced-colors and more-contrast tokens in `packages/css/src/utilities.css` (ea6b4e5). The `--bp-*` tokens are not used by any media query |
 | 1.5 Behaviour parity with WAI-ARIA | partial | `docs/a11y-report.md` lists open findings |
-| 1.6 Bug sweep | partial | tooltip no longer closes on focus scroll, context-menu demo trigger is a button, Drawer close has a test (e40aa16). Combobox no longer opens on focus alone and toast focus proxies left the Tab order. Open Chrome re-test of `docs/e2e-findings.md` is not done |
+| 1.6 Bug sweep | partial | tooltip no longer closes on focus scroll, context-menu demo trigger is a button, Drawer close has a test (43f5096). Combobox no longer opens on focus alone and toast focus proxies left the Tab order. Open Chrome re-test of `docs/e2e-findings.md` is not done |
 | 1.7 Docs playground | done | `apps/docs/src/page/playground.tsx` |
 
 ## Phase 2: fill the real gaps
@@ -84,8 +84,8 @@ Newer browser features are used behind detection with the old code as fallback (
 
 | Item | Status | Evidence |
 |---|---|---|
-| CSS anchor positioning for floating layers | prototype | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (dd30ec4, b34adcd); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (fb88670) |
-| Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (e40aa16, ADR 0005) |
+| CSS anchor positioning for floating layers | prototype | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (dde5ece) |
+| Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (43f5096, ADR 0005) |
 | Scroll-driven animation, `@starting-style`, container queries, `interpolate-size` | not started | no uses in `packages/css/src` or `packages/react/src` |
 
 ## Quality gates

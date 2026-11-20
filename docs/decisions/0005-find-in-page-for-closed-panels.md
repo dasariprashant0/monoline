@@ -1,6 +1,6 @@
 # 0005: Find in page for closed panels
 
-Status: accepted (commit e40aa16)
+Status: accepted (commit 43f5096)
 
 ## Context
 
