@@ -8,11 +8,12 @@ Monoline is an open-source UI kit with two layers:
 
 | Layer | Package | What |
 |---|---|---|
-| Core | `packages/css` → `@monoline/css` | Plain CSS: tokens, 3 themes, 8 accents, look options (font, corners, density), base, one stylesheet per component. Works with any framework or none. |
+| Core | `packages/css` → `@monoline/css` | Plain CSS: tokens, 3 themes, 8 accents, look options (font, corners, density), base, one stylesheet per component. Built files are wrapped in cascade layers ([ADR 0003](docs/decisions/0003-css-cascade-layers.md)). Works with any framework or none. |
 | CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. |
-| React | `packages/react` → `@monoline/react` | Accessible, typed React components that render the core's classes. Complex behaviour comes from Radix (`radix-ui`). |
+| React | `packages/react` → `@monoline/react` | Accessible, typed React components that render the core's classes. Modals use native `<dialog>`, popovers and menus use one own floating layer ([ADR 0001](docs/decisions/0001-native-dialog-and-own-floating-layer.md)); roving focus and collections (tabs, accordion, slider and others) still come from Radix (`radix-ui`). |
 | Docs | `apps/docs` | The documentation site. Discovers components automatically. |
 | Registry | `registry/`, `llms.txt`, `llms-full.txt` | Generated, machine-readable component list and source for AI tools. |
+| Decisions | `docs/decisions/` | Short ADRs. Read the one that covers your area before changing it. |
 
 Look and feel: monospace type, square edges, thin rules, one accent. Rules and token list: `DESIGN.md`. Comparable libraries for scope and API shape: shadcn/ui, Radix, Mantine, Chakra, Ant Design, daisyUI, Headless UI, Base UI, HeroUI, Magic UI. Take their component coverage and prop conventions; keep Monoline's look.
 
@@ -23,8 +24,10 @@ npm install --cache "$TMPDIR/npm-cache"   # once
 npm run dev                               # docs site on :5180, live components and CSS
 npm test                                  # vitest + axe for every component
 npm run typecheck                         # tsc for react + docs
-npm run check                             # css contrast + raw-colour lint, typecheck, tests
+npm run check                             # css lint (contrast, raw colours, motion), doc comments, registry, typecheck, tests
 npm run build                             # css dist, react dist, docs site
+npm run size                              # gzip budgets for JS and CSS; run after build
+npm run test:docs -w docs                 # docs scripts tests
 npm run registry                          # regenerate registry/ and llms*.txt
 ```
 
@@ -61,8 +64,8 @@ packages/css/src/components/<name>.css   styles, tokens only
 
 - `forwardRef` to the root DOM element. Spread remaining props onto it. Accept and merge `className` with `cx()`.
 - Variants are string unions: `variant`, `size` (`sm | md | lg`), `tone`. Defaults are the most common use. Boolean props are `isX`-free: `disabled`, `loading`, `invalid`, `required`.
-- Polymorphism: `asChild` using Radix `Slot` where a different element makes sense. No `as` prop.
-- Controlled and uncontrolled pairs follow one pattern: `value` / `defaultValue` / `onValueChange(value)`; `open` / `defaultOpen` / `onOpenChange(open)`; `checked` / `defaultChecked` / `onCheckedChange(checked)`. Radix already does this: pass it through.
+- Polymorphism: `asChild` using Monoline's own `Slot` (`packages/react/src/utils/slot.tsx`; only `sidebar.tsx` still imports Radix's) where a different element makes sense. No `as` prop.
+- Controlled and uncontrolled pairs follow one pattern: `value` / `defaultValue` / `onValueChange(value)`; `open` / `defaultOpen` / `onOpenChange(open)`; `checked` / `defaultChecked` / `onCheckedChange(checked)`. Pass Radix's props through where a component wraps Radix.
 - Compound components for anything with parts: `Dialog`, `DialogTrigger`, `DialogContent`, `DialogTitle`... exported as named exports (not `Dialog.Trigger`), so they tree-shake and read plainly.
 - State is exposed as `data-state="open|closed|checked|..."` and `data-disabled`, `data-invalid`, never class toggles that consumers must guess. CSS styles `[data-state=...]`.
 - Add props, never change or remove one. A new prop is optional. Name booleans positively.
@@ -70,11 +73,14 @@ packages/css/src/components/<name>.css   styles, tokens only
 - Server-safe: no `window` access during render. Add `'use client'` only where hooks or handlers are used (a file-top directive is fine in every interactive component).
 - No runtime CSS-in-JS, no Tailwind, no icon libraries. Icons are inline SVG with `currentColor`, `aria-hidden`, passed as `children` or props. If a component needs a built-in glyph (chevron, check), write a 10-line inline SVG in that component's folder.
 - Dependencies: only `radix-ui` and React. A new dependency needs a reason in the PR and must be a peer or optional where possible.
+- Newer platform features (anchor positioning, `until-found`, scroll-driven animation) are allowed only behind capability detection with the current code as fallback ([ADR 0004](docs/decisions/0004-baseline-policy-with-js-fallback.md)). Detection returns false on the server.
+- Size is a budget: `npm run size` fails over it. Raise one only with a reason in the commit ([ADR 0002](docs/decisions/0002-per-module-build-and-size-budgets.md)).
 
 ### CSS rules
 
 - Tokens only: no raw hex, px font size or spacing number. `npm run check` fails on raw colours. If a value is missing, add a token to `tokens.css` first (all three themes).
 - Square edges (`--radius` is 0), thin `--rule` lines, no shadows except toast/popover layers, no gradients except `--hatch` (the `effects` category is exempt but must respect `prefers-reduced-motion`).
+- Source files are unlayered; `packages/css/scripts/bundle.mjs` adds the layers when it builds `dist/`. Do not write `@layer` in `src/`.
 - Style Radix and native state through attributes: `[data-state="open"]`, `[aria-current]`, `[aria-invalid="true"]`, `:disabled`. Focus uses `:focus-visible` with the shared ring.
 - A component's CSS lives in its own file, named after the component. Do not append to another file.
 - Class names are plain and unprefixed (`.btn`, `.card`, `.dialog`). Variants are a second class (`.btn-solid`). Parts use a dash (`.card-header`). Keep them short and unsurprising.
@@ -89,7 +95,7 @@ WCAG 2.2 AA. For each component, `meta.json` `a11y` lists the keyboard and scree
 - Every control has an accessible name (label, `aria-label`, `aria-labelledby`). Icon-only buttons require `aria-label` (make it a required prop in the type).
 - Errors use `aria-invalid` and `aria-describedby`. Status changes use `role="status"` or `role="alert"` sparingly.
 - Targets at least 24×24 CSS px; focus ring never hidden; colour is never the only signal.
-- Motion respects `prefers-reduced-motion` (base.css already zeroes animations).
+- Motion respects `prefers-reduced-motion` (`base.css` has one global `prefers-reduced-motion` rule and `npm run check` fails if a stylesheet re-enables motion with `!important`).
 - One `axe` test per component (`expect(await axe(container)).toHaveNoViolations()`), plus interaction tests with `@testing-library/user-event`.
 
 ### Tests
@@ -108,7 +114,7 @@ Every prop in an exported `*Props` interface or type, every exported component a
 
 Several agents may build at once, each in its own worktree. To avoid conflicts:
 
-1. Work only inside the folders and CSS files your task owns (listed in `docs/ROADMAP.md`). Do not edit another category's component or CSS files; open a note in your report instead.
+1. Work only inside the folders and CSS files your task owns (named in your task). Do not edit another category's component or CSS files; open a note in your report instead.
 2. Never hand-edit or commit generated files: `packages/react/src/index.ts`, `registry/`, `llms.txt`, `llms-full.txt`, any `dist/`.
 3. Shared files (`tokens.css`, `base.css`, `accents.css`, `options.css`, `utilities.css`, `package.json`, `AGENTS.md`, `DESIGN.md`) belong to the `core` task. If you need a token, add it in your own CSS file as a component-scoped custom property (`--dialog-width`) and note it in your report.
 4. Commit early and small, on your own branch. Message style: `button: add loading state`.
