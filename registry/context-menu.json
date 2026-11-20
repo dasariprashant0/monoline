@@ -16,7 +16,7 @@
     }
   ],
   "a11y": [
-    "Opens with right click, long press or the context-menu key (Shift+F10).",
+    "Opens with right click, long press or the context-menu key (Shift+F10). The trigger must be focusable for the key to work: use asChild with a button, or an element with tabIndex 0.",
     "Arrow keys move, Enter or Space selects, Escape closes and returns focus.",
     "Every action must also exist elsewhere in the UI for people who cannot open it."
   ],
@@ -57,7 +57,7 @@
       ]
     }
   ],
-  "usage": "import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger} from '@monoline/react';\n\n<ContextMenu>\n  <ContextMenuTrigger><div style={{display: 'grid', placeItems: 'center', height: '120px', border: '1px dashed var(--rule)'}}>Right click here</div></ContextMenuTrigger>\n  <ContextMenuContent aria-label=\"File actions\"><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone=\"danger\">Delete</ContextMenuItem></ContextMenuContent>\n</ContextMenu>",
+  "usage": "import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger} from '@monoline/react';\n\n<ContextMenu>\n  <ContextMenuTrigger asChild><button type=\"button\" style={{display: 'grid', placeItems: 'center', height: '120px', width: '100%', border: '1px dashed var(--rule)', background: 'none', font: 'inherit', color: 'inherit'}}>Right click here, or focus and press Shift+F10</button></ContextMenuTrigger>\n  <ContextMenuContent aria-label=\"File actions\"><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone=\"danger\">Delete</ContextMenuItem></ContextMenuContent>\n</ContextMenu>",
   "dataAttributes": [
     {
       "name": "data-highlighted",
@@ -101,7 +101,7 @@
     },
     {
       "path": "packages/react/src/components/context-menu/meta.json",
-      "content": "{\"name\":\"context-menu\",\"title\":\"Context menu\",\"category\":\"overlays\",\"description\":\"A menu of actions opened by right click or long press on an area.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"popover.css\",\"17-dropdown-menu.css\"],\"a11y\":[\"Opens with right click, long press or the context-menu key (Shift+F10).\",\"Arrow keys move, Enter or Space selects, Escape closes and returns focus.\",\"Every action must also exist elsewhere in the UI for people who cannot open it.\"],\"keywords\":[\"right click\",\"menu\",\"actions\"],\"uses\":[\"dropdown-menu\",\"popover\"]}\n"
+      "content": "{\"name\":\"context-menu\",\"title\":\"Context menu\",\"category\":\"overlays\",\"description\":\"A menu of actions opened by right click or long press on an area.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"popover.css\",\"17-dropdown-menu.css\"],\"a11y\":[\"Opens with right click, long press or the context-menu key (Shift+F10). The trigger must be focusable for the key to work: use asChild with a button, or an element with tabIndex 0.\",\"Arrow keys move, Enter or Space selects, Escape closes and returns focus.\",\"Every action must also exist elsewhere in the UI for people who cannot open it.\"],\"keywords\":[\"right click\",\"menu\",\"actions\"],\"uses\":[\"dropdown-menu\",\"popover\"]}\n"
     }
   ]
 }
