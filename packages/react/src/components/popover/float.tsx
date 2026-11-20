@@ -51,10 +51,9 @@ export function place(anchor: Element, panel: HTMLElement, {side = 'bottom', ali
 export const nativeAnchor = () => typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('anchor-name: --a') && CSS.supports('position-area: top');
 
 /** Same placement as `place()` done by the browser: the panel is anchored with `position-area` (shifts to stay in view),
- *  `position-try-fallbacks` flips it when it does not fit, margins stand in for the offsets and collision padding.
- *  Returns a cleanup. ponytail: `collisionPadding` is not applied (the panel can touch the viewport edge); `data-side` reports the preferred side, not the flipped one; read it from the layout if a
- *  style ever needs it. */
-function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {side = 'bottom', align = 'center', sideOffset = 0, alignOffset = 0}: Placement) {
+ *  `position-try-fallbacks` flips it when it does not fit, a margin for `sideOffset`, margins on the viewport edges for `collisionPadding`.
+ *  Returns a cleanup. */
+function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {side = 'bottom', align = 'center', sideOffset = 0, alignOffset = 0, collisionPadding: pad = 8}: Placement) {
   const rtl = getComputedStyle(anchor).direction === 'rtl';
   const vertical = side === 'top' || side === 'bottom';
   const start = vertical ? (rtl ? 'span-left' : 'span-right') : 'span-bottom', end = vertical ? (rtl ? 'span-right' : 'span-left') : 'span-top';
@@ -66,11 +65,21 @@ function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {sid
   s.setProperty('position-try-fallbacks', vertical ? 'flip-block' : 'flip-inline');
   s.margin = '0';
   s.setProperty(`margin-${OPPOSITE[side]}`, `${sideOffset}px`);
+  // Collision padding: the position-area box runs from the anchor to the viewport edge, so pad only the viewport edges
+  // (the one beyond the anchor, and the one the panel grows towards along the anchor's edge), never the anchor-facing ones.
+  // Insets do not work here: a non-auto inset makes the browser ignore position-area.
+  for (const edge of [side, along.slice(5)]) if (edge) s.setProperty(`margin-${edge}`, `${pad}px`);
   s.translate = vertical ? `${rtl ? -alignOffset : alignOffset}px 0` : `0 ${alignOffset}px`;
   s.setProperty('--anchor-width', 'anchor-size(width)');
   s.setProperty('--available-height', '100%'); // the position-area box is the containing block, so this is the room on that side
-  panel.dataset.side = side; panel.dataset.align = align;
-  return () => anchor.style.removeProperty('anchor-name');
+  // The browser may flip the panel when it does not fit: read the side it ended up on from the layout.
+  const sync = () => {
+    const a = anchor.getBoundingClientRect(), r = panel.getBoundingClientRect();
+    panel.dataset.side = vertical ? (r.top >= a.bottom - 1 ? 'bottom' : 'top') : (r.left >= a.right - 1 ? 'right' : 'left');
+  };
+  panel.dataset.align = align; panel.dataset.side = side; sync();
+  addEventListener('resize', sync); addEventListener('scroll', sync, true);
+  return () => { anchor.style.removeProperty('anchor-name'); removeEventListener('resize', sync); removeEventListener('scroll', sync, true); };
 }
 
 const noop = () => () => {};

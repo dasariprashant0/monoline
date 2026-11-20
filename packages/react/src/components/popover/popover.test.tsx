@@ -48,6 +48,11 @@ describe('Popover native anchor positioning (M1)', () => {
     expect(panel.style.getPropertyValue('position-area')).toBe('bottom span-right');
     expect(panel.style.getPropertyValue('position-anchor')).toBe(trigger.style.getPropertyValue('anchor-name'));
     expect(panel.style.left).toBe('');
+    // collision padding only on the viewport-facing edges, never on the anchor-facing one
+    expect(panel.style.marginBottom).toBe('8px');
+    expect(panel.style.marginRight).toBe('8px');
+    expect(panel.style.marginLeft).toBe('0px');
+    expect(panel.dataset.side).toBe('bottom');
     await user.keyboard('{Escape}');
     expect(trigger.style.getPropertyValue('anchor-name')).toBe('');
   });
