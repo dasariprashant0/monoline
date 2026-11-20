@@ -26,6 +26,7 @@
     "size": "node scripts/size.mjs",
     "test:css-browser": "node scripts/css-computed.mjs",
     "e2e": "node scripts/e2e/run.mjs",
-    "ax": "node scripts/ax/run.mjs"
+    "ax": "node scripts/ax/run.mjs",
+    "install-smoke": "node scripts/install-smoke/run.mjs"
   }
 }

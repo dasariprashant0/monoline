@@ -17,6 +17,7 @@ jobs:
       - run: npm run check
       - run: npm run test:cli
       - run: npm run test:mcp
+      - run: npm run test:release
       - run: npm run build
       - run: npm run size
       - run: npm run registry
@@ -24,3 +25,34 @@ jobs:
         run: node packages/tokens/scripts/build.mjs && git diff --exit-code packages/tokens/dist
       - name: Registry and llms files are up to date
         run: git diff --exit-code registry llms.txt llms-full.txt
+      - name: Release dry run (tarball contents, exports, nothing is published)
+        run: node scripts/release.mjs publish --dry-run
+
+  # The peer range is react >=18, so run the react tests against both majors.
+  react-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
+    name: react ${{ matrix.react }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - name: Install React ${{ matrix.react }} in every workspace
+        run: node scripts/lib/use-react.mjs ${{ matrix.react }} && npm install --no-package-lock --no-audit --no-fund
+      - name: Show the React version under test
+        run: node -p "require('react/package.json').version"
+      - run: npm test -w @monoline/react
+
+  # Packs the tarballs, installs them into a fresh directory with React 18 and 19, builds the Vite starter.
+  install-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - run: npm run build -w @monoline/css && npm run build -w @monoline/react
+      - run: npm run install-smoke

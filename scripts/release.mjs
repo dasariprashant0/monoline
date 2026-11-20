@@ -402,9 +402,10 @@ function publish({dryRun, yes, provenance}) {
     const p = byName.get(name);
     const {version} = p.json;
     // npm view prints an error JSON on stdout for a 404, so only a successful exit means the version exists
-    const onNpm = yes && (() => { const r = run('npm', ['view', `${name}@${version}`, 'version', '--json']); return r.status === 0 && r.stdout.trim() !== ''; })();
+    // the dry run checks too: npm refuses `publish --dry-run` over a version that already exists
+    const onNpm = (() => { const r = run('npm', ['view', `${name}@${version}`, 'version', '--json']); return r.status === 0 && r.stdout.trim() !== ''; })();
     if (onNpm) {
-      console.log(`skip ${name}@${version}: already on npm`);
+      console.log(`${dryRun ? 'dry run: would skip' : 'skip'} ${name}@${version}: already on npm`);
       continue;
     }
     const args = ['publish', '--access', 'public'];
