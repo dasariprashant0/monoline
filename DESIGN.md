@@ -158,7 +158,8 @@ Never use `--border` for a visible line: it is about 1.1:1 in dark themes. Use `
 
 - There is one entrance per page: the `Display` lines rise once. Lists may fade in. Nothing loops.
 - Use `--fast` for hover and colour, `--base` for overlays and toggles, and `--slow` for a list arriving. Ease with `--ease`.
-- Every animation stops under `prefers-reduced-motion`; `base.css` handles that. Don't override it.
+- Every animation and transition stops under `prefers-reduced-motion: reduce`, and smooth scrolling turns off; one rule in `base.css` covers every stylesheet. Don't override it. `npm run check` fails if a stylesheet re-enables motion with `!important`.
+- Write a duration as `--fast`, `--base` or `--slow`. A one-off (a looping effect) is a component knob such as `var(--reveal-duration, 0.95s)`, not a literal in the rule.
 
 ## 9. Accessibility
 
@@ -166,6 +167,7 @@ Never use `--border` for a visible line: it is about 1.1:1 in dark themes. Use `
 - Focus is always visible: `:focus-visible` draws a 2px accent ring. Never remove it.
 - Text contrast is at least 4.5:1. Use `--muted` for secondary text, never lighter.
 - Never use colour alone. Status also has a word (the `strong` in a `Banner`) or a shape (`.check`).
+- Forced colours (Windows High Contrast) and `prefers-contrast: more` are handled in `utilities.css`. Under forced colours the colour tokens become system colours (`Canvas`, `CanvasText`, `Highlight`, `LinkText`), which the browser keeps; so draw fills, strokes and selected states with tokens, never a `box-shadow` alone (the browser removes shadows). Under more contrast, `--muted` (7:1 or better), `--border` and `--rule` move towards the text colour.
 - Name icon-only buttons with `aria-label`. Mark current items with `aria-current` and toggles with `aria-pressed` or `aria-checked`.
 - Escape closes drawers and dialogs. Dialogs return focus where it was.
 
@@ -195,6 +197,24 @@ Never use `--border` for a visible line: it is about 1.1:1 in dark themes. Use `
 - [ ] Nothing touches a window edge: a page keeps `--s7`, a small window `--window-pad` (§5).
 - [ ] Empty, loading and error states exist and use plain words.
 - [ ] Nothing animates except the title reveal and overlays.
+
+## Cascade layers
+
+Every built file declares or joins five layers, in this order (later wins, whatever the selector's specificity):
+
+```css
+@layer monoline.base, monoline.tokens, monoline.components, monoline.options, monoline.utilities;
+```
+
+| Layer | Holds |
+|---|---|
+| `monoline.base` | `base.css`: fonts, reset, body, type roles, the reduced-motion rule |
+| `monoline.tokens` | `tokens.css` and `accents.css`: every colour, size and timing |
+| `monoline.components` | every `src/components/*.css` file |
+| `monoline.options` | `options.css`: `data-font`, `data-radius`, `data-density`. After components, because `data-radius="round"` restyles `.btn`, `.badge` and `.tag` |
+| `monoline.utilities` | `utilities.css`: layout helpers, plus the forced-colours and more-contrast token overrides |
+
+The order is declared once, at the top of `core.css` (and `monoline.css`); per-component files only join the layers. Your own CSS outside any layer beats all five, so an app rule needs no extra specificity or `!important`. The source files are plain CSS: `scripts/bundle.mjs` adds the `@layer` wrappers at build time, and `npm run check` proves the wrapping loses no rule.
 
 ## Options: font, corners, density, accents
 

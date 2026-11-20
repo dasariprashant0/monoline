@@ -53,9 +53,16 @@ body::after {
 
 /* The one reveal: lines slide up out of their own clipped box, once. */
 .reveal { display: block; overflow: hidden; padding-bottom: 0.06em; }
-.reveal > span { display: block; animation: rise 0.95s var(--ease) both; }
+.reveal > span { display: block; animation: rise var(--reveal-duration, 0.95s) var(--ease) both; }
 @keyframes rise { from { transform: translateY(108%); } to { transform: none; } }
 
+/* Reduced motion: every animation and transition in the kit stops, scrolling jumps. This one rule covers every stylesheet
+   (npm run check proves nothing re-enables motion). Do not override it. Content never depends on an animation to appear. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Forced colours: the film grain would draw over the user's palette. Tokens become system colours in accents.css. */
+@media (forced-colors: active) {
+  body::after { display: none; }
 }

@@ -49,3 +49,32 @@
 :where(.prose, .card, .dialog-content) > :where(.field, .heading, .text, .alert, .empty, .stack, .code-block, .table-wrap, form) + :where(.field, .heading, .text, .alert, .empty, .stack, .code-block, .table-wrap, form, .btn),
 :where(.prose, .card, .dialog-content) > :where(.btn) + :where(.field, .heading, .text, .alert, .empty, .stack, .code-block, .table-wrap, form) { margin-top: var(--flow, var(--s4)); }
 :where(.prose, .card, .dialog-content) > :where(.field, .heading, .text, .alert, .btn) + :where(.heading) { margin-top: calc(var(--flow, var(--s4)) * 1.5); }
+
+/* ─── Environment adaptations ───
+   Last layer, so these win over the theme and accent tokens. Kept out of tokens.css and accents.css, which the
+   token build (packages/tokens) reads as flat blocks. */
+/* More contrast (prefers-contrast: more). Secondary text and lines move towards the text colour. Colours only: no size or layout changes.
+   Written as mixes so it holds in every theme; `npm run check` tests the result is at least 7:1. */
+@media (prefers-contrast: more) {
+  :root, [data-theme] {
+    --muted:  color-mix(in srgb, var(--foreground) 85%, var(--background));
+    --border: color-mix(in srgb, var(--foreground) 55%, var(--background));
+    --rule:   color-mix(in srgb, var(--foreground) 55%, transparent);
+  }
+}
+
+
+/* Forced colours (Windows High Contrast, forced-colors: active). The browser replaces most colours with the user's
+   palette, but keeps a system colour an author writes. So the tokens become system colours: fills drawn with
+   var(--accent), SVG strokes and the focus ring then stay visible. The selector list includes [data-accent][data-theme] so it matches the accent rules. */
+@media (forced-colors: active) {
+  :root, [data-theme], [data-accent], [data-accent][data-theme] {
+    --background: Canvas; --foreground: CanvasText; --muted: CanvasText;
+    --border: CanvasText; --rule: CanvasText;
+    --surface: Canvas; --surface-text: CanvasText;
+    --accent: Highlight; --accent-text: LinkText; --accent-2: Highlight; --on-accent: HighlightText;
+    --focus-ring: 2px solid Highlight;
+    --shadow-popover: none; --shadow-toast: none;
+  }
+}
+
