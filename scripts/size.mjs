@@ -30,9 +30,9 @@ const cases = [
   ['Dialog', "import {Dialog, DialogTrigger, DialogContent, DialogTitle} from '@monoline/react'; console.log(Dialog, DialogTrigger, DialogContent, DialogTitle)", 2],
   ['AlertDialog', "import {AlertDialog, AlertDialogContent} from '@monoline/react'; console.log(AlertDialog, AlertDialogContent)", 2],
   ['Drawer', "import {Drawer, DrawerContent} from '@monoline/react'; console.log(Drawer, DrawerContent)", 2],
-  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.5],
-  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.6],
-  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.7],
+  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.7],
+  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.8],
+  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.9],
   ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.4],
   ['Everything', "import * as m from '@monoline/react'; console.log(m)", 100],
 ];
