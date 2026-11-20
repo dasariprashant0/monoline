@@ -78,13 +78,13 @@ export const choosing = () => (
       <dl className="kv">
         <dt>You want plain CSS</dt><dd>No Tailwind, no runtime CSS-in-JS, no required provider. One CSS import and class names you can read.</dd>
         <dt>You want one look you can change</dt><dd>Three themes, eight accents, three fonts, three corner styles and three densities, each one attribute on <code>&lt;html&gt;</code>, with contrast checked for every pairing.</dd>
-        <dt>You want small output</dt><dd>One Button is under 1 KB of JavaScript gzip on top of React, and CSS can be loaded per component. See <a href={href(''docs/tools/compare'')}>Compare</a> for measured numbers.</dd>
+        <dt>You want small output</dt><dd>One Button is under 1 KB of JavaScript gzip on top of React, and CSS can be loaded per component. See <a href={href('docs/tools/compare')}>Compare</a> for measured numbers.</dd>
         <dt>You want to own the code or use AI tools</dt><dd>Install the packages, or copy source with the CLI. Every component has a <code>meta.json</code>, and <code>llms.txt</code> and a JSON registry describe them all.</dd>
       </dl>
     </Section>
     <Section title="Pick something else if">
       <dl className="kv">
-        <dt>You need a stable 1.0 today</dt><dd>Monoline is 0.x. Minor releases can rename classes or props, and each change is in the <a href={href(''docs/tools/changelog'')}>changelog</a>. Pin an exact version in production.</dd>
+        <dt>You need a stable 1.0 today</dt><dd>Monoline is 0.x. Minor releases can rename classes or props, and each change is in the <a href={href('docs/tools/changelog')}>changelog</a>. Pin an exact version in production.</dd>
         <dt>You use Tailwind everywhere</dt><dd>shadcn/ui fits that workflow better; Monoline's classes do not use Tailwind's utilities.</dd>
         <dt>You build React Native or Vue</dt><dd>The components are React only. The CSS works anywhere, but the behaviour does not come with it.</dd>
         <dt>You need proof from assistive technology</dt><dd>Every component has axe and keyboard tests and is audited in a real browser. No human screen-reader test has been run yet; the <a href={href('docs/guides/accessibility')}>accessibility page</a> says what is not covered.</dd>

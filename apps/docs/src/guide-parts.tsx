@@ -21,7 +21,7 @@ export function PmCode({cmds, label = 'Package manager'}: {cmds: Record<string, 
   return (
     <Tabs value={current} onValueChange={setPm}>
       <TabsList aria-label={label}>{Object.keys(cmds).map((k) => <TabsTrigger key={k} value={k}>{k}</TabsTrigger>)}</TabsList>
-      {Object.entries(cmds).map(([k, cmd]) => <TabsContent key={k} value={k}><CodeBlock title="bash" code={cmd} /></TabsContent>)}
+      {Object.entries(cmds).map(([k, cmd]) => <TabsContent key={k} value={k} style={{minWidth: 0}}><CodeBlock title="bash" code={cmd} /></TabsContent>)}
     </Tabs>
   );
 }
