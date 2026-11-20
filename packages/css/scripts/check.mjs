@@ -4,6 +4,7 @@ import {readdirSync} from 'node:fs';
 import {read, parseTokens, contrast} from './lib.mjs';
 import './check-logical.mjs';
 import './check-layers.mjs';
+import './check-motion.mjs';
 import {findDuplicates, parseRules} from './check-duplicates.mjs';
 import './size.mjs';
 
@@ -26,6 +27,17 @@ for (const [theme, base] of Object.entries(themes)) {
     need(`${id} accent-text on background`, v['--accent-text'], bg, 4.5);
     need(`${id} accent on background`, v['--accent'], bg, 3);
     need(`${id} on-accent on accent`, v['--on-accent'], v['--accent'], 4.5);
+  }
+}
+
+// prefers-contrast: more (tokens.css). Mirrors its colour-mix(in srgb) maths: --muted is 85% text colour, --border 55%.
+{
+  const mix = (a, b, p) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * p + parseInt(b.slice(i, i + 2), 16) * (1 - p)).toString(16).padStart(2, '0')).join('');
+  const tokens = read('src/utilities.css');
+  if (!/--muted:\s*color-mix\(in srgb, var\(--foreground\) 85%/.test(tokens) || !/--border:\s*color-mix\(in srgb, var\(--foreground\) 55%/.test(tokens)) fails.push('utilities.css: the prefers-contrast block changed; update the mixes in check.mjs');
+  for (const [theme, base] of Object.entries(themes)) {
+    need(`${theme} more-contrast muted on background`, mix(base['--foreground'], base['--background'], 0.85), base['--background'], 7);
+    need(`${theme} more-contrast border on background`, mix(base['--foreground'], base['--background'], 0.55), base['--background'], 3);
   }
 }
 

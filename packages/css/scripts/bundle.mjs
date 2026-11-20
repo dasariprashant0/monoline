@@ -1,5 +1,5 @@
 // Pure: turns src/ into every CSS output as strings. build.mjs writes them, check.mjs and size.mjs test them.
-//   core        tokens, base, accents, options, utilities, each in its own cascade layer
+//   core        base, tokens (+ accents), options, utilities, each in its own cascade layer; components come between tokens and options
 //   parts       every src/components/*.css file on its own, wrapped in the components layer
 //   components  one bundle per React component: exactly the files its meta.json `css` lists
 //   all         core + every component (dist/monoline.css)
@@ -8,7 +8,7 @@ import {read} from './lib.mjs';
 
 // Declared once, at the top of core.css (and monoline.css). The order is the cascade: later layers win,
 // and any CSS an app writes outside a layer beats all of them without specificity fights.
-export const LAYERS = '@layer monoline.base, monoline.tokens, monoline.components, monoline.utilities;';
+export const LAYERS = '@layer monoline.base, monoline.tokens, monoline.components, monoline.options, monoline.utilities;';
 
 const COMP_DIR = new URL('../src/components/', import.meta.url);
 const META_DIR = new URL('../../react/src/components/', import.meta.url);
@@ -22,10 +22,12 @@ export function bundles() {
   const order = readdirSync(COMP_DIR).filter((f) => f.endsWith('.css')).sort(); // cascade order, same as before
   const src = (f) => read(`src/components/${f}`);
 
-  const coreBody = layer('monoline.base', read('src/base.css')) + layer('monoline.tokens', [read('src/tokens.css'), read('src/accents.css'), read('src/options.css')].join('\n'));
+  const coreBody = layer('monoline.base', read('src/base.css')) + layer('monoline.tokens', [read('src/tokens.css'), read('src/accents.css')].join('\n'));
+  // Options restyle components (data-radius="round" rounds .btn), so they must sit after the components layer, not in tokens.
+  const options = layer('monoline.options', read('src/options.css'));
   const util = layer('monoline.utilities', read('src/utilities.css'));
   const head = banner(version) + LAYERS + '\n';
-  const core = head + coreBody + util;
+  const core = head + coreBody + options + util;
 
   const parts = Object.fromEntries(order.map((f) => [f, banner(version) + layer('monoline.components', src(f))]));
 
@@ -43,6 +45,6 @@ export function bundles() {
     if (files.length) components[name] = banner(version) + layer('monoline.components', files.map(src).join('\n'));
   }
 
-  const all = head + coreBody + layer('monoline.components', order.map(src).join('\n')) + util;
+  const all = head + coreBody + layer('monoline.components', order.map(src).join('\n')) + options + util;
   return {version, order, core, parts, index, components, all, banner: banner(version)};
 }
