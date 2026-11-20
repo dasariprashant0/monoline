@@ -1,6 +1,9 @@
+'use client';
 import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';
 import {Accordion as RadixAccordion} from 'radix-ui';
 import {cx} from '../../utils/cx';
+import {setRefs} from '../../utils/overlay';
+import {useUntilFound} from '../../utils/until-found';
 
 /** `type="single"` (optionally `collapsible`) or `type="multiple"`. */
 export const Accordion = RadixAccordion.Root;
@@ -19,7 +22,8 @@ export const AccordionTrigger = forwardRef<ElementRef<typeof RadixAccordion.Trig
   );
 });
 
-/** The panel revealed when the item is open; its children sit inside a padded body. */
+/** The panel revealed when the item is open; its children sit inside a padded body. Closed panels are found by the browser's Find in page where `hidden="until-found"` is supported. */
 export const AccordionContent = forwardRef<ElementRef<typeof RadixAccordion.Content>, ComponentPropsWithoutRef<typeof RadixAccordion.Content>>(function AccordionContent({className, children, ...rest}, ref) {
-  return <RadixAccordion.Content ref={ref} className="acc-content" {...rest}><div className={cx('acc-body', className)}>{children}</div></RadixAccordion.Content>;
+  const found = useUntilFound();
+  return <RadixAccordion.Content ref={(n) => setRefs(n, found.ref, ref)} forceMount={found.forceMount} className="acc-content" {...rest}><div className={cx('acc-body', className)}>{children}</div></RadixAccordion.Content>;
 });

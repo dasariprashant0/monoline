@@ -26,7 +26,7 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   invalid?: boolean;
 }
 
-/** A searchable single select. Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
+/** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
 export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
   const f = useFieldControl();
   const listId = useId();
@@ -83,7 +83,6 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         {...invalidAttrs(invalid)}
         value={text ?? selected?.label ?? ''}
         onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && value === undefined) { setInner(''); onValueChange?.(''); } }}
-        onFocus={() => setOpen(true)}
         onClick={() => setOpen(true)}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}

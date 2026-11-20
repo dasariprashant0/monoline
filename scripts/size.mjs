@@ -30,10 +30,10 @@ const cases = [
   ['Dialog', "import {Dialog, DialogTrigger, DialogContent, DialogTitle} from '@monoline/react'; console.log(Dialog, DialogTrigger, DialogContent, DialogTitle)", 2],
   ['AlertDialog', "import {AlertDialog, AlertDialogContent} from '@monoline/react'; console.log(AlertDialog, AlertDialogContent)", 2],
   ['Drawer', "import {Drawer, DrawerContent} from '@monoline/react'; console.log(Drawer, DrawerContent)", 2],
-  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.5],
-  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.6],
-  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.7],
-  ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.4],
+  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.8],
+  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.9],
+  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.9],
+  ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.5],
   ['Everything', "import * as m from '@monoline/react'; console.log(m)", 100],
 ];
 const bundle = (code) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});

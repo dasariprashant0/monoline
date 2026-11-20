@@ -34,3 +34,35 @@ describe('Popover', () => {
     expect(await axe(await screen.findByRole('dialog'))).toHaveNoViolations();
   });
 });
+
+describe('Popover native anchor positioning (M1)', () => {
+  const supports = CSS.supports;
+  afterEach(() => { CSS.supports = supports; });
+  it('uses position-area and anchor-name when the browser has them, and no pixel placement', async () => {
+    CSS.supports = () => true;
+    const user = userEvent.setup();
+    render(ui());
+    const trigger = screen.getByRole('button', {name: 'Open'});
+    await user.click(trigger);
+    const panel = await screen.findByRole('dialog', {name: 'Details'});
+    expect(panel.style.getPropertyValue('position-area')).toBe('bottom span-right');
+    expect(panel.style.getPropertyValue('position-anchor')).toBe(trigger.style.getPropertyValue('anchor-name'));
+    expect(panel.style.left).toBe('');
+    // collision padding only on the viewport-facing edges, never on the anchor-facing one
+    expect(panel.style.marginBottom).toBe('8px');
+    expect(panel.style.marginRight).toBe('8px');
+    expect(panel.style.marginLeft).toBe('0px');
+    expect(panel.dataset.side).toBe('bottom');
+    await user.keyboard('{Escape}');
+    expect(trigger.style.getPropertyValue('anchor-name')).toBe('');
+  });
+  it('falls back to pixel placement without it', async () => {
+    CSS.supports = () => false;
+    const user = userEvent.setup();
+    render(ui());
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    const panel = await screen.findByRole('dialog', {name: 'Details'});
+    expect(panel.style.left).toMatch(/px$/);
+    expect(panel.style.getPropertyValue('position-area')).toBe('');
+  });
+});

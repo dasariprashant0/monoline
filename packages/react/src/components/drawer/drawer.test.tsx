@@ -18,6 +18,13 @@ describe('Drawer', () => {
     const dlg = await screen.findByRole('dialog', {name: 'Filters'});
     expect(dlg).toHaveAttribute('data-side', 'right');
   });
+  it('has a visible Close button by default for touch users (e2e F7)', async () => {
+    const user = userEvent.setup();
+    render(ui());
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    await user.click(await screen.findByRole('button', {name: 'Close'}));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
   it('supports another side', async () => {
     const user = userEvent.setup();
     render(ui('left'));
