@@ -114,6 +114,10 @@ Several agents may build at once, each in its own worktree. To avoid conflicts:
 4. Commit early and small, on your own branch. Message style: `button: add loading state`.
 5. Finish with the Definition of done below, and report: what you built, what you could not finish, anything another task must change.
 
+### Start from `origin/master`
+
+Local `master` can fall behind silently. Before you branch, run `sh scripts/sync-master.sh` (fast-forward only, quiet when current; a SessionStart hook runs it too), then branch from the remote: `git fetch origin && git switch -c <name> origin/master`. Never branch from local `master`. If the script refuses (dirty or diverged master), it says why and changes nothing.
+
 ## Definition of done (per component)
 
 - [ ] Folder has all five files; `meta.json` valid; `index.ts` exports component and `*Props` types.
