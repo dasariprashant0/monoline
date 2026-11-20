@@ -82,3 +82,12 @@ Home page: master's redesign (Plain CSS and accessible React, install box, live 
 - React 18 (the Next.js App Router needs 19; the Vite run used 19.3).
 - Astro, React Router and Remix pages, and the CLI on any component that needs a shared helper.
 - Whether an AI tool given `llms.txt` and the Recipes prompt produces working code.
+
+## Re-run on the integration branch (2026-11-20)
+
+From an empty temp folder, against npm 0.4.0 packages:
+
+- README quick start: `npm create vite@latest my-app -- --template react-ts`, `npm install`, `npm install @monoline/react @monoline/css`, `rm src/App.tsx src/App.css src/index.css`, then the README's own `main.tsx` extracted from the file. `npm run build` passed: `index-BGGbU52u.css 13.26 kB gzip 3.87 kB`, `index-BEFnxefQ.js 221.27 kB gzip 69.36 kB`.
+- CLI known issue reproduced with `npx monoline add dialog --registry <this tree's registry/>`: `modal.tsx(3,20): error TS2307: Cannot find module '../../utils/slot'` and the same for `'../../utils/overlay'`. The default registry URL (GitHub master) was not reachable from the sandbox, so the local `registry/` was used.
+- Next.js path: **not re-run**. `create-next-app` could not be fetched in the sandbox (npm registry returned 403 from the network policy). The Next.js guide rests on the earlier run above.
+- pnpm, yarn and bun tabs: still not executed.
