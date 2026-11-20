@@ -1,0 +1,28 @@
+import {useLayoutEffect, useRef, useSyncExternalStore} from 'react';
+
+const noop = () => () => {};
+/** `hidden="until-found"` is Chromium (and recent Safari) only, not Baseline: feature-detected, false on the server and while hydrating. */
+const supported = () => typeof HTMLElement !== 'undefined' && 'onbeforematch' in HTMLElement.prototype;
+
+/** Find-in-page for closed Collapsible and Accordion panels. Where the browser supports `hidden="until-found"` the closed
+ *  panel stays in the DOM with that attribute, so Ctrl+F finds its text; the browser then fires `beforematch` and the
+ *  panel is opened through its own trigger (found through `aria-labelledby`, or as the Collapsible's own trigger). Elsewhere `forceMount` stays unset and Radix
+ *  unmounts the closed panel as before. Spread `forceMount` into the Radix content and attach `ref` to it. */
+export function useUntilFound() {
+  const on = useSyncExternalStore(noop, supported, () => false);
+  const ref = useRef<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!on || !el) return;
+    const sync = () => { if (el.dataset.state === 'open') el.hidden = false; else el.setAttribute('hidden', 'until-found'); };
+    // Accordion panels name their trigger (aria-labelledby); a Collapsible trigger only carries aria-controls while open, so
+    // take the first expandable control in the panel's parent that is not inside the panel
+    const found = () => (document.getElementById(el.getAttribute('aria-labelledby') ?? '') ?? [...(el.parentElement?.querySelectorAll<HTMLElement>('[aria-expanded]') ?? [])].find((t) => !el.contains(t)))?.click();
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(el, {attributes: true, attributeFilter: ['data-state']});
+    el.addEventListener('beforematch', found);
+    return () => { mo.disconnect(); el.removeEventListener('beforematch', found); };
+  }, [on]);
+  return {ref, forceMount: on ? true as const : undefined};
+}
