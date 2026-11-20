@@ -8,6 +8,7 @@ import {CopyIcon, CheckIcon} from '../shell/Logo';
 import {categories, hooks, inCategory, nice, pathOf} from '../shell/registry';
 import {href} from '../shell/router';
 import {GITHUB} from '../shell/Topbar';
+import {viteMain1, nextLayout, nextThemeInit, nextDemo, nextPage} from './start-snippets';
 
 const H2 = ({id, children}: {id: string; children: ReactNode}) => <h2 id={id} className="cdoc-h2">{children}</h2>;
 
@@ -70,25 +71,25 @@ const Step = ({n, title, children}: {n: number; title: string; children: ReactNo
 export const Nextjs = () => (
   <>
     <section className="cdoc-section" aria-labelledby="nx-install"><H2 id="nx-install">Installation</H2>
+      <p className="cdoc-muted">Run from an empty folder with Next.js 16.4 (App Router) and React 19.3. See <a href={href('docs/getting-started')}>Get started</a> for the Vite walkthrough with theme, dark mode and a dialog.</p>
       <ol className="doc-steps">
-        <Step n={1} title="Install the packages"><CodeBlock language="bash" code="npm install @monoline/react @monoline/css" /></Step>
-        <Step n={2} title="Load the stylesheet in the layout"><p className="cdoc-muted">App Router. Import it once, before your own CSS.</p><CodeBlock title="app/layout.tsx" language="tsx" code={`import '@monoline/css';\n\nexport default function RootLayout({children}: {children: React.ReactNode}) {\n  return <html lang="en"><body>{children}</body></html>;\n}`} /></Step>
-        <Step n={3} title="Use a component"><p className="cdoc-muted">Components that use state or handlers carry <code>'use client'</code> themselves, so a Server Component file can import and render them.</p><CodeBlock title="app/page.tsx" language="tsx" code={`import {Button} from '@monoline/react';\n\nexport default function Page() {\n  return <Button>Save</Button>;\n}`} /></Step>
+        <Step n={1} title="Create the app and install"><CodeBlock language="bash" code={'npx create-next-app@latest my-app --ts --app --no-tailwind\ncd my-app\nnpm install @monoline/react @monoline/css\nrm app/globals.css app/page.module.css'} /><p className="cdoc-muted">The generator's own CSS sets colours that fight with Monoline, so it is removed.</p></Step>
+        <Step n={2} title="Load the CSS and the theme in the layout"><p className="cdoc-muted">Import <code>core.css</code> first, then one file per component you use. <code>suppressHydrationWarning</code> is needed because the theme is written to <code>&lt;html&gt;</code> before React loads.</p><CodeBlock title="app/layout.tsx" language="tsx" code={nextLayout} /></Step>
+        <Step n={3} title="Set the saved theme before first paint"><p className="cdoc-muted"><code>themeScript</code> is exported from a client module, so a Server Component cannot call it (the build fails with "Attempted to call themeScript() from the server"). This small client file calls it instead, so dark-mode visitors see no light flash.</p><CodeBlock title="app/theme-init.tsx" language="tsx" code={nextThemeInit} /></Step>
+        <Step n={4} title="Use components from a client file"><p className="cdoc-muted">Anything with state or handlers needs <code>'use client'</code> in the file where you use it. Import that file from the server page.</p><CodeBlock title="app/demo.tsx" language="tsx" code={nextDemo} /><CodeBlock title="app/page.tsx" language="tsx" code={nextPage} /></Step>
       </ol>
-    </section>
-    <section className="cdoc-section" aria-labelledby="nx-theme"><H2 id="nx-theme">Theme and accent</H2>
-      <p className="cdoc-muted">Set the attributes on <code>&lt;html&gt;</code> so the first paint already has the right look.</p>
-      <CodeBlock title="app/layout.tsx" language="tsx" code={`<html lang="en" data-theme="warm" data-accent="blue">`} />
+      <p className="cdoc-muted">Run <code>npm run dev</code>. The production build prerenders the page without errors and the browser console stays empty. Importing <code>@monoline/react</code> does not touch <code>window</code>. Only React 19 was run here.</p>
     </section>
   </>
 );
 
 export const Vite = () => (
   <section className="cdoc-section" aria-labelledby="vt-install"><H2 id="vt-install">Installation</H2>
+    <p className="cdoc-muted">The full walkthrough, with theme, dark mode and a dialog, is <a href={href('docs/getting-started')}>Get started</a>. The short version, from <code>npm create vite@latest my-app -- --template react-ts</code>:</p>
     <ol className="doc-steps">
       <Step n={1} title="Install the packages"><CodeBlock language="bash" code="npm install @monoline/react @monoline/css" /></Step>
-      <Step n={2} title="Import the stylesheet once"><CodeBlock title="src/main.tsx" language="tsx" code={`import '@monoline/css';\nimport {createRoot} from 'react-dom/client';\nimport {App} from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);`} /></Step>
-      <Step n={3} title="Render a component"><CodeBlock title="src/App.tsx" language="tsx" code={`import {Button} from '@monoline/react';\n\nexport const App = () => <Button>Save</Button>;`} /></Step>
+      <Step n={2} title="Remove the template's CSS"><p className="cdoc-muted">Its colours and layout fight with Monoline.</p><CodeBlock language="bash" code="rm src/App.tsx src/App.css src/index.css" /></Step>
+      <Step n={3} title="Import the CSS and render a component"><CodeBlock title="src/main.tsx" language="tsx" code={viteMain1} /></Step>
     </ol>
   </section>
 );

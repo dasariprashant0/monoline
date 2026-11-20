@@ -5,22 +5,13 @@ import {ThemeBuilder} from './theme-builder';
 import {Section, P} from './guide-parts';
 import {forms} from './guides-forms';
 import {i18n, accessibility, contributing} from './guides-more';
+import {viteSteps, recipes, choosing} from './guides-start';
 
 export interface Guide {slug: string; title: string; summary: string; body: () => ReactNode}
 
 
-const gettingStarted = () => (
+const moreStart = () => (
   <>
-    <Section title="Install">
-      <P>Monoline is two packages: <code>@monoline/css</code> (plain CSS, works anywhere) and <code>@monoline/react</code> (React components that render the same classes). React 18 or newer is a peer dependency.</P>
-      <CodeBlock title="bash" code="npm install @monoline/react @monoline/css" />
-    </Section>
-    <Section title="A minimal React app">
-      <P>Import the stylesheet once at your entry point, then import components by name.</P>
-      <CodeBlock title="main.tsx" code={"import {createRoot} from 'react-dom/client';\nimport '@monoline/css';\nimport {Button} from '@monoline/react';\n\ncreateRoot(document.getElementById('root')!).render(\n  <Button>Save</Button>\n);"} />
-      <P>Set a theme and accent on <code>&lt;html&gt;</code> (see Theming). Without attributes you get the warm theme with the orange accent.</P>
-      <CodeBlock title="index.html" code={'<html lang="en" data-theme="warm" data-accent="orange">'} />
-    </Section>
     <Section title="Load only the CSS you use">
       <P><code>import '@monoline/css'</code> is the easy start: one file with every component (about 18 KB gzip). Most apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.</P>
       <CodeBlock title="main.tsx" code={"import '@monoline/css/core.css';              // tokens, themes, accents, base: always\nimport '@monoline/css/components/button.css';\nimport '@monoline/css/components/dialog.css';\nimport '@monoline/css/components/card.css';"} />
@@ -50,6 +41,13 @@ const gettingStarted = () => (
   </>
 );
 
+const gettingStarted = () => (
+  <>
+    {viteSteps()}
+    {moreStart()}
+  </>
+);
+
 const cli = () => (
   <>
     <Section title="Overview">
@@ -74,6 +72,9 @@ const cli = () => (
         <dt><code>--cwd &lt;path&gt;</code></dt><dd>Project root. Default: the current folder.</dd>
       </dl>
       <P><code>monoline.json</code> stores <code>components</code>, <code>styles</code> and optionally <code>registry</code>; flags win over it.</P>
+    </Section>
+    <Section title="Known issue">
+      <P>Checked on 2026-11-20 against the registry on <code>master</code>: <code>add button</code>, <code>add card</code> and <code>add dialog</code> copy files that import <code>utils/slot</code> or <code>utils/overlay</code>, and the CLI does not copy those helpers. A TypeScript build then fails with <code>TS2307: Cannot find module '../../utils/slot'</code>. Until this is fixed, install the packages (Getting started) for those components, or copy the missing helper files from <code>packages/react/src/utils/</code> by hand.</P>
     </Section>
     <Section title="Example">
       <CodeBlock title="bash" code={'npx monoline add dialog --dry-run\nnpx monoline add dialog\nnpm i radix-ui   # the command prints the exact packages'} />
@@ -152,7 +153,9 @@ const forAi = () => (
 );
 
 export const guides: Guide[] = [
-  {slug: 'getting-started', title: 'Getting started', summary: 'Install, import and render your first component.', body: gettingStarted},
+  {slug: 'getting-started', title: 'Getting started', summary: 'From an empty folder to a themed page, dark mode and a dialog with Vite, in ten minutes.', body: gettingStarted},
+  {slug: 'recipes', title: 'Copy-paste recipes', summary: 'A settings form, a toast and an AI prompt, each built and tested.', body: recipes},
+  {slug: 'choosing', title: 'Is Monoline for you?', summary: 'When to pick it, when not to, and what is still missing.', body: choosing},
   {slug: 'cli', title: 'CLI', summary: 'Copy components into your project with npx monoline.', body: cli},
   {slug: 'theming', title: 'Theming', summary: 'Themes, accents, fonts, corners, density and tokens.', body: theming},
   {slug: 'theme-builder', title: 'Theme builder', summary: 'Try the options and custom colours, then copy the CSS.', body: () => <ThemeBuilder />},
