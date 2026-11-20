@@ -11,6 +11,7 @@ import {VERSION, entryAt, neighbours} from '../shell/registry';
 import {CopyMarkdown, OpenMenu} from './doc-actions';
 import type {ComponentMeta, Demo} from '@monoline/react';
 import {keyboardRows} from '../../scripts/lib/a11y.mjs';
+import {demosFor} from '../shell/registry';
 import {Playground} from './playground';
 import './page.css';
 
@@ -26,7 +27,6 @@ const propsByName: Record<string, PropGroup[]> = first(import.meta.glob<Record<s
 const extras: Record<string, Extra> = first(import.meta.glob<Record<string, Extra>>('./demos.generated.json', {eager: true, import: 'default'})) ?? {};
 const styling: Record<string, StyleFile[]> = first(import.meta.glob<Record<string, StyleFile[]>>('./styling.generated.json', {eager: true, import: 'default'})) ?? {};
 const metas = import.meta.glob<ComponentMeta>('../../../../packages/react/src/{components,hooks}/*/meta.json', {eager: true, import: 'default'});
-const demoModules = import.meta.glob<{demos: Demo[]}>('../../../../packages/react/src/{components,hooks}/*/*.demo.tsx', {eager: true});
 const allMetas = Object.values(metas).sort((a, b) => a.name.localeCompare(b.name));
 
 const GITHUB = 'https://github.com/dasariprashant0/monoline/tree/master/packages/react/src';
@@ -192,10 +192,7 @@ export interface ComponentDocProps {
 export function ComponentDoc({meta, linkTo = (n) => `#${n}`}: ComponentDocProps) {
   const hook = meta.category === 'hooks';
   const extra: Extra = extras[meta.name] ?? {importName: meta.title, parts: [], dependencies: [], demos: []};
-  const demos = useMemo(() => {
-    const key = Object.keys(demoModules).find((k) => k.includes(`/${meta.name}/`));
-    return key ? demoModules[key]!.demos : [];
-  }, [meta.name]);
+  const demos = demosFor(meta.name);
   const groups = propsByName[meta.name] ?? [];
   const styleFiles = styling[meta.name] ?? [];
   const keys = useMemo(() => keyboardRows(meta.a11y), [meta.a11y]);

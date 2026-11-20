@@ -1,13 +1,31 @@
 // Everything the shell needs to know about the site: components and hooks (from meta.json), guides, and the
 // flat list the search palette uses. A new component folder shows up here with no change.
+import {use} from 'react';
 import type {ComponentMeta, Demo} from '@monoline/react';
 import {guides, type Guide} from '../guides';
+import {loader, type Tracked} from './lazy';
 
 export {guides};
 export type {Guide};
 
 const metas = import.meta.glob<ComponentMeta>('../../../../packages/react/src/{components,hooks}/*/meta.json', {eager: true, import: 'default'});
-const demoModules = import.meta.glob<{demos: Demo[]}>('../../../../packages/react/src/{components,hooks}/*/*.demo.tsx', {eager: true});
+// Demo modules hold every example's JSX, so they load on demand. `demosFor` suspends until a component's demos have
+// arrived: render it under <Suspense>, or await `loadDemos(name)` first (the prerender does, for every component).
+type DemoModule = {demos: Demo[]};
+const demoFiles = import.meta.glob<DemoModule>('../../../../packages/react/src/{components,hooks}/*/*.demo.tsx');
+const demoKey = (files: Record<string, unknown>, name: string) => Object.keys(files).find((k) => k.includes(`/${name}/`));
+const demoLoaders = new Map<string, () => Tracked<Demo[]>>();
+
+/** Starts loading a component's demos (or returns the loader already started). Resolves to [] when it has none. */
+export function loadDemos(name: string) {
+  let l = demoLoaders.get(name);
+  if (!l) {
+    const key = demoKey(demoFiles, name);
+    l = loader(() => (key ? demoFiles[key]!().then((m) => m.demos) : Promise.resolve([] as Demo[])));
+    demoLoaders.set(name, l);
+  }
+  return l();
+}
 
 /** Version of @monoline/react, read from its package.json. */
 export const VERSION = Object.values(import.meta.glob<string>('../../../../packages/react/package.json', {eager: true, import: 'version'}))[0] ?? '';
@@ -23,11 +41,8 @@ const CATEGORY_ORDER = ['layout', 'typography', 'buttons', 'forms', 'data-displa
 export const categories = CATEGORY_ORDER.filter((c) => components.some((m) => m.category === c));
 export const inCategory = (c: string) => components.filter((m) => m.category === c);
 
-/** Live demos of a component, as exported by its `<name>.demo.tsx`. */
-export const demosFor = (name: string): Demo[] => {
-  const key = Object.keys(demoModules).find((k) => k.includes(`/${name}/`));
-  return key ? demoModules[key]!.demos : [];
-};
+/** Live demos of a component, as exported by its `<name>.demo.tsx`. Suspends until they have loaded. */
+export const demosFor = (name: string): Demo[] => use(loadDemos(name));
 
 /** Route path (no base, no leading slash) of a component or hook. Every docs page lives under `docs/`. */
 export const pathOf = (m: ComponentMeta) => `docs/${isHook(m) ? 'hooks' : 'components'}/${m.name}`;
