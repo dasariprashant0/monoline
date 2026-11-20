@@ -1,6 +1,6 @@
 # Improvement plan (phase 0 recon)
 
-Date 2026-11-20, branch `claude/ds-recon-plan-215911`, version 0.4.0 (+ Unreleased tokens). No component code changed. Every row below was checked in this worktree.
+Date 2026-11-20, branch `claude/ds-recon-plan-215911`, version 0.5.0 (released 2026-11-20 per `CHANGELOG.md`). Rebased onto `origin/master` `4bd0932` (was cut from `e4b3e46`). The findings were measured at 0.4.0 + unreleased tokens; the 0.5.0 delta (docs redesign, GitHub Pages removed, docs moved to monoline.prashantdasari.com, README badges, versions bumped to 0.5.0) is folded in below. The baseline command results were **not** re-run after the rebase. No component code changed. Rows are checked in this worktree unless marked otherwise.
 
 ## Baseline: commands actually run
 
@@ -23,11 +23,11 @@ Date 2026-11-20, branch `claude/ds-recon-plan-215911`, version 0.4.0 (+ Unreleas
 |---|---|---|
 | CSS core | `packages/css` (`@monoline/css`) | tokens, 3 themes, 8 accents, 129 component files, `dist/core.css` + per-component bundles |
 | React | `packages/react` (`@monoline/react`) | 135 components, 23 hooks, ESM + CJS, `sideEffects:false`, peer react >=18, dep `radix-ui` |
-| Other packages | `packages/cli` (`monoline`), `mcp`, `tokens` (private), `vscode` | all 0.4.0 |
+| Other packages | `packages/cli` (`monoline`), `mcp`, `tokens` (private), `vscode` | all 0.5.0 |
 | Docs | `apps/docs` (Vite, prerendered, playground, theme builder, Themes, Blocks, Compare) | no Storybook; the docs site is the catalogue |
 | Registry | `registry/` (159 files), `llms.txt`, `llms-full.txt` | generated, maintainer-only |
 | Examples | `examples/{dashboard,auth-settings,landing}` | |
-| CI | `.github/workflows/{ci,audit,ax,e2e,pages,release}.yml` | release publishes with provenance, needs `NPM_TOKEN` |
+| CI | ``.github/workflows/{ci,audit,ax,e2e,release}.yml` (`pages.yml` removed in 0.5.0; docs now served from monoline.prashantdasari.com, host config not in this repo) | release publishes with provenance, needs `NPM_TOKEN` |
 | Design rules | `DESIGN.md`, `AGENTS.md`, `docs/ROADMAP.md` | |
 
 ## A. Findings
@@ -38,18 +38,18 @@ Severity: H blocks adoption or violates the stated a11y bar; M real gap; L polis
 |---|---|---|---|---|
 | F1 | library | H | `.github/workflows/ci.yml` runs one Node 22 job; no React 18/19 matrix, while `packages/react/package.json` peer is `>=18` | Add a matrix job (React 18 and 19) running `npm test -w @monoline/react` |
 | F2 | library | H | No clean-install test anywhere (`ROADMAP.md` 0.4 open); no `examples/` Vite/Next/Astro/Remix starters | Add install smoke tests that pack the tarballs and render Button + Dialog in 4 starters |
-| F3 | library | H | `ROADMAP.md` 0.3: "not on npm yet". Publish state not verified here. `release.yml` needs `NPM_TOKEN` and the `release` environment | Owner decides when to publish (see E1); dry-run `npm pack` per package first |
+| F3 | library | H | `ROADMAP.md` 0.3: "not on npm yet" (stale?). 0.5.0 is tagged in `CHANGELOG.md` and the README now has an npm badge, so it may be published; **not verified** (no network check run). `release.yml` needs `NPM_TOKEN` and the `release` environment | Owner decides when to publish (see E1); dry-run `npm pack` per package first |
 | F4 | a11y | H | `docs/a11y-report.md` line 7: no NVDA/JAWS/VoiceOver/TalkBack testing has been done by anyone | Owner-run manual pass on the 15 flows (report lines 36-115); agents only prepare scripts |
 | F5 | a11y | M | `grep forced-colors\|prefers-contrast packages/css/src` returns 0 files | Add `forced-colors` and `prefers-contrast` rules for focus ring, borders, selected states; check in `scripts/css-computed.mjs` |
-| F6 | a11y | M | `docs/a11y-report.md` "Open findings": Toast viewport has two unnamed focusable proxies; docs sidebar is a second unnamed complementary landmark; scrollable code blocks are focusable with no role | Name/role the docs items (`apps/docs`); for Toast, confirm after the 0.4 rewrite whether it is still Radix and fix or document |
+| F6 | a11y | M | `docs/a11y-report.md` "Open findings" (now 11, was 9; the two new ones are focusable `generic` elements with nothing to announce): Toast viewport has two unnamed focusable proxies; docs sidebar is a second unnamed complementary landmark; scrollable code blocks are focusable with no role | Name/role the docs items (`apps/docs`); for Toast, confirm after the 0.4 rewrite whether it is still Radix and fix or document |
 | F7 | a11y | M | `docs/e2e-findings.md` "Not fixed": context-menu demo trigger not focusable, Drawer has no visible close, tooltip closes on scroll, combobox opens on focus. Written before the 0.4 native-dialog/floating-layer rewrite, so some may be stale | Re-test each in real Chrome; fix demos (focusable trigger, `DrawerClose`) and update the file |
 | F8 | a11y | M | `.github/workflows/e2e.yml` and `scripts/e2e/` are Chrome only; no Firefox/WebKit grep hits | Add Firefox and WebKit smoke for dialog, menu, select, combobox, tabs (roadmap 0.6) |
 | F9 | docs | M | `docs/ROADMAP.md` says 114 components, 1182 tests, Radix size risk, "Button 1.7 KB"; reality is 135 components, 1446 tests, Radix mostly removed, Button 0.7 KB (`CHANGELOG.md` 0.4.0) | Rewrite the status table and risks; mark done phases |
 | F10 | docs | M | `AGENTS.md` says deps are only `radix-ui` and `asChild` uses Radix `Slot`; `CHANGELOG.md` 0.4.0 says Slot is now `utils/slot.tsx` and overlays are native | Update AGENTS.md conventions (it is the contract for agents) |
 | F11 | docs | M | No `docs/decisions` or ADR folder; big choices (native `<dialog>`, own floating layer, per-module build, CSS split) live only in CHANGELOG | Add 4-5 short ADRs from `CHANGELOG.md` 0.4.0 |
-| F12 | docs | L | `apps/docs/package.json` version 0.3.0 vs 0.4.0 elsewhere | Align or leave (private) |
-| F13 | code | M | Build log: docs `index-*.js` 1,159 KB / 320 KB gzip in one chunk (`vite build` warning) | Route-level `import()` code splitting for docs pages |
-| F14 | code | M | `npm run size`: all CSS 19.9/20 KB, Everything 96.2/100 KB; any new component will trip the budget | Re-baseline budgets deliberately or trim; document the policy |
+| F12 | docs | L | `apps/docs/package.json` version 0.3.0 vs 0.5.0 elsewhere | Align or leave (private) |
+| F13 | code | M | Build log (measured before the docs redesign, **not re-measured**): docs `index-*.js` 1,159 KB / 320 KB gzip in one chunk (`vite build` warning) | Route-level `import()` code splitting for docs pages |
+| F14 | code | M | `npm run size` (pre-0.5.0 numbers): all CSS 19.9/20 KB, Everything 96.2/100 KB; any new component will trip the budget | Re-baseline budgets deliberately or trim; document the policy |
 | F15 | code | L | No linter or formatter script in root `package.json`; "lint" is only `packages/css/scripts/check.mjs` and `check-docs.mjs` | Decide (E3): add ESLint with `jsx-a11y`, or keep custom checks |
 | F16 | code | L | `CHANGELOG.md` Unreleased: `--bp-*` tokens are not used by any media query (stylesheets use 560/600/760/800/860/900/1100 px, 40/64rem) | Leave until the owner decides on tablet layout change |
 | F17 | motion | L | `prefers-reduced-motion` appears in `packages/css/src/base.css:59` (global) and 14 of 33 CSS files that animate | Confirm base.css rule covers the rest; add a check in `packages/css/scripts/check.mjs` that every animating file is covered |
@@ -61,7 +61,7 @@ Checked and fine: `outline:none` uses in `packages/css/src` are either programma
 
 | ID | Area | Gap | Evidence | Fix |
 |---|---|---|---|---|
-| G1 | Install | Nothing can be installed yet: not published (roadmap 0.3), so `npm install @monoline/react` in README fails today | `README.md` "Use it"; `docs/ROADMAP.md` Phase 0 | Publish (E1), then verify on a clean machine (F2) |
+| G1 | Install | Install path unverified: roadmap 0.3 says not published, but 0.5.0 is released and the README has an npm badge. Run `npm view @monoline/react` first | `README.md` "Use it"; `docs/ROADMAP.md` Phase 0 | Publish (E1), then verify on a clean machine (F2) |
 | G2 | Install | README's first path loads all CSS (`import '@monoline/css'` = 19.9 KB gzip) while CHANGELOG 0.4.0 calls `core.css` plus per-component CSS the recommended path (core 3.6 KB) | `README.md`, `CHANGELOG.md`, `npm run size` | Make the small-CSS path the README default, with `@monoline/react` `styles` map |
 | G3 | Install | No starter a newcomer can clone for Vite, Next.js, Astro or Remix; `npx monoline init` exists but no "create app" route | `examples/` (3 apps, built from workspace), `packages/cli` | Starters per framework (WP1); decide on `npm create` (E8) |
 | G4 | Install | Framework notes (Next.js `'use client'`, SSR, CSS import order, React 18 vs 19) are not tested or documented | `ci.yml`, `AGENTS.md` ("Server-safe") | Test in the install smoke, then add a short guide per framework |
@@ -141,7 +141,7 @@ Generated files (`packages/react/src/index.ts`, `registry/`, `llms*.txt`, `dist/
 
 | WP | Scope | Owns (globs) | Skills | Agents | Model / effort | Acceptance |
 |---|---|---|---|---|---|---|
-| WP1 Library and CI | F1, F2, F3 (dry run only), F14; roadmap 0.2-0.5, 3.7 migration notes | `.github/workflows/{ci,release,pages}.yml`, root `package.json`, `packages/*/package.json`, `packages/{cli,mcp,tokens,vscode}/**`, `scripts/{release*,size*}.mjs`, `scripts/lib/**`, new `scripts/install-smoke/**`, `examples/**` | ci-cd-and-automation, shipping-and-launch, api-and-interface-design, modern-web-guidance:modern-web-guidance (browser-support policy, E9) | Frontend Developer, typescript-reviewer | sonnet, high | React 18+19 matrix green locally; 4 starters build; `npm pack --dry-run` lists expected files; `npm run check`, `size`, `test:release` pass |
+| WP1 Library and CI | F1, F2, F3 (dry run only), F14; roadmap 0.2-0.5, 3.7 migration notes | `.github/workflows/{ci,release}.yml`, root `package.json`, `packages/*/package.json`, `packages/{cli,mcp,tokens,vscode}/**`, `scripts/{release*,size*}.mjs`, `scripts/lib/**`, new `scripts/install-smoke/**`, `examples/**` | ci-cd-and-automation, shipping-and-launch, api-and-interface-design, modern-web-guidance:modern-web-guidance (browser-support policy, E9) | Frontend Developer, typescript-reviewer | sonnet, high | React 18+19 matrix green locally; 4 starters build; `npm pack --dry-run` lists expected files; `npm run check`, `size`, `test:release` pass |
 | WP2 Components and a11y fixes | F6 (component part), F7, F17, F18 (only if E4 yes); roadmap 1.2, 1.3, 1.5 | `packages/react/src/**`, `packages/css/src/components/**` | wcag-accessibility, design:accessibility-review, agentic-council:a11y-audit, react-patterns, modern-web-guidance:modern-web-guidance (M1, M2, M7) | Frontend Developer, Accessibility Auditor, react-reviewer | sonnet, high | each fix has a test; `npm test`, `npm run check`, `npm run typecheck` pass; F7 items re-tested in Chrome and listed fixed or stale |
 | WP3 Browser a11y and interaction tests | F4 prep, F5 test side, F8; roadmap 0.6, 4 | `scripts/{e2e,ax}/**`, `scripts/{audit,audit-examples,css-computed}.mjs`, `.github/workflows/{ax,e2e,audit}.yml`, `docs/{a11y-report,e2e-findings,screen-readers}.md` | browser-testing-with-devtools, e2e-testing, agentic-council:a11y-audit | Accessibility Auditor, Evidence Collector | sonnet, high | `npm run e2e` and `npm run ax` run and pass in Chrome; Firefox/WebKit smoke added; report regenerated; manual SR script ready for owner |
 | WP4 Tokens, motion and visual polish | F5 (CSS side), F16, F17 check; roadmap 1.4, 3.4 | `packages/css/src/{tokens,base,accents,options,utilities}.css`, `packages/css/{scripts,js}/**`, `DESIGN.md`, `apps/docs/src/theme-builder.tsx` | design:design-critique, agentic-council:visual-audit, agentic-council:design-system-architecture, ui-ux-pro-max:design-system, modern-web-guidance:modern-web-guidance (M3-M6, M8) | UI Designer, UX Architect, Evidence Collector | sonnet, medium (high for forced-colors) | `npm run check` (contrast, raw-colour) and `test:tokens` pass; screenshots in 3 themes at 375 and 1280 px; forced-colors and reduced-motion checks added |
