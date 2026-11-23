@@ -47,7 +47,3 @@
   .chart-marks { animation: chart-reveal var(--slow) var(--ease) backwards; }
 }
 @keyframes chart-reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(-8px); } }
-/* Forced colours: the active hit area is a wash fill. */
-@media (forced-colors: active) {
-  .chart-hit[data-active] { fill: none; stroke: Highlight; }
-}

@@ -40,5 +40,4 @@
 /* Forced colours: the current item is a box-shadow and a wash fill, both dropped. */
 @media (forced-colors: active) {
   .sidebar-item[aria-current="page"] { border-inline-start-color: Highlight; outline: 1px solid Highlight; outline-offset: -1px; }
-  .sidebar[data-collapsed] .sidebar-item[aria-current="page"] { border-block-end: 2px solid Highlight; }
 }

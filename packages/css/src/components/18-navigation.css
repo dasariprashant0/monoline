@@ -24,5 +24,4 @@
 /* Forced colours: selected tab and current page marker without box-shadow. */
 @media (forced-colors: active) {
   .tab[aria-selected="true"] { border-block-start: 2px solid Highlight; }
-  .pager [aria-current="page"] { background: Highlight; color: HighlightText; }
 }
