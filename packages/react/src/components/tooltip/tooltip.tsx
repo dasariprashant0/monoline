@@ -21,7 +21,13 @@ export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, c
 }
 
 interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; id: string; trigger: React.RefObject<HTMLElement | null>; kbd: React.RefObject<boolean> }
-const Context = createContext<Ctx>(null as never);
+const Context = createContext<Ctx | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+function useTooltipCtx(): Ctx {
+  const c = useContext(Context);
+  if (!c) throw new Error('Monoline: TooltipContent must be rendered inside a Tooltip.');
+  return c;
+}
 
 export interface TooltipProps {
   /** The text shown. Keep it short; it repeats or extends a label and must never hold essential information alone. */
@@ -69,7 +75,7 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
 
 /** The floating tooltip box. `Tooltip` renders one for you; it works only inside a `Tooltip`. */
 export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', onPointerEnter, onPointerLeave, ...rest}, forwarded) {
-  const c = useContext(Context);
+  const c = useTooltipCtx();
   const el = useRef<HTMLDivElement | null>(null);
   useDismiss(c.open, [el, c.trigger], () => c.show(false));
   // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.

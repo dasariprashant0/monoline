@@ -3,7 +3,7 @@ import {createContext, forwardRef, useContext, useEffect, useRef, useState, type
 import {Slot} from '../../utils/slot';
 import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
-import {MenuContent, MenuContext, MenuItem, MenuLabel, MenuRoot, MenuSeparator, openWith, type MenuContentProps, type MenuItemProps, type MenuProps} from '../dropdown-menu/menu';
+import {MenuContent, MenuItem, MenuLabel, MenuRoot, MenuSeparator, openWith, useMenuCtx, type MenuContentProps, type MenuItemProps, type MenuProps} from '../dropdown-menu/menu';
 
 const Point = createContext<(x: number, y: number) => void>(() => {});
 
@@ -24,7 +24,7 @@ export const ContextMenuTrigger = forwardRef<HTMLSpanElement, HTMLAttributes<HTM
   /** Render your own element instead of a span; it receives the props and handlers. */
   asChild?: boolean;
 }>(function ContextMenuTrigger({asChild, onContextMenu, onPointerDown, onPointerUp, onPointerMove, onPointerCancel, tabIndex, ...rest}, ref) {
-  const c = useContext(MenuContext), at = useContext(Point);
+  const c = useMenuCtx(), at = useContext(Point);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const origin = useRef<{x: number; y: number} | null>(null);
   useEffect(() => () => clearTimeout(timer.current), []);

@@ -3,10 +3,16 @@ import {createContext, forwardRef, useContext, useEffect, useId, useRef, useStat
 import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
 import {useIsRtl} from '../../utils/direction';
-import {MenuContent, MenuContext, MenuItem, MenuLabel, MenuRoot, MenuSeparator, openWith, type MenuContentProps, type MenuItemProps} from '../dropdown-menu/menu';
+import {MenuContent, MenuItem, MenuLabel, MenuRoot, MenuSeparator, openWith, useMenuCtx, type MenuContentProps, type MenuItemProps} from '../dropdown-menu/menu';
 
 interface Bar { open: string | null; setOpen: (id: string | null) => void; ref: RefObject<HTMLDivElement | null>; move: (dir: 1 | -1, from: Element | null) => void }
-const BarContext = createContext<Bar>(null as never);
+const BarContext = createContext<Bar | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+function useBarCtx(): Bar {
+  const c = useContext(BarContext);
+  if (!c) throw new Error('Monoline: this Menubar part must be rendered inside a Menubar.');
+  return c;
+}
 const Key = createContext('');
 
 const TRIGGER = '[role=menuitem][aria-haspopup=menu]';
@@ -42,7 +48,7 @@ export const Menubar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
 
 /** One menu in the bar. Put a `MenubarTrigger` and a `MenubarContent` inside. */
 export function MenubarMenu({children}: {children?: ReactNode}) {
-  const bar = useContext(BarContext), id = useId();
+  const bar = useBarCtx(), id = useId();
   return (
     <Key.Provider value={id}>
       <MenuRoot open={bar.open === id} onOpenChange={(o) => bar.setOpen(o ? id : bar.open === id ? null : bar.open)} extra={{step: bar.move}}>{children}</MenuRoot>
@@ -52,7 +58,7 @@ export function MenubarMenu({children}: {children?: ReactNode}) {
 
 /** The button in the bar that opens its menu. */
 export const MenubarTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>(function MenubarTrigger({className, onClick, onKeyDown, onPointerEnter, ...rest}, ref) {
-  const c = useContext(MenuContext), bar = useContext(BarContext), id = useContext(Key);
+  const c = useMenuCtx(), bar = useBarCtx(), id = useContext(Key);
   return (
     <button
       ref={(n) => setRefs(n, c.trigger, ref)} type="button" role="menuitem" id={c.triggerId} data-menu={id} aria-haspopup="menu" aria-expanded={c.open} aria-controls={c.open ? c.menuId : undefined} data-state={c.open ? 'open' : 'closed'}
