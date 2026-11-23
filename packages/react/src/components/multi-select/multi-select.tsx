@@ -1,7 +1,7 @@
 'use client';
-import {forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
+import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
 import {Tag} from '../tag';
 
 export interface MultiSelectOption {
@@ -32,7 +32,8 @@ export interface MultiSelectProps extends Omit<InputHTMLAttributes<HTMLInputElem
  * removable tags, the list stays open after a pick, Enter toggles the active option, and
  * Backspace in an empty field removes the last tag. The listbox has `aria-multiselectable`.
  */
-export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(function MultiSelect({options, value, defaultValue = [], onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
+export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(function MultiSelect({options, value, defaultValue = [], onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
+  const labelId = useFieldLabelId();
   const f = useFieldControl();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
@@ -43,6 +44,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
   const query = text.trim().toLowerCase();
   const shown = options.filter((o) => o.label.toLowerCase().includes(query));
   const optId = (i: number) => `${listId}-${i}`;
+  useEffect(() => { if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'}); }, [open, active]);
 
   const commit = (next: string[]) => { if (value === undefined) setInner(next); onValueChange?.(next); };
   const toggle = (o: MultiSelectOption) => {
@@ -89,15 +91,15 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
           {...invalidAttrs(invalid)}
           value={text}
           onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); }}
-          onFocus={() => setOpen(true)}
-          onClick={() => setOpen(true)}
+          onFocus={(e) => { onFocus?.(e); setOpen(true); }}
+          onClick={(e) => { onClick?.(e); setOpen(true); }}
           onBlur={(e) => { onBlur?.(e); setOpen(false); setText(''); }}
           onKeyDown={keydown}
           {...rest}
         />
       </div>
       {open && (
-        <ul id={listId} role="listbox" aria-multiselectable="true" className="multi-select-list" aria-label={rest['aria-label']}>
+        <ul id={listId} role="listbox" aria-multiselectable="true" className="multi-select-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>
           {shown.length === 0 && <li className="multi-select-empty" role="presentation">{emptyText}</li>}
           {shown.map((o, i) => (
             <li

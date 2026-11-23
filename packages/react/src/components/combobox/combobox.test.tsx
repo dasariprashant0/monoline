@@ -97,4 +97,25 @@ describe('Combobox', () => {
     await user.click(screen.getByRole('combobox'));
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('tells a controlled parent when the text is cleared', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<Combobox aria-label="Person" options={options} value="ada" onValueChange={fn} />);
+    await user.clear(screen.getByRole('combobox'));
+    expect(fn).toHaveBeenCalledWith('');
+  });
+  it('still opens when the consumer passes onClick, and calls it', async () => {
+    const user = userEvent.setup();
+    const click = vi.fn();
+    render(<Combobox aria-label="Person" options={options} onClick={click} />);
+    await user.click(screen.getByRole('combobox'));
+    expect(click).toHaveBeenCalled();
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+  });
+  it('names the list after the Field label, not the typed text', async () => {
+    const user = userEvent.setup();
+    render(<Field label="Person"><Combobox options={options} /></Field>);
+    await user.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('listbox', {name: 'Person'})).toBeInTheDocument();
+  });
 });

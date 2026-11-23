@@ -69,4 +69,14 @@ describe('Autocomplete', () => {
     await user.type(screen.getByRole('combobox', {name: 'City'}), 'b');
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('does not throw on Enter when the suggestions shrank under the active row', async () => {
+    const user = userEvent.setup();
+    const {rerender} = render(<Autocomplete aria-label="City" suggestions={suggestions} />);
+    const input = screen.getByRole('combobox');
+    await user.type(input, 'b');
+    await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    rerender(<Autocomplete aria-label="City" suggestions={['Berlin']} />);
+    await user.keyboard('{Enter}');
+    expect(input).toHaveValue('b');
+  });
 });
