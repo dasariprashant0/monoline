@@ -1,4 +1,4 @@
-import {forwardRef, type AnchorHTMLAttributes, type ReactNode, type Ref} from 'react';
+import {cloneElement, forwardRef, isValidElement, type AnchorHTMLAttributes, type ReactNode, type Ref} from 'react';
 import {Slot} from '../../utils/slot';
 import {cx} from '../../utils/cx';
 
@@ -19,10 +19,11 @@ export type RenderLink = (props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, '
 /** An anchor with the Monoline underline. */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({external, asChild, className, children, ...rest}, ref) {
   const Comp = asChild ? Slot : 'a';
+  const newTab = <span className="sr-only"> (opens in a new tab)</span>;
   const extra = external ? {target: '_blank', rel: 'noopener noreferrer'} : {};
   return (
     <Comp ref={ref} className={cx('link', className)} {...extra} {...rest}>
-      {asChild ? children : <>{children}{external && <span className="sr-only"> (opens in a new tab)</span>}</>}
+      {asChild ? (external && isValidElement<{children?: ReactNode}>(children) ? cloneElement(children, undefined, <>{children.props.children}{newTab}</>) : children) : <>{children}{external && newTab}</>}
     </Comp>
   );
 });
