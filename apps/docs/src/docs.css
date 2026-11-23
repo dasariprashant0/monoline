@@ -275,3 +275,9 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .docs-main .table td:first-child code { font-weight: 500; }
 .docs-main .table .badge { margin-inline-start: var(--s1); }
 .docs-main .table-wrap + p, .docs-main .table-wrap + .cdoc-props { margin-top: var(--s4); }
+
+/* Audit B fixes: code and version chips stay left-to-right in RTL; type cells keep their width; token names do not break after the dashes. */
+.doc-chip, .tk-code, .cdoc-type { unicode-bidi: isolate; }
+.doc-chip { direction: ltr; }
+.cdoc-props td:nth-child(2) { min-width: 9rem; }
+.cdoc-section .table td:first-child code { white-space: nowrap; }

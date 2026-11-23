@@ -24,7 +24,7 @@
 .cdoc-code[data-long][data-state="closed"] .cdoc-code-body { max-height: calc(var(--s9) * 3); overflow: hidden; }
 
 .cdoc-props { display: grid; gap: var(--s3); min-width: 0; }
-.cdoc-type { overflow-wrap: anywhere; white-space: normal; }
+.cdoc-type { overflow-wrap: break-word; white-space: normal; }
 .cdoc-list { display: grid; gap: var(--s2); font-size: var(--text-sm); max-width: var(--measure); }
 .cdoc-list li::before { content: "— "; color: var(--muted); }
 .cdoc-kbd { font-family: inherit; padding: 0 var(--s2); border: 1px solid var(--rule); white-space: nowrap; }

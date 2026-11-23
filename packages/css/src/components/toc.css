@@ -1,7 +1,7 @@
 /* Table of contents ("On this page"): a sticky rail of heading links on a thin rule. An accent "thumb" marks the active link,
    level changes are joined by a diagonal bend. --toc-top is the sticky offset (match your header), --toc-pad the inner padding,
    --toc-indent the nesting step, --toc-gap the space between links (also the length of a bend). */
-.toc { --toc-indent: var(--s3); --toc-gap: var(--s2); position: sticky; top: var(--toc-top, 0); align-self: start; max-height: calc(100vh - var(--toc-top, 0px)); overflow-y: auto; padding: var(--toc-pad, var(--s7) var(--s5) var(--s5) var(--s3)); font-size: var(--text-sm); }
+.toc { --toc-indent: var(--s3); --toc-gap: var(--s2); position: sticky; top: var(--toc-top, 0); align-self: start; max-height: calc(100dvh - var(--toc-top, 0px)); overflow-y: auto; padding: var(--toc-pad, var(--s7) var(--s5) var(--s5) var(--s3)); font-size: var(--text-sm); }
 .toc-heading { display: inline-flex; align-items: center; gap: var(--s2); margin-bottom: var(--s2); font-weight: 700; color: var(--muted); }
 .toc-body { position: relative; margin-inline-start: 1px; padding-block: var(--s3); }
 .toc-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }

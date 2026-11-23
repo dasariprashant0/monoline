@@ -1,5 +1,5 @@
 /* ─── App shell: sidebar + main ─── */
-.shell { display: grid; grid-template-columns: var(--side) 1fr; height: 100vh; }
+.shell { display: grid; grid-template-columns: var(--side) 1fr; height: 100dvh; }
 .side { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s5) var(--s4); border-inline-end: 1px solid var(--rule); overflow-y: auto; }
 .brand { display: flex; align-items: center; gap: var(--s3); font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-lg); text-transform: uppercase; letter-spacing: -0.02em; padding: 0 var(--s2) var(--s5); }
 .brand-mark { width: 14px; height: 14px; background: var(--foreground); box-shadow: calc(18px * var(--dir, 1)) 0 0 -3px var(--accent); margin-inline-end: 8px; flex: none; }
@@ -13,7 +13,7 @@
 .main { overflow-y: auto; padding: var(--s7) var(--s7) var(--s9); }
 .main > * { max-width: var(--content); }
 /* A small window (Settings, a panel): a head (tabs) and a scrolling body, both --window-pad in from every edge. */
-.window { display: flex; flex-direction: column; height: 100vh; }
+.window { display: flex; flex-direction: column; height: 100dvh; }
 .window-head { padding: 0 var(--window-pad); }
 .window-body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--window-pad) var(--window-pad) var(--s8); }
 .head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s5); flex-wrap: wrap; }
