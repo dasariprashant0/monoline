@@ -10,7 +10,10 @@ import {Floating, useDismiss, useHydrated, type Placement} from '../popover/floa
 
 /** Where focus goes when a menu opens. Set by whatever opened it, read once by the panel. A module variable because only one menu can open at a time. */
 let intent: 'first' | 'last' | 'panel' = 'panel';
-export const openWith = (i: typeof intent) => { intent = i; };
+let intentAt = 0;
+export const openWith = (i: typeof intent) => { intent = i; intentAt = Date.now(); };
+/** The intent set just before this open; an old one (the open was refused, say by a controlled parent) is ignored. */
+const takeIntent = (): typeof intent => { const how = Date.now() - intentAt < 1000 ? intent : 'panel'; intent = 'panel'; return how; };
 
 export interface MenuCtx {
   open: boolean; setOpen: (o: boolean) => void; trigger: RefObject<HTMLElement | null>; triggerId: string; menuId: string;
@@ -63,13 +66,15 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
+  // The unmount cleanup must call the latest `onCloseAutoFocus`, not the one from the first render.
+  const closeFocus = useRef(onCloseAutoFocus);
+  closeFocus.current = onCloseAutoFocus;
   useEffect(() => {
-    const p = el.current!, items = p.querySelectorAll<HTMLElement>(ITEM), how = intent;
-    intent = 'panel';
+    const p = el.current!, items = p.querySelectorAll<HTMLElement>(ITEM), how = takeIntent();
     (how === 'first' ? items[0] : how === 'last' ? items[items.length - 1] : p)?.focus();
     return () => {
       if (outside.current) return;
-      const e = new Event('x', {cancelable: true}); onCloseAutoFocus?.(e);
+      const e = new Event('x', {cancelable: true}); closeFocus.current?.(e);
       if (!e.defaultPrevented) c.trigger.current?.focus({preventScroll: true});
     };
   }, []);
@@ -82,7 +87,7 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
     if (next === null) return;
     e.preventDefault(); next?.focus();
   };
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => (c.anchor ?? (() => c.trigger.current))()} role="menu" id={c.menuId} aria-orientation="vertical" aria-labelledby={c.anchor ? undefined : c.triggerId} tabIndex={-1} data-state="open" {...rest} onKeyDown={keydown} />;
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => (c.anchor ?? (() => c.trigger.current))()} role="menu" id={c.menuId} aria-orientation="vertical" aria-labelledby={c.anchor ? undefined : c.triggerId} aria-label={c.anchor ? 'Menu' : undefined} tabIndex={-1} data-state="open" {...rest} onKeyDown={keydown} />;
 });
 
 /** Internal: the floating `role="menu"` panel with roving focus and type-ahead. Renders nothing while closed. */

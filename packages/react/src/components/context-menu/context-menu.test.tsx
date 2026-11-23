@@ -93,4 +93,14 @@ describe('ContextMenu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     vi.useRealTimers();
   });
+  it('gives the menu an accessible name, which the consumer can replace', async () => {
+    const user = userEvent.setup();
+    const {unmount} = render(ui());
+    await user.pointer({keys: '[MouseRight]', target: screen.getByText('Right click here')});
+    expect(await screen.findByRole('menu', {name: 'Menu'})).toBeInTheDocument();
+    unmount();
+    render(<ContextMenu><ContextMenuTrigger>Area</ContextMenuTrigger><ContextMenuContent aria-label="File actions"><ContextMenuItem>Rename</ContextMenuItem></ContextMenuContent></ContextMenu>);
+    await user.pointer({keys: '[MouseRight]', target: screen.getByText('Area')});
+    expect(await screen.findByRole('menu', {name: 'File actions'})).toBeInTheDocument();
+  });
 });
