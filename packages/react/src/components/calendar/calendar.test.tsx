@@ -63,4 +63,9 @@ describe('Calendar', () => {
     render(<Calendar defaultValue={jan} locale="en-US" />);
     expect(screen.queryByRole('button', {name: 'Clear date'})).not.toBeInTheDocument();
   });
+  it('takes the month arrow names from labels', () => {
+    render(<Calendar aria-label="Datum" labels={{previousMonth: 'Vorheriger Monat', nextMonth: 'Nächster Monat'}} />);
+    expect(screen.getByRole('button', {name: 'Vorheriger Monat'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Nächster Monat'})).toBeInTheDocument();
+  });
 });

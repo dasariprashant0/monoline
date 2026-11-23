@@ -12,6 +12,8 @@ export interface DateRange {
 }
 
 export interface RangeCalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+  /** Texts for the month arrows, for other languages. Defaults are English. */
+  labels?: {previousMonth?: string; nextMonth?: string};
   /** The selected range when controlled. Pair with `onValueChange`. */
   value?: DateRange;
   /** The initially selected range when uncontrolled. Default empty. */
@@ -37,7 +39,7 @@ const addMonths = (d: Date, n: number) => { const t = new Date(d.getFullYear(), 
 const EMPTY: DateRange = {start: null, end: null};
 
 /** Pick a start and an end date on one month grid. The first click sets the start, the second the end; the days between are previewed on hover and keyboard focus. Controlled with `value` + `onValueChange`, or uncontrolled. */
-export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(function RangeCalendar({value, defaultValue = EMPTY, onValueChange, weekStartsOn = 0, min, max, isDateDisabled, locale, className, ...rest}, ref) {
+export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(function RangeCalendar({value, defaultValue = EMPTY, onValueChange, weekStartsOn = 0, min, max, isDateDisabled, locale, labels, className, ...rest}, ref) {
   const [inner, setInner] = useState<DateRange>(defaultValue);
   const range = value ?? inner;
   const [focus, setFocus] = useState<Date>(() => day(range.start ?? new Date()));
@@ -86,9 +88,9 @@ export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(func
   return (
     <div ref={ref} className={cx('calendar range-calendar', className)} {...rest}>
       <div className="calendar-head">
-        <button type="button" className="calendar-nav" aria-label="Previous month" onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.previousMonth ?? 'Previous month'} onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
         <div className="calendar-title" aria-live="polite">{month}</div>
-        <button type="button" className="calendar-nav" aria-label="Next month" onClick={() => setFocus(addMonths(focus, 1))}>›</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.nextMonth ?? 'Next month'} onClick={() => setFocus(addMonths(focus, 1))}>›</button>
       </div>
       <table ref={grid} role="grid" aria-label={month} className="calendar-grid" onKeyDown={keydown} onMouseLeave={() => setHover(null)}>
         <thead>

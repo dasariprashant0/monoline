@@ -8,6 +8,8 @@ export interface FileUploadProps extends Omit<InputHTMLAttributes<HTMLInputEleme
   label?: ReactNode;
   /** Called with the full current list whenever it changes. */
   onFilesChange?: (files: File[]) => void;
+  /** Texts for other languages. `list` names the file list, `remove` is the button word. Defaults "Selected files" and "Remove". */
+  labels?: {list?: string; remove?: string};
 }
 
 /** Whether a file matches an `accept` list such as `.png, image/*, application/pdf`. An empty list accepts everything. */
@@ -21,7 +23,7 @@ function accepted(file: File, accept: string | undefined): boolean {
 const size = (n: number) => (n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`);
 
 /** Controls are native: the input is visually hidden but focusable. Use `accept` and `multiple` as on any file input. */
-export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(function FileUpload({label = 'Drop files here or choose', onFilesChange, multiple, className, ...rest}, ref) {
+export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(function FileUpload({label = 'Drop files here or choose', onFilesChange, labels, multiple, className, ...rest}, ref) {
   const id = useId();
   const [files, setFiles] = useState<File[]>([]);
   const [over, setOver] = useState(false);
@@ -58,11 +60,11 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(function
         <span>{label}</span>
       </label>
       {files.length > 0 && (
-        <ul className="upload-list" aria-label="Selected files">
+        <ul className="upload-list" aria-label={labels?.list ?? 'Selected files'}>
           {files.map((f, i) => (
             <li key={f.name + i}>
               <span className="upload-name">{f.name}</span><span className="muted small">{size(f.size)}</span>
-              <button type="button" className="upload-remove" onClick={() => set(files.filter((_, j) => j !== i), `${f.name} removed`)}>Remove<span className="sr-only"> {f.name}</span></button>
+              <button type="button" className="upload-remove" onClick={() => set(files.filter((_, j) => j !== i), `${f.name} removed`)}>{labels?.remove ?? 'Remove'}<span className="sr-only"> {f.name}</span></button>
             </li>
           ))}
         </ul>

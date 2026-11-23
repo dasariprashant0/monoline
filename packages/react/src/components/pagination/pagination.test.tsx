@@ -49,4 +49,11 @@ describe('Pagination', () => {
     rerender(<Pagination pageCount={NaN} />);
     expect(screen.getAllByRole('button', {name: /Page/})).toHaveLength(1);
   });
+  it('takes its texts from labels', () => {
+    render(<Pagination pageCount={3} labels={{navigation: 'Seiten', previous: 'Zurück', next: 'Weiter', page: (n) => `Seite ${n}`}} />);
+    expect(screen.getByRole('navigation', {name: 'Seiten'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Zurück'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Weiter'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Seite 2'})).toBeInTheDocument();
+  });
 });

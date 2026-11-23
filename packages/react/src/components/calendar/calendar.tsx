@@ -4,6 +4,8 @@ import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
 
 export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+  /** Texts for the month arrows, for other languages. Defaults are English. */
+  labels?: {previousMonth?: string; nextMonth?: string};
   /** The selected date when controlled; `null` means none. Pair with `onValueChange`. */
   value?: Date | null;
   /** The initially selected date when uncontrolled. Default none. */
@@ -28,7 +30,7 @@ const add = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.ge
 const addMonths = (d: Date, n: number) => { const t = new Date(d.getFullYear(), d.getMonth() + n, 1); const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate(); return new Date(t.getFullYear(), t.getMonth(), Math.min(d.getDate(), last)); };
 
 /** Pick a date. Controlled with `value` + `onValueChange`, or uncontrolled. */
-export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calendar({value, defaultValue = null, onValueChange, clearable = false, weekStartsOn = 0, min, max, locale, className, ...rest}, ref) {
+export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calendar({value, defaultValue = null, onValueChange, clearable = false, weekStartsOn = 0, min, max, locale, labels, className, ...rest}, ref) {
   const [inner, setInner] = useState<Date | null>(defaultValue);
   const selected = value === undefined ? inner : value;
   const [focus, setFocus] = useState<Date>(() => day(selected ?? new Date()));
@@ -62,9 +64,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
   return (
     <div ref={ref} className={cx('calendar', className)} {...rest}>
       <div className="calendar-head">
-        <button type="button" className="calendar-nav" aria-label="Previous month" onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.previousMonth ?? 'Previous month'} onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
         <div className="calendar-title" aria-live="polite">{month}</div>
-        <button type="button" className="calendar-nav" aria-label="Next month" onClick={() => setFocus(addMonths(focus, 1))}>›</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.nextMonth ?? 'Next month'} onClick={() => setFocus(addMonths(focus, 1))}>›</button>
       </div>
       <table ref={grid} role="grid" aria-label={month} className="calendar-grid" onKeyDown={keydown}>
         <thead>
