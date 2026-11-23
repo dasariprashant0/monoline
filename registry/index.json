@@ -1469,6 +1469,7 @@
         "color-picker"
       ],
       "propNames": [
+        "labels",
         "value",
         "defaultValue",
         "onValueChange",
@@ -2183,6 +2184,9 @@
       "propNames": [
         "placeholder",
         "format",
+        "open",
+        "defaultOpen",
+        "onOpenChange",
         "disabled",
         "size",
         "invalid",
@@ -2240,7 +2244,11 @@
       "propNames": [
         "placeholder",
         "format",
+        "open",
+        "defaultOpen",
+        "onOpenChange",
         "disabled",
+        "size",
         "invalid",
         "className",
         "aria-label"
@@ -2653,7 +2661,8 @@
       ],
       "propNames": [
         "label",
-        "onFilesChange"
+        "onFilesChange",
+        "labels"
       ]
     },
     {
@@ -3324,6 +3333,7 @@
         "onValueChange",
         "options",
         "onSearch",
+        "onSearchError",
         "triggers",
         "onMentionSelect",
         "loadingText",
@@ -3655,6 +3665,7 @@
         "field"
       ],
       "propNames": [
+        "labels",
         "size",
         "invalid"
       ]
@@ -3925,7 +3936,8 @@
         "defaultPage",
         "pageCount",
         "onPageChange",
-        "siblings"
+        "siblings",
+        "labels"
       ]
     },
     {
@@ -4180,6 +4192,7 @@
         "checkbox"
       ],
       "propNames": [
+        "labels",
         "value",
         "defaultValue",
         "onValueChange",
@@ -4794,7 +4807,8 @@
         "value",
         "defaultValue",
         "onValueChange",
-        "aria-label"
+        "aria-label",
+        "labels"
       ]
     },
     {
@@ -5125,7 +5139,8 @@
         "field"
       ],
       "propNames": [
-        "label"
+        "label",
+        "invalid"
       ]
     },
     {
