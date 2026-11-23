@@ -172,4 +172,25 @@ describe('DataGrid', () => {
     const {container} = render(grid({selectionMode: 'multiple'}));
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('does not select the row when a control inside a cell is clicked', async () => {
+    const user = userEvent.setup();
+    const onSelectedIdsChange = vi.fn();
+    const withButton: DataGridColumn<Row>[] = [...cols, {id: 'act', header: 'Action', cell: (r) => <button type="button">Open {r.id}</button>}];
+    render(grid({columns: withButton, selectionMode: 'multiple', onSelectedIdsChange}));
+    await user.click(screen.getByRole('button', {name: 'Open r0'}));
+    expect(onSelectedIdsChange).not.toHaveBeenCalled();
+    await user.click(cell(1, 0));
+    expect(onSelectedIdsChange).toHaveBeenCalledWith(['r0']);
+  });
+  it('mirrors ArrowLeft and ArrowRight in a right-to-left grid', async () => {
+    const user = userEvent.setup();
+    render(<div dir="rtl">{grid()}</div>);
+    await user.tab();
+    await user.keyboard('{ArrowDown}');
+    expect(document.activeElement).toBe(cell(1, 0));
+    await user.keyboard('{ArrowLeft}');
+    expect(document.activeElement).toBe(cell(1, 1));
+    await user.keyboard('{ArrowRight}');
+    expect(document.activeElement).toBe(cell(1, 0));
+  });
 });

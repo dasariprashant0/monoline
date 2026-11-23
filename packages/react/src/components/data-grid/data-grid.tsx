@@ -3,6 +3,7 @@ import {forwardRef, useCallback, useEffect, useMemo, useRef, useState, type CSSP
 import {cx} from '../../utils/cx';
 import {EmptyState} from '../empty-state';
 import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
+import {useIsRtl} from '../../utils/direction';
 
 export interface DataGridColumn<T> {
   id: string;
@@ -73,6 +74,7 @@ function Chevron({dir}: {dir?: 'asc' | 'desc'}) {
  * Rows have one fixed height; cell content should not wrap to a second line. `aria-rowcount` and
  * `aria-rowindex` tell assistive technology the full size. Column headers are focusable cells: Enter or Space sorts.
  * Choice: sorting is done here (stable, three states: ascending, descending, none) unless `manualSort`.
+ * Rows are identified by `getRowId`; without it the row index is the id, so selection follows the position, not the row, when `manualSort` reorders them. Pass `getRowId` for sortable or live data.
  * @example <DataGrid aria-label="Orders" columns={cols} rows={rows} height={480} getRowId={(r) => r.id} />
  */
 function DataGridInner<T>(
@@ -170,6 +172,7 @@ function DataGridInner<T>(
     onSelectedIdsChange?.(next);
   };
 
+  const isRtl = useIsRtl();
   const handleKey = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented || !(e.target as HTMLElement).hasAttribute('data-col')) return;
@@ -179,8 +182,8 @@ function DataGridInner<T>(
     switch (e.key) {
       case 'ArrowDown': return to(row + 1, col);
       case 'ArrowUp': return to(row - 1, col);
-      case 'ArrowRight': return to(row, col + 1);
-      case 'ArrowLeft': return to(row, col - 1);
+      case 'ArrowRight': return to(row, col + (isRtl(e.currentTarget) ? -1 : 1));
+      case 'ArrowLeft': return to(row, col + (isRtl(e.currentTarget) ? 1 : -1));
       case 'PageDown': return to(row + page, col);
       case 'PageUp': return to(row - page, col);
       case 'Home': return to(e.ctrlKey || e.metaKey ? 0 : row, 0);
@@ -271,7 +274,7 @@ function DataGridInner<T>(
                     data-align={c.align}
                     className="data-grid-cell"
                     onFocus={() => setActive({row: vi + 1, col: ci})}
-                    onClick={() => toggleRow(id)}
+                    onClick={(e) => { if ((e.target as Element).closest('button, a[href], input, select, textarea, label, [role="button"], [role="link"], [contenteditable="true"]')) return; toggleRow(id); }}
                   >
                     <span className="data-grid-text">{content}</span>
                   </div>
