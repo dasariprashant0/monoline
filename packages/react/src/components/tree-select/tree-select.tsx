@@ -11,6 +11,8 @@ export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputEleme
   items: TreeNode[];
   /** Selected node ids when controlled. Always an array, also in single mode (zero or one id). Pair with `onValueChange`. */
   value?: string[];
+  /** Form field name. Hidden inputs submit one entry per selected node id; the visible box is not submitted. */
+  name?: string;
   /** Ids selected at first when uncontrolled. Default none. */
   defaultValue?: string[];
   /** Called with the full list of selected ids after each change. */
@@ -33,7 +35,7 @@ const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label
  * Typing filters the tree to matching nodes and their parents. Use `multiple` to pick several nodes.
  * @example <TreeSelect aria-label="Folder" items={folders} onValueChange={(ids) => setFolder(ids[0])} />
  */
-export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
+export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, name, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
   const f = useFieldControl();
   const listId = useId();
@@ -98,6 +100,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
 
   return (
     <div className={cx('tree-select', className)}>
+      {name && selected.map((id) => <input key={id} type="hidden" name={name} value={id} disabled={rest.disabled} />)}
       <input
         ref={ref}
         type="text"
@@ -106,7 +109,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         className="input"
         aria-haspopup="tree"
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && cur >= 0 ? rowId(cur) : undefined}
         {...f}

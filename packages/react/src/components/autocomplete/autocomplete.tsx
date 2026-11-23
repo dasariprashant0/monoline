@@ -52,7 +52,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
         disabled={disabled}
         data-disabled={disabled ? '' : undefined}
         aria-expanded={isOpen}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={isOpen && active >= 0 ? optId(active) : undefined}
         {...f}

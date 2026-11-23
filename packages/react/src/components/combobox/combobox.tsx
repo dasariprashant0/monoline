@@ -18,6 +18,8 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   defaultValue?: string;
   /** Called with the chosen option's value, or '' when cleared. */
   onValueChange?: (value: string) => void;
+  /** Form field name. A hidden input submits the chosen option `value` (not its label); the visible text box is not submitted. */
+  name?: string;
   /** Shown when nothing matches. */
   emptyText?: string;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
@@ -27,7 +29,7 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 }
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
+export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
   const f = useFieldControl();
   const labelId = useFieldLabelId();
   const listId = useId();
@@ -69,6 +71,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
 
   return (
     <div ref={root} className={cx('combobox', className)}>
+      {name && <input type="hidden" name={name} value={current} disabled={disabled} />}
       <input
         ref={ref}
         type="text"
@@ -79,7 +82,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         data-disabled={disabled ? '' : undefined}
         aria-expanded={open}
         data-state={open ? 'open' : 'closed'}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && shown[active] ? optId(active) : undefined}
         {...f}

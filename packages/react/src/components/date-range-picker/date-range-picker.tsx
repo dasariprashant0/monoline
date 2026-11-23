@@ -23,6 +23,8 @@ export interface DateRangePickerProps extends Omit<RangeCalendarProps, 'classNam
   size?: 'sm' | 'md' | 'lg';
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
   invalid?: boolean;
+  /** Form field name. Two hidden inputs submit `YYYY-MM-DD` dates as `<name>-start` and `<name>-end` (empty when not chosen). */
+  name?: string;
   /** Extra class name for the trigger button. */
   className?: string;
   /** Names the control when it is not inside a Field. */
@@ -42,7 +44,7 @@ const parse = (s: string): Date | null => {
 };
 
 /** Pick a date range from a popover. It holds two typed fields (YYYY-MM-DD) and a range calendar that stay in sync. Value is `{start, end}`. Same `value` / `defaultValue` / `onValueChange` as RangeCalendar. */
-export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker({value, defaultValue, onValueChange, placeholder = 'Pick dates', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, invalid, className, 'aria-label': label, min, max, isDateDisabled, ...cal}, ref) {
+export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker({value, defaultValue, onValueChange, placeholder = 'Pick dates', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, name, invalid, className, 'aria-label': label, min, max, isDateDisabled, ...cal}, ref) {
   const f = useFieldControl();
   const errId = useId();
   const [inner, setInner] = useState<DateRange>(defaultValue ?? {start: null, end: null});
@@ -85,6 +87,8 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
   );
 
   return (
+    <>
+    {name && <><input type="hidden" name={`${name}-start`} value={toText(current.start)} disabled={disabled} /><input type="hidden" name={`${name}-end`} value={toText(current.end)} disabled={disabled} /></>}
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>
@@ -100,5 +104,6 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
           <RangeCalendar value={current} locale={locale} min={min} max={max} isDateDisabled={isDateDisabled} {...cal} onValueChange={(r) => { commit(r); setBad(null); if (r.start && r.end) setOpen(false); }} />
         </PopoverContent>
           </Popover>
+    </>
   );
 });

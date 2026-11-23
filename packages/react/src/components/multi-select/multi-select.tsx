@@ -19,6 +19,8 @@ export interface MultiSelectProps extends Omit<InputHTMLAttributes<HTMLInputElem
   defaultValue?: string[];
   /** Called with the full list of chosen values. */
   onValueChange?: (value: string[]) => void;
+  /** Form field name. A hidden input submits one entry per chosen `value`; the visible text box is not submitted. */
+  name?: string;
   /** Shown when nothing matches. */
   emptyText?: string;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
@@ -32,7 +34,7 @@ export interface MultiSelectProps extends Omit<InputHTMLAttributes<HTMLInputElem
  * removable tags, the list stays open after a pick, Enter toggles the active option, and
  * Backspace in an empty field removes the last tag. The listbox has `aria-multiselectable`.
  */
-export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(function MultiSelect({options, value, defaultValue = [], onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
+export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(function MultiSelect({options, value, defaultValue = [], onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
   const f = useFieldControl();
   const listId = useId();
@@ -70,6 +72,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
 
   return (
     <div className={cx('multi-select', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
+      {name && current.map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />)}
       <div className="multi-select-box">
         {current.map((v) => {
           const label = options.find((o) => o.value === v)?.label ?? v;
@@ -84,7 +87,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
           disabled={disabled}
           aria-expanded={open}
         data-state={open ? 'open' : 'closed'}
-          aria-controls={listId}
+          aria-controls={open ? listId : undefined}
           aria-autocomplete="list"
           aria-activedescendant={open && shown[active] ? optId(active) : undefined}
           {...f}

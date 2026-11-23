@@ -11,6 +11,8 @@ export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   defaultValue?: string[];
   /** Called with the full list of tags after one is added or removed. */
   onValueChange?: (value: string[]) => void;
+  /** Form field name. A hidden input submits one entry per tag; the visible text box is not submitted. */
+  name?: string;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
   size?: 'sm' | 'md' | 'lg';
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
@@ -22,7 +24,7 @@ export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
  * Backspace in an empty field removes the last tag, and each tag has a remove button.
  * Unlike `MultiSelect` there is no list: any text is a valid tag.
  */
-export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function TagsInput({value, defaultValue = [], onValueChange, size = 'md', invalid, disabled, className, onKeyDown, onBlur, ...rest}, ref) {
+export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function TagsInput({value, defaultValue = [], onValueChange, size = 'md', invalid, disabled, name, className, onKeyDown, onBlur, ...rest}, ref) {
   const f = useFieldControl();
   const [inner, setInner] = useState(defaultValue);
   const tags = value ?? inner;
@@ -39,6 +41,7 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
 
   return (
     <div className={cx('tags-input', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
+      {name && tags.map((t) => <input key={t} type="hidden" name={name} value={t} disabled={disabled} />)}
       {tags.map((t) => <Tag key={t} onRemove={disabled ? undefined : () => commit(tags.filter((x) => x !== t))}>{t}</Tag>)}
       <input
         ref={ref}
