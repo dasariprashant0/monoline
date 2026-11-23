@@ -77,10 +77,14 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
 
   const refreshEmpty = () => { const el = editorRef.current; if (el) setEmpty(!el.textContent && !el.querySelector('li, br')); };
 
-  // Write the HTML into the DOM: on mount, and when a controlled value differs from what the editor holds.
+  // Write the HTML into the DOM: on mount, and when a controlled value differs from what the editor holds. `defaultValue`
+  // is read once, so a changed default never wipes what the user typed.
+  const seeded = useRef(false);
   useIsoLayoutEffect(() => {
     const el = editorRef.current;
     if (!el) return;
+    if (!controlled && seeded.current) return;
+    seeded.current = true;
     const next = sanitizeHtml(controlled ? value : (defaultValue ?? ''));
     if (last.current === '' && el.innerHTML === '' ? next !== '' : next !== last.current) {
       el.innerHTML = next;
