@@ -75,4 +75,8 @@ describe('DatePicker', () => {
     rerender(<DatePicker aria-label="Due" open={false} onOpenChange={fn} />);
     expect(screen.queryByRole('dialog', {name: 'Choose a date'})).not.toBeInTheDocument();
   });
+  it('inside a Field the trigger keeps the Field label as its name, not "undefined: ..."', () => {
+    render(<Field label="Due date"><DatePicker /></Field>);
+    expect(screen.getByRole('button', {name: 'Due date'})).toBeInTheDocument();
+  });
 });

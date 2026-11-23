@@ -1,8 +1,8 @@
 import {cloneElement, forwardRef, isValidElement, useCallback, version, type CSSProperties, type HTMLAttributes, type ReactElement, type ReactNode, type Ref} from 'react';
 import {setRefs} from './overlay';
 
-/** The child's ref: `props.ref` in React 19, `element.ref` before (reading it in 19 logs a warning). */
-const refOf = (el: ReactElement<{ref?: Ref<unknown>}>): Ref<unknown> | undefined => 'ref' in el.props ? el.props.ref : Number(version.split('.')[0]) < 19 ? (el as unknown as {ref?: Ref<unknown>}).ref : undefined;
+/** The child's ref: `props.ref` in React 19, `element.ref` before. In React 18 development builds an element that has a ref also has a `props.ref` warning getter that returns undefined, so `'ref' in props` is no test. */
+const refOf = (el: ReactElement<{ref?: Ref<unknown>}>): Ref<unknown> | undefined => Number(version.split('.')[0]) < 19 ? (el as unknown as {ref?: Ref<unknown>}).ref : el.props.ref;
 
 /** `asChild` without the weight: renders its only child element with the Slot's props merged in. The child's props win,
  *  except `aria-*` and `data-state`, which describe the Slot's own widget and so come from the Slot. Event handlers of
