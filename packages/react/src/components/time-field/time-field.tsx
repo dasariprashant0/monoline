@@ -3,6 +3,7 @@ import {forwardRef, useEffect, useRef, useState, type HTMLAttributes, type Keybo
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
 import {useFieldControl} from '../field';
+import {setRefs} from '../../utils/overlay';
 
 export interface TimeFieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange' | 'role'> {
   /** The time as 24-hour `"HH:mm"` when controlled; `""` means none. Pair with `onValueChange`. */
@@ -38,17 +39,20 @@ export const TimeField = forwardRef<HTMLDivElement, TimeFieldProps>(function Tim
   const buf = useRef('');
   const root = useRef<HTMLDivElement>(null);
   const twelve = hourCycle === 12;
-  const stepBy = Math.max(1, step);
+  const stepBy = Number.isFinite(step) ? Math.max(1, Math.round(step)) : 1;
 
+  // Controlled: after every edit, look at `value` again. A parent that refuses the change leaves `value` as it was, and the
+  // segments must then show that, not the refused time.
+  const [recheck, setRecheck] = useState(0);
   // Follow a changed controlled value without wiping a half-typed time.
   useEffect(() => {
     if (value === undefined) return;
     const p = parse(value);
     if (p.h !== null) setT({h: p.h, m: p.m, p: p.h >= 12 ? 'PM' : 'AM'});
     else setT((s) => (s.h !== null && s.m !== null ? {...s, h: null, m: null} : s));
-  }, [value]);
+  }, [value, recheck]);
 
-  const out = (n: typeof t) => { setT(n); onValueChange?.(n.h !== null && n.m !== null ? `${pad(n.h)}:${pad(n.m)}` : ''); };
+  const out = (n: typeof t) => { setT(n); onValueChange?.(n.h !== null && n.m !== null ? `${pad(n.h)}:${pad(n.m)}` : ''); if (value !== undefined) setRecheck((r) => r + 1); };
   const hour12 = t.h === null ? null : t.h % 12 || 12;
   const to24 = (h12: number, p: 'AM' | 'PM') => (h12 % 12) + (p === 'PM' ? 12 : 0);
   const setHour = (n: number | null, base = t) => out({...base, h: n === null ? null : twelve ? to24(n, base.p) : n});
@@ -103,7 +107,7 @@ export const TimeField = forwardRef<HTMLDivElement, TimeFieldProps>(function Tim
   const cycle = t.h !== null && t.m !== null ? `${pad(t.h)}:${pad(t.m)}` : '';
 
   return (
-    <div ref={(el) => { root.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }} role="group" aria-label={label} className={cx('input time-field', className)} data-disabled={disabled || undefined} data-invalid={invalid || undefined} {...f} aria-invalid={invalid || f['aria-invalid']} {...rest}>
+    <div ref={(el) => setRefs(el, root, ref)} role="group" aria-label={label} className={cx('input time-field', className)} data-disabled={disabled || undefined} data-invalid={invalid || undefined} {...f} aria-invalid={invalid || f['aria-invalid']} {...rest}>
       {parts.map((part, i) => {
         const c = part === 'period' ? null : current(part);
         const [lo, hi] = part === 'period' ? [0, 1] : limits(part);
@@ -128,7 +132,7 @@ export const TimeField = forwardRef<HTMLDivElement, TimeFieldProps>(function Tim
           </span>
         );
       })}
-      {name && <input type="hidden" name={name} value={cycle} />}
+      {name && <input type="hidden" name={name} value={cycle} disabled={disabled} />}
     </div>
   );
 });
