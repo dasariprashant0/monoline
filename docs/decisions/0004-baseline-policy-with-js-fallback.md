@@ -15,5 +15,5 @@ The platform now covers things we built in JS: anchor positioning, `popover`, sc
 ## Consequences
 
 - Two code paths per enhancement, both tested. Examples: `nativeAnchor()` in `float.tsx` with `place()` as fallback (e2eb539), `useUntilFound` in `utils/until-found.ts` (43f5096, see [0005](0005-find-in-page-for-closed-panels.md)).
-- The anchor-positioning path is a prototype: collision padding is not applied natively and `data-side` reports the preferred side. It is not a replacement for `place()` yet.
+- The anchor-positioning path is a prototype: collision padding is not applied natively and `data-side` reports the preferred side. It is opt-in (`data-anchor="native"` on `<html>`), not the default: with it on, a Select near the bottom of the viewport shrank instead of flipping and failed the Chrome e2e. `place()` is the default path.
 - Baseline status was not re-checked per feature in this record. Check it when you add or widen an enhancement.

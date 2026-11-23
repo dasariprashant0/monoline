@@ -84,7 +84,7 @@ Newer browser features are used behind detection with the old code as fallback (
 
 | Item | Status | Evidence |
 |---|---|---|
-| CSS anchor positioning for floating layers | prototype | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (dde5ece) |
+| CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (dde5ece) |
 | Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (43f5096, ADR 0005) |
 | Scroll-driven animation, `@starting-style`, container queries, `interpolate-size` | not started | no uses in `packages/css/src` or `packages/react/src` |
 

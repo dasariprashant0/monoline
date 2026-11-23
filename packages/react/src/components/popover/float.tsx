@@ -46,9 +46,10 @@ export function place(anchor: Element, panel: HTMLElement, {side = 'bottom', ali
   panel.dataset.side = side; panel.dataset.align = align;
 }
 
-/** CSS anchor positioning (`anchor-name` + `position-area`) is Baseline newly available, not widely: used when the browser has
- *  it, with `place()` above as the fallback everywhere else. */
-export const nativeAnchor = () => typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('anchor-name: --a') && CSS.supports('position-area: top');
+/** CSS anchor positioning (`anchor-name` + `position-area`) is Baseline newly available, not widely, and in Chrome e2e it
+ *  let a Select near the viewport edge shrink instead of flip. So it is opt-in: set `data-anchor="native"` on <html> and the
+ *  browser must also support it. The default is `place()` above, everywhere. */
+export const nativeAnchor = () => typeof document !== 'undefined' && document.documentElement.dataset.anchor === 'native' && typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('anchor-name: --a') && CSS.supports('position-area: top');
 
 /** Same placement as `place()` done by the browser: the panel is anchored with `position-area` (shifts to stay in view),
  *  `position-try-fallbacks` flips it when it does not fit, a margin for `sideOffset`, margins on the viewport edges for `collisionPadding`.

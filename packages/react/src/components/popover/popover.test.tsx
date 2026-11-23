@@ -37,9 +37,10 @@ describe('Popover', () => {
 
 describe('Popover native anchor positioning (M1)', () => {
   const supports = CSS.supports;
-  afterEach(() => { CSS.supports = supports; });
-  it('uses position-area and anchor-name when the browser has them, and no pixel placement', async () => {
+  afterEach(() => { CSS.supports = supports; delete document.documentElement.dataset.anchor; });
+  it('uses position-area and anchor-name when opted in and the browser has them, and no pixel placement', async () => {
     CSS.supports = () => true;
+    document.documentElement.dataset.anchor = 'native';
     const user = userEvent.setup();
     render(ui());
     const trigger = screen.getByRole('button', {name: 'Open'});
@@ -56,7 +57,17 @@ describe('Popover native anchor positioning (M1)', () => {
     await user.keyboard('{Escape}');
     expect(trigger.style.getPropertyValue('anchor-name')).toBe('');
   });
+  it('stays on pixel placement by default even when the browser supports it', async () => {
+    CSS.supports = () => true;
+    const user = userEvent.setup();
+    render(ui());
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    const panel = await screen.findByRole('dialog', {name: 'Details'});
+    expect(panel.style.left).toMatch(/px$/);
+    expect(panel.style.getPropertyValue('position-area')).toBe('');
+  });
   it('falls back to pixel placement without it', async () => {
+    document.documentElement.dataset.anchor = 'native';
     CSS.supports = () => false;
     const user = userEvent.setup();
     render(ui());
