@@ -73,5 +73,11 @@
       "path": "packages/react/src/components/spotlight/spotlight.tsx",
       "content": "'use client';\nimport {forwardRef, useRef, type CSSProperties, type HTMLAttributes, type PointerEvent} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {\n  /** Radius of the glow in px. Default 240. */\n  size?: number;\n}\n\n/**\n * A surface with a soft highlight that follows the pointer. Pointer only: keyboard and touch users see the plain surface and lose nothing.\n * The glow is a pseudo-element, so it is never read aloud. No transition under reduced motion.\n */\nexport const Spotlight = forwardRef<HTMLDivElement, SpotlightProps>(function Spotlight({size = 240, className, style, onPointerMove, children, ...rest}, ref) {\n  const local = useRef<HTMLDivElement | null>(null);\n  const move = (e: PointerEvent<HTMLDivElement>) => {\n    const el = local.current;\n    if (el) {\n      const r = el.getBoundingClientRect();\n      el.style.setProperty('--spotlight-x', `${e.clientX - r.left}px`);\n      el.style.setProperty('--spotlight-y', `${e.clientY - r.top}px`);\n    }\n    onPointerMove?.(e);\n  };\n  return (\n    <div ref={(node) => { local.current = node; if (typeof ref === 'function') ref(node); else if (ref) ref.current = node; }} className={cx('spotlight', className)} style={{'--spotlight-size': `${size}px`, ...style} as CSSProperties} onPointerMove={move} {...rest}>\n      {children}\n    </div>\n  );\n});\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

@@ -83,5 +83,11 @@
       "path": "packages/react/src/components/label/meta.json",
       "content": "{\"name\":\"label\",\"title\":\"Label\",\"category\":\"forms\",\"description\":\"The visible name of a form control.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Label\",\"css\":[\"03-form-fields.css\"],\"a11y\":[\"A real <label>: clicking it focuses the control it names.\",\"required adds a visual marker; set required on the control for assistive tech.\"],\"keywords\":[\"form\",\"caption\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

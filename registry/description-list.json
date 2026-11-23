@@ -79,5 +79,11 @@
       "path": "packages/react/src/components/description-list/meta.json",
       "content": "{\"name\":\"description-list\",\"title\":\"Description list\",\"category\":\"data-display\",\"description\":\"Label and value pairs, like the details of a record.\",\"status\":\"stable\",\"css\":[\"description-list.css\"],\"a11y\":[\"A native dl with dt and dd, so assistive tech pairs each label with its value.\"],\"keywords\":[\"key value\",\"details\",\"dl\",\"properties\",\"meta\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

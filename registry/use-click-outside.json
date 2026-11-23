@@ -51,5 +51,6 @@
       "path": "packages/react/src/hooks/use-click-outside/use-click-outside.ts",
       "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * Calls `onOutside` when a pointer goes down outside the element this ref is attached to.\n * Use it to close popovers and menus. Does nothing while the ref is unattached.\n * Content rendered in a portal is outside the ref's DOM subtree, so put the portal inside the ref or check it in `onOutside`.\n */\nexport function useClickOutside<T extends HTMLElement = HTMLElement>(\n  onOutside: (event: Event) => void,\n  enabled = true,\n) {\n  const ref = useRef<T | null>(null);\n  const callbackRef = useRef(onOutside);\n\n  useEffect(() => {\n    callbackRef.current = onOutside;\n  });\n\n  useEffect(() => {\n    if (!enabled) return;\n    const onPointerDown = (event: Event) => {\n      const node = ref.current;\n      if (!node) return;\n      if (event.target instanceof Node && node.contains(event.target)) return;\n      callbackRef.current(event);\n    };\n    document.addEventListener('pointerdown', onPointerDown);\n    return () => document.removeEventListener('pointerdown', onPointerDown);\n  }, [enabled]);\n\n  return ref;\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

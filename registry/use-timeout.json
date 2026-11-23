@@ -48,5 +48,6 @@
       "path": "packages/react/src/hooks/use-timeout/use-timeout.ts",
       "content": "'use client';\nimport {useCallback, useEffect, useRef} from 'react';\n\n/** `const {start, clear} = useTimeout(fn, 500)`. Calling `start` again restarts it. Cleared on unmount. The latest `fn` always runs. */\nexport function useTimeout(callback: () => void, delay: number) {\n  const fn = useRef(callback);\n  const id = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);\n  useEffect(() => { fn.current = callback; });\n  const clear = useCallback(() => { clearTimeout(id.current); id.current = undefined; }, []);\n  const start = useCallback(() => { clear(); id.current = setTimeout(() => fn.current(), delay); }, [clear, delay]);\n  useEffect(() => clear, [clear]);\n  return {start, clear};\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

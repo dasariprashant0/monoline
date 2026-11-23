@@ -62,5 +62,6 @@
       "path": "packages/react/src/hooks/use-intersection/use-intersection.ts",
       "content": "'use client';\nimport {useCallback, useEffect, useRef, useState, type RefCallback} from 'react';\n\nexport interface UseIntersectionOptions extends IntersectionObserverInit {\n  /** Stop observing after the first time it is visible. */\n  once?: boolean;\n}\n\n/** Returns `[ref, entry]`; `entry?.isIntersecting` says if it is in view. */\nexport function useIntersection<T extends Element = Element>({once, root, rootMargin, threshold}: UseIntersectionOptions = {}): [RefCallback<T>, IntersectionObserverEntry | null] {\n  const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);\n  const observer = useRef<IntersectionObserver | null>(null);\n  const ref = useCallback<RefCallback<T>>((el) => {\n    observer.current?.disconnect();\n    observer.current = null;\n    if (!el || typeof IntersectionObserver === 'undefined') return;\n    observer.current = new IntersectionObserver(([e]) => {\n      if (!e) return;\n      setEntry(e);\n      if (once && e.isIntersecting) observer.current?.disconnect();\n    }, {root, rootMargin, threshold});\n    observer.current.observe(el);\n  }, [once, root, rootMargin, threshold]);\n  useEffect(() => () => observer.current?.disconnect(), []);\n  return [ref, entry];\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

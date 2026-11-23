@@ -89,5 +89,11 @@
       "path": "packages/react/src/components/icon-button/meta.json",
       "content": "{\"name\":\"icon-button\",\"title\":\"Icon button\",\"category\":\"buttons\",\"description\":\"A square button holding only an icon. The accessible name is required.\",\"status\":\"stable\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"icon-button.css\"],\"a11y\":[\"Native button; aria-label is required by the type.\",\"Space and Enter activate it.\"],\"keywords\":[\"icon\",\"action\",\"toolbar\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

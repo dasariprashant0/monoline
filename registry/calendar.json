@@ -135,5 +135,15 @@
       "path": "packages/react/src/components/calendar/meta.json",
       "content": "{\"name\":\"calendar\",\"title\":\"Calendar\",\"category\":\"forms\",\"description\":\"A month grid for picking one date.\",\"status\":\"stable\",\"css\":[\"calendar.css\"],\"a11y\":[\"role=\\\"grid\\\" with column headers; one day is in the tab order (roving tabindex).\",\"Arrow keys move by day and week, Home/End to the start and end of the week, PageUp/PageDown by month.\",\"Each day button has a full date name; the selected day has aria-pressed and today has aria-current=\\\"date\\\".\",\"With `clearable`, a \\\"Clear date\\\" button resets the value; it is disabled while no date is chosen.\"],\"keywords\":[\"date\",\"month\",\"datepicker\",\"schedule\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    },
+    {
+      "path": "packages/react/src/utils/direction.ts",
+      "content": "import {Direction} from 'radix-ui';\n\n/**\n * Returns `isRtl(element)` for custom widgets that read ArrowLeft/ArrowRight themselves.\n * The nearest `dir` attribute wins; otherwise a `DirectionProvider` value, then the computed CSS direction.\n */\nexport function useIsRtl() {\n  const ctx = Direction.useDirection();\n  return (el: Element | null | undefined): boolean => {\n    const d = el?.closest('[dir]')?.getAttribute('dir');\n    if (d === 'rtl' || d === 'ltr') return d === 'rtl';\n    return ctx === 'rtl' || (!!el && getComputedStyle(el).direction === 'rtl');\n  };\n}\n"
+    }
   ]
 }
