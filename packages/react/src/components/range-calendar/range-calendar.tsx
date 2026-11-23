@@ -1,5 +1,5 @@
 'use client';
-import {forwardRef, useRef, useState, type HTMLAttributes, type KeyboardEvent} from 'react';
+import {forwardRef, useEffect, useRef, useState, type HTMLAttributes, type KeyboardEvent} from 'react';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
 
@@ -12,6 +12,8 @@ export interface DateRange {
 }
 
 export interface RangeCalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
+  /** Texts for the month arrows, for other languages. Defaults are English. */
+  labels?: {previousMonth?: string; nextMonth?: string};
   /** The selected range when controlled. Pair with `onValueChange`. */
   value?: DateRange;
   /** The initially selected range when uncontrolled. Default empty. */
@@ -37,14 +39,16 @@ const addMonths = (d: Date, n: number) => { const t = new Date(d.getFullYear(), 
 const EMPTY: DateRange = {start: null, end: null};
 
 /** Pick a start and an end date on one month grid. The first click sets the start, the second the end; the days between are previewed on hover and keyboard focus. Controlled with `value` + `onValueChange`, or uncontrolled. */
-export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(function RangeCalendar({value, defaultValue = EMPTY, onValueChange, weekStartsOn = 0, min, max, isDateDisabled, locale, className, ...rest}, ref) {
+export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(function RangeCalendar({value, defaultValue = EMPTY, onValueChange, weekStartsOn = 0, min, max, isDateDisabled, locale, labels, className, ...rest}, ref) {
   const [inner, setInner] = useState<DateRange>(defaultValue);
   const range = value ?? inner;
   const [focus, setFocus] = useState<Date>(() => day(range.start ?? new Date()));
   const [hover, setHover] = useState<Date | null>(null);
   const grid = useRef<HTMLTableElement>(null);
   const isRtl = useIsRtl();
-  const today = day(new Date());
+  // "Today" is read after mount: on the server and while hydrating it would depend on the server's clock and timezone.
+  const [today, setToday] = useState<Date | null>(null);
+  useEffect(() => { setToday(day(new Date())); }, []);
   const first = new Date(focus.getFullYear(), focus.getMonth(), 1);
   const start = add(first, -((first.getDay() - weekStartsOn + 7) % 7));
   const weeks = Array.from({length: 6}, (_, w) => Array.from({length: 7}, (_, d) => add(start, w * 7 + d)));
@@ -84,9 +88,9 @@ export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(func
   return (
     <div ref={ref} className={cx('calendar range-calendar', className)} {...rest}>
       <div className="calendar-head">
-        <button type="button" className="calendar-nav" aria-label="Previous month" onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.previousMonth ?? 'Previous month'} onClick={() => setFocus(addMonths(focus, -1))}>‹</button>
         <div className="calendar-title" aria-live="polite">{month}</div>
-        <button type="button" className="calendar-nav" aria-label="Next month" onClick={() => setFocus(addMonths(focus, 1))}>›</button>
+        <button type="button" className="calendar-nav" aria-label={labels?.nextMonth ?? 'Next month'} onClick={() => setFocus(addMonths(focus, 1))}>›</button>
       </div>
       <table ref={grid} role="grid" aria-label={month} className="calendar-grid" onKeyDown={keydown} onMouseLeave={() => setHover(null)}>
         <thead>
@@ -106,10 +110,10 @@ export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(func
                       tabIndex={same(d, focus) ? 0 : -1}
                       className="calendar-day"
                       data-outside={d.getMonth() !== focus.getMonth() || undefined}
-                      data-today={same(d, today) || undefined}
+                      data-today={(today !== null && same(d, today)) || undefined}
                       aria-label={full(d)}
                       aria-pressed={isStart || isEnd}
-                      aria-current={same(d, today) ? 'date' : undefined}
+                      aria-current={(today !== null && same(d, today)) ? 'date' : undefined}
                       disabled={off(d)}
                       onMouseEnter={() => picking && setHover(d)}
                       onClick={() => { choose(d); setFocus(d); }}

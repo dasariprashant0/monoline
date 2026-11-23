@@ -1,7 +1,7 @@
 'use client';
-import {forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
+import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
 
 export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** Suggestions shown while typing; matched by substring, case-insensitive. */
@@ -25,6 +25,7 @@ export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputEle
  * match, and has no empty state.
  */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(function Autocomplete({suggestions, value, defaultValue = '', onValueChange, size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
+  const labelId = useFieldLabelId();
   const f = useFieldControl();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
@@ -35,6 +36,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
   const shown = q ? suggestions.filter((s) => s.toLowerCase().includes(q) && s !== text) : [];
   const isOpen = open && shown.length > 0;
   const optId = (i: number) => `${listId}-${i}`;
+  useEffect(() => { if (isOpen && active >= 0) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'}); }, [isOpen, active]);
 
   const set = (v: string) => { if (value === undefined) setInner(v); onValueChange?.(v); };
   const pick = (s: string) => { set(s); setOpen(false); setActive(-1); };
@@ -63,13 +65,13 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
           if (e.defaultPrevented) return;
           if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active + 1) % shown.length); }
           else if (e.key === 'ArrowUp') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active <= 0 ? shown.length : active) - 1); }
-          else if (e.key === 'Enter' && isOpen && active >= 0) { e.preventDefault(); pick(shown[active]!); }
+          else if (e.key === 'Enter' && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
           else if (e.key === 'Escape' && isOpen) { e.preventDefault(); setOpen(false); setActive(-1); }
         }}
         {...rest}
       />
       {isOpen && (
-        <ul id={listId} role="listbox" className="autocomplete-list" aria-label={rest['aria-label']}>
+        <ul id={listId} role="listbox" className="autocomplete-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>
           {shown.map((s, i) => (
             <li
               key={s}

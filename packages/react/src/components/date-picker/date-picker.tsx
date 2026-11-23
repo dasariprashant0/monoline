@@ -4,12 +4,19 @@ import {Popover, PopoverContent, PopoverTrigger} from '../popover';
 import {Calendar, type CalendarProps} from '../calendar';
 import {cx} from '../../utils/cx';
 import {invalidAttrs, useFieldControl} from '../field';
+import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface DatePickerProps extends Omit<CalendarProps, 'className' | 'aria-label'> {
   /** Text shown on the button while no date is chosen. Default "Pick a date". */
   placeholder?: string;
   /** Intl options for the text on the button. Default: medium date. */
   format?: Intl.DateTimeFormatOptions;
+  /** Controlled open state of the calendar popover. */
+  open?: boolean;
+  /** Whether the popover starts open. Default false. */
+  defaultOpen?: boolean;
+  /** Called with the next open state when the popover opens or closes. */
+  onOpenChange?: (open: boolean) => void;
   /** Stops the user opening the calendar. */
   disabled?: boolean;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
@@ -36,16 +43,16 @@ const FIT = {maxHeight: 'var(--available-height)', overflowY: 'auto'} as const;
  * Add `clearable` to put a "Clear date" button in the popover; it calls `onValueChange(null)` and closes.
  * @example <DatePicker clearable value={date} onValueChange={setDate} aria-label="Due" />
  */
-export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker({value, defaultValue = null, onValueChange, placeholder = 'Pick a date', format = {dateStyle: 'medium'}, locale, size = 'md', disabled, invalid, className, 'aria-label': label, ...cal}, ref) {
+export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker({value, defaultValue = null, onValueChange, placeholder = 'Pick a date', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, invalid, className, 'aria-label': label, ...cal}, ref) {
   const f = useFieldControl();
   const [inner, setInner] = useState<Date | null>(defaultValue);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useControllableState({value: openProp, defaultValue: defaultOpen, onChange: onOpenChange});
   const current = value === undefined ? inner : value;
   const text = current ? new Intl.DateTimeFormat(locale, format).format(current) : '';
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label} {...invalidAttrs(invalid)} data-disabled={disabled ? '' : undefined} data-empty={!current || undefined}>
+        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} {...invalidAttrs(invalid)} data-disabled={disabled ? '' : undefined} data-empty={!current || undefined}>
           {text || placeholder}
         </button>
       </PopoverTrigger>

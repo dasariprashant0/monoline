@@ -22,14 +22,15 @@ export interface RatingProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defau
 const Star = () => <svg aria-hidden="true" viewBox="0 0 20 20" width="1em" height="1em"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="miter" /></svg>;
 
 /** Star rating. Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating({value, defaultValue = 0, onValueChange, max = 5, readOnly, name, className, 'aria-label': label, ...rest}, ref) {
+export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating({value, defaultValue = 0, onValueChange, max: maxProp = 5, readOnly, name, className, 'aria-label': label, ...rest}, ref) {
   const auto = useId();
+  const max = Number.isFinite(maxProp) ? Math.max(0, Math.floor(maxProp)) : 5;
   const [inner, setInner] = useState(defaultValue);
   const current = value ?? inner;
   const set = (n: number) => { if (value === undefined) setInner(n); onValueChange?.(n); };
   if (readOnly) {
     return (
-      <div ref={ref} role="img" className={cx('rating', className)} {...rest} aria-label={`${label}: ${current} out of ${max}`}>
+      <div ref={ref} role="img" className={cx('rating', className)} {...rest} aria-label={label ? `${label}: ${current} out of ${max}` : `${current} out of ${max}`}>
         {Array.from({length: max}, (_, i) => <span key={i} className="rating-star" data-on={i < current || undefined}><Star /></span>)}
       </div>
     );

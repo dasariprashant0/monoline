@@ -7,7 +7,13 @@ import {setRefs} from '../../utils/overlay';
 import {Floating, useDismiss, useHydrated, useHoverIntent, type Placement} from '../popover/float';
 
 interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; openDelay: number; closeDelay: number; trigger: RefObject<HTMLElement | null> }
-const Context = createContext<Ctx>(null as never);
+const Context = createContext<Ctx | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+function useHoverCardCtx(): Ctx {
+  const c = useContext(Context);
+  if (!c) throw new Error('Monoline: this HoverCard part must be rendered inside a HoverCard.');
+  return c;
+}
 
 export interface HoverCardProps {
   /** Controlled open state. */
@@ -37,20 +43,20 @@ export const HoverCardTrigger = forwardRef<HTMLAnchorElement, AnchorHTMLAttribut
   /** Render your own element instead of an anchor; it receives the props and handlers. */
   asChild?: boolean;
 }>(function HoverCardTrigger({asChild, ...rest}, ref) {
-  const c = useContext(Context);
+  const c = useHoverCardCtx();
   const Comp = asChild ? Slot : 'a';
   return <Comp ref={(n: HTMLAnchorElement | null) => setRefs(n, c.trigger, ref)} data-state={c.open ? 'open' : 'closed'} {...rest} onPointerEnter={(e: PointerEvent) => { if (e.pointerType !== 'touch') c.show(true, c.openDelay); }} onPointerLeave={() => c.show(false, c.closeDelay)} onFocus={() => c.show(true)} onBlur={() => c.show(false)} />;
 });
 
-const Panel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function Panel({className, sideOffset = 8, align = 'start', ...rest}, forwarded) {
-  const c = useContext(Context);
+const Panel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function Panel({className, sideOffset = 8, align = 'start', onPointerEnter, onPointerLeave, ...rest}, forwarded) {
+  const c = useHoverCardCtx();
   const el = useRef<HTMLDivElement | null>(null);
   useDismiss(true, [el, c.trigger], () => c.show(false));
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} sideOffset={sideOffset} align={align} data-state="open" onPointerEnter={() => c.show(true)} onPointerLeave={() => c.show(false, c.closeDelay)} className={cx('popover', className)} {...rest} />;
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} sideOffset={sideOffset} align={align} data-state="open" className={cx('popover', className)} {...rest} onPointerEnter={(e) => { onPointerEnter?.(e); c.show(true); }} onPointerLeave={(e) => { onPointerLeave?.(e); c.show(false, c.closeDelay); }} />;
 });
 
 /** The floating card, opening 8px from the trigger and aligned to its start. Keep it supplementary: it is not reachable by touch. */
 export const HoverCardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function HoverCardContent(props, ref) {
-  const {open} = useContext(Context), hydrated = useHydrated();
+  const {open} = useHoverCardCtx(), hydrated = useHydrated();
   return open && hydrated ? <Panel ref={ref} {...props} /> : null;
 });

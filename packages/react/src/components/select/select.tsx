@@ -1,10 +1,11 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type ReactNode, type RefObject} from 'react';
+import {createContext, forwardRef, useContext, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type ReactNode, type RefObject} from 'react';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
 import {invalidAttrs, useFieldControl} from '../field';
 import {Floating, useDismiss, useHydrated, type Placement} from '../popover/float';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 interface Ctx {
   open: boolean; setOpen: (o: boolean) => void; value: string; setValue: (v: string) => void;
@@ -12,7 +13,13 @@ interface Ctx {
   /** Item text by value, so the trigger can show the chosen item while the list is closed. */
   labels: Map<string, ReactNode>; label: (value: string, text: ReactNode) => void;
 }
-const Context = createContext<Ctx>(null as never);
+const Context = createContext<Ctx | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+function useSelectCtx(): Ctx {
+  const c = useContext(Context);
+  if (!c) throw new Error('Monoline: this Select part must be rendered inside a Select.');
+  return c;
+}
 const Group = createContext<string | undefined>(undefined);
 
 export interface SelectProps {
@@ -65,7 +72,7 @@ export function SelectValue({placeholder, children}: {
   /** Overrides the shown text. */
   children?: ReactNode;
 }) {
-  const c = useContext(Context);
+  const c = useSelectCtx();
   return <span>{children ?? (c.value ? c.labels.get(c.value) : undefined) ?? placeholder}</span>;
 }
 
@@ -77,7 +84,7 @@ export interface SelectTriggerProps extends ButtonHTMLAttributes<HTMLButtonEleme
 }
 /** The button that shows the chosen value. Inside a Field it is labelled and described automatically. */
 export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function SelectTrigger({className, size = 'md', invalid, children, id, onClick, onKeyDown, disabled, ...rest}, ref) {
-  const f = useFieldControl(), c = useContext(Context);
+  const f = useFieldControl(), c = useSelectCtx();
   const off = disabled ?? c.disabled;
   return (
     <button
@@ -99,7 +106,7 @@ export interface SelectContentProps extends HTMLAttributes<HTMLDivElement>, Plac
 const OPTION = '[role=option]:not([aria-disabled=true])';
 
 const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({className, children, position: _p, sideOffset = 4, align = 'start', onKeyDown, ...rest}, forwarded) {
-  const c = useContext(Context);
+  const c = useSelectCtx();
   const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
   useDismiss(true, [el, c.trigger], (kind) => { outside.current = kind === 'outside'; c.setOpen(false); });
   useEffect(() => {
@@ -124,7 +131,7 @@ const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({class
 
 /** The floating list of options, rendered in a portal and positioned under the trigger. Closed, its items stay mounted but hidden so the trigger can show the chosen text. */
 export const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(function SelectContent(props, ref) {
-  const {open} = useContext(Context), hydrated = useHydrated();
+  const {open} = useSelectCtx(), hydrated = useHydrated();
   return open && hydrated ? <List ref={ref} {...props} /> : <div hidden>{props.children}</div>;
 });
 
@@ -136,9 +143,9 @@ export interface SelectItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'o
 }
 /** One choice in the list; give it a `value` and the visible text as children. */
 export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem({className, children, value, disabled, onClick, onFocus, onBlur, onPointerMove, onKeyDown, ...rest}, ref) {
-  const c = useContext(Context);
+  const c = useSelectCtx();
   const selected = c.value === value;
-  useLayoutEffect(() => c.label(value, children), [value, children]);
+  useIsoLayoutEffect(() => c.label(value, children), [value, children]);
   const pick = () => { c.setValue(value); c.setOpen(false); };
   return (
     <div

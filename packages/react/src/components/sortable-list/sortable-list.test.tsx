@@ -102,4 +102,15 @@ describe('SortableList', () => {
     const {container} = render(<SortableList aria-label="Tasks" defaultValue={items} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('cancels instead of throwing when a controlled row disappears during a drag', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const {rerender} = render(<SortableList aria-label="Tasks" value={items} onValueChange={onValueChange} />);
+    screen.getByRole('button', {name: 'Reorder Alpha'}).focus();
+    await user.keyboard(' {ArrowDown}');
+    rerender(<SortableList aria-label="Tasks" value={items.slice(1)} onValueChange={onValueChange} />);
+    await user.keyboard(' ');
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(names()).toEqual(['Beta', 'Gamma']);
+  });
 });

@@ -10,7 +10,10 @@ import {Floating, useDismiss, useHydrated, type Placement} from '../popover/floa
 
 /** Where focus goes when a menu opens. Set by whatever opened it, read once by the panel. A module variable because only one menu can open at a time. */
 let intent: 'first' | 'last' | 'panel' = 'panel';
-export const openWith = (i: typeof intent) => { intent = i; };
+let intentAt = 0;
+export const openWith = (i: typeof intent) => { intent = i; intentAt = Date.now(); };
+/** The intent set just before this open; an old one (the open was refused, say by a controlled parent) is ignored. */
+const takeIntent = (): typeof intent => { const how = Date.now() - intentAt < 1000 ? intent : 'panel'; intent = 'panel'; return how; };
 
 export interface MenuCtx {
   open: boolean; setOpen: (o: boolean) => void; trigger: RefObject<HTMLElement | null>; triggerId: string; menuId: string;
@@ -20,7 +23,13 @@ export interface MenuCtx {
   step?: (dir: 1 | -1, from: Element | null) => void;
 }
 /** Internal: open state, trigger and ids shared by a menu and its parts. */
-export const MenuContext = createContext<MenuCtx>(null as never);
+export const MenuContext = createContext<MenuCtx | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+export function useMenuCtx(): MenuCtx {
+  const c = useContext(MenuContext);
+  if (!c) throw new Error('Monoline: this menu part must be rendered inside its menu (DropdownMenu, ContextMenu or Menubar).');
+  return c;
+}
 
 export interface MenuProps {
   /** Controlled open state. */
@@ -50,20 +59,22 @@ export interface MenuContentProps extends HTMLAttributes<HTMLDivElement>, Placem
 const ITEM = '[role^=menuitem]:not([aria-disabled=true])';
 
 const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEscapeKeyDown, onCloseAutoFocus, onKeyDown, ...rest}, forwarded) {
-  const c = useContext(MenuContext);
+  const c = useMenuCtx();
   const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
   useDismiss(true, [el, c.trigger], (kind) => {
     if (kind === 'escape' && onEscapeKeyDown) { const e = new Event('x', {cancelable: true}); onEscapeKeyDown(e); if (e.defaultPrevented) return; }
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
+  // The unmount cleanup must call the latest `onCloseAutoFocus`, not the one from the first render.
+  const closeFocus = useRef(onCloseAutoFocus);
+  closeFocus.current = onCloseAutoFocus;
   useEffect(() => {
-    const p = el.current!, items = p.querySelectorAll<HTMLElement>(ITEM), how = intent;
-    intent = 'panel';
+    const p = el.current!, items = p.querySelectorAll<HTMLElement>(ITEM), how = takeIntent();
     (how === 'first' ? items[0] : how === 'last' ? items[items.length - 1] : p)?.focus();
     return () => {
       if (outside.current) return;
-      const e = new Event('x', {cancelable: true}); onCloseAutoFocus?.(e);
+      const e = new Event('x', {cancelable: true}); closeFocus.current?.(e);
       if (!e.defaultPrevented) c.trigger.current?.focus({preventScroll: true});
     };
   }, []);
@@ -76,12 +87,12 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
     if (next === null) return;
     e.preventDefault(); next?.focus();
   };
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => (c.anchor ?? (() => c.trigger.current))()} role="menu" id={c.menuId} aria-orientation="vertical" aria-labelledby={c.anchor ? undefined : c.triggerId} tabIndex={-1} data-state="open" {...rest} onKeyDown={keydown} />;
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => (c.anchor ?? (() => c.trigger.current))()} role="menu" id={c.menuId} aria-orientation="vertical" aria-labelledby={c.anchor ? undefined : c.triggerId} aria-label={c.anchor ? 'Menu' : undefined} tabIndex={-1} data-state="open" {...rest} onKeyDown={keydown} />;
 });
 
 /** Internal: the floating `role="menu"` panel with roving focus and type-ahead. Renders nothing while closed. */
 export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(function MenuContent({className, ...props}, ref) {
-  const {open} = useContext(MenuContext), hydrated = useHydrated();
+  const {open} = useMenuCtx(), hydrated = useHydrated();
   return open && hydrated ? <Panel ref={ref} className={cx('menu-content', className)} {...props} /> : null;
 });
 
@@ -94,7 +105,7 @@ export interface MenuItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onS
 
 /** Internal: one menu entry; `role` picks menuitem, menuitemcheckbox or menuitemradio. */
 export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: string}>(function MenuItem({role = 'menuitem', disabled, onSelect, onClick, onKeyDown, onPointerMove, onFocus, onBlur, ...rest}, ref) {
-  const c = useContext(MenuContext);
+  const c = useMenuCtx();
   const choose = () => { const e = new Event('menu.itemSelect', {cancelable: true}); onSelect?.(e); if (!e.defaultPrevented) c.setOpen(false); };
   return (
     <div

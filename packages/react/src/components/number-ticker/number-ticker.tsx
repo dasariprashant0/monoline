@@ -2,6 +2,7 @@
 import {forwardRef, useEffect, useRef, useState, type HTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {usePrefersReducedMotion} from './use-reduced-motion';
+import {setRefs} from '../../utils/overlay';
 
 export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
   /** The number to count to. Screen readers get this, never the frames in between. */
@@ -34,7 +35,7 @@ export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(funct
     const run = () => {
       const t0 = performance.now();
       const step = (t: number) => {
-        const p = Math.min(1, (t - t0) / duration);
+        const p = duration > 0 ? Math.min(1, Math.max(0, (t - t0) / duration)) : 1;
         setShown(from + (value - from) * (1 - (1 - p) ** 3));
         if (p < 1) raf = requestAnimationFrame(step);
       };
@@ -49,7 +50,7 @@ export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(funct
   }, [value, from, duration, reduced]);
 
   return (
-    <span ref={(node) => { local.current = node; if (typeof ref === 'function') ref(node); else if (ref) ref.current = node; }} className={cx('number-ticker', className)} {...rest}>
+    <span ref={(node) => setRefs(node, local, ref)} className={cx('number-ticker', className)} {...rest}>
       <span className="sr-only">{fmt(value)}</span>
       <span aria-hidden="true">{fmt(shown)}</span>
     </span>

@@ -133,7 +133,7 @@
   "source": [
     {
       "path": "packages/react/src/components/tabs/index.ts",
-      "content": "export {Tabs, TabsList, TabsTrigger, TabsContent} from './tabs';\n"
+      "content": "export {Tabs, TabsList, TabsTrigger, TabsContent} from './tabs';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {Tabs, TabsList, TabsTrigger, TabsContent} from './tabs';\n/** Props of `Tabs`. */\nexport type TabsProps = ComponentPropsWithoutRef<typeof Tabs>;\n/** Props of `TabsList`. */\nexport type TabsListProps = ComponentPropsWithoutRef<typeof TabsList>;\n/** Props of `TabsTrigger`. */\nexport type TabsTriggerProps = ComponentPropsWithoutRef<typeof TabsTrigger>;\n/** Props of `TabsContent`. */\nexport type TabsContentProps = ComponentPropsWithoutRef<typeof TabsContent>;\n"
     },
     {
       "path": "packages/react/src/components/tabs/meta.json",

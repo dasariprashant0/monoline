@@ -139,7 +139,7 @@
   "source": [
     {
       "path": "packages/react/src/components/toggle-group/index.ts",
-      "content": "export {ToggleGroup, ToggleGroupItem} from './toggle-group';\n"
+      "content": "export {ToggleGroup, ToggleGroupItem} from './toggle-group';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {ToggleGroup, ToggleGroupItem} from './toggle-group';\n/** Props of `ToggleGroup`. */\nexport type ToggleGroupProps = ComponentPropsWithoutRef<typeof ToggleGroup>;\n/** Props of `ToggleGroupItem`. */\nexport type ToggleGroupItemProps = ComponentPropsWithoutRef<typeof ToggleGroupItem>;\n"
     },
     {
       "path": "packages/react/src/components/toggle-group/meta.json",

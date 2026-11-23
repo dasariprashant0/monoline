@@ -201,4 +201,12 @@ describe('RichTextEditor', () => {
     const {container} = render(<RichTextEditor aria-label="Notes" defaultValue="<p>hi</p>" />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it('does not rewrite what the user typed when defaultValue changes', () => {
+    const {rerender} = render(<RichTextEditor aria-label="Notes" defaultValue="<p>one</p>" />);
+    const box = screen.getByRole('textbox', {name: 'Notes'});
+    box.innerHTML = '<p>typed</p>';
+    rerender(<RichTextEditor aria-label="Notes" defaultValue="<p>two</p>" />);
+    expect(box).toHaveTextContent('typed');
+  });
 });

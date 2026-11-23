@@ -46,6 +46,13 @@
           "optional": true,
           "default": null,
           "description": "Visible label. Without it, give the switch an `aria-label`."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "Marks the switch as having an error: sets `aria-invalid` and `data-invalid`."
         }
       ]
     }
@@ -89,7 +96,7 @@
     },
     {
       "path": "packages/react/src/components/switch/switch.tsx",
-      "content": "'use client';\nimport {forwardRef, type ComponentPropsWithoutRef, type ElementRef, type ReactNode} from 'react';\nimport {Switch as RadixSwitch} from 'radix-ui';\nimport {cx} from '../../utils/cx';\nimport {useFieldControl} from '../field';\n\nexport interface SwitchProps extends Omit<ComponentPropsWithoutRef<typeof RadixSwitch.Root>, 'children'> {\n  /** Visible label. Without it, give the switch an `aria-label`. */\n  label?: ReactNode;\n}\n\n/** An on/off setting that applies at once. Use a Checkbox for a choice you submit later. */\nexport const Switch = forwardRef<ElementRef<typeof RadixSwitch.Root>, SwitchProps>(function Switch({label, className, id, ...rest}, ref) {\n  const f = useFieldControl();\n  const sw = (\n    <RadixSwitch.Root ref={ref} id={id ?? f.id} className={cx('sw', className)} aria-describedby={f['aria-describedby']} {...rest}>\n      <RadixSwitch.Thumb className=\"sw-thumb\" />\n    </RadixSwitch.Root>\n  );\n  return label ? <label className=\"choice\" style={{alignItems: 'center'}}>{sw}<span>{label}</span></label> : sw;\n});\n"
+      "content": "'use client';\nimport {forwardRef, type ComponentPropsWithoutRef, type ElementRef, type ReactNode} from 'react';\nimport {Switch as RadixSwitch} from 'radix-ui';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface SwitchProps extends Omit<ComponentPropsWithoutRef<typeof RadixSwitch.Root>, 'children'> {\n  /** Visible label. Without it, give the switch an `aria-label`. */\n  label?: ReactNode;\n  /** Marks the switch as having an error: sets `aria-invalid` and `data-invalid`. */\n  invalid?: boolean;\n}\n\n/** An on/off setting that applies at once. Use a Checkbox for a choice you submit later. */\nexport const Switch = forwardRef<ElementRef<typeof RadixSwitch.Root>, SwitchProps>(function Switch({label, invalid, className, id, ...rest}, ref) {\n  const f = useFieldControl();\n  const sw = (\n    <RadixSwitch.Root ref={ref} id={id ?? f.id} className={cx('sw', className)} {...invalidAttrs(invalid || Boolean(f['aria-invalid']))} aria-describedby={f['aria-describedby']} {...rest}>\n      <RadixSwitch.Thumb className=\"sw-thumb\" />\n    </RadixSwitch.Root>\n  );\n  return label ? <label className=\"choice\" style={{alignItems: 'center'}}>{sw}<span>{label}</span></label> : sw;\n});\n"
     }
   ],
   "utils": []

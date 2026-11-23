@@ -21,7 +21,13 @@ export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, c
 }
 
 interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; id: string; trigger: React.RefObject<HTMLElement | null>; kbd: React.RefObject<boolean> }
-const Context = createContext<Ctx>(null as never);
+const Context = createContext<Ctx | null>(null);
+/** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
+function useTooltipCtx(): Ctx {
+  const c = useContext(Context);
+  if (!c) throw new Error('Monoline: TooltipContent must be rendered inside a Tooltip.');
+  return c;
+}
 
 export interface TooltipProps {
   /** The text shown. Keep it short; it repeats or extends a label and must never hold essential information alone. */
@@ -58,7 +64,7 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
         data-state={isOpen ? 'open' : 'closed'}
         onPointerMove={(e: React.PointerEvent) => { if (e.pointerType !== 'touch' && !moved.current) { moved.current = true; show(true, delay); } }} /* a real move, not a layout shift under a resting pointer */
         onPointerLeave={() => { moved.current = false; show(false, 100); }}
-        onPointerDown={() => { pressed.current = true; kbd.current = false; document.addEventListener('pointerup', () => { pressed.current = false; }, {once: true}); show(false); }}
+        onPointerDown={() => { pressed.current = true; kbd.current = false; const done = () => { pressed.current = false; document.removeEventListener('pointerup', done); document.removeEventListener('pointercancel', done); }; document.addEventListener('pointerup', done); document.addEventListener('pointercancel', done); show(false); }}
         onFocus={() => { if (!pressed.current) { kbd.current = true; show(true); } }}
         onBlur={() => { kbd.current = false; show(false); }}
       >{children}</Slot>
@@ -68,8 +74,8 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
 }
 
 /** The floating tooltip box. `Tooltip` renders one for you; it works only inside a `Tooltip`. */
-export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', ...rest}, forwarded) {
-  const c = useContext(Context);
+export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', onPointerEnter, onPointerLeave, ...rest}, forwarded) {
+  const c = useTooltipCtx();
   const el = useRef<HTMLDivElement | null>(null);
   useDismiss(c.open, [el, c.trigger], () => c.show(false));
   // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.
@@ -79,5 +85,5 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivE
     addEventListener('scroll', close, true);
     return () => removeEventListener('scroll', close, true);
   }, []);
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} side={side} sideOffset={sideOffset} role="tooltip" id={c.id} data-state="open" onPointerEnter={() => c.show(true)} onPointerLeave={() => c.show(false, 100)} className={cx('tooltip', className)} {...rest} />;
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} side={side} sideOffset={sideOffset} role="tooltip" id={c.id} data-state="open" className={cx('tooltip', className)} {...rest} onPointerEnter={(e) => { onPointerEnter?.(e); c.show(true); }} onPointerLeave={(e) => { onPointerLeave?.(e); c.show(false, 100); }} />;
 });

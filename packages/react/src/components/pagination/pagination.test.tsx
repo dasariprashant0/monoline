@@ -33,4 +33,27 @@ describe('Pagination', () => {
     const {container} = render(<Pagination page={3} pageCount={10} onPageChange={() => {}} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('reports a page change once, and nothing when the current page is pressed again', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<Pagination pageCount={5} onPageChange={fn} />);
+    await user.click(screen.getByRole('button', {name: 'Page 1'}));
+    expect(fn).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', {name: 'Page 2'}));
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(2);
+  });
+  it('shows one page for a pageCount below 1 or not a number', () => {
+    const {rerender} = render(<Pagination pageCount={0} />);
+    expect(screen.getAllByRole('button', {name: /Page/})).toHaveLength(1);
+    rerender(<Pagination pageCount={NaN} />);
+    expect(screen.getAllByRole('button', {name: /Page/})).toHaveLength(1);
+  });
+  it('takes its texts from labels', () => {
+    render(<Pagination pageCount={3} labels={{navigation: 'Seiten', previous: 'Zurück', next: 'Weiter', page: (n) => `Seite ${n}`}} />);
+    expect(screen.getByRole('navigation', {name: 'Seiten'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Zurück'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Weiter'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Seite 2'})).toBeInTheDocument();
+  });
 });

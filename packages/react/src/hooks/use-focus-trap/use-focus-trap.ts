@@ -13,6 +13,11 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+/** Open traps, oldest first: only the newest reacts, so two traps never pull focus back and forth. */
+const traps: object[] = [];
+/** Floating layers (select lists, menus, popovers) are rendered outside the trapped element but belong to it. */
+const FLOATING = '[role="listbox"],[role="menu"],[role="tree"],[role="dialog"],[role="tooltip"]';
+
 /**
  * Keeps Tab and Shift+Tab inside the element this ref is attached to while `active` is true.
  * Focus moves to the first focusable element on activation, and goes back to the element that
@@ -29,6 +34,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     const container = ref.current;
     if (!active || !container) return;
 
+    const me = {};
+    traps.push(me);
+    const top = () => traps[traps.length - 1] === me;
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const items = () => Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE));
 
@@ -36,7 +44,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     (items()[0] ?? container).focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab' || !top()) return;
       const list = items();
       const first = list[0];
       const last = list[list.length - 1];
@@ -58,7 +66,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
 
     // Focus that gets out by mouse or script comes back in.
     const onFocusIn = (event: FocusEvent) => {
+      if (!top()) return;
       if (event.target instanceof Node && container.contains(event.target)) return;
+      if (event.target instanceof Element && event.target.closest(FLOATING)) return;
       (items()[0] ?? container).focus();
     };
 
@@ -67,6 +77,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('focusin', onFocusIn);
+      traps.splice(traps.indexOf(me), 1);
       if (previous?.isConnected) previous.focus();
     };
   }, [active]);

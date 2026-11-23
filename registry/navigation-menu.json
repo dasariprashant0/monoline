@@ -136,7 +136,7 @@
   "source": [
     {
       "path": "packages/react/src/components/navigation-menu/index.ts",
-      "content": "export {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink} from './navigation-menu';\n"
+      "content": "export {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink} from './navigation-menu';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink} from './navigation-menu';\n/** Props of `NavigationMenu`. */\nexport type NavigationMenuProps = ComponentPropsWithoutRef<typeof NavigationMenu>;\n/** Props of `NavigationMenuList`. */\nexport type NavigationMenuListProps = ComponentPropsWithoutRef<typeof NavigationMenuList>;\n/** Props of `NavigationMenuItem`. */\nexport type NavigationMenuItemProps = ComponentPropsWithoutRef<typeof NavigationMenuItem>;\n/** Props of `NavigationMenuTrigger`. */\nexport type NavigationMenuTriggerProps = ComponentPropsWithoutRef<typeof NavigationMenuTrigger>;\n/** Props of `NavigationMenuContent`. */\nexport type NavigationMenuContentProps = ComponentPropsWithoutRef<typeof NavigationMenuContent>;\n/** Props of `NavigationMenuLink`. */\nexport type NavigationMenuLinkProps = ComponentPropsWithoutRef<typeof NavigationMenuLink>;\n"
     },
     {
       "path": "packages/react/src/components/navigation-menu/meta.json",

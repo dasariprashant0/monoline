@@ -36,4 +36,19 @@ describe('useControllableState', () => {
     act(() => result.current[1]('a'));
     expect(onChange).not.toHaveBeenCalled();
   });
+  it('applies two changes made in one handler (set(1); set(0))', () => {
+    const {result} = renderHook(() => useControllableState({defaultValue: 0}));
+    act(() => { result.current[1](1); result.current[1](0); });
+    expect(result.current[0]).toBe(0);
+  });
+  it('keeps one setter identity and calls the latest onChange', () => {
+    const first = vi.fn(), second = vi.fn();
+    const {result, rerender} = renderHook(({fn}) => useControllableState({defaultValue: 0, onChange: fn}), {initialProps: {fn: first}});
+    const setter = result.current[1];
+    rerender({fn: second});
+    expect(result.current[1]).toBe(setter);
+    act(() => setter(5));
+    expect(second).toHaveBeenCalledWith(5);
+    expect(first).not.toHaveBeenCalled();
+  });
 });

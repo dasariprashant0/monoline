@@ -1,5 +1,6 @@
 'use client';
-import {forwardRef, useState, type HTMLAttributes} from 'react';
+import {forwardRef, type HTMLAttributes} from 'react';
+import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   /** Current page, 1-based, when controlled. Pair with `onPageChange`. */
@@ -12,6 +13,8 @@ export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onCh
   onPageChange?: (page: number) => void;
   /** How many numbers to show on each side of the current page. */
   siblings?: number;
+  /** Texts for other languages: the landmark name, the two buttons and each page button's name. Defaults are English. */
+  labels?: {navigation?: string; previous?: string; next?: string; page?: (page: number) => string};
 }
 
 /** Page numbers with the first and last always visible and "…" for gaps. Pure function exported for testing. */
@@ -27,23 +30,20 @@ export function pageWindow(page: number, count: number, siblings = 1): Array<num
 }
 
 /** Previous, numbered pages and next, as buttons. The current page has aria-current. */
-export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagination({page: pageProp, defaultPage = 1, pageCount, onPageChange, siblings = 1, ...rest}, ref) {
-  const [inner, setInner] = useState(defaultPage);
-  const page = pageProp ?? inner;
-  const go = (p: number) => {
-    const next = Math.min(pageCount, Math.max(1, p));
-    if (pageProp === undefined) setInner(next);
-    onPageChange?.(next);
-  };
+export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagination({page: pageProp, defaultPage = 1, pageCount, onPageChange, siblings = 1, labels, ...rest}, ref) {
+  const count = Number.isFinite(pageCount) ? Math.max(1, Math.floor(pageCount)) : 1;
+  const [page, setPage] = useControllableState({value: pageProp, defaultValue: defaultPage, onChange: onPageChange});
+  // Only a real change is reported: pressing the current page again does nothing.
+  const go = (p: number) => setPage(Math.min(count, Math.max(1, p)));
   return (
-    <nav ref={ref} aria-label="Pagination" {...rest}>
+    <nav ref={ref} aria-label={labels?.navigation ?? 'Pagination'} {...rest}>
       <div className="pager">
-        <button type="button" disabled={page <= 1} onClick={() => go(page - 1)}>Prev</button>
-        {pageWindow(page, pageCount, siblings).map((p, i) =>
+        <button type="button" disabled={page <= 1} onClick={() => go(page - 1)}>{labels?.previous ?? 'Prev'}</button>
+        {pageWindow(page, count, siblings).map((p, i) =>
           p === 'gap' ? <span key={`g${i}`} className="muted" aria-hidden="true">…</span> : (
-            <button key={p} type="button" aria-current={p === page ? 'page' : undefined} aria-label={`Page ${p}`} onClick={() => go(p)}>{p}</button>
+            <button key={p} type="button" aria-current={p === page ? 'page' : undefined} aria-label={labels?.page ? labels.page(p) : `Page ${p}`} onClick={() => go(p)}>{p}</button>
           ))}
-        <button type="button" disabled={page >= pageCount} onClick={() => go(page + 1)}>Next</button>
+        <button type="button" disabled={page >= count} onClick={() => go(page + 1)}>{labels?.next ?? 'Next'}</button>
       </div>
     </nav>
   );

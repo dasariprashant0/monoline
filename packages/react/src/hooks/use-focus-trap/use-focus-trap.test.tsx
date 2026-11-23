@@ -80,4 +80,26 @@ describe('useFocusTrap', () => {
     expect(outside).toHaveFocus();
     cleanup();
   });
+  it('lets focus move into a floating listbox rendered outside the trap', () => {
+    const {unmount} = setup(true);
+    const list = document.createElement('div');
+    list.setAttribute('role', 'listbox');
+    const option = document.createElement('button');
+    list.appendChild(option);
+    document.body.appendChild(list);
+    act(() => option.focus());
+    expect(document.activeElement).toBe(option);
+    list.remove();
+    unmount();
+  });
+  it('only the newest of two traps reacts', () => {
+    function Two() {
+      const a = useFocusTrap<HTMLDivElement>(true), b = useFocusTrap<HTMLDivElement>(true);
+      return <><div ref={a}><button>A</button></div><div ref={b}><button>B</button></div></>;
+    }
+    render(<Two />);
+    expect(screen.getByText('B')).toHaveFocus();
+    act(() => screen.getByText('A').focus());
+    expect(screen.getByText('B')).toHaveFocus();
+  });
 });

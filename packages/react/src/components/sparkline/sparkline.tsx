@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, type HTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {formatFull, linearScale, polyline, r2} from '../../utils/chart';
+import {formatFull, linearScale, maxOf, minOf, polyline, r2} from '../../utils/chart';
 
 export interface SparklineProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'title'> {
   /** Accessible name. Required. */
@@ -26,7 +26,7 @@ export const Sparkline = forwardRef<HTMLSpanElement, SparklineProps>(function Sp
   if (!vals.length) return <span ref={ref} className={cx('sparkline', 'sparkline-empty', className)} role="img" aria-label={`${title}: no data`} {...rest}>No data</span>;
   const fmt = valueFormat ?? formatFull;
   const pad = 3, n = vals.length;
-  const y = linearScale(Math.min(...vals), Math.max(...vals), height - pad, pad);
+  const y = linearScale(minOf(vals), maxOf(vals), height - pad, pad);
   const xs = vals.map((_, i) => (n === 1 ? width / 2 : pad + (i * (width - 2 * pad)) / (n - 1)));
   const ys = vals.map(y);
   const line = polyline(xs, ys);

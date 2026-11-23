@@ -1,4 +1,4 @@
-import {arcPath, extent, formatCompact, linearScale, niceTicks, normalize, pieArcs, polyline, stack} from './chart';
+import {arcPath, extent, maxOf, minOf, formatCompact, linearScale, niceTicks, normalize, pieArcs, polyline, stack} from './chart';
 
 describe('niceTicks', () => {
   it('rounds 0..97 to 0, 20, ..., 100', () => {
@@ -85,5 +85,18 @@ describe('polyline and format', () => {
     expect(formatCompact(950)).toBe('950');
     expect(formatCompact(1200)).toBe('1.2K');
     expect(formatCompact(3_400_000)).toBe('3.4M');
+  });
+});
+
+describe('minOf and maxOf', () => {
+  it('handle lists too long for Math.min(...list)', () => {
+    const big = Array.from({length: 300000}, (_, i) => i - 100);
+    expect(minOf(big)).toBe(-100);
+    expect(maxOf(big)).toBe(299899);
+    expect(extent([big], false).max).toBe(299899);
+  });
+  it('take a start value', () => {
+    expect(minOf([3, 4], 0)).toBe(0);
+    expect(maxOf([-3, -4], 0)).toBe(0);
   });
 });

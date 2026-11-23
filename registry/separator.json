@@ -82,7 +82,7 @@
   "source": [
     {
       "path": "packages/react/src/components/separator/index.ts",
-      "content": "export {Separator} from './separator';\n"
+      "content": "export {Separator} from './separator';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {Separator} from './separator';\n/** Props of `Separator`. */\nexport type SeparatorProps = ComponentPropsWithoutRef<typeof Separator>;\n"
     },
     {
       "path": "packages/react/src/components/separator/meta.json",

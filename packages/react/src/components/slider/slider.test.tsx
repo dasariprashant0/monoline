@@ -29,4 +29,9 @@ describe('Slider', () => {
     const {container} = render(<Slider aria-label="Volume" defaultValue={30} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('takes the range thumb words from labels', () => {
+    render(<Slider aria-label="Preis" defaultValue={[10, 20]} labels={{minimum: 'Minimum', maximum: 'Maximum'}} />);
+    expect(screen.getByRole('slider', {name: 'Preis Minimum'})).toBeInTheDocument();
+    expect(screen.getByRole('slider', {name: 'Preis Maximum'})).toBeInTheDocument();
+  });
 });

@@ -2,6 +2,7 @@
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {useFieldControl} from '../field';
+import {setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
 export interface MentionOption {
@@ -24,6 +25,8 @@ export interface MentionsProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
   options?: MentionOption[];
   /** Loads choices for the typed query, for example from a server. Return the options or a promise of them. Late answers for an older query are ignored. Replaces `options` filtering when given. */
   onSearch?: (query: string, trigger: string) => MentionOption[] | Promise<MentionOption[]>;
+  /** Called when `onSearch` throws or its promise rejects. The list is then empty; use this to show or report the failure. */
+  onSearchError?: (error: unknown) => void;
   /** Characters that open the list when typed at the start of a word. Default `["@"]`. */
   triggers?: string[];
   /** Called with the option and the trigger when the user inserts a mention. */
@@ -49,7 +52,7 @@ function findActive(text: string, caret: number, triggers: string[]): Active | n
 }
 
 /** A textarea that suggests people or items when the user types a trigger such as `@`. It follows the ARIA combobox pattern as far as a `<textarea>` allows (a textarea cannot take role combobox, so it stays a textbox with `aria-haspopup`, `aria-controls` and `aria-activedescendant`): ArrowUp/ArrowDown choose, Enter or Tab insert, Escape closes. Options are filtered locally or loaded with `onSearch`. The list opens under the field, not at the caret. */
-export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions({value, defaultValue = '', onValueChange, options = [], onSearch, triggers = ['@'], onMentionSelect, loadingText = 'Loading', emptyText = 'No matches', invalid, className, onKeyDown, onBlur, onSelect, ...rest}, ref) {
+export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions({value, defaultValue = '', onValueChange, options = [], onSearch, onSearchError, triggers = ['@'], onMentionSelect, loadingText = 'Loading', emptyText = 'No matches', invalid, className, onKeyDown, onBlur, onSelect, ...rest}, ref) {
   const f = useFieldControl();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
@@ -61,17 +64,26 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
   const [loaded, setLoaded] = useState<MentionOption[]>([]);
   const [loading, setLoading] = useState(false);
   const seq = useRef(0);
+  const hasSearch = !!onSearch;
+  const searchRef = useRef(onSearch), errorRef = useRef(onSearchError);
+  searchRef.current = onSearch; errorRef.current = onSearchError;
   const open = !!active && dismissed !== active.start;
 
   const query = active?.query ?? '';
   const trigger = active?.trigger ?? '';
   useEffect(() => {
-    if (!open || !onSearch) return;
+    const search = searchRef.current;
+    if (!open || !search) return;
     const n = ++seq.current;
     setLoading(true);
-    Promise.resolve(onSearch(query, trigger)).then((r) => { if (n === seq.current) { setLoaded(r); setLoading(false); } }, () => { if (n === seq.current) { setLoaded([]); setLoading(false); } });
+    // `Promise.resolve().then` also turns a synchronous throw from `onSearch` into a rejection.
+    Promise.resolve().then(() => search(query, trigger)).then(
+      (r) => { if (n === seq.current) { setLoaded(r); setLoading(false); } },
+      (e) => { if (n === seq.current) { setLoaded([]); setLoading(false); errorRef.current?.(e); } },
+    );
     return () => { seq.current++; };
-  }, [open, query, trigger, onSearch]);
+    // Only whether a search exists matters here: an inline `onSearch` is a new function every render and must not restart the search.
+  }, [open, query, trigger, hasSearch]);
 
   const shown = !open ? [] : onSearch ? loaded : options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()) || o.value.toLowerCase().includes(query.toLowerCase()));
   const at = Math.min(index, Math.max(shown.length - 1, 0));
@@ -121,7 +133,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
   return (
     <div className={cx('mentions', className)}>
       <textarea
-        ref={(el) => { area.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }}
+        ref={(el) => setRefs(el, area, ref)}
         className="textarea"
         aria-haspopup="listbox"
         aria-autocomplete="list"

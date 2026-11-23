@@ -1,9 +1,9 @@
 'use client';
-import {forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
+import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {useIsRtl} from '../../utils/direction';
-import {useFieldControl} from '../field';
+import {useFieldControl, useFieldLabelId} from '../field';
 import type {TreeNode} from '../tree';
 
 export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'> {
@@ -33,7 +33,8 @@ const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label
  * Typing filters the tree to matching nodes and their parents. Use `multiple` to pick several nodes.
  * @example <TreeSelect aria-label="Folder" items={folders} onValueChange={(ids) => setFolder(ids[0])} />
  */
-export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, className, onBlur, onKeyDown, ...rest}, ref) {
+export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
+  const labelId = useFieldLabelId();
   const f = useFieldControl();
   const listId = useId();
   const isRtl = useIsRtl();
@@ -66,6 +67,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
   const index = rows.findIndex((r) => r.node.id === activeId);
   const cur = index >= 0 ? index : rows.findIndex((r) => !r.node.disabled);
   const rowId = (i: number) => `${listId}-${i}`;
+  useEffect(() => { if (open && cur >= 0) document.getElementById(rowId(cur))?.scrollIntoView?.({block: 'nearest'}); }, [open, cur]);
 
   const pick = (node: TreeNode) => {
     if (node.disabled) return;
@@ -111,14 +113,14 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         {...(invalid ? {'aria-invalid': true as const} : {})}
         value={text ?? summary}
         onChange={(e) => { setText(e.target.value); setOpen(true); setActiveId(undefined); }}
-        onFocus={() => setOpen(true)}
-        onClick={() => setOpen(true)}
+        onFocus={(e) => { onFocus?.(e); setOpen(true); }}
+        onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
         {...rest}
       />
       {open && (
-        <ul id={listId} role="tree" className="tree-select-list" aria-label={rest['aria-label']} aria-multiselectable={multiple || undefined}>
+        <ul id={listId} role="tree" className="tree-select-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId} aria-multiselectable={multiple || undefined}>
           {rows.length === 0 && <li className="tree-select-empty" role="presentation">{emptyText}</li>}
           {rows.map((r, i) => (
             <li

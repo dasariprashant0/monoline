@@ -74,7 +74,7 @@
   "source": [
     {
       "path": "packages/react/src/components/table/index.ts",
-      "content": "export {Table, TableCaption, TableHeader, TableBody, TableRow, TableHead, TableCell} from './table';\n"
+      "content": "export {Table, TableCaption, TableHeader, TableBody, TableRow, TableHead, TableCell} from './table';\nexport type {TableProps, TableCellProps} from './table';\n"
     },
     {
       "path": "packages/react/src/components/table/meta.json",
