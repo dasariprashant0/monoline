@@ -120,4 +120,29 @@ describe('TimeField', () => {
     const {container} = render(<TimeField aria-label="Start" defaultValue="09:30" />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('shows the controlled value again when the parent refuses a change', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<TimeField aria-label="Start" value="10:00" hourCycle={24} onValueChange={fn} />);
+    hour().focus();
+    await user.keyboard('{ArrowUp}');
+    expect(fn).toHaveBeenCalledWith('11:00');
+    expect(hour()).toHaveTextContent('10');
+  });
+  it('treats a non-finite step as 1 and does not submit when disabled', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    const {container} = render(<TimeField aria-label="Start" defaultValue="10:00" hourCycle={24} step={NaN} name="t" disabled onValueChange={fn} />);
+    expect(container.querySelector('input[type=hidden]')).toBeDisabled();
+    minute().focus();
+    await user.keyboard('{ArrowUp}');
+    expect(fn).not.toHaveBeenCalled();
+  });
+  it('steps minutes by 1 when step is NaN', async () => {
+    const user = userEvent.setup();
+    render(<TimeField aria-label="Start" defaultValue="10:00" hourCycle={24} step={NaN} />);
+    minute().focus();
+    await user.keyboard('{ArrowUp}');
+    expect(minute()).toHaveTextContent('01');
+  });
 });
