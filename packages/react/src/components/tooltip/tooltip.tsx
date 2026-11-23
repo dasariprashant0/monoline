@@ -58,7 +58,7 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
         data-state={isOpen ? 'open' : 'closed'}
         onPointerMove={(e: React.PointerEvent) => { if (e.pointerType !== 'touch' && !moved.current) { moved.current = true; show(true, delay); } }} /* a real move, not a layout shift under a resting pointer */
         onPointerLeave={() => { moved.current = false; show(false, 100); }}
-        onPointerDown={() => { pressed.current = true; kbd.current = false; document.addEventListener('pointerup', () => { pressed.current = false; }, {once: true}); show(false); }}
+        onPointerDown={() => { pressed.current = true; kbd.current = false; const done = () => { pressed.current = false; document.removeEventListener('pointerup', done); document.removeEventListener('pointercancel', done); }; document.addEventListener('pointerup', done); document.addEventListener('pointercancel', done); show(false); }}
         onFocus={() => { if (!pressed.current) { kbd.current = true; show(true); } }}
         onBlur={() => { kbd.current = false; show(false); }}
       >{children}</Slot>

@@ -26,4 +26,9 @@ describe('Switch', () => {
     const {container} = render(<Switch label="Digest" />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('can be marked invalid', () => {
+    render(<Switch aria-label="Terms" invalid />);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('switch')).toHaveAttribute('data-invalid');
+  });
 });
