@@ -76,4 +76,16 @@ describe('useHotkeys', () => {
     fireEvent.keyDown(document.body, {key: 'z'});
     expect(onKey).not.toHaveBeenCalled();
   });
+  it('ignores a keydown without a key (browser autofill)', () => {
+    const fn = vi.fn();
+    renderHook(() => useHotkeys({'mod+k': fn}));
+    expect(() => fireEvent.keyDown(document.body, {key: undefined as unknown as string, ctrlKey: true})).not.toThrow();
+    expect(fn).not.toHaveBeenCalled();
+  });
+  it('matches Alt+letter by physical key, since Option changes the character on macOS', () => {
+    const fn = vi.fn();
+    renderHook(() => useHotkeys({'alt+a': fn}));
+    fireEvent.keyDown(document.body, {key: 'å', code: 'KeyA', altKey: true});
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
 });

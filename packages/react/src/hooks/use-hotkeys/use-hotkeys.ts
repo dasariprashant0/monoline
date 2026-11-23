@@ -40,7 +40,10 @@ export function parseHotkey(combo: string): Combo {
 }
 
 function matches(combo: Combo, event: KeyboardEvent): boolean {
-  if (event.key.toLowerCase() !== combo.key) return false;
+  // Autofill can dispatch a keydown without `key`. On macOS Option changes the character (Option+A gives "å"), so Alt combos match the physical key.
+  let keyOk = event.key?.toLowerCase() === combo.key;
+  if (!keyOk && combo.alt && /^[a-z0-9]$/.test(combo.key)) keyOk = event.code === (/\d/.test(combo.key) ? 'Digit' : 'Key') + combo.key.toUpperCase();
+  if (!keyOk) return false;
   const mac = isMac();
   const wantMeta = combo.meta || (combo.mod && mac);
   const wantCtrl = combo.ctrl || (combo.mod && !mac);

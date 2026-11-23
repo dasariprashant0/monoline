@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 
 export interface UseControllableStateOptions<T> {
   /** When defined, the hook is controlled and `value` wins. */
@@ -24,14 +24,17 @@ export function useControllableState<T>({
   const isControlled = value !== undefined;
   const current = isControlled ? (value as T) : internal;
 
-  const setValue = useCallback(
-    (next: T) => {
-      if (Object.is(next, current)) return;
-      if (!isControlled) setInternal(next);
-      onChange?.(next);
-    },
-    [current, isControlled, onChange],
-  );
+  // The setter reads the latest value and callback from refs, so it keeps one identity, never acts on a stale render,
+  // and two calls in one event handler (`set(1); set(0)`) each compare against what the first one committed.
+  const latest = useRef({current, isControlled, onChange});
+  latest.current = {current, isControlled, onChange};
+
+  const setValue = useCallback((next: T) => {
+    const {current: now, isControlled: controlled, onChange: notify} = latest.current;
+    if (Object.is(next, now)) return;
+    if (!controlled) { latest.current = {...latest.current, current: next}; setInternal(next); }
+    notify?.(next);
+  }, []);
 
   return [current, setValue];
 }
