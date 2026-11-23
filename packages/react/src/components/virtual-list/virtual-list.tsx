@@ -24,6 +24,8 @@ export interface VirtualListProps extends Omit<HTMLAttributes<HTMLDivElement>, '
  * @example <VirtualList aria-label="Users" count={10000} itemHeight={32} height={320} renderItem={(i) => users[i].name} />
  */
 export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function VirtualList({count, itemHeight, height, overscan = 4, renderItem, className, style, onScroll, onKeyDown, ...rest}, ref) {
+  // A row height of 0 or less would make every row index NaN: treat it as 1 so the list still renders.
+  itemHeight = itemHeight > 0 ? itemHeight : 1;
   const [top, setTop] = useState(0);
   const [active, setActive] = useState(0);
   const root = useRef<HTMLDivElement | null>(null);

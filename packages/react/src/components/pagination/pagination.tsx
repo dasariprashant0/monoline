@@ -1,5 +1,6 @@
 'use client';
-import {forwardRef, useState, type HTMLAttributes} from 'react';
+import {forwardRef, type HTMLAttributes} from 'react';
+import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   /** Current page, 1-based, when controlled. Pair with `onPageChange`. */
@@ -28,22 +29,19 @@ export function pageWindow(page: number, count: number, siblings = 1): Array<num
 
 /** Previous, numbered pages and next, as buttons. The current page has aria-current. */
 export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagination({page: pageProp, defaultPage = 1, pageCount, onPageChange, siblings = 1, ...rest}, ref) {
-  const [inner, setInner] = useState(defaultPage);
-  const page = pageProp ?? inner;
-  const go = (p: number) => {
-    const next = Math.min(pageCount, Math.max(1, p));
-    if (pageProp === undefined) setInner(next);
-    onPageChange?.(next);
-  };
+  const count = Number.isFinite(pageCount) ? Math.max(1, Math.floor(pageCount)) : 1;
+  const [page, setPage] = useControllableState({value: pageProp, defaultValue: defaultPage, onChange: onPageChange});
+  // Only a real change is reported: pressing the current page again does nothing.
+  const go = (p: number) => setPage(Math.min(count, Math.max(1, p)));
   return (
     <nav ref={ref} aria-label="Pagination" {...rest}>
       <div className="pager">
         <button type="button" disabled={page <= 1} onClick={() => go(page - 1)}>Prev</button>
-        {pageWindow(page, pageCount, siblings).map((p, i) =>
+        {pageWindow(page, count, siblings).map((p, i) =>
           p === 'gap' ? <span key={`g${i}`} className="muted" aria-hidden="true">…</span> : (
             <button key={p} type="button" aria-current={p === page ? 'page' : undefined} aria-label={`Page ${p}`} onClick={() => go(p)}>{p}</button>
           ))}
-        <button type="button" disabled={page >= pageCount} onClick={() => go(page + 1)}>Next</button>
+        <button type="button" disabled={page >= count} onClick={() => go(page + 1)}>Next</button>
       </div>
     </nav>
   );
