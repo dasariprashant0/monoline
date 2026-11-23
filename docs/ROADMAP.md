@@ -33,7 +33,7 @@ Skip on purpose: 3D, WebGL and glow effects; enterprise-only widgets (Transfer, 
 
 | Step | Status | Evidence |
 |---|---|---|
-| 0.1 Per-module build and size budget | done | `scripts/size.mjs`; budgets raised on purpose (all CSS 21 KB; Tooltip, Popover, DropdownMenu +0.2 KB for anchor positioning), see ADR 0002 |
+| 0.1 Per-module build and size budget | done | `scripts/size.mjs`; budgets raised on purpose (all CSS 21 KB; Tooltip +0.3, Popover +0.3, DropdownMenu +0.2, Select +0.1 KB for anchor positioning), see ADR 0002 |
 | 0.2 Green CI on GitHub | unverified | workflows exist in `.github/workflows`; run history not read |
 | 0.3 Publish to npm with provenance | open | workflow, `scripts/release.mjs` and a release dry run exist; the owner decides when to publish. `@monoline/tokens` has never been published |
 | 0.4 Clean installs in Vite, Next.js, Astro, React Router | done | `npm run install-smoke` (`scripts/install-smoke/run.mjs`), `examples/starters/{vite,next,astro,react-router}`. A React Router starter stands in for Remix |
@@ -84,7 +84,7 @@ Newer browser features are used behind detection with the old code as fallback (
 
 | Item | Status | Evidence |
 |---|---|---|
-| CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (dde5ece) |
+| CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover, DropdownMenu and Select budgets were raised by 0.3, 0.3, 0.2 and 0.1 KB for it (dde5ece, 6d8ea26) |
 | Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (43f5096, ADR 0005) |
 | Scroll-driven animation, `@starting-style`, container queries, `interpolate-size` | not started | no uses in `packages/css/src` or `packages/react/src` |
 
