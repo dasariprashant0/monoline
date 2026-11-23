@@ -102,7 +102,7 @@ function Example({id, demo, code, playground}: {id: string; demo: Demo; code?: D
           </TabsList>
           {code && <a className="cdoc-open-pg" href={playground} target="_blank" rel="noopener">Open playground <span aria-hidden="true">↗</span></a>}
         </div>
-        <TabsContent value="preview"><div className="cdoc-stage">{hydrated && demo.render()}</div></TabsContent>
+        <TabsContent value="preview"><div className="cdoc-stage" role="group" aria-label={`${demo.title} preview`}>{hydrated && demo.render()}</div></TabsContent>
         {code && (
           <TabsContent value="code">
             <Collapsible open={open || !long} onOpenChange={setOpen} className="cdoc-code" data-long={long || undefined}>

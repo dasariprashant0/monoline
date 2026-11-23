@@ -4,3 +4,7 @@
 .range-cell[data-in-range][data-preview] .calendar-day:not([aria-pressed="true"]) { text-decoration: underline dotted; text-underline-offset: 3px; }
 .range-calendar .calendar-day[aria-pressed="true"] { background: var(--foreground); color: var(--background); }
 .range-calendar .calendar-day:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--wash); }
+/* Forced colours: cells inside the range are a wash fill; mark them with an outline. */
+@media (forced-colors: active) {
+  .range-cell[data-in-range] { outline: 1px solid Highlight; outline-offset: -1px; }
+}

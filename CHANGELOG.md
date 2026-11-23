@@ -7,15 +7,15 @@ Versions follow [semver](https://semver.org). Before 1.0, a minor version may ch
 ### Added
 
 - **`Toc` component** (`@monoline/react`, `toc.css`): an "On this page" list of links to a page's headings, with the current one marked `aria-current="location"` and an accent bar that follows it along a thin rule. The docs rail uses it.
-- **Accessibility settings in `@monoline/css`:** under `prefers-contrast: more`, `--muted`, `--border` and `--rule` move towards the text colour (`npm run check` tests 7:1). Under `forced-colors: active`, the colour tokens map to system colours so fills, SVG strokes and the focus ring stay visible. Both are in `utilities.css`, the last layer. `npm run check` also fails if a stylesheet re-enables motion with `!important` and lists literal animation durations.
-- **Find in page for closed Accordion and Collapsible panels.** Where the browser supports `hidden="until-found"`, closed panels stay in the DOM so Ctrl+F finds their text and opens them. Other browsers unmount them as before.
+- **Accessibility settings in `@monoline/css`:** under `prefers-contrast: more`, `--muted`, `--border` and `--rule` move towards the text colour (`npm run check` tests `--muted` at 7:1 and `--border` at 3:1; `--rule` is not tested). Under `forced-colors: active`, the colour tokens map to system colours so fills, SVG strokes and the focus ring stay visible. Both are in `utilities.css`, the last layer. `npm run check` also fails if a stylesheet re-enables motion with `!important` and lists literal animation durations.
+- **Find in page for closed Accordion and Collapsible panels.** Where the browser supports `hidden="until-found"`, closed panels stay in the DOM so Ctrl+F finds their text and opens them. Other browsers unmount them as before. In Chromium and Safari the closed panel's contents are now always mounted: effects run on mount and inputs inside closed panels stay in their forms (see ADR 0007).
 - **CSS anchor positioning** for the shared floating layer (`anchor-name`, `position-area`), opt-in with `data-anchor="native"` on `<html>` (and only where the browser supports it); `place()` stays the default, because in Chrome e2e the native path let a Select near the viewport edge shrink instead of flip. Collision padding is applied on viewport edges and the flipped side is reported in `data-side`.
-- **Install and cross-browser checks:** CI runs the unit tests on React 18 and 19, `npm run install-smoke` installs the packed packages into clean Vite, Next.js, Astro and React Router starters (`examples/starters/`), and `scripts/e2e/cross-browser` smoke-tests Chromium, WebKit and Firefox.
+- **Install and cross-browser checks:** CI runs the unit tests on React 18 and 19, `npm run install-smoke` installs the packed packages into clean Vite, Next.js, Astro and React Router starters (`examples/starters/`), and the `cross-browser` job in `.github/workflows/e2e.yml` runs `scripts/e2e/cross-browser/smoke.mjs` on Firefox and WebKit (`ci.yml` does not run it; the Chrome e2e suite runs in the other `e2e.yml` job).
 
 ### Changed
 
 - Built CSS has a new layer, `monoline.options`, between components and utilities. `data-radius`, `data-font` and `data-density` rules moved out of `monoline.tokens` into it, so options restyle components in every bundle. The layer order is `base, tokens, components, options, utilities`.
-- The all-CSS size budget is 21 KB (was 20); the Tooltip, Popover and DropdownMenu budgets are 0.2 KB higher for the anchor-positioning path.
+- The all-CSS size budget is 21 KB (was 20); the anchor-positioning path raised the budgets in `scripts/size.mjs`: Tooltip 2.5 to 2.9 KB, Popover 2.6 to 3.0 KB, DropdownMenu 3.7 to 4.0 KB, Select 5.4 to 5.6 KB.
 
 ### Fixed
 

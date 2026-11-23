@@ -1,8 +1,11 @@
+/// <reference types="vite/client" />
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {renderToString} from 'react-dom/server';
 import {axe} from '../../test/axe';
-import {ThemeProvider, themeScript, useTheme} from './theme-provider';
+import {ThemeProvider, useTheme} from './theme-provider';
+import {themeScript} from './index';
+import themeScriptSource from './theme-script.ts?raw';
 import {ThemeSwitcher} from './theme-switcher';
 
 const root = document.documentElement;
@@ -84,6 +87,11 @@ describe('ThemeProvider', () => {
 });
 
 describe('themeScript', () => {
+  it('lives in a file without "use client", so a Server Component can call it', () => {
+    expect(themeScriptSource).not.toMatch(/^\s*['"]use client['"]/);
+    expect(typeof themeScript()).toBe('string');
+  });
+
   it('sets saved attributes before paint', () => {
     localStorage.setItem('monoline-theme', 'midnight');
     localStorage.setItem('monoline-accent', 'blue');

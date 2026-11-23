@@ -140,7 +140,7 @@ export function PlaygroundPage() {
         </section>
         <section className="pl-pane" aria-labelledby="pl-prev-h">
           <h2 id="pl-prev-h" className="pl-h">Preview</h2>
-          <div className="pl-stage"><div ref={stage} /></div>
+          <div className="pl-stage" role="group" aria-label="Live preview"><div ref={stage} /></div>
           {error && <pre className="pl-error" role="alert">{error}</pre>}
         </section>
       </main>

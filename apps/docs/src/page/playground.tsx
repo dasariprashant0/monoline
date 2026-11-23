@@ -141,7 +141,7 @@ function Panel({importName, controls, build}: {importName: string; controls: Con
   const changed = JSON.stringify(values) !== JSON.stringify(start);
   return (
     <div className="pg">
-      <div className="pg-stage cdoc-stage" data-no-toc>
+      <div className="pg-stage cdoc-stage" data-no-toc role="group" aria-label="Playground preview">
         <Boundary key={JSON.stringify(values)}>{toElement(node)}</Boundary>
       </div>
       <div className="pg-controls" role="group" aria-label={`${importName} props`}>

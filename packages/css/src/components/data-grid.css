@@ -19,3 +19,7 @@
 .data-grid-sort[data-direction="desc"] { transform: rotate(180deg); }
 .data-grid-empty-row { block-size: auto; }
 .data-grid-empty { grid-column: 1 / -1; }
+/* Forced colours: a selected row is a wash fill; mark it with an outline. */
+@media (forced-colors: active) {
+  .data-grid-body-row[data-state="selected"] { outline: 2px solid Highlight; outline-offset: -2px; }
+}

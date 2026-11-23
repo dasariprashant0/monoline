@@ -27,6 +27,7 @@
     "test:css-browser": "node scripts/css-computed.mjs",
     "e2e": "node scripts/e2e/run.mjs",
     "ax": "node scripts/ax/run.mjs",
+    "check:package-types": "node scripts/check-package-types.mjs",
     "install-smoke": "node scripts/install-smoke/run.mjs"
   }
 }

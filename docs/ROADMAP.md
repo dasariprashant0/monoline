@@ -6,11 +6,11 @@ Last updated 2026-11-20. Status is checked against this tree (measured 2026-11-2
 
 | Area | State | Evidence |
 |---|---|---|
-| Components | 136 components and 23 hooks | `registry/index.json` (159 entries) |
+| Components | 136 components and 23 hooks | `registry/index.json` (159 entries: 136 components plus 23 hooks; the folder holds 160 files with `index.json`) |
 | Tests | 1,467 unit tests with axe and keyboard checks; every demo renders in a test | `npm test` |
 | Real-browser checks | axe, overflow and console errors on every docs page in 3 themes at desktop and 375 px; e2e suite in Chrome (`scripts/e2e/tests`); Firefox and WebKit smoke (`scripts/e2e/cross-browser`) | `scripts/audit.mjs`, `scripts/e2e` |
 | Look options | 8 accents, 3 fonts, 3 corner styles, 3 densities, RTL | `packages/css/src/options.css`, `docs/rtl.md` |
-| Accessibility proof | axe and an accessibility-tree check for 41 components (0 fail, 10 open findings). No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
+| Accessibility proof | axe and an accessibility-tree check for 41 components (0 fail, 3 distinct open findings in 10 occurrences). No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
 | Docs | page per component, search, playground, themes, blocks, compare | `apps/docs` |
 | AI-readable | `meta.json`, `registry/`, `llms.txt`, `llms-full.txt`, Markdown per page, MCP server, `AGENTS.md` | generated |
 | Size | Button 0.7 KB gzip, Dialog 1.8, Select 5.4, everything 98.5 of 100; all CSS 20.6 of 21. `npm run size` passes | `npm run size`, `docs/bundle-report.md`, ADR 0002 |
@@ -33,10 +33,10 @@ Skip on purpose: 3D, WebGL and glow effects; enterprise-only widgets (Transfer, 
 
 | Step | Status | Evidence |
 |---|---|---|
-| 0.1 Per-module build and size budget | done | `scripts/size.mjs`; budgets raised on purpose (all CSS 21 KB; Tooltip, Popover, DropdownMenu +0.2 KB for anchor positioning), see ADR 0002 |
+| 0.1 Per-module build and size budget | done | `scripts/size.mjs`; budgets raised on purpose (all CSS 21 KB; Tooltip +0.3, Popover +0.3, DropdownMenu +0.2, Select +0.1 KB for anchor positioning), see ADR 0002 |
 | 0.2 Green CI on GitHub | unverified | workflows exist in `.github/workflows`; run history not read |
 | 0.3 Publish to npm with provenance | open | workflow, `scripts/release.mjs` and a release dry run exist; the owner decides when to publish. `@monoline/tokens` has never been published |
-| 0.4 Clean installs in Vite, Next.js, Astro, Remix | done | `npm run install-smoke` (`scripts/install-smoke/run.mjs`), `examples/starters/{vite,next,astro,react-router}`. A React Router starter stands in for Remix |
+| 0.4 Clean installs in Vite, Next.js, Astro, React Router | done | `npm run install-smoke` (`scripts/install-smoke/run.mjs`), `examples/starters/{vite,next,astro,react-router}`. A React Router starter stands in for Remix |
 | 0.5 React 18 and 19 matrix | done | `react-matrix` job in `.github/workflows/ci.yml` (run history not read) |
 | 0.6 Real-browser interaction tests | partial | `scripts/e2e` runs in Chrome. Firefox and WebKit run a smoke test only (`scripts/e2e/cross-browser/smoke.mjs`) |
 | 0.7 CSS split with `@layer` | done | `core.css` plus per-component files; layers added in `packages/css/scripts/bundle.mjs` (ADR 0003) |
@@ -84,7 +84,7 @@ Newer browser features are used behind detection with the old code as fallback (
 
 | Item | Status | Evidence |
 |---|---|---|
-| CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover and DropdownMenu budgets were raised 0.2 KB for it (dde5ece) |
+| CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover, DropdownMenu and Select budgets were raised by 0.3, 0.3, 0.2 and 0.1 KB for it (dde5ece, 6d8ea26) |
 | Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (43f5096, ADR 0005) |
 | Scroll-driven animation, `@starting-style`, container queries, `interpolate-size` | not started | no uses in `packages/css/src` or `packages/react/src` |
 
@@ -101,12 +101,12 @@ Newer browser features are used behind detection with the old code as fallback (
 | One Button, gzip | at most 2.5 KB (now 0.7) |
 | Typical 10-component app, gzip | JS under 25 KB, CSS under 10 KB |
 | Axe violations across all pages, themes and accents | 0, in CI |
-| Clean install works in Vite, Next.js, Astro, Remix | all four, in CI |
+| Clean install works in Vite, Next.js, Astro, React Router (stands in for Remix) | all four, in CI (`install-smoke`) |
 | Every component documented: install, usage, API, accessibility, styling | 100 percent |
 
 ## Risks
 
-- **Solo maintenance.** 159 units is a lot to keep correct. Mitigation: the gates above, and no component without tests and a demo.
+- **Solo maintenance.** 159 registry entries (136 components, 23 hooks) is a lot to keep correct. Mitigation: the gates above, and no component without tests and a demo.
 - **Trust.** Nobody adopts an unproven kit. Mitigation: publish audit results, ship templates, dogfood.
 - **Size budgets.** All CSS is near its 21 KB budget, so a new component can fail `npm run size`. Raise a budget only on purpose.
 - **Radix drift.** Many components still use Radix (the list is in `docs/bundle-report.md`). Mitigation: React 18 and 19 matrix in CI, and dependency updates in CI.
