@@ -88,4 +88,13 @@ describe('Command', () => {
     render(<Command defaultOpen items={make()} />);
     expect(await axe(document.body)).toHaveNoViolations();
   });
+  it('starts empty again when the parent closes and reopens it', async () => {
+    const user = userEvent.setup();
+    const items = [{id: 'a', label: 'Alpha', onSelect: () => {}}, {id: 'b', label: 'Beta', onSelect: () => {}}];
+    const {rerender} = render(<Command items={items} open onOpenChange={() => {}} />);
+    await user.type(await screen.findByRole('combobox'), 'zzz');
+    rerender(<Command items={items} open={false} onOpenChange={() => {}} />);
+    rerender(<Command items={items} open onOpenChange={() => {}} />);
+    expect(await screen.findByRole('combobox')).toHaveValue('');
+  });
 });
