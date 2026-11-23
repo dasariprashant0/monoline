@@ -1,7 +1,7 @@
 'use client';
-import {forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
+import {useEffect, forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
 
 export interface ComboboxOption {
   value: string;
@@ -27,8 +27,9 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 }
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
+export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
   const f = useFieldControl();
+  const labelId = useFieldLabelId();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const current = value ?? inner;
@@ -40,6 +41,8 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
   const query = (text ?? '').trim().toLowerCase();
   const shown = text === null ? options : options.filter((o) => o.label.toLowerCase().includes(query));
   const optId = (i: number) => `${listId}-${i}`;
+  // Arrow keys move through a list taller than its popup: keep the active option in view.
+  useEffect(() => { if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'}); }, [open, active]);
 
   const pick = (o: ComboboxOption) => {
     if (o.disabled) return;
@@ -82,14 +85,14 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         {...f}
         {...invalidAttrs(invalid)}
         value={text ?? selected?.label ?? ''}
-        onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && value === undefined) { setInner(''); onValueChange?.(''); } }}
-        onClick={() => setOpen(true)}
+        onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && current !== '') { if (value === undefined) setInner(''); onValueChange?.(''); } }}
+        onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
         {...rest}
       />
       {open && (
-        <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : f.id}>
+        <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>
           {shown.length === 0 && <li className="combobox-empty" role="presentation">{emptyText}</li>}
           {shown.map((o, i) => (
             <li

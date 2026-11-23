@@ -8,6 +8,7 @@ interface FieldContextValue {
   invalid: boolean;
   required: boolean;
   describedBy: string | undefined;
+  labelId: string;
 }
 const FieldContext = createContext<FieldContextValue | null>(null);
 
@@ -28,6 +29,11 @@ export function useFieldControl(): {id?: string; 'aria-describedby'?: string; 'a
     'data-invalid': ctx.invalid ? '' : undefined,
     required: ctx.required ? true : undefined,
   };
+}
+
+/** The id of the surrounding Field's label, or undefined outside a Field. For popups that need a name (`aria-labelledby`). */
+export function useFieldLabelId(): string | undefined {
+  return useContext(FieldContext)?.labelId;
 }
 
 /** Attributes for a control marked invalid with its own `invalid` prop: `aria-invalid` for assistive tech, `data-invalid` for styling. */
@@ -67,9 +73,9 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field({labe
   const errorId = error ? `${base}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
   return (
-    <FieldContext.Provider value={{id: `${base}-control`, invalid: Boolean(error), required, describedBy}}>
+    <FieldContext.Provider value={{id: `${base}-control`, invalid: Boolean(error), required, describedBy, labelId: `${base}-label`}}>
       <div ref={ref} className={cx('field', className)} {...rest}>
-        <Label htmlFor={`${base}-control`} required={required}>{label}</Label>
+        <Label id={`${base}-label`} htmlFor={`${base}-control`} required={required}>{label}</Label>
         {children}
         {hint && <span id={hintId} className="field-hint">{hint}</span>}
         {error && <span id={errorId} className="field-error" role={fromForm ? undefined : 'alert'}>{error}</span>}
