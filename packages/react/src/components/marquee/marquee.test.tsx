@@ -1,4 +1,5 @@
 import {render, screen} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Marquee} from './marquee';
 import {createRef} from 'react';
@@ -48,6 +49,19 @@ describe('Marquee', () => {
     expect(ref.current).toHaveClass('marquee', 'mine');
     expect(ref.current!.style.color).toBe('red');
     expect(ref.current!.style.getPropertyValue('--marquee-duration')).toBe('0s');
+  });
+  it('pausable adds a Pause toggle that sets aria-pressed and data-paused', async () => {
+    const user = userEvent.setup();
+    const {container} = render(<Marquee pausable><span>Acme</span></Marquee>);
+    const btn = screen.getByRole('button', {name: /pause/i});
+    expect(btn).toHaveAttribute('aria-pressed', 'false');
+    await user.click(btn);
+    expect(btn).toHaveAttribute('aria-pressed', 'true');
+    expect(container.firstElementChild).toHaveAttribute('data-paused');
+  });
+  it('has no pause button unless pausable', () => {
+    render(<Marquee><span>Acme</span></Marquee>);
+    expect(screen.queryByRole('button')).toBeNull();
   });
   it('has no axe violations', async () => {
     const {container} = render(<Marquee><span>Acme</span></Marquee>);

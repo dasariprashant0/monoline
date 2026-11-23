@@ -21,7 +21,7 @@
 const D = '[role=dialog]';
 export const pageChecks = [
   {id: 'docs-page-structure', route: 'components/button', phases: [{
-    name: 'landmarks and headings', scope: 'page', known: {check: 'The docs sidebar is a second unnamed complementary landmark (apps/docs shell, not a component).', generic: 'Scrollable code blocks and panels in the docs page are focusable regions without a role (apps/docs, not a component).'},
+    name: 'landmarks and headings', scope: 'page',
     expect: [{role: 'main', count: 1}, {role: 'navigation', name: 'Main'}, {role: 'banner', count: 1}, {role: 'heading', states: {level: 1}}],
     after: ({nodes}) => {
       const live = nodes.filter((n) => !n.ignored);

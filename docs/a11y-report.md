@@ -13,7 +13,7 @@ What it cannot tell you: how a given screen reader words those things, whether t
 ## Summary
 
 - Components and examples checked: **41**, plus the docs page landmarks and heading order.
-- Checks that fail: **0**. Open findings that are understood and not fixed: **10**.
+- Checks that fail: **0**. Open findings that are understood and not fixed: **4**.
 - Problems found and fixed in components while building this check: **5 groups** (listed below).
 - Generic checks on every example: every control has a role and a non-empty name; no focusable element with no role ("generic"); `aria-labelledby` and `aria-describedby` resolve to text; an invalid field says why; every dialog has a name, a description (unless noted) and reports modal, and nothing outside it stays in the tree.
 - Chrome does not surface `aria-current` or `aria-sort` in the tree through this protocol; those are read from the DOM and marked as such.
@@ -30,7 +30,6 @@ What it cannot tell you: how a given screen reader words those things, whether t
 
 - **toast** (shown, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Radix Toast viewport: two unnamed focusable proxy elements that hand focus to the first and last toast. Upstream behaviour, reachable by Tab only while a toast is open.
 - **toaster** (shown, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Radix Toast viewport: two unnamed focusable proxy elements that hand focus to the first and last toast. Upstream behaviour, reachable by Tab only while a toast is open.
-- **docs-page-structure** (landmarks and headings, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Scrollable code blocks and panels in the docs page are focusable regions without a role (apps/docs, not a component).
 
 ## Triage: what to fix, where, and how to re-check
 
@@ -38,9 +37,9 @@ Every row is reproduced by a command in this repo (last run 2026-11-20, real Chr
 
 | ID | Component | WCAG | Sev | Evidence | Suggested fix | Owner |
 |---|---|---|---|---|---|---|
-| T1 | toast, toaster | 2.1.1, 4.1.2 | M | ax: two focusable `generic` proxy elements in the Toast viewport, reachable by Tab while a toast is open | Confirm whether Toast still uses Radix after the 0.4 rewrite. If so, give the proxies `aria-hidden` plus `tabindex=-1` or replace the viewport; if upstream, keep the finding and document it in the toast `meta.json` a11y list | WP2 `packages/react/src/components/toast` |
-| T2 | docs sidebar | 1.3.1, 2.4.1 | M | ax: second `complementary` landmark with no name | Give the sidebar `aria-label` (for example "Components") or make it `nav` | WP5 `apps/docs` |
-| T3 | docs code blocks | 4.1.2, 2.1.1 | L | ax: 5 scrollable code blocks/panels focusable with role `generic` | Add `role="region"` plus `aria-label` (or `tabindex=0` only when it scrolls, with a name) | WP5 `apps/docs` |
+| T1 | toast, toaster | 2.1.1, 4.1.2 | M | Re-checked (audit C): the two proxies are `tabindex=-1`, so Tab does not reach them; they are focusable by script only. Still open as a low-severity finding. Was: ax: two focusable `generic` proxy elements in the Toast viewport, reachable by Tab while a toast is open | Confirm whether Toast still uses Radix after the 0.4 rewrite. If so, give the proxies `aria-hidden` plus `tabindex=-1` or replace the viewport; if upstream, keep the finding and document it in the toast `meta.json` a11y list | WP2 `packages/react/src/components/toast` |
+| T2 | docs sidebar | 1.3.1, 2.4.1 | M | FIXED (audit C, 2026-11-23: `aria-label=\"Documentation sidebar\"`). Was: ax: second `complementary` landmark with no name | Give the sidebar `aria-label` (for example "Components") or make it `nav` | WP5 `apps/docs` |
+| T3 | docs code blocks | 4.1.2, 2.1.1 | L | FIXED (audit C: CodeBlock is a tab stop only when it scrolls, then a named group). Was: ax: 5 scrollable code blocks/panels focusable with role `generic` | Add `role="region"` plus `aria-label` (or `tabindex=0` only when it scrolls, with a name) | WP5 `apps/docs` |
 | T4 | context-menu demo | 2.1.1 | M | FIXED (WP2/WP4; probe F7a passes on the integration tree, 2026-11-20). Was: probe F7a: demo trigger is a `span` with tabIndex -1; `meta.json` promises Shift+F10 but nothing can take focus | Demo with a focusable trigger (button or `tabindex=0` wrapper); say in the docs that the trigger must be focusable | WP2 `context-menu.demo.tsx` |
 | T5 | tooltip | 1.4.13, 2.1.1 | M | FIXED (WP2/WP4; probe F7c passes on the integration tree, 2026-11-20). Was: probe F7c: Tab that scrolls the trigger into view leaves no tooltip in the DOM; the same focus with the trigger already visible shows it | Ignore scroll events caused by focus (do not close on scroll for ~100 ms after focus, or only on user scroll) | WP2 `packages/react/src/components/tooltip`, `popover/float.tsx` |
 | T6 | combobox | 3.2.1 | L | FIXED (WP2/WP4; probe F7d passes on the integration tree, 2026-11-20). Was: probe F7d: `aria-expanded="true"` as soon as the input is focused | Open on typing or ArrowDown (APG), keep an opt-in prop for open-on-focus. Product decision, not a strict failure | WP2 `packages/react/src/components/combobox` |
@@ -775,11 +774,4 @@ Page `components/button`.
 | navigation | Main | none | Main, navigation |
 | banner | (none) | none | banner |
 | heading | Button | level=1 | Button, heading level 1 |
-
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
 

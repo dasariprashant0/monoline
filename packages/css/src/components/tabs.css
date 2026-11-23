@@ -11,3 +11,8 @@
 .tabs-trigger[data-state="active"] { color: var(--foreground); border-color: var(--foreground); }
 .tabs-trigger:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
 .tabs-content:focus-visible { outline-offset: 4px; }
+/* Forced colours: a transparent border is drawn in the text colour, so every tab would look selected. Hide the inactive mark and highlight the active one. */
+@media (forced-colors: active) {
+  .tabs-trigger { border-color: Canvas; }
+  .tabs-trigger[data-state="active"] { border-color: Highlight; }
+}

@@ -17,7 +17,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function E
   return (
     <div ref={ref} className={cx('empty', className)} {...rest}>
       {icon && <div className="empty-icon" aria-hidden="true">{icon}</div>}
-      <h3 className="empty-title">{title}</h3>
+      {title !== '' && title != null && title !== false && <h3 className="empty-title">{title}</h3>}
       {description && <p className="empty-description">{description}</p>}
       {children && <div className="empty-actions">{children}</div>}
     </div>
