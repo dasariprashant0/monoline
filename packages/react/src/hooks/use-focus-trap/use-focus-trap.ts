@@ -19,6 +19,11 @@ const FOCUSABLE = [
  * had focus before when the trap deactivates or unmounts.
  * Visibility is not checked (jsdom has no layout); hidden elements with `tabindex` are still reached.
  */
+/** Open traps, oldest first: only the newest reacts, so two traps never pull focus back and forth. */
+const traps: object[] = [];
+/** Floating layers (select lists, menus, popovers) are rendered outside the trapped element but belong to it. */
+const FLOATING = '[role="listbox"],[role="menu"],[role="tree"],[role="dialog"],[role="tooltip"]';
+
 export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolean) {
   const ref = useRef<T | null>(null);
 
@@ -26,6 +31,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     const container = ref.current;
     if (!active || !container) return;
 
+    const me = {};
+    traps.push(me);
+    const top = () => traps[traps.length - 1] === me;
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const items = () => Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE));
 
@@ -33,7 +41,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     (items()[0] ?? container).focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab' || !top()) return;
       const list = items();
       const first = list[0];
       const last = list[list.length - 1];
@@ -55,7 +63,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
 
     // Focus that gets out by mouse or script comes back in.
     const onFocusIn = (event: FocusEvent) => {
+      if (!top()) return;
       if (event.target instanceof Node && container.contains(event.target)) return;
+      if (event.target instanceof Element && event.target.closest(FLOATING)) return;
       (items()[0] ?? container).focus();
     };
 
@@ -64,6 +74,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolea
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('focusin', onFocusIn);
+      traps.splice(traps.indexOf(me), 1);
       if (previous?.isConnected) previous.focus();
     };
   }, [active]);

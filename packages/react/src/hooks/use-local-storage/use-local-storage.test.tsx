@@ -93,4 +93,15 @@ describe('useLocalStorage', () => {
     unmount();
     expect(remove).toHaveBeenCalledWith('storage', expect.any(Function));
   });
+  it('applies two functional updates in one handler', () => {
+    const {result} = renderHook(() => useLocalStorage('k-two', 0));
+    act(() => { result.current[1]((n) => n + 1); result.current[1]((n) => n + 1); });
+    expect(result.current[0]).toBe(2);
+  });
+  it('keeps two hooks on the same key in sync inside one tab', () => {
+    const a = renderHook(() => useLocalStorage('k-sync', 'x'));
+    const b = renderHook(() => useLocalStorage('k-sync', 'x'));
+    act(() => a.result.current[1]('y'));
+    expect(b.result.current[0]).toBe('y');
+  });
 });

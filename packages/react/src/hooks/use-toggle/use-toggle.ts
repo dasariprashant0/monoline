@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 
 /** True for a DOM or React event, so `onClick={toggle}` flips instead of trying to set the event as a value. */
 const isEvent = (v: unknown) => typeof v === 'object' && v !== null && ('nativeEvent' in v || (typeof Event !== 'undefined' && v instanceof Event));
@@ -19,13 +19,14 @@ export function useToggle<T>(options: readonly [T, ...T[]]): [T, (value?: T) => 
 export function useToggle<T>(arg: boolean | readonly [T, ...T[]] = false): [T, (value?: T) => void] {
   const options = (typeof arg === 'boolean' ? (arg ? [true, false] : [false, true]) : arg) as readonly [T, ...T[]];
   const [index, setIndex] = useState(0);
+  const list = useRef(options);
+  list.current = options;
   const toggle = useCallback((value?: T) => {
     setIndex((i) => {
-      if (value !== undefined && !isEvent(value)) { const at = options.indexOf(value); return at === -1 ? i : at; }
-      return (i + 1) % options.length;
+      const all = list.current;
+      if (value !== undefined && !isEvent(value)) { const at = all.indexOf(value); return at === -1 ? i : at; }
+      return (i + 1) % all.length;
     });
-    // options is expected to be a stable list
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options.length]);
+  }, []);
   return [options[index] as T, toggle];
 }
