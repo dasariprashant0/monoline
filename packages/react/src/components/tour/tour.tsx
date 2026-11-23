@@ -79,7 +79,7 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
   const go = (n: number) => { if (n < 0 || n >= steps.length) return; if (step === undefined) setInnerStep(n); onStepChange?.(n); };
 
   // The card is portalled to <body>, so carry the surrounding text direction across.
-  useIsoLayoutEffect(() => { if (isOpen && anchor.current) setDir(isRtl(anchor.current) ? 'rtl' : 'ltr'); }); // eslint-disable-line
+  useIsoLayoutEffect(() => { if (isOpen && anchor.current) setDir(isRtl(anchor.current) ? 'rtl' : 'ltr'); }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Remember where focus was; give it back when the tour closes.
   useEffect(() => {
