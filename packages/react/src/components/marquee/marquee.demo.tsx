@@ -10,4 +10,13 @@ export const demos: Demo[] = [
       </Marquee>
     ),
   },
+  {
+    title: 'With a pause button',
+    description: 'Use pausable when the row carries content, so keyboard and touch users can stop it.',
+    render: () => (
+      <Marquee duration={20} pausable>
+        {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>{n}</span>)}
+      </Marquee>
+    ),
+  },
 ];

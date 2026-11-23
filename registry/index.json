@@ -1612,7 +1612,8 @@
       ],
       "a11y": [
         "The code is a pre/code element; the region has an accessible name.",
-        "The copy button is announced as \"Copy code\" and confirms with a polite live message."
+        "The copy button is announced as \"Copy code\" and confirms with a polite live message.",
+        "A listing that scrolls becomes a focusable group named \"<title>, scrollable\" so the keyboard can scroll it; one that fits is not a tab stop."
       ],
       "keywords": [
         "pre",
@@ -3250,7 +3251,8 @@
       ],
       "a11y": [
         "The duplicate copy is aria-hidden so screen readers read the items once.",
-        "Pauses on hover and focus; animation is off under prefers-reduced-motion."
+        "Pauses on hover and focus; animation is off under prefers-reduced-motion.",
+        "Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users."
       ],
       "keywords": [
         "ticker",
@@ -3277,7 +3279,8 @@
       "propNames": [
         "duration",
         "reverse",
-        "pauseOnHover"
+        "pauseOnHover",
+        "pausable"
       ]
     },
     {

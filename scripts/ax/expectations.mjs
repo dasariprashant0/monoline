@@ -21,7 +21,7 @@
 const D = '[role=dialog]';
 export const pageChecks = [
   {id: 'docs-page-structure', route: 'components/button', phases: [{
-    name: 'landmarks and headings', scope: 'page', known: {generic: 'The CodeBlock <pre tabindex=0> is focusable and has no role (packages/react code-block, not the docs shell). The docs-owned panels are named now.'},
+    name: 'landmarks and headings', scope: 'page',
     expect: [{role: 'main', count: 1}, {role: 'navigation', name: 'Main'}, {role: 'banner', count: 1}, {role: 'heading', states: {level: 1}}],
     after: ({nodes}) => {
       const live = nodes.filter((n) => !n.ignored);

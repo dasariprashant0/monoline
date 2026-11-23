@@ -157,7 +157,7 @@ export function App() {
     <div className="docs" data-home={route.kind === 'home' || undefined} data-rail={(route.kind !== 'home' && headings.length > 1) || undefined}>
       <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); const m = main.current; if (m) { m.tabIndex = -1; m.focus(); } }}>Skip to main content</a>
       <Topbar path={path} route={route} prefs={prefs} set={set} onSearch={() => setSearch(true)} />
-      <aside className="docs-side" id="docs-side">
+      <aside className="docs-side" id="docs-side" aria-label="Documentation sidebar">
         <button type="button" className="side-search" aria-haspopup="dialog" onClick={() => setSearch(true)}>
           <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3.5 3.5" /></svg>
           <span>Search</span><kbd className="kbd" aria-hidden="true">/</kbd>
@@ -174,7 +174,7 @@ export function App() {
       </main>
       {headings.length > 1 && route.kind !== 'home' && (
         <Toc headings={headings} extra={route.kind === 'page' && (route.entry.kind === 'component' || route.entry.kind === 'hook') ? (
-          <dl className="docs-facts" aria-label="Package facts">
+          <aside className="docs-facts-box" aria-label="Package facts"><dl className="docs-facts">
             <dt>Version</dt><dd>{VERSION}</dd>
             <dt>Links</dt>
             <dd>
@@ -182,7 +182,7 @@ export function App() {
               <a href={`${GITHUB}/issues/new`}>Report an issue</a>
               <a href={`${import.meta.env.BASE_URL}docs/${route.entry.name}.md`}>View as Markdown</a>
             </dd>
-          </dl>
+          </dl></aside>
         ) : undefined} />
       )}
       <Search open={search} onOpenChange={setSearch} />

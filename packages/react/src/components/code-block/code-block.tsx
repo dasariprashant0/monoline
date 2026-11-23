@@ -41,6 +41,19 @@ export const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(function Cod
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
+  // Only a listing that actually scrolls is a tab stop (so keyboard users can scroll it); a short one would be a stop that does nothing.
+  const pre = useRef<HTMLPreElement>(null);
+  const [scrolls, setScrolls] = useState(false);
+  useEffect(() => {
+    const el = pre.current;
+    if (!el) return;
+    const check = () => setScrolls(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    check();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [code, lineNumbers]);
   const lang = language ?? languageFromName(title);
   const lines = useMemo(() => toLines(highlight(code.replace(/\n$/, ''), lang)), [code, lang]);
   const copy = async () => {
@@ -60,7 +73,7 @@ export const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(function Cod
         </div>
       )}
       {!title && button}
-      <pre tabIndex={0} data-lines={lineNumbers || undefined}>
+      <pre ref={pre} tabIndex={scrolls ? 0 : undefined} role={scrolls ? 'group' : undefined} aria-label={scrolls ? `${title ?? 'Code'}, scrollable` : undefined} data-lines={lineNumbers || undefined}>
         <code>
           {lines.map((line, i) => (
             <span key={i} className="code-line">

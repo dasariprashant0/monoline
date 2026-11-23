@@ -167,7 +167,7 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .pager-title { display: flex; align-items: center; gap: var(--s2); min-width: 0; font-size: var(--text-sm); font-weight: 500; }
 .pager-next { grid-column: 2; }
 .pager-next .pager-title { justify-content: flex-end; }
-.pager-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; min-width: 0; color: var(--muted); font-size: var(--text-xs); overflow: hidden; overflow-wrap: anywhere; }
+.pager-desc { min-width: 0; color: var(--muted); font-size: var(--text-xs); overflow-wrap: anywhere; } /* no line clamp: under WCAG text-spacing overrides a fixed box cut the text off (1.4.12) */
 .pager-next .pager-desc { text-align: end; }
 @media (max-width: 600px) { .pager { grid-template-columns: minmax(0, 1fr); } .pager-next { grid-column: auto; } }
 @media (max-width: 880px) { .kv { grid-template-columns: minmax(0, 1fr); gap: var(--s1); } .kv dd { margin-bottom: var(--s3); } }
@@ -240,7 +240,7 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 
 /* Ideas taken from the other docs sites: version badge (Mantine, HeroUI), theme toggle (shadcn, Mantine, HeroUI), search in the sidebar (Radix),
    link chips (HeroUI), previous/next arrows beside the page actions (shadcn) */
-.docs-version { padding: 2px var(--s2); border: 1px solid var(--rule); border-radius: var(--round); font-size: var(--text-xs); color: var(--muted); text-decoration: none; }
+.docs-version { display: inline-flex; align-items: center; min-height: 24px; box-sizing: border-box; padding: 2px var(--s2); border: 1px solid var(--rule); border-radius: var(--round); font-size: var(--text-xs); color: var(--muted); text-decoration: none; }
 .docs-version:hover { color: var(--foreground); border-color: var(--foreground); }
 .docs-theme { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; color: var(--muted); cursor: pointer; }
 .docs-theme:hover { background: var(--wash-2); color: var(--foreground); }
@@ -281,3 +281,18 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .doc-chip { direction: ltr; }
 .cdoc-props td:nth-child(2) { min-width: 9rem; }
 .cdoc-section .table td:first-child code { white-space: nowrap; }
+
+/* Below 440px the wordmark and the search button overlapped (1.4.10). The logo mark stays, the word is kept for screen readers. */
+@media (max-width: 440px) {
+  .docs-bar .logo-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+/* Reflow (1.4.10): a long code line gave grid items their min-content width, so whole pages scrolled sideways at 320px. */
+.docs-main, .docs-main .cdoc-tabs, .docs-main .tabs-content, .docs-main .code-block { min-width: 0; max-width: 100%; }
+.docs-main :not(pre) > code { overflow-wrap: anywhere; }
+.docs-main .doc-title, .docs-main .doc-lede { overflow-wrap: anywhere; }
+.docs-main pre { max-width: 100%; overflow-x: auto; }
+@media (max-width: 640px) { .theme-card { grid-template-columns: minmax(0, 1fr); } }
+.builder-controls, .custom-row { grid-template-columns: minmax(0, 1fr); }
+.custom-row .segmented { flex-wrap: wrap; }
+.tp { overflow: hidden; }
+.tp-bar { flex-wrap: wrap; }
