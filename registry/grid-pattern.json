@@ -79,5 +79,6 @@
       "path": "packages/react/src/components/grid-pattern/meta.json",
       "content": "{\"name\":\"grid-pattern\",\"title\":\"Grid pattern\",\"category\":\"effects\",\"description\":\"A decorative line grid background drawn in SVG with currentColor.\",\"status\":\"stable\",\"css\":[\"grid-pattern.css\"],\"a11y\":[\"Decorative: aria-hidden and not focusable, so it adds nothing to the reading order.\",\"Static; no motion.\"],\"keywords\":[\"background\",\"grid\",\"lines\",\"graph paper\",\"decoration\"]}\n"
     }
-  ]
+  ],
+  "utils": []
 }

@@ -48,5 +48,6 @@
       "path": "packages/react/src/hooks/use-hover/use-hover.ts",
       "content": "'use client';\nimport {useCallback, useEffect, useRef, useState, type RefCallback} from 'react';\n\n/** Returns `[ref, hovered]`. Attach `ref` to the element. Pointer only, so keep it for decoration. */\nexport function useHover<T extends HTMLElement = HTMLElement>(): [RefCallback<T>, boolean] {\n  const [hovered, setHovered] = useState(false);\n  const node = useRef<T | null>(null);\n  const on = useCallback(() => setHovered(true), []);\n  const off = useCallback(() => setHovered(false), []);\n  const ref = useCallback<RefCallback<T>>((el) => {\n    if (node.current) { node.current.removeEventListener('mouseenter', on); node.current.removeEventListener('mouseleave', off); }\n    node.current = el;\n    if (el) { el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off); }\n  }, [on, off]);\n  useEffect(() => () => { node.current?.removeEventListener('mouseenter', on); node.current?.removeEventListener('mouseleave', off); }, [on, off]);\n  return [ref, hovered];\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

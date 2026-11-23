@@ -65,5 +65,6 @@
       "path": "packages/react/src/components/separator/separator.tsx",
       "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Separator as RadixSeparator} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** A thin rule. Decorative by default (hidden from assistive tech); pass `decorative={false}` when it really divides content. */\nexport const Separator = forwardRef<ElementRef<typeof RadixSeparator.Root>, ComponentPropsWithoutRef<typeof RadixSeparator.Root>>(function Separator({className, orientation = 'horizontal', decorative = true, ...rest}, ref) {\n  return <RadixSeparator.Root ref={ref} orientation={orientation} decorative={decorative} className={cx('separator', className)} {...rest} />;\n});\n"
     }
-  ]
+  ],
+  "utils": []
 }

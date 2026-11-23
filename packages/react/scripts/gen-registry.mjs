@@ -26,6 +26,26 @@ const all = units();
 const known = new Set(all.map((u) => u.name));
 const program = createProgram(all.map((u) => mainSourceFile(u.dir, u.name)).filter(Boolean));
 
+// Shared helpers a component imports from src/utils (slot, overlay, chart...), with the ones those import in turn.
+// cx is left out: the CLI writes it itself. The CLI copies these next to the component so the import resolves.
+const utilsDir = join(pkgRoot, 'src', 'utils');
+function sharedUtils(source) {
+  const found = new Map();
+  const visit = (code, re) => {
+    for (const m of code.matchAll(re)) {
+      const name = m[1];
+      if (name === 'cx' || found.has(name)) continue;
+      const file = ['.ts', '.tsx'].map((e) => name + e).find((f) => existsSync(join(utilsDir, f)));
+      if (!file) throw new Error(`utils/${name} is imported but not found in src/utils`);
+      const content = readFileSync(join(utilsDir, file), 'utf8');
+      found.set(name, {path: `packages/react/src/utils/${file}`, content});
+      visit(content, /from '\.\/([a-z0-9-]+)'/g);
+    }
+  };
+  for (const s of source) if (/\.tsx?$/.test(s.path)) visit(s.content, /from '\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g);
+  return [...found.values()].sort((a, b) => a.path.localeCompare(b.path));
+}
+
 // Pass 1: the export each unit's index.ts gives (the name people import), so hooks get `useX`, not `UseX`.
 const exportOf = new Map(all.map((u) => {
   const want = u.kind === 'hooks' ? camel(u.name) : pascal(u.name);
@@ -80,7 +100,7 @@ for (const u of all) {
   const source = readdirSync(u.dir).filter((f) => /\.(tsx?|json)$/.test(f) && !/\.(test|demo)\./.test(f)).sort()
     .map((f) => ({path: `${path}/${f}`, content: readFileSync(join(u.dir, f), 'utf8')}));
   const css = meta.css.map((f, i) => ({path: `packages/css/src/components/${f}`, content: cssTexts[i]}));
-  perComponent.set(u.name, JSON.stringify({...entry, dependencies: {'radix-ui': '^1.4.2'}, source, css}, null, 2) + '\n');
+  perComponent.set(u.name, JSON.stringify({...entry, dependencies: {'radix-ui': '^1.4.2'}, source, utils: sharedUtils(source), css}, null, 2) + '\n');
 }
 
 // index.json: the light list (no props, usage or classes; the per-component file has those). Prop names are here so search can match them.

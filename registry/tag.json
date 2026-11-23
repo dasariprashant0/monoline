@@ -84,5 +84,6 @@
       "path": "packages/react/src/components/tag/tag.tsx",
       "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface TagProps extends HTMLAttributes<HTMLSpanElement> {\n  /** Shows a remove button and calls this when it is pressed. */\n  onRemove?: () => void;\n  /** Text used in the remove button's name: \"Remove <label>\". Defaults to the child text. */\n  label?: string;\n}\n\n/** A label for a category, filter or value. */\nexport const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag({onRemove, label, className, children, ...rest}, ref) {\n  const text = label ?? (typeof children === 'string' ? children : '');\n  return (\n    <span ref={ref} className={cx('tag', className)} {...rest}>\n      {children}\n      {onRemove && (\n        <button type=\"button\" onClick={onRemove} aria-label={`Remove ${text}`.trim()}>\n          <svg aria-hidden=\"true\" viewBox=\"0 0 10 10\" width=\"10\" height=\"10\"><path d=\"M1 1l8 8M9 1l-8 8\" stroke=\"currentColor\" fill=\"none\" /></svg>\n        </button>\n      )}\n    </span>\n  );\n});\n"
     }
-  ]
+  ],
+  "utils": []
 }

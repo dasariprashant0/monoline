@@ -48,15 +48,17 @@ async function load(base, name) {
 }
 
 // '../../utils/cx' and '../../hooks/x' live elsewhere in the repo; here everything is a sibling folder.
-const fixImports = (src) => src.replace(/'\.\.\/\.\.\/utils\/cx'/g, `'../utils/cx'`).replace(/'\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g, `'../$1'`);
+const fixImports = (src) => src.replace(/'\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g, `'../utils/$1'`).replace(/'\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g, `'../$1'`);
 const siblingNames = (src) => [...src.matchAll(/from '\.\.\/([a-z0-9-]+)'/g)].map((m) => m[1]).concat([...src.matchAll(/from '\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g)].map((m) => m[1]));
 const styleBundle = (c) => `@layer monoline.components {\n${c.css.map((s) => s.content.trim()).join('\n\n')}\n}\n`;
-const usesCx = (c) => c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx'));
+const usesCx = (c) => c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx')) || (c.utils ?? []).some((u) => u.content.includes("'./cx'"));
 
 // Files one component writes, paths relative to the project root. The shared utils/cx.ts is added by the caller.
 function componentFiles(c, compDir, styleDir) {
   const files = c.source.filter((s) => basename(s.path) !== 'meta.json')
     .map((s) => ({path: join(compDir, c.name, basename(s.path)), content: fixImports(s.content)}));
+  // Shared helpers (slot, overlay, chart...) the registry lists for this component; they sit in utils/ next to cx.ts.
+  for (const u of c.utils ?? []) files.push({path: join(compDir, 'utils', basename(u.path)), content: u.content});
   // One file per component: the CSS it lists, in the components layer (core.css declares the layer order).
   if (c.css.length) files.push({path: join(styleDir, `${c.name}.css`), content: styleBundle(c)});
   return files;

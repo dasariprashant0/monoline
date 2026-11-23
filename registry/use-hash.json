@@ -49,5 +49,6 @@
       "path": "packages/react/src/hooks/use-hash/use-hash.ts",
       "content": "'use client';\nimport {useCallback, useSyncExternalStore} from 'react';\n\nconst subscribe = (cb: () => void) => { window.addEventListener('hashchange', cb); return () => window.removeEventListener('hashchange', cb); };\n\n/** `const [hash, setHash] = useHash()`. The value has no leading \"#\". Empty string on the server. */\nexport function useHash(): [string, (hash: string) => void] {\n  const hash = useSyncExternalStore(subscribe, () => window.location.hash.slice(1), () => '');\n  const set = useCallback((next: string) => { window.location.hash = next; }, []);\n  return [hash, set];\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }
