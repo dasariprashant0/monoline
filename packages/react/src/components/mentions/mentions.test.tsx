@@ -128,7 +128,7 @@ describe('Mentions', () => {
   });
   it('does not search again when the parent re-renders with a new inline onSearch', async () => {
     const user = userEvent.setup();
-    const calls = vi.fn(() => [{value: 'ada', label: 'Ada'}]);
+    const calls = vi.fn((_q: string, _t: string) => [{value: 'ada', label: 'Ada'}]);
     const {rerender} = render(<Mentions aria-label="Comment" onSearch={(q, t) => calls(q, t)} />);
     await user.type(screen.getByRole('textbox'), '@a');
     await screen.findByRole('option', {name: 'Ada'});
