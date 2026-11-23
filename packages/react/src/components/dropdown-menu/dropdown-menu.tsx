@@ -5,6 +5,15 @@ import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
 import {MenuCheckboxItem, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuRoot, MenuSeparator, openWith, useMenuCtx, type MenuCheckboxItemProps, type MenuContentProps, type MenuItemProps, type MenuProps, type MenuRadioGroupProps} from './menu';
 
+/** Props of `DropdownMenu`: `open`, `defaultOpen`, `onOpenChange` and its parts as children. */
+export type DropdownMenuProps = MenuProps;
+/** Props of `DropdownMenuContent`. */
+export type DropdownMenuContentProps = MenuContentProps;
+/** Props of `DropdownMenuCheckboxItem`. */
+export type DropdownMenuCheckboxItemProps = MenuCheckboxItemProps;
+/** Props of `DropdownMenuRadioGroup`. */
+export type DropdownMenuRadioGroupProps = MenuRadioGroupProps;
+
 /** The root of a menu opened by a button. Put a `DropdownMenuTrigger` and `DropdownMenuContent` inside. */
 export function DropdownMenu(props: MenuProps) { return <MenuRoot {...props} />; }
 
