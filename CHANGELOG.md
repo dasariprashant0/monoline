@@ -15,7 +15,7 @@ Versions follow [semver](https://semver.org). Before 1.0, a minor version may ch
 ### Changed
 
 - Built CSS has a new layer, `monoline.options`, between components and utilities. `data-radius`, `data-font` and `data-density` rules moved out of `monoline.tokens` into it, so options restyle components in every bundle. The layer order is `base, tokens, components, options, utilities`.
-- The all-CSS size budget is 21 KB (was 20); the anchor-positioning path raised the budgets in `scripts/size.mjs`: Tooltip 2.5 to 2.8 KB, Popover 2.6 to 2.9 KB, DropdownMenu 3.7 to 3.9 KB, Select 5.4 to 5.5 KB.
+- The all-CSS size budget is 21 KB (was 20); the anchor-positioning path raised the budgets in `scripts/size.mjs`: Tooltip 2.5 to 2.9 KB, Popover 2.6 to 3.0 KB, DropdownMenu 3.7 to 4.0 KB, Select 5.4 to 5.6 KB.
 
 ### Fixed
 
