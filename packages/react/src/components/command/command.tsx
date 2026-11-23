@@ -60,7 +60,9 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const listId = useId();
-  const setOpen = (next: boolean) => { if (open === undefined) setInner(next); onOpenChange?.(next); if (!next) { setQuery(''); setActive(0); } };
+  const setOpen = (next: boolean) => { if (open === undefined) setInner(next); onOpenChange?.(next); };
+  // However it closes (Escape, a pick, or the parent setting `open` to false), the next opening starts empty.
+  useEffect(() => { if (!isOpen) { setQuery(''); setActive(0); } }, [isOpen]);
 
   useEffect(() => {
     if (!shortcut) return;
@@ -141,7 +143,7 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
                   <div id={`${listId}-g${gi}`} className="command-heading" role="presentation">{g.name}</div>
                   {opts}
                 </div>
-              ) : <div key={`g${gi}`} role="group" aria-label="Other" className="command-group">{opts}</div>;
+              ) : <div key={`g${gi}`} role="presentation" className="command-group">{opts}</div>;
             })}
           </div>
           <p className="sr-only" role="status">{flat.length === 0 ? emptyText : `${flat.length} results`}</p>
