@@ -73,10 +73,10 @@ export function stack(values: number[][]): {lo: number; hi: number}[][] {
 export function extent(values: number[][], stacked: boolean): {min: number; max: number} {
   if (stacked) {
     const s = stack(values).flat();
-    return {min: Math.min(0, ...s.map((x) => x.lo)), max: Math.max(0, ...s.map((x) => x.hi))};
+    return {min: minOf(s.map((x) => x.lo), 0), max: maxOf(s.map((x) => x.hi), 0)};
   }
   const all = values.flat();
-  return {min: Math.min(0, ...all), max: Math.max(0, ...all)};
+  return {min: minOf(all, 0), max: maxOf(all, 0)};
 }
 
 export interface PieArc { value: number; fraction: number; start: number; end: number }
@@ -168,4 +168,8 @@ export const textWidth = (s: string, size = 7): number => s.length * size;
 export const truncate = (s: string, max: number): string => (s.length > max ? `${s.slice(0, Math.max(1, max - 1))}…` : s);
 
 /** Left margin that fits the widest y tick label. */
-export const axisLeft = (ticks: number[], fmt: (n: number) => string): number => Math.max(...ticks.map((t) => textWidth(fmt(t)))) + 14;
+/** Smallest and largest of a list, with a start value. Unlike `Math.min(...list)` this does not overflow the call stack on a very long list. */
+export const minOf = (list: readonly number[], start = Infinity): number => list.reduce((m, v) => (v < m ? v : m), start);
+export const maxOf = (list: readonly number[], start = -Infinity): number => list.reduce((m, v) => (v > m ? v : m), start);
+
+export const axisLeft = (ticks: number[], fmt: (n: number) => string): number => maxOf(ticks.map((t) => textWidth(fmt(t))), 0) + 14;
