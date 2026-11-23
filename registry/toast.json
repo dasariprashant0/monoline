@@ -62,7 +62,7 @@
   "source": [
     {
       "path": "packages/react/src/components/toast/index.ts",
-      "content": "export {ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastAction, ToastClose} from './toast';\n"
+      "content": "export {ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastAction, ToastClose} from './toast';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastAction, ToastClose} from './toast';\n/** Props of `ToastProvider`. */\nexport type ToastProviderProps = ComponentPropsWithoutRef<typeof ToastProvider>;\n/** Props of `ToastViewport`. */\nexport type ToastViewportProps = ComponentPropsWithoutRef<typeof ToastViewport>;\n/** Props of `Toast`. */\nexport type ToastProps = ComponentPropsWithoutRef<typeof Toast>;\n/** Props of `ToastTitle`. */\nexport type ToastTitleProps = ComponentPropsWithoutRef<typeof ToastTitle>;\n/** Props of `ToastDescription`. */\nexport type ToastDescriptionProps = ComponentPropsWithoutRef<typeof ToastDescription>;\n/** Props of `ToastAction`. */\nexport type ToastActionProps = ComponentPropsWithoutRef<typeof ToastAction>;\n/** Props of `ToastClose`. */\nexport type ToastCloseProps = ComponentPropsWithoutRef<typeof ToastClose>;\n"
     },
     {
       "path": "packages/react/src/components/toast/meta.json",

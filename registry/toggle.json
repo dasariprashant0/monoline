@@ -63,7 +63,7 @@
   "source": [
     {
       "path": "packages/react/src/components/toggle/index.ts",
-      "content": "export {Toggle} from './toggle';\n"
+      "content": "export {Toggle} from './toggle';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {Toggle} from './toggle';\n/** Props of `Toggle`. */\nexport type ToggleProps = ComponentPropsWithoutRef<typeof Toggle>;\n"
     },
     {
       "path": "packages/react/src/components/toggle/meta.json",

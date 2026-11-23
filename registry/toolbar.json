@@ -56,7 +56,7 @@
   "source": [
     {
       "path": "packages/react/src/components/toolbar/index.ts",
-      "content": "export {Toolbar, ToolbarButton, ToolbarSeparator, ToolbarLink} from './toolbar';\n"
+      "content": "export {Toolbar, ToolbarButton, ToolbarSeparator, ToolbarLink} from './toolbar';\nimport type {ComponentPropsWithoutRef} from 'react';\nimport type {Toolbar, ToolbarButton, ToolbarSeparator, ToolbarLink} from './toolbar';\n/** Props of `Toolbar`. */\nexport type ToolbarProps = ComponentPropsWithoutRef<typeof Toolbar>;\n/** Props of `ToolbarButton`. */\nexport type ToolbarButtonProps = ComponentPropsWithoutRef<typeof ToolbarButton>;\n/** Props of `ToolbarSeparator`. */\nexport type ToolbarSeparatorProps = ComponentPropsWithoutRef<typeof ToolbarSeparator>;\n/** Props of `ToolbarLink`. */\nexport type ToolbarLinkProps = ComponentPropsWithoutRef<typeof ToolbarLink>;\n"
     },
     {
       "path": "packages/react/src/components/toolbar/meta.json",

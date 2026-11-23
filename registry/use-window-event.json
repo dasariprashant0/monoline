@@ -47,7 +47,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-window-event/use-window-event.ts",
-      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/** `useWindowEvent('resize', () => ...)`. The latest handler is used without re-subscribing. */\nexport function useWindowEvent<K extends keyof WindowEventMap>(type: K, listener: (event: WindowEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void {\n  const fn = useRef(listener);\n  useEffect(() => { fn.current = listener; });\n  useEffect(() => {\n    const on = (e: WindowEventMap[K]) => fn.current(e);\n    window.addEventListener(type, on, options);\n    return () => window.removeEventListener(type, on, options);\n  }, [type, options]);\n}\n"
+      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/** `useWindowEvent('resize', () => ...)`. The latest handler is used without re-subscribing. */\nexport function useWindowEvent<K extends keyof WindowEventMap>(type: K, listener: (event: WindowEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void {\n  const fn = useRef(listener);\n  useEffect(() => { fn.current = listener; });\n  // An inline `{passive: true}` is a new object every render: re-subscribe only when its flags change.\n  const opts = useRef(options);\n  opts.current = options;\n  const flags = typeof options === 'object' ? `${options.capture}|${options.passive}|${options.once}` : String(options);\n  useEffect(() => {\n    const on = (e: WindowEventMap[K]) => fn.current(e);\n    window.addEventListener(type, on, opts.current);\n    return () => window.removeEventListener(type, on, opts.current);\n  }, [type, flags]);\n}\n"
     }
   ],
   "utils": []
