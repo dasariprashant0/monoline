@@ -13,17 +13,17 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+/** Open traps, oldest first: only the newest reacts, so two traps never pull focus back and forth. */
+const traps: object[] = [];
+/** Floating layers (select lists, menus, popovers) are rendered outside the trapped element but belong to it. */
+const FLOATING = '[role="listbox"],[role="menu"],[role="tree"],[role="dialog"],[role="tooltip"]';
+
 /**
  * Keeps Tab and Shift+Tab inside the element this ref is attached to while `active` is true.
  * Focus moves to the first focusable element on activation, and goes back to the element that
  * had focus before when the trap deactivates or unmounts.
  * Visibility is not checked (jsdom has no layout); hidden elements with `tabindex` are still reached.
  */
-/** Open traps, oldest first: only the newest reacts, so two traps never pull focus back and forth. */
-const traps: object[] = [];
-/** Floating layers (select lists, menus, popovers) are rendered outside the trapped element but belong to it. */
-const FLOATING = '[role="listbox"],[role="menu"],[role="tree"],[role="dialog"],[role="tooltip"]';
-
 export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolean) {
   const ref = useRef<T | null>(null);
 
