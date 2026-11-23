@@ -37,7 +37,76 @@
     "breadcrumbs-auto",
     "menubar"
   ],
-  "props": [],
+  "props": [
+    {
+      "name": "NavigationMenuProps",
+      "props": [
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "dir",
+          "type": "Direction",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "onValueChange",
+          "type": "((value: string) => void)",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "orientation",
+          "type": "Orientation",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "activationMode",
+          "type": "ActivationMode",
+          "optional": true,
+          "default": null,
+          "description": "Whether an item is activated automatically or manually.\n- `\"automatic\"`: hovering or focusing a trigger opens its item, and moving\n  away closes it after a short delay.\n- `\"manual\"`: clicking a trigger toggles the item; hover and focus are ignored"
+        },
+        {
+          "name": "delayDuration",
+          "type": "number",
+          "optional": true,
+          "default": null,
+          "description": "The duration from when the pointer enters the trigger until the tooltip\ngets opened. When `activationMode` is `manual`, this prop is ignored."
+        },
+        {
+          "name": "skipDelayDuration",
+          "type": "number",
+          "optional": true,
+          "default": null,
+          "description": "How much time a user has to enter another trigger without incurring a delay\nagain. When `activationMode` is `manual`, this prop is ignored."
+        }
+      ]
+    }
+  ],
   "usage": "import {NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger} from '@monoline/react';\n\n<div style={{minHeight: '200px'}}>\n  <NavigationMenu aria-label=\"Site\">\n    <NavigationMenuList>\n      <NavigationMenuItem><NavigationMenuLink href=\"#\" active>Home</NavigationMenuLink></NavigationMenuItem>\n      <NavigationMenuItem>\n        <NavigationMenuTrigger>Products</NavigationMenuTrigger>\n        <NavigationMenuContent><div className=\"navmenu-panel\"><NavigationMenuLink href=\"#\">UI kit</NavigationMenuLink><NavigationMenuLink href=\"#\">Icons</NavigationMenuLink><NavigationMenuLink href=\"#\">Templates</NavigationMenuLink></div></NavigationMenuContent>\n      </NavigationMenuItem>\n      <NavigationMenuItem><NavigationMenuLink href=\"#\">Docs</NavigationMenuLink></NavigationMenuItem>\n    </NavigationMenuList>\n  </NavigationMenu>\n</div>",
   "dataAttributes": [
     {
@@ -75,7 +144,7 @@
     },
     {
       "path": "packages/react/src/components/navigation-menu/navigation-menu.tsx",
-      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {NavigationMenu as Radix} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** A site navigation bar whose items can open rich panels of links. Put a `NavigationMenuList` inside; the panels share one viewport. */\nexport const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function NavigationMenu({className, children, ...rest}, ref) {\n  return (\n    <Radix.Root ref={ref} className={cx('navmenu', className)} {...rest}>\n      {children}\n      <div className=\"navmenu-viewport-wrap\"><Radix.Viewport className=\"navmenu-viewport\" /></div>\n    </Radix.Root>\n  );\n});\n/** The row that holds the `NavigationMenuItem`s. */\nexport const NavigationMenuList = forwardRef<ElementRef<typeof Radix.List>, ComponentPropsWithoutRef<typeof Radix.List>>(function NavigationMenuList({className, ...rest}, ref) {\n  return <Radix.List ref={ref} className={cx('navmenu-list', className)} {...rest} />;\n});\n/** One entry in the list: either a `NavigationMenuLink`, or a `NavigationMenuTrigger` with its `NavigationMenuContent`. */\nexport const NavigationMenuItem = Radix.Item;\n/** The button that opens its item's panel; shows a small arrow. */\nexport const NavigationMenuTrigger = forwardRef<ElementRef<typeof Radix.Trigger>, ComponentPropsWithoutRef<typeof Radix.Trigger>>(function NavigationMenuTrigger({className, children, ...rest}, ref) {\n  return <Radix.Trigger ref={ref} className={cx('navmenu-link navmenu-trigger', className)} {...rest}>{children}<span aria-hidden=\"true\"> ▾</span></Radix.Trigger>;\n});\n/** The panel of links shown under the trigger when it is open. */\nexport const NavigationMenuContent = forwardRef<ElementRef<typeof Radix.Content>, ComponentPropsWithoutRef<typeof Radix.Content>>(function NavigationMenuContent({className, ...rest}, ref) {\n  return <Radix.Content ref={ref} className={cx('navmenu-content', className)} {...rest} />;\n});\n/** A link in the bar or inside a panel; use `asChild` for a router link and `active` to mark the current page. */\nexport const NavigationMenuLink = forwardRef<ElementRef<typeof Radix.Link>, ComponentPropsWithoutRef<typeof Radix.Link>>(function NavigationMenuLink({className, ...rest}, ref) {\n  return <Radix.Link ref={ref} className={cx('navmenu-link', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {NavigationMenu as Radix} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** Props of NavigationMenu: `value`, `defaultValue`, `onValueChange`, `orientation`, delays. */\nexport type NavigationMenuProps = ComponentPropsWithoutRef<typeof Radix.Root>;\n\n/** A site navigation bar whose items can open rich panels of links. Put a `NavigationMenuList` inside; the panels share one viewport. */\nexport const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function NavigationMenu({className, children, ...rest}, ref) {\n  return (\n    <Radix.Root ref={ref} className={cx('navmenu', className)} {...rest}>\n      {children}\n      <div className=\"navmenu-viewport-wrap\"><Radix.Viewport className=\"navmenu-viewport\" /></div>\n    </Radix.Root>\n  );\n});\n/** The row that holds the `NavigationMenuItem`s. */\nexport const NavigationMenuList = forwardRef<ElementRef<typeof Radix.List>, ComponentPropsWithoutRef<typeof Radix.List>>(function NavigationMenuList({className, ...rest}, ref) {\n  return <Radix.List ref={ref} className={cx('navmenu-list', className)} {...rest} />;\n});\n/** One entry in the list: either a `NavigationMenuLink`, or a `NavigationMenuTrigger` with its `NavigationMenuContent`. */\nexport const NavigationMenuItem = Radix.Item;\n/** The button that opens its item's panel; shows a small arrow. */\nexport const NavigationMenuTrigger = forwardRef<ElementRef<typeof Radix.Trigger>, ComponentPropsWithoutRef<typeof Radix.Trigger>>(function NavigationMenuTrigger({className, children, ...rest}, ref) {\n  return <Radix.Trigger ref={ref} className={cx('navmenu-link navmenu-trigger', className)} {...rest}>{children}<span aria-hidden=\"true\"> ▾</span></Radix.Trigger>;\n});\n/** The panel of links shown under the trigger when it is open. */\nexport const NavigationMenuContent = forwardRef<ElementRef<typeof Radix.Content>, ComponentPropsWithoutRef<typeof Radix.Content>>(function NavigationMenuContent({className, ...rest}, ref) {\n  return <Radix.Content ref={ref} className={cx('navmenu-content', className)} {...rest} />;\n});\n/** A link in the bar or inside a panel; use `asChild` for a router link and `active` to mark the current page. */\nexport const NavigationMenuLink = forwardRef<ElementRef<typeof Radix.Link>, ComponentPropsWithoutRef<typeof Radix.Link>>(function NavigationMenuLink({className, ...rest}, ref) {\n  return <Radix.Link ref={ref} className={cx('navmenu-link', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []

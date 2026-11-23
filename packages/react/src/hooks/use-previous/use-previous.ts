@@ -1,7 +1,12 @@
 'use client';
 import {useEffect, useRef} from 'react';
 
-/** The value from the previous render (`undefined` on the first). */
+/**
+ * The value from the previous render (`undefined` on the first).
+ *
+ * @param value The current value.
+ * @returns The value from the previous render, or `undefined` on the first.
+ */
 export function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
 

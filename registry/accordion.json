@@ -25,6 +25,10 @@
     "collapse",
     "expand"
   ],
+  "related": [
+    "collapsible",
+    "tabs"
+  ],
   "kind": "components",
   "import": "import {Accordion} from '@monoline/react'",
   "path": "packages/react/src/components/accordion",
@@ -35,12 +39,69 @@
     "packages/react/src/components/accordion/index.ts",
     "packages/react/src/components/accordion/meta.json"
   ],
-  "related": [
-    "area-chart",
-    "avatar",
-    "avatar-group"
+  "props": [
+    {
+      "name": "AccordionProps",
+      "props": [
+        {
+          "name": "defaultValue",
+          "type": "string | string[]",
+          "optional": true,
+          "default": null,
+          "description": "The value of the item whose content is expanded when the accordion is initially rendered. Use\n`defaultValue` if you do not need to control the state of an accordion.\nThe value of the items whose contents are expanded when the accordion is initially rendered. Use\n`defaultValue` if you do not need to control the state of an accordion."
+        },
+        {
+          "name": "dir",
+          "type": "Direction",
+          "optional": true,
+          "default": null,
+          "description": "The language read direction."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "\"single\" | \"multiple\"",
+          "optional": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string | string[]",
+          "optional": true,
+          "default": null,
+          "description": "The controlled stateful value of the accordion item whose content is expanded.\nThe controlled stateful value of the accordion items whose contents are expanded."
+        },
+        {
+          "name": "onValueChange",
+          "type": "((value: string) => void) | ((value: string[]) => void)",
+          "optional": true,
+          "default": null,
+          "description": "The callback that fires when the state of the accordion changes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "Whether or not an accordion is disabled from user interaction."
+        },
+        {
+          "name": "orientation",
+          "type": "Orientation",
+          "optional": true,
+          "default": null,
+          "description": "The layout in which the Accordion operates."
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@monoline/react';\n\n<Accordion type=\"single\" collapsible defaultValue=\"a\">\n  <AccordionItem value=\"a\"><AccordionTrigger>What is Monoline?</AccordionTrigger><AccordionContent>A small UI kit: plain CSS plus accessible React components.</AccordionContent></AccordionItem>\n  <AccordionItem value=\"b\"><AccordionTrigger>Do I need React?</AccordionTrigger><AccordionContent>No. The CSS works on its own.</AccordionContent></AccordionItem>\n</Accordion>",
   "dataAttributes": [
     {
@@ -65,7 +126,7 @@
   "source": [
     {
       "path": "packages/react/src/components/accordion/accordion.tsx",
-      "content": "'use client';\nimport {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Accordion as RadixAccordion} from 'radix-ui';\nimport {cx} from '../../utils/cx';\nimport {setRefs} from '../../utils/overlay';\nimport {useUntilFound} from '../../utils/until-found';\n\n/** `type=\"single\"` (optionally `collapsible`) or `type=\"multiple\"`. */\nexport const Accordion = RadixAccordion.Root;\n\n/** One collapsible section. Give it a unique `value` and put an `AccordionTrigger` and an `AccordionContent` inside. */\nexport const AccordionItem = forwardRef<ElementRef<typeof RadixAccordion.Item>, ComponentPropsWithoutRef<typeof RadixAccordion.Item>>(function AccordionItem({className, ...rest}, ref) {\n  return <RadixAccordion.Item ref={ref} className={cx('acc-item', className)} {...rest} />;\n});\n\n/** The heading button that opens and closes its item; wrapped in an h-level header so it appears in the page outline. */\nexport const AccordionTrigger = forwardRef<ElementRef<typeof RadixAccordion.Trigger>, ComponentPropsWithoutRef<typeof RadixAccordion.Trigger>>(function AccordionTrigger({className, children, ...rest}, ref) {\n  return (\n    <RadixAccordion.Header className=\"acc-header\">\n      <RadixAccordion.Trigger ref={ref} className={cx('acc-trigger', className)} {...rest}>{children}</RadixAccordion.Trigger>\n    </RadixAccordion.Header>\n  );\n});\n\n/** The panel revealed when the item is open; its children sit inside a padded body. Closed panels are found by the browser's Find in page where `hidden=\"until-found\"` is supported. */\nexport const AccordionContent = forwardRef<ElementRef<typeof RadixAccordion.Content>, ComponentPropsWithoutRef<typeof RadixAccordion.Content>>(function AccordionContent({className, children, ...rest}, ref) {\n  const found = useUntilFound();\n  return <RadixAccordion.Content ref={(n) => setRefs(n, found.ref, ref)} forceMount={found.forceMount} className=\"acc-content\" {...rest}><div className={cx('acc-body', className)}>{children}</div></RadixAccordion.Content>;\n});\n"
+      "content": "'use client';\nimport {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Accordion as RadixAccordion} from 'radix-ui';\nimport {cx} from '../../utils/cx';\nimport {setRefs} from '../../utils/overlay';\nimport {useUntilFound} from '../../utils/until-found';\n\n/** Props of Accordion: `type` is 'single' or 'multiple', plus the Radix accordion root props. */\nexport type AccordionProps = ComponentPropsWithoutRef<typeof RadixAccordion.Root>;\n\n/** `type=\"single\"` (optionally `collapsible`) or `type=\"multiple\"`. */\nexport const Accordion = RadixAccordion.Root;\n\n/** One collapsible section. Give it a unique `value` and put an `AccordionTrigger` and an `AccordionContent` inside. */\nexport const AccordionItem = forwardRef<ElementRef<typeof RadixAccordion.Item>, ComponentPropsWithoutRef<typeof RadixAccordion.Item>>(function AccordionItem({className, ...rest}, ref) {\n  return <RadixAccordion.Item ref={ref} className={cx('acc-item', className)} {...rest} />;\n});\n\n/** The heading button that opens and closes its item; wrapped in an h-level header so it appears in the page outline. */\nexport const AccordionTrigger = forwardRef<ElementRef<typeof RadixAccordion.Trigger>, ComponentPropsWithoutRef<typeof RadixAccordion.Trigger>>(function AccordionTrigger({className, children, ...rest}, ref) {\n  return (\n    <RadixAccordion.Header className=\"acc-header\">\n      <RadixAccordion.Trigger ref={ref} className={cx('acc-trigger', className)} {...rest}>{children}</RadixAccordion.Trigger>\n    </RadixAccordion.Header>\n  );\n});\n\n/** The panel revealed when the item is open; its children sit inside a padded body. Closed panels are found by the browser's Find in page where `hidden=\"until-found\"` is supported. */\nexport const AccordionContent = forwardRef<ElementRef<typeof RadixAccordion.Content>, ComponentPropsWithoutRef<typeof RadixAccordion.Content>>(function AccordionContent({className, children, ...rest}, ref) {\n  const found = useUntilFound();\n  return <RadixAccordion.Content ref={(n) => setRefs(n, found.ref, ref)} forceMount={found.forceMount} className=\"acc-content\" {...rest}><div className={cx('acc-body', className)}>{children}</div></RadixAccordion.Content>;\n});\n"
     },
     {
       "path": "packages/react/src/components/accordion/index.ts",
@@ -73,7 +134,7 @@
     },
     {
       "path": "packages/react/src/components/accordion/meta.json",
-      "content": "{\"name\":\"accordion\",\"title\":\"Accordion\",\"category\":\"data-display\",\"description\":\"Stacked headings that each show or hide a section.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Accordion\",\"css\":[\"accordion-item.css\",\"15-accordion.css\"],\"a11y\":[\"Each trigger is a button inside a heading with aria-expanded and aria-controls.\",\"Enter and Space toggle; Arrow keys, Home and End move between triggers.\",\"single or multiple open items; collapsible lets the last one close.\"],\"keywords\":[\"faq\",\"collapse\",\"expand\"]}\n"
+      "content": "{\"name\":\"accordion\",\"title\":\"Accordion\",\"category\":\"data-display\",\"description\":\"Stacked headings that each show or hide a section.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Accordion\",\"css\":[\"accordion-item.css\",\"15-accordion.css\"],\"a11y\":[\"Each trigger is a button inside a heading with aria-expanded and aria-controls.\",\"Enter and Space toggle; Arrow keys, Home and End move between triggers.\",\"single or multiple open items; collapsible lets the last one close.\"],\"keywords\":[\"faq\",\"collapse\",\"expand\"],\"related\":[\"collapsible\",\"tabs\"]}\n"
     }
   ],
   "utils": [

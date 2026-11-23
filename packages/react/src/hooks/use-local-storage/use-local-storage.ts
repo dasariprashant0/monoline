@@ -19,6 +19,10 @@ function parse<T>(raw: string, fallback: T): T {
  * - Changes in other tabs arrive through the `storage` event; other hooks on the same key in this tab through a window event.
  * - `set(prev => next)` reads the latest value, so two calls in one handler both apply.
  * - Storage can throw (private mode, quota, blocked): reads fall back to `initialValue`, writes still update state.
+ *
+ * @param key The `localStorage` key.
+ * @param initialValue Used on the server, on first render and when nothing is stored.
+ * @returns The value and a setter that accepts a value or an updater function.
  */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, SetLocalStorageValue<T>] {
   const initialRef = useRef(initialValue);

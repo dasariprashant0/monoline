@@ -11,7 +11,12 @@ const isEvent = (v: unknown) => typeof v === 'object' && v !== null && ('nativeE
  */
 /** What a boolean `toggle` accepts: a value, or the event when it is used as a click handler. */
 export type ToggleArg = boolean | Event | {nativeEvent: unknown};
-/** Boolean form: `useToggle(true)` starts on; `toggle()` flips; `toggle(false)` sets. Returns `[value, toggle]`. */
+/**
+ * Boolean form: `useToggle(true)` starts on; `toggle()` flips; `toggle(false)` sets. Returns `[value, toggle]`.
+ *
+ * @param initial Starting value. Default `false`.
+ * @returns The value and a function that flips it, or sets it when given a boolean.
+ */
 export function useToggle(initial?: boolean): [boolean, (value?: ToggleArg) => void];
 /** List form: cycles through `options`; `toggle(value)` jumps to one. Returns `[value, toggle]`. */
 export function useToggle<T>(options: readonly [T, ...T[]]): [T, (value?: T) => void];

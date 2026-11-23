@@ -108,7 +108,7 @@
         },
         {
           "name": "selectionMode",
-          "type": "\"none\" | \"multiple\" | \"single\"",
+          "type": "\"none\" | \"single\" | \"multiple\"",
           "optional": true,
           "default": "'none'",
           "description": "Whether rows can be selected: `none` (default), `single` or `multiple`."

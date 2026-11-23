@@ -24,6 +24,9 @@ export const ToastViewport = forwardRef<ElementRef<typeof Radix.Viewport>, Compo
   return <Radix.Viewport ref={(n) => setRefs(n, ol, ref)} className={cx('toast-viewport', className)} {...rest} />;
 });
 
+/** Props of Toast: `open`, `defaultOpen`, `onOpenChange`, `duration`, `type`. */
+export type ToastProps = ComponentPropsWithoutRef<typeof Radix.Root>;
+
 /** One message. Control it with `open` / `onOpenChange`. */
 export const Toast = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function Toast({className, ...rest}, ref) {
   return <Radix.Root ref={ref} className={cx('toast-item', className)} {...rest} />;

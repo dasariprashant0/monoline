@@ -26,6 +26,11 @@
     "textbox",
     "form"
   ],
+  "related": [
+    "textarea",
+    "password-input",
+    "field"
+  ],
   "kind": "components",
   "import": "import {Input} from '@monoline/react'",
   "path": "packages/react/src/components/input",
@@ -35,9 +40,6 @@
     "packages/react/src/components/input/input.test.tsx",
     "packages/react/src/components/input/input.tsx",
     "packages/react/src/components/input/meta.json"
-  ],
-  "related": [
-    "field"
   ],
   "props": [
     {
@@ -106,7 +108,7 @@
     },
     {
       "path": "packages/react/src/components/input/meta.json",
-      "content": "{\"name\":\"input\",\"title\":\"Input\",\"category\":\"forms\",\"description\":\"A single-line text field.\",\"status\":\"stable\",\"uses\":[\"field\"],\"css\":[\"03-form-fields.css\",\"11-field-states.css\"],\"a11y\":[\"Native <input>: all keyboard and autofill behaviour is the browser's.\",\"Inside a Field it is labelled and described automatically; invalid sets aria-invalid.\"],\"keywords\":[\"text\",\"textbox\",\"form\"]}\n"
+      "content": "{\"name\":\"input\",\"title\":\"Input\",\"category\":\"forms\",\"description\":\"A single-line text field.\",\"status\":\"stable\",\"uses\":[\"field\"],\"css\":[\"03-form-fields.css\",\"11-field-states.css\"],\"a11y\":[\"Native <input>: all keyboard and autofill behaviour is the browser's.\",\"Inside a Field it is labelled and described automatically; invalid sets aria-invalid.\"],\"keywords\":[\"text\",\"textbox\",\"form\"],\"related\":[\"textarea\",\"password-input\",\"field\"]}\n"
     }
   ],
   "utils": []

@@ -121,7 +121,7 @@ export function Themes() {
   const [, set] = usePrefsContext();
   return (
     <>
-      <p className="prose">A preset is a combination of the options the kit already has, so there is nothing new to install: set the attributes on <code>&lt;html&gt;</code> and, for High contrast, add a few token overrides. Each card checks its own colours against WCAG AA when it renders. Apply one to this site, or copy the CSS. To build your own, use the <a href={href('guides/theming')}>theming guide</a>.</p>
+      <p className="prose">A preset is a combination of the options the kit already has, so there is nothing new to install: set the attributes on <code>&lt;html&gt;</code> and, for High contrast, add a few token overrides. Each card checks its own colours against WCAG AA when it renders. Apply one to this site, or copy the CSS. To build your own, use the <a href={href('docs/theming')}>theming guide</a>.</p>
       <div className="theme-bar"><Button size="sm" variant="line" onClick={() => { set('theme', 'system'); set('accent', 'orange'); set('font', 'mono'); set('radius', 'square'); set('density', 'comfortable'); set('tokens', ''); }}>Reset to the default look</Button></div>
       <div className="theme-grid">{PRESETS.map((p) => <PresetCard key={p.id} p={p} />)}</div>
     </>

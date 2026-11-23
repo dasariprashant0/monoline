@@ -1,7 +1,11 @@
 'use client';
 import {useCallback, useEffect, useRef, useState, type RefCallback} from 'react';
 
-/** Returns `[ref, hovered]`. Attach `ref` to the element. Pointer only, so keep it for decoration. */
+/**
+ * Returns `[ref, hovered]`. Attach `ref` to the element. Pointer only, so keep it for decoration.
+ *
+ * @returns A ref callback for the element, and whether the pointer is over it.
+ */
 export function useHover<T extends HTMLElement = HTMLElement>(): [RefCallback<T>, boolean] {
   const [hovered, setHovered] = useState(false);
   const node = useRef<T | null>(null);

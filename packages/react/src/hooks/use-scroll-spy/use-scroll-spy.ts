@@ -1,7 +1,13 @@
 'use client';
 import {useEffect, useState} from 'react';
 
-/** Pass the element ids in page order. Returns the id of the last one scrolled past `offset` pixels from the top. */
+/**
+ * Pass the element ids in page order. Returns the id of the last one scrolled past `offset` pixels from the top.
+ *
+ * @param ids Element ids in page order.
+ * @param offset Pixels from the top of the viewport at which a section counts as reached. Default `80`.
+ * @returns The id of the active section, or `null` before the first.
+ */
 export function useScrollSpy(ids: readonly string[], offset = 80): string | null {
   const [active, setActive] = useState<string | null>(null);
   const key = ids.join('|');

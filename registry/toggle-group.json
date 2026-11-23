@@ -21,6 +21,10 @@
     "options",
     "button group"
   ],
+  "related": [
+    "toggle",
+    "tabs"
+  ],
   "kind": "components",
   "import": "import {ToggleGroup} from '@monoline/react'",
   "path": "packages/react/src/components/toggle-group",
@@ -31,12 +35,83 @@
     "packages/react/src/components/toggle-group/toggle-group.test.tsx",
     "packages/react/src/components/toggle-group/toggle-group.tsx"
   ],
-  "related": [
-    "button",
-    "button-group",
-    "copy-button"
+  "props": [
+    {
+      "name": "ToggleGroupProps",
+      "props": [
+        {
+          "name": "defaultValue",
+          "type": "string | string[]",
+          "optional": true,
+          "default": null,
+          "description": "The value of the item that is pressed when initially rendered. Use\n`defaultValue` if you do not need to control the state of a toggle group.\nThe value of the items that are pressed when initially rendered. Use\n`defaultValue` if you do not need to control the state of a toggle group."
+        },
+        {
+          "name": "dir",
+          "type": "Direction",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "\"single\" | \"multiple\"",
+          "optional": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "value",
+          "type": "string | string[]",
+          "optional": true,
+          "default": null,
+          "description": "The controlled stateful value of the item that is pressed.\nThe controlled stateful value of the items that are pressed."
+        },
+        {
+          "name": "onValueChange",
+          "type": "((value: string) => void) | ((value: string[]) => void)",
+          "optional": true,
+          "default": null,
+          "description": "The callback that fires when the value of the toggle group changes.\nThe callback that fires when the state of the toggle group changes."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "Whether the group is disabled from user interaction."
+        },
+        {
+          "name": "orientation",
+          "type": "Orientation",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "rovingFocus",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "Whether the group should maintain roving focus of its buttons."
+        },
+        {
+          "name": "loop",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": ""
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {ToggleGroup, ToggleGroupItem} from '@monoline/react';\n\n<ToggleGroup type=\"single\" defaultValue=\"30\" aria-label=\"Range\">\n  <ToggleGroupItem value=\"7\">7 days</ToggleGroupItem>\n  <ToggleGroupItem value=\"30\">30 days</ToggleGroupItem>\n  <ToggleGroupItem value=\"365\">Year</ToggleGroupItem>\n</ToggleGroup>",
   "dataAttributes": [
     {
@@ -68,11 +143,11 @@
     },
     {
       "path": "packages/react/src/components/toggle-group/meta.json",
-      "content": "{\"name\":\"toggle-group\",\"title\":\"Toggle group\",\"category\":\"buttons\",\"description\":\"A row of toggles where one or several can be on.\",\"status\":\"stable\",\"primitive\":\"radix-ui/ToggleGroup\",\"css\":[\"slider.css\"],\"a11y\":[\"single type is role=radiogroup with radio items; multiple type is a group of toggle buttons.\",\"Arrow keys move focus between items; Space and Enter toggle.\",\"Give the group an aria-label.\"],\"keywords\":[\"segmented\",\"options\",\"button group\"]}\n"
+      "content": "{\"name\":\"toggle-group\",\"title\":\"Toggle group\",\"category\":\"buttons\",\"description\":\"A row of toggles where one or several can be on.\",\"status\":\"stable\",\"primitive\":\"radix-ui/ToggleGroup\",\"css\":[\"slider.css\"],\"a11y\":[\"single type is role=radiogroup with radio items; multiple type is a group of toggle buttons.\",\"Arrow keys move focus between items; Space and Enter toggle.\",\"Give the group an aria-label.\"],\"keywords\":[\"segmented\",\"options\",\"button group\"],\"related\":[\"toggle\",\"tabs\"]}\n"
     },
     {
       "path": "packages/react/src/components/toggle-group/toggle-group.tsx",
-      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {ToggleGroup as RadixToggleGroup} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** `type=\"single\"` for one choice (like a segmented control) or `type=\"multiple\"`. Arrow keys move between items. */\nexport const ToggleGroup = forwardRef<ElementRef<typeof RadixToggleGroup.Root>, ComponentPropsWithoutRef<typeof RadixToggleGroup.Root>>(function ToggleGroup({className, ...rest}, ref) {\n  return <RadixToggleGroup.Root ref={ref} className={cx('toggle-group', className)} {...rest} />;\n});\n/** One toggle button in a `ToggleGroup`; give it a `value` and an accessible name. */\nexport const ToggleGroupItem = forwardRef<ElementRef<typeof RadixToggleGroup.Item>, ComponentPropsWithoutRef<typeof RadixToggleGroup.Item>>(function ToggleGroupItem({className, ...rest}, ref) {\n  return <RadixToggleGroup.Item ref={ref} className={cx('toggle', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {ToggleGroup as RadixToggleGroup} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** Props of ToggleGroup: `type`, `value`, `defaultValue`, `onValueChange`, `disabled`. */\nexport type ToggleGroupProps = ComponentPropsWithoutRef<typeof RadixToggleGroup.Root>;\n\n/** `type=\"single\"` for one choice (like a segmented control) or `type=\"multiple\"`. Arrow keys move between items. */\nexport const ToggleGroup = forwardRef<ElementRef<typeof RadixToggleGroup.Root>, ComponentPropsWithoutRef<typeof RadixToggleGroup.Root>>(function ToggleGroup({className, ...rest}, ref) {\n  return <RadixToggleGroup.Root ref={ref} className={cx('toggle-group', className)} {...rest} />;\n});\n/** One toggle button in a `ToggleGroup`; give it a `value` and an accessible name. */\nexport const ToggleGroupItem = forwardRef<ElementRef<typeof RadixToggleGroup.Item>, ComponentPropsWithoutRef<typeof RadixToggleGroup.Item>>(function ToggleGroupItem({className, ...rest}, ref) {\n  return <RadixToggleGroup.Item ref={ref} className={cx('toggle', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []

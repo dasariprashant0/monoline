@@ -25,6 +25,10 @@
     "cta",
     "submit"
   ],
+  "related": [
+    "shimmer-button",
+    "toggle"
+  ],
   "kind": "components",
   "import": "import {Button} from '@monoline/react'",
   "path": "packages/react/src/components/button",
@@ -35,18 +39,13 @@
     "packages/react/src/components/button/index.ts",
     "packages/react/src/components/button/meta.json"
   ],
-  "related": [
-    "button-group",
-    "copy-button",
-    "icon-button"
-  ],
   "props": [
     {
       "name": "ButtonProps",
       "props": [
         {
           "name": "variant",
-          "type": "\"danger\" | \"line\" | \"solid\" | \"ghost\"",
+          "type": "\"line\" | \"danger\" | \"solid\" | \"ghost\"",
           "optional": true,
           "default": "'solid'",
           "description": "Default `solid`: the one main action per view. `line` for the rest, `ghost` for inline links, `danger` for destructive."
@@ -105,7 +104,7 @@
     },
     {
       "path": "packages/react/src/components/button/meta.json",
-      "content": "{\n  \"name\": \"button\",\n  \"title\": \"Button\",\n  \"category\": \"buttons\",\n  \"description\": \"Triggers an action. Native button with solid, line, ghost and danger variants.\",\n  \"status\": \"stable\",\n  \"primitive\": \"radix-ui/Slot\",\n  \"css\": [\"02-buttons.css\", \"13-loading.css\"],\n  \"a11y\": [\n    \"Native <button>: Enter and Space activate, Tab focuses.\",\n    \"loading sets aria-busy and blocks clicks while keeping the label.\",\n    \"asChild renders a link without losing link semantics.\"\n  ],\n  \"keywords\": [\"action\", \"cta\", \"submit\"]\n}\n"
+      "content": "{\"name\":\"button\",\"title\":\"Button\",\"category\":\"buttons\",\"description\":\"Triggers an action. Native button with solid, line, ghost and danger variants.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Slot\",\"css\":[\"02-buttons.css\",\"13-loading.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses.\",\"loading sets aria-busy and blocks clicks while keeping the label.\",\"asChild renders a link without losing link semantics.\"],\"keywords\":[\"action\",\"cta\",\"submit\"],\"related\":[\"shimmer-button\",\"toggle\"]}\n"
     }
   ],
   "utils": [
