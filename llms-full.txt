@@ -1146,6 +1146,7 @@ export function Save() {
 A11y:
 - The code is a pre/code element; the region has an accessible name.
 - The copy button is announced as "Copy code" and confirms with a polite live message.
+- A listing that scrolls becomes a focusable group named "<title>, scrollable" so the keyboard can scroll it; one that fits is not a tab stop.
 
 CSS classes: code-block, code-head, code-title, code-copy, code-line, tok-keyword, tok-string, tok-number, tok-comment, tok-tag, tok-attr, tok-fn, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block
 Data attributes: data-copied; data-headless; data-lines
@@ -2329,6 +2330,7 @@ Props (name: type = default, ? means optional):
 - duration?: number = 30 — Seconds for one full loop.
 - reverse?: boolean — Scroll to the right instead of the left. Default false.
 - pauseOnHover?: boolean = true — Stop when the pointer is over it or focus is inside. Default true.
+- pausable?: boolean — Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default false.
 
 Usage:
 ```tsx
@@ -2342,8 +2344,10 @@ import {Marquee} from '@monoline/react';
 A11y:
 - The duplicate copy is aria-hidden so screen readers read the items once.
 - Pauses on hover and focus; animation is off under prefers-reduced-motion.
+- Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users.
 
-CSS classes: marquee, marquee-track, marquee-reverse, marquee-pause
+CSS classes: marquee, marquee-track, marquee-reverse, marquee-pause, marquee-controlled, marquee-toggle
+Data attributes: data-paused
 Source: registry/marquee.json
 
 ## Mentions (mentions)
