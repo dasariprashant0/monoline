@@ -95,3 +95,26 @@ describe('Button, Link, Rating, PasswordInput, NumberInput', () => {
     expect(container.querySelector('.input-wrap.w2 input.i2')).not.toBeNull();
   });
 });
+
+describe('Toaster overflow and Tour announcement', () => {
+  it('toasts pushed past the limit are dismissed and do not come back', async () => {
+    const {act} = await import('@testing-library/react');
+    const {Toaster, toast} = await import('./components/toaster');
+    vi.useFakeTimers();
+    render(<Toaster limit={2} />);
+    let ids: Array<string | number> = [];
+    act(() => { ids = [toast('one'), toast('two'), toast('three')]; });
+    act(() => { vi.advanceTimersByTime(400); });
+    expect(screen.queryByText('one')).toBeNull();
+    act(() => { toast.dismiss(ids[2]); });
+    act(() => { vi.advanceTimersByTime(400); });
+    expect(screen.queryByText('one')).toBeNull();
+    act(() => { toast.dismiss(); vi.advanceTimersByTime(400); });
+    vi.useRealTimers();
+  });
+  it('Tour does not announce an empty title for a non-string title', async () => {
+    const {Tour} = await import('./components/tour');
+    render(<Tour defaultOpen steps={[{title: <b>Hi</b>}]} />);
+    expect(screen.getByRole('status')).toHaveTextContent(/^Step 1 of 1$/);
+  });
+});

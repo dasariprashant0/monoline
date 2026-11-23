@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, type CanvasHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {prefersReducedMotion} from '../number-ticker/use-reduced-motion';
+import {prefersReducedMotion} from '../../utils/reduced-motion';
 
 export interface ConfettiHandle {
   /** Throw a burst. Does nothing under `prefers-reduced-motion`. */

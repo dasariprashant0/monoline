@@ -62,7 +62,7 @@ packages/css/src/components/<name>.css   styles, tokens only
 
 ### API conventions (follow these so every component feels the same)
 
-- `forwardRef` to the root DOM element. Spread remaining props onto it. Accept and merge `className` with `cx()`.
+- `forwardRef` to the root DOM element. Spread remaining props onto it. Accept and merge `className` with `cx()`. Providers and other parts that render no element of their own (`Toaster`, `ThemeProvider`, `DirectionProvider`) are the exception; a component whose root is a portal (`Tour`, `Command`) forwards the ref to that root. Where a component has a wrapper around its input, `className` goes to the wrapper in `TagsInput`, `MultiSelect`, `Combobox` and `TreeSelect`, and to the input in `NumberInput` and `PasswordInput`, which also take `wrapperClassName`.
 - Variants are string unions: `variant`, `size` (`sm | md | lg`), `tone`. Defaults are the most common use. Boolean props are `isX`-free: `disabled`, `loading`, `invalid`, `required`.
 - Polymorphism: `asChild` using Monoline's own `Slot` (`packages/react/src/utils/slot.tsx`; only `sidebar.tsx` still imports Radix's) where a different element makes sense. No `as` prop.
 - Controlled and uncontrolled pairs follow one pattern: `value` / `defaultValue` / `onValueChange(value)`; `open` / `defaultOpen` / `onOpenChange(open)`; `checked` / `defaultChecked` / `onCheckedChange(checked)`. Pass Radix's props through where a component wraps Radix.

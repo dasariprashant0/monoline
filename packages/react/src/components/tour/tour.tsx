@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useEffect, useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode} from 'react';
+import {forwardRef, useCallback, useEffect, useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
@@ -57,8 +57,8 @@ const resolve = (t: TourStep['target']): HTMLElement | null => (typeof t === 'st
 const GAP = 12;
 const EDGE = 8;
 
-/** A guided tour: a spotlight over a target element with a card holding the step text and Back, Next and Skip buttons. The card is a dialog that takes focus, Escape ends the tour and focus returns to where it was. Arrow keys move between steps, the target scrolls into view, and each step is announced politely. */
-export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defaultStep = 0, onStepChange, onFinish, spotlightPadding = 6, labels, className, ...rest}: TourProps) {
+/** A guided tour (`ref` goes to the portalled root): a spotlight over a target element with a card holding the step text and Back, Next and Skip buttons. The card is a dialog that takes focus, Escape ends the tour and focus returns to where it was. Arrow keys move between steps, the target scrolls into view, and each step is announced politely. */
+export const Tour = forwardRef<HTMLDivElement, TourProps>(function Tour({steps, open, defaultOpen = false, onOpenChange, step, defaultStep = 0, onStepChange, onFinish, spotlightPadding = 6, labels, className, ...rest}, forwarded) {
   const [innerOpen, setInnerOpen] = useState(defaultOpen);
   const [innerStep, setInnerStep] = useState(defaultStep);
   const isOpen = open ?? innerOpen;
@@ -162,7 +162,7 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
   return <>
     <span ref={anchor} hidden />
     {createPortal(
-    <div className={cx('tour', className)} dir={dir} {...rest}>
+    <div ref={forwarded} className={cx('tour', className)} dir={dir} {...rest}>
       <div className="tour-overlay" aria-hidden="true" onMouseDown={(e) => e.preventDefault()} />
       {box && <div className="tour-spotlight" aria-hidden="true" style={{top: box.top - pad, left: box.left - pad, width: box.width + pad * 2, height: box.height + pad * 2}} />}
       <div
@@ -185,8 +185,8 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
           <button type="button" className="btn btn-solid btn-sm" onClick={next}>{last ? L.done : L.next}</button>
         </div>
       </div>
-      <div className="sr-only" role="status">{`Step ${index + 1} of ${steps.length}: ${typeof s.title === 'string' ? s.title : ''}`}</div>
+      <div className="sr-only" role="status">{`Step ${index + 1} of ${steps.length}${typeof s.title === 'string' ? `: ${s.title}` : ''}`}</div>
     </div>,
     document.body,
   )}</>;
-}
+});

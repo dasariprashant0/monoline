@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useId, useState, type ReactNode} from 'react';
+import {forwardRef, useEffect, useId, useState, type ReactNode} from 'react';
 import {Modal, ModalContent, ModalTitle, ModalTrigger} from '../dialog/modal';
 import {cx} from '../../utils/cx';
 
@@ -54,7 +54,7 @@ export function matchesShortcut(e: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrl
  * Models the listbox on Combobox: focus stays in the input, ArrowUp/Down moves the active option, Enter runs it.
  * @example <Command shortcut="mod+k" items={[{id: 'new', label: 'New file', onSelect: create}]} />
  */
-export function Command({items, open, defaultOpen = false, onOpenChange, shortcut, title = 'Command palette', placeholder = 'Type a command', emptyText = 'No results', trigger, className}: CommandProps) {
+export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Command({items, open, defaultOpen = false, onOpenChange, shortcut, title = 'Command palette', placeholder = 'Type a command', emptyText = 'No results', trigger, className}, ref) {
   const [inner, setInner] = useState(defaultOpen);
   const isOpen = open ?? inner;
   const [query, setQuery] = useState('');
@@ -106,7 +106,7 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
   return (
     <Modal open={isOpen} onOpenChange={setOpen}>
       {trigger && <ModalTrigger asChild>{trigger}</ModalTrigger>}
-        <ModalContent className={cx('command', className)} aria-describedby={undefined}>
+        <ModalContent ref={ref} className={cx('command', className)} aria-describedby={undefined}>
           <ModalTitle className="sr-only">{title}</ModalTitle>
           <input
             type="text"
@@ -155,4 +155,4 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
         </ModalContent>
     </Modal>
   );
-}
+});

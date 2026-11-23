@@ -42,7 +42,7 @@ describe('Link', () => {
     expect(ref.current).toHaveClass('link', 'mine');
   });
   it('asChild applies external attributes to the child and adds the new-tab hint inside it', () => {
-    const {container} = render(<Link asChild external><a href="/r">Router</a></Link>);
+    render(<Link asChild external><a href="/r">Router</a></Link>);
     const a = screen.getByRole('link', {name: 'Router (opens in a new tab)'});
     expect(a).toHaveAttribute('target', '_blank');
     expect(a).toHaveAttribute('rel', 'noopener noreferrer');

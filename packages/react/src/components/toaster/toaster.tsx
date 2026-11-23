@@ -1,5 +1,5 @@
 'use client';
-import {useSyncExternalStore, type ReactNode} from 'react';
+import {useEffect, useSyncExternalStore, type ReactNode} from 'react';
 import {Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport} from '../toast';
 import {useDirection} from '../direction-provider';
 
@@ -127,8 +127,13 @@ export interface ToasterProps {
 export function Toaster({limit = 3, position = 'end', label = 'Notifications', dismissLabel = 'Dismiss'}: ToasterProps) {
   const all = useSyncExternalStore(subscribe, snapshot, snapshot);
   const dir = useDirection();
-  // Only the newest `limit` open toasts are rendered; older ones simply unmount.
-  const shown = all.filter((i) => i.open).slice(-limit);
+  // Only the newest `limit` open toasts are rendered; older ones are dismissed.
+  const open = all.filter((i) => i.open);
+  const shown = open.slice(-limit);
+  // Older toasts pushed out by newer ones are dismissed, not just hidden: otherwise they come back with a fresh timer.
+  const overflow = open.length > limit ? open.slice(0, open.length - limit).map((i) => i.id) : [];
+  const overflowKey = overflow.join('\u0000');
+  useEffect(() => { overflow.forEach((id) => dismiss(id)); }, [overflowKey]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <ToastProvider duration={5000} swipeDirection={dir === 'rtl' ? 'left' : 'right'} label={label}>
       {shown.map((t) => (
