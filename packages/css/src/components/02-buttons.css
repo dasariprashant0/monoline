@@ -19,3 +19,5 @@
   .btn-solid, .btn-solid:hover:not(:disabled) { background: ButtonText; color: ButtonFace; }
   .btn-line, .btn-danger { outline: 1px solid ButtonText; outline-offset: -1px; }
 }
+/* The loading spinner takes the button text colour, so it stays visible on a solid button (its background is --foreground). */
+.btn .spinner { border-color: currentColor; border-bottom-color: transparent; }

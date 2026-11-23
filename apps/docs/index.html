@@ -13,6 +13,16 @@
       if (r && r !== location.href) history.replaceState(null, '', r);
     } catch (e) {}
   </script>
+  <script>
+    // Applies the saved look before first paint so a saved dark theme, accent or direction does not flash the defaults.
+    try {
+      var p = JSON.parse(localStorage.getItem('monoline-prefs') || '{}'), h = document.documentElement;
+      var t = p.theme || 'system';
+      h.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'warm') : t;
+      h.dataset.accent = p.accent || 'orange'; h.dataset.font = p.font || 'pair'; h.dataset.radius = p.radius || 'soft'; h.dataset.density = p.density || 'comfortable';
+      h.dir = p.dir || 'ltr';
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div id="root"></div>
