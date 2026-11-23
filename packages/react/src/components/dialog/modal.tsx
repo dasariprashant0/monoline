@@ -8,8 +8,14 @@ import {TABBABLE, setRefs, vetoed} from '../../utils/overlay';
    the inert page, Escape and the top layer for free; this file adds controlled state, the Radix-style parts,
    focus return, backdrop click and the aria ids. Scroll lock and the backdrop are CSS (dialog.css). */
 
-interface Ctx { open: boolean; setOpen: (o: boolean) => void; modal: boolean; contentId: string; titleId: string; descId: string; hasDesc: boolean; setHasDesc: (v: boolean) => void }
-const Context = createContext<Ctx>(null as never);
+interface Ctx { open: boolean; setOpen: (o: boolean) => void; modal: boolean; contentId: string; titleId: string; descId: string; hasTitle: boolean; setHasTitle: (v: boolean) => void; hasDesc: boolean; setHasDesc: (v: boolean) => void }
+const Context = createContext<Ctx | null>(null);
+/** The surrounding dialog's state; a part rendered outside its root says so instead of failing on a null. */
+function useModal(): Ctx {
+  const c = useContext(Context);
+  if (!c) throw new Error('Monoline: this dialog part must be rendered inside its root (Dialog, AlertDialog or Drawer).');
+  return c;
+}
 
 export interface ModalProps {
   /** Controlled open state. */
@@ -28,8 +34,9 @@ export interface ModalProps {
 export function Modal({open, defaultOpen = false, onOpenChange, modal = true, children}: ModalProps) {
   const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: onOpenChange});
   const [hasDesc, setHasDesc] = useState(false);
+  const [hasTitle, setHasTitle] = useState(false);
   const id = useId();
-  return <Context.Provider value={{open: isOpen, setOpen, modal, contentId: id, titleId: id + 't', descId: id + 'd', hasDesc, setHasDesc}}>{children}</Context.Provider>;
+  return <Context.Provider value={{open: isOpen, setOpen, modal, contentId: id, titleId: id + 't', descId: id + 'd', hasTitle, setHasTitle, hasDesc, setHasDesc}}>{children}</Context.Provider>;
 }
 
 export interface ModalButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -39,14 +46,14 @@ export interface ModalButtonProps extends ButtonHTMLAttributes<HTMLButtonElement
 
 /** Internal: the opener behind DialogTrigger, DrawerTrigger and AlertDialogTrigger. */
 export const ModalTrigger = forwardRef<HTMLButtonElement, ModalButtonProps>(function ModalTrigger({asChild, onClick, ...rest}, ref) {
-  const c = useContext(Context);
+  const c = useModal();
   const Comp = asChild ? Slot : 'button';
   return <Comp ref={ref} type={asChild ? undefined : 'button'} aria-haspopup="dialog" aria-expanded={c.open} aria-controls={c.open ? c.contentId : undefined} data-state={c.open ? 'open' : 'closed'} {...rest} onClick={(e: React.MouseEvent<HTMLButtonElement>) => { onClick?.(e); if (!e.defaultPrevented) c.setOpen(!c.open); }} />;
 });
 
 /** Internal: the closer behind DialogClose, DrawerClose and the alert dialog buttons. */
 export const ModalClose = forwardRef<HTMLButtonElement, ModalButtonProps>(function ModalClose({asChild, onClick, ...rest}, ref) {
-  const c = useContext(Context);
+  const c = useModal();
   const Comp = asChild ? Slot : 'button';
   return <Comp ref={ref} type={asChild ? undefined : 'button'} {...rest} onClick={(e: React.MouseEvent<HTMLButtonElement>) => { onClick?.(e); if (!e.defaultPrevented) c.setOpen(false); }} />;
 });
@@ -66,7 +73,7 @@ export interface ModalContentProps extends Omit<DialogHTMLAttributes<HTMLDialogE
 
 
 const Panel = forwardRef<HTMLDialogElement, ModalContentProps>(function Panel({onEscapeKeyDown, onPointerDownOutside, onOpenAutoFocus, onCloseAutoFocus, dismissOnOutside = true, onPointerDown, onClick, onKeyDown, children, ...rest}, forwarded) {
-  const c = useContext(Context);
+  const c = useModal();
   const el = useRef<HTMLDialogElement | null>(null);
   const hooks = useRef({onOpenAutoFocus, onCloseAutoFocus});
   hooks.current = {onOpenAutoFocus, onCloseAutoFocus};
@@ -88,7 +95,7 @@ const Panel = forwardRef<HTMLDialogElement, ModalContentProps>(function Panel({o
       id={c.contentId}
       role="dialog"
       aria-modal={c.modal || undefined}
-      aria-labelledby={c.titleId}
+      aria-labelledby={c.hasTitle ? c.titleId : undefined}
       aria-describedby={c.hasDesc ? c.descId : undefined}
       data-state="open"
       {...rest}
@@ -110,17 +117,19 @@ const Panel = forwardRef<HTMLDialogElement, ModalContentProps>(function Panel({o
 
 /** Internal: the native `<dialog>` panel behind every modal component. Renders nothing while closed. */
 export const ModalContent = forwardRef<HTMLDialogElement, ModalContentProps>(function ModalContent(props, ref) {
-  return useContext(Context).open ? <Panel ref={ref} {...props} /> : null;
+  return useModal().open ? <Panel ref={ref} {...props} /> : null;
 });
 
 /** Internal: the heading that names the dialog (`aria-labelledby`). */
 export const ModalTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(function ModalTitle(props, ref) {
-  return <h2 ref={ref} id={useContext(Context).titleId} {...props} />;
+  const {titleId, setHasTitle} = useModal();
+  useEffect(() => { setHasTitle(true); return () => setHasTitle(false); }, [setHasTitle]);
+  return <h2 ref={ref} id={titleId} {...props} />;
 });
 
 /** Internal: the sentence that describes the dialog (`aria-describedby`, set only while rendered). */
 export const ModalDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(function ModalDescription(props, ref) {
-  const {descId, setHasDesc} = useContext(Context);
+  const {descId, setHasDesc} = useModal();
   useEffect(() => { setHasDesc(true); return () => setHasDesc(false); }, [setHasDesc]);
   return <p ref={ref} id={descId} {...props} />;
 });
