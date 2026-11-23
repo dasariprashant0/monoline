@@ -73,7 +73,7 @@
         },
         {
           "name": "orientation",
-          "type": "\"vertical\" | \"horizontal\"",
+          "type": "\"horizontal\" | \"vertical\"",
           "optional": true,
           "default": "'vertical'",
           "description": "`vertical` (default) moves with ArrowUp and ArrowDown; `horizontal` lays the items in a row and moves with ArrowLeft and ArrowRight."

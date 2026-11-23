@@ -16,6 +16,10 @@
     "input",
     "settle"
   ],
+  "related": [
+    "use-timeout",
+    "use-interval"
+  ],
   "kind": "hooks",
   "import": "import {useDebounce} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-debounce",
@@ -25,11 +29,6 @@
     "packages/react/src/hooks/use-debounce/use-debounce.demo.tsx",
     "packages/react/src/hooks/use-debounce/use-debounce.test.tsx",
     "packages/react/src/hooks/use-debounce/use-debounce.ts"
-  ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
   ],
   "props": [
     {
@@ -65,7 +64,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-debounce/meta.json",
-      "content": "{\"name\":\"use-debounce\",\"title\":\"useDebounce\",\"category\":\"hooks\",\"description\":\"Debounced value and debounced callback: wait for input to settle before acting.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Use for search fields so the list updates after typing stops.\",\"A pending callback is dropped on unmount.\"],\"keywords\":[\"throttle\",\"delay\",\"search\",\"input\",\"settle\"]}\n"
+      "content": "{\"name\":\"use-debounce\",\"title\":\"useDebounce\",\"category\":\"hooks\",\"description\":\"Debounced value and debounced callback: wait for input to settle before acting.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Use for search fields so the list updates after typing stops.\",\"A pending callback is dropped on unmount.\"],\"keywords\":[\"throttle\",\"delay\",\"search\",\"input\",\"settle\"],\"related\":[\"use-timeout\",\"use-interval\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-debounce/use-debounce.ts",

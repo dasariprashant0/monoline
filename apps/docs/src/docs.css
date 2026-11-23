@@ -296,3 +296,7 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .custom-row .segmented { flex-wrap: wrap; }
 .tp { overflow: hidden; }
 .tp-bar { flex-wrap: wrap; }
+/* Audit D: the other implicit grid columns that grew to their widest child, and two more long-word wraps. */
+.theme-grid, .theme-meta { grid-template-columns: minmax(0, 1fr); }
+.theme-meta > *, .builder-controls > * { min-width: 0; }
+.doc-features, .doc-links { overflow-wrap: anywhere; }

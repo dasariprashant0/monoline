@@ -28,7 +28,20 @@
     "use-clipboard",
     "use-controllable-state"
   ],
-  "props": [],
+  "props": [
+    {
+      "name": "Returns",
+      "props": [
+        {
+          "name": "return",
+          "type": "boolean",
+          "optional": false,
+          "default": null,
+          "description": "`false` until the component has mounted, then `true`."
+        }
+      ]
+    }
+  ],
   "usage": "import {useMounted} from '@monoline/react';\n\nfunction Demo() {\n  const mounted = useMounted();\n  return <p>{mounted ? 'Rendered in the browser.' : 'Server render.'}</p>;\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
@@ -46,7 +59,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-mounted/use-mounted.ts",
-      "content": "'use client';\nimport {useEffect, useState} from 'react';\n\n/** False on the server and during the first render, true afterwards. */\nexport function useMounted(): boolean {\n  const [mounted, setMounted] = useState(false);\n  useEffect(() => setMounted(true), []);\n  return mounted;\n}\n"
+      "content": "'use client';\nimport {useEffect, useState} from 'react';\n\n/**\n * False on the server and during the first render, true afterwards.\n *\n * @returns `false` until the component has mounted, then `true`.\n */\nexport function useMounted(): boolean {\n  const [mounted, setMounted] = useState(false);\n  useEffect(() => setMounted(true), []);\n  return mounted;\n}\n"
     }
   ],
   "utils": []

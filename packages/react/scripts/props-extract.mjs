@@ -3,7 +3,7 @@
 // with the TypeScript compiler API and returns groups:
 //   [{name: 'ButtonProps', props: [{name, type, optional, default, description}]}]
 // `type` is the checker's type text, `default` the initializer from the component's destructuring (or null),
-// `description` the JSDoc. Props inherited from HTML elements are not listed (only symbols declared in the file).
+// `description` the JSDoc. Props inherited from HTML elements are not listed (only symbols declared in the file; a type that declares none lists the props Radix documents).
 import ts from 'typescript';
 import {existsSync} from 'node:fs';
 import {join} from 'node:path';
@@ -62,8 +62,11 @@ export function propGroups(program, file, {pattern = COMPONENT_PROPS} = {}) {
     const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
     if (!exported || !(ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) || !pattern.test(node.name.text)) return;
     const type = checker.getTypeAtLocation(node.name);
-    const props = checker.getPropertiesOfType(type)
-      .filter((s) => (s.declarations ?? []).some((d) => d.getSourceFile() === sf))
+    const all = checker.getPropertiesOfType(type);
+    const declaredIn = (test) => all.filter((s) => (s.declarations ?? []).some((d) => test(d.getSourceFile())));
+    // A thin wrapper over a Radix part declares nothing itself: fall back to the props Radix documents.
+    const own = declaredIn((f) => f === sf);
+    const props = (own.length ? own : declaredIn((f) => f.fileName.includes('/@radix-ui/')))
       .map((s) => {
         const decl = s.declarations[0];
         const text = checker.typeToString(checker.getTypeOfSymbolAtLocation(s, decl), decl, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
@@ -77,7 +80,35 @@ export function propGroups(program, file, {pattern = COMPONENT_PROPS} = {}) {
       });
     if (props.length) groups.push({name: node.name.text, props});
   });
+  if (!groups.length && pattern === HOOK_PROPS) groups.push(...hookSignature(checker, sf));
   return groups;
+}
+
+/** A hook with no *Options type: its exported `use*` function as a Parameters group (JSDoc @param text) and a Returns group. */
+function hookSignature(checker, sf) {
+  const out = [];
+  ts.forEachChild(sf, (node) => {
+    const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+    if (!exported || !ts.isFunctionDeclaration(node) || !node.name || !/^use[A-Z]/.test(node.name.text) || out.length) return;
+    const flags = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
+    const params = node.parameters.map((p) => {
+      const name = p.name.getText(sf);
+      const tag = ts.getJSDocParameterTags(p).find((t) => t.name.getText(sf) === name);
+      return {
+        name,
+        type: checker.typeToString(checker.getTypeAtLocation(p), p, flags).replace(/ \| undefined$/, ''),
+        optional: !!p.questionToken || !!p.initializer,
+        default: p.initializer ? p.initializer.getText(sf) : null,
+        description: tag?.comment ? ts.getTextOfJSDocComment(tag.comment)?.trim() ?? '' : '',
+      };
+    });
+    if (params.length) out.push({name: 'Parameters', props: params});
+    const sig = checker.getSignatureFromDeclaration(node);
+    const ret = sig && checker.typeToString(checker.getReturnTypeOfSignature(sig), node, flags);
+    const retTag = ts.getAllJSDocTags(node, (t) => t.tagName.text === 'returns' || t.tagName.text === 'return')[0];
+    if (ret && ret !== 'void') out.push({name: 'Returns', props: [{name: 'return', type: ret, optional: false, default: null, description: retTag?.comment ? ts.getTextOfJSDocComment(retTag.comment)?.trim() ?? '' : ''}]});
+  });
+  return out;
 }
 
 /** Convenience for one file: builds its own program. Used by tests and one-off callers. */

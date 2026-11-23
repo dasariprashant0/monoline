@@ -9,10 +9,10 @@ npm install @monoline/css
 Three ways to load it (sizes are minified + gzip; details in [docs/css-modules.md](../../docs/css-modules.md)):
 
 ```ts
-// 1. Everything, one file: 16.3 KB
+// 1. Everything, one file: about 21 KB gzip
 import '@monoline/css'; // dist/monoline.css; monoline.min.css is the minified build
 
-// 2. Core plus only the components you use: core 3.3 KB, then 0.1 to 2.3 KB per component
+// 2. Core plus only the components you use: core 3.7 KB, then 0.1 to 2.3 KB per component
 import '@monoline/css/core.css';           // first: it declares the cascade-layer order
 import '@monoline/css/components/button.css';
 import '@monoline/css/components/dialog.css';

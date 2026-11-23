@@ -24,6 +24,9 @@
   "uses": [
     "popover"
   ],
+  "related": [
+    "popover"
+  ],
   "kind": "components",
   "import": "import {Tooltip} from '@monoline/react'",
   "path": "packages/react/src/components/tooltip",
@@ -33,9 +36,6 @@
     "packages/react/src/components/tooltip/tooltip.demo.tsx",
     "packages/react/src/components/tooltip/tooltip.test.tsx",
     "packages/react/src/components/tooltip/tooltip.tsx"
-  ],
-  "related": [
-    "popover"
   ],
   "props": [
     {
@@ -108,7 +108,7 @@
     },
     {
       "path": "packages/react/src/components/tooltip/meta.json",
-      "content": "{\"name\":\"tooltip\",\"title\":\"Tooltip\",\"category\":\"overlays\",\"description\":\"Short hint text on hover and keyboard focus.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"tooltip.css\"],\"a11y\":[\"Shows on hover and on keyboard focus; the trigger gets aria-describedby while it is open.\",\"Escape dismisses it; it stays open while the pointer is over it.\",\"Never the only place for essential information: touch users do not get hover.\"],\"keywords\":[\"hint\",\"title\",\"hover\"],\"uses\":[\"popover\"]}\n"
+      "content": "{\"name\":\"tooltip\",\"title\":\"Tooltip\",\"category\":\"overlays\",\"description\":\"Short hint text on hover and keyboard focus.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"tooltip.css\"],\"a11y\":[\"Shows on hover and on keyboard focus; the trigger gets aria-describedby while it is open.\",\"Escape dismisses it; it stays open while the pointer is over it.\",\"Never the only place for essential information: touch users do not get hover.\"],\"keywords\":[\"hint\",\"title\",\"hover\"],\"uses\":[\"popover\"],\"related\":[\"popover\"]}\n"
     },
     {
       "path": "packages/react/src/components/tooltip/tooltip.tsx",

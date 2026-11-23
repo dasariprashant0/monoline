@@ -2,14 +2,22 @@
 
 > Open-source UI kit: a plain CSS core (@monoline/css) with accessible React components (@monoline/react). Three themes, eight accents, font, corner and density options, no Tailwind, no runtime CSS-in-JS.
 
-Start with AGENTS.md (how to work in this repo) and DESIGN.md (the look and rules). Every component is a folder with source, test, demo and meta.json. Install the packages, or copy one component with npx monoline add <name> (source in registry/<name>.json).
+Start with AGENTS.md (https://github.com/dasariprashant0/monoline/blob/master/AGENTS.md: how to work in this repo) and DESIGN.md (https://github.com/dasariprashant0/monoline/blob/master/DESIGN.md: the look and rules). Every component is a folder with source, test, demo and meta.json. Install the packages, or copy one component with npx monoline add <name> (source in https://monoline.prashantdasari.com/registry/<name>.json).
 
 ## Accordion (accordion)
 Stacked headings that each show or hide a section.
-Status: stable | Category: data-display | Primitive: radix-ui/Accordion | Related: area-chart, avatar, avatar-group
+Status: stable | Category: data-display | Primitive: radix-ui/Accordion | Related: collapsible, tabs
 Import: import {Accordion} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- defaultValue?: string | string[] — The value of the item whose content is expanded when the accordion is initially rendered. Use `defaultValue` if you do not need to control the state of an accordion. The value of the items whose contents are expanded when the accordion is initially rendered. Use `defaultValue` if you do not need to control the state of an accordion.
+- dir?: Direction — The language read direction.
+- asChild?: boolean
+- type: "single" | "multiple"
+- value?: string | string[] — The controlled stateful value of the accordion item whose content is expanded. The controlled stateful value of the accordion items whose contents are expanded.
+- onValueChange?: ((value: string) => void) | ((value: string[]) => void) — The callback that fires when the state of the accordion changes.
+- disabled?: boolean — Whether or not an accordion is disabled from user interaction.
+- orientation?: Orientation — The layout in which the Accordion operates.
 
 Usage:
 ```tsx
@@ -28,7 +36,7 @@ A11y:
 
 CSS classes: acc-item, acc-header, acc-trigger, acc-content, acc-body, accordion, accordion-body
 Data attributes: data-state: open
-Source: registry/accordion.json
+Source: https://monoline.prashantdasari.com/registry/accordion.json
 
 ## Alert (alert)
 A message that stays on screen, with a title and a tone.
@@ -58,11 +66,11 @@ A11y:
 
 CSS classes: alert, alert-title, alert-description
 Data attributes: data-tone: success | warning | danger
-Source: registry/alert.json
+Source: https://monoline.prashantdasari.com/registry/alert.json
 
 ## Alert dialog (alert-dialog)
 A modal that interrupts to confirm a destructive or irreversible action.
-Status: stable | Category: overlays | Primitive: native <dialog> | Related: dialog
+Status: stable | Category: overlays | Primitive: native <dialog> | Related: dialog, drawer
 Import: import {AlertDialog} from '@monoline/react'
 
 Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
@@ -87,7 +95,7 @@ A11y:
 - Clicking the overlay does not close it.
 
 CSS classes: dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner
-Source: registry/alert-dialog.json
+Source: https://monoline.prashantdasari.com/registry/alert-dialog.json
 
 ## Animated list (animated-list)
 A list whose items enter one by one without shifting the layout.
@@ -120,7 +128,7 @@ A11y:
 - With prefers-reduced-motion all items are visible at once.
 
 CSS classes: animated-list, animated-list-item
-Source: registry/animated-list.json
+Source: https://monoline.prashantdasari.com/registry/animated-list.json
 
 ## App shell (app-shell)
 The frame of an app: skip link, navbar, sidebar, main and aside in one responsive grid.
@@ -198,7 +206,7 @@ A11y:
 
 CSS classes: link, divider, skip-link, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-icon, tooltip, dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, sidebar, sidebar-inner, sidebar-header, sidebar-footer, sidebar-content, sidebar-group, sidebar-group-label, sidebar-list, sidebar-item, sidebar-icon, sidebar-label, sidebar-toggle, sidebar-drawer, sidebar-trigger, navbar, navbar-brand, navbar-links, navbar-list, navbar-link, navbar-actions, navbar-drawer, navbar-menu, app-shell, app-shell-navbar, app-shell-main, app-shell-aside
 Data attributes: data-side: right | end | left | start | top | bottom; data-collapsed; data-sticky; data-scroll: contained
-Source: registry/app-shell.json
+Source: https://monoline.prashantdasari.com/registry/app-shell.json
 
 ## Area chart (area-chart)
 A line chart filled down to zero, optionally stacked to show a running total.
@@ -232,14 +240,16 @@ A11y:
 
 CSS classes: chart, chart-plot, chart-svg, chart-hits, chart-s0, chart-s1, chart-s2, chart-s3, chart-s4, chart-tick, chart-value, chart-rule, chart-zero, chart-outline, chart-pat, chart-pat-dot, chart-line, chart-area, chart-hit, chart-tip, chart-tip-title, chart-tip-row, chart-tip-value, chart-legend, chart-legend-detail, chart-swatch, chart-empty, chart-marks, chart-point, chart-guide
 Data attributes: data-active; data-align: start | end
-Source: registry/area-chart.json
+Source: https://monoline.prashantdasari.com/registry/area-chart.json
 
 ## Aspect ratio (aspect-ratio)
 Keep media or a placeholder at a fixed width-to-height ratio.
 Status: stable | Category: layout | Primitive: radix-ui/AspectRatio | Related: app-shell, box, container
 Import: import {AspectRatio} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- asChild?: boolean
+- ratio?: number
 
 Usage:
 ```tsx
@@ -254,7 +264,7 @@ import {AspectRatio} from '@monoline/react';
 
 A11y:
 - A plain div; the content keeps its own semantics and alt text.
-Source: registry/aspect-ratio.json
+Source: https://monoline.prashantdasari.com/registry/aspect-ratio.json
 
 ## Autocomplete (autocomplete)
 A text field that suggests values while you type and accepts anything you enter.
@@ -289,7 +299,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, autocomplete, autocomplete-list, autocomplete-option
 Data attributes: data-active
-Source: registry/autocomplete.json
+Source: https://monoline.prashantdasari.com/registry/autocomplete.json
 
 ## Avatar (avatar)
 A person or thing as an image with an initials fallback.
@@ -318,7 +328,7 @@ A11y:
 - The fallback shows while the image loads or if it fails.
 
 CSS classes: avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note
-Source: registry/avatar.json
+Source: https://monoline.prashantdasari.com/registry/avatar.json
 
 ## Avatar group (avatar-group)
 Overlap several avatars and show how many more there are.
@@ -342,7 +352,7 @@ A11y:
 - role="group" with an accessible name; the overflow count is plain text.
 
 CSS classes: avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note
-Source: registry/avatar-group.json
+Source: https://monoline.prashantdasari.com/registry/avatar-group.json
 
 ## Badge (badge)
 A short status word or count.
@@ -368,7 +378,7 @@ A11y:
 - For a count that changes, put it inside an aria-live region yourself.
 
 CSS classes: swatch, check, check-pass, check-fail, badge, badge-solid, badge-accent, kbd, key-hints, dot, heat-0, heat-1, heat-2, heat-3, heat-4
-Source: registry/badge.json
+Source: https://monoline.prashantdasari.com/registry/badge.json
 
 ## Bar chart (bar-chart)
 Compare values across categories with vertical or horizontal bars, grouped or stacked.
@@ -381,7 +391,7 @@ Props (name: type = default, ? means optional):
 - series?: ChartSeries[] — Several series: `[{name: 'Visits', values: [3, 5]}]`, with `labels` for the categories.
 - labels?: string[] — Category labels for the x axis (or y axis when horizontal), one per value in `series`.
 - seriesName?: string = 'Value' — Name of the single series when `data` is used. Default "Value".
-- orientation?: "vertical" | "horizontal" = 'vertical' — `vertical` draws columns, `horizontal` draws rows (better for long labels). Default `vertical`.
+- orientation?: "horizontal" | "vertical" = 'vertical' — `vertical` draws columns, `horizontal` draws rows (better for long labels). Default `vertical`.
 - stacked?: boolean = false — Stack series on top of each other instead of side by side.
 - showValues?: boolean = false — Print each value at the end of its bar (the total for stacked bars).
 - height?: number — Chart height in px. Horizontal charts size themselves to the number of rows when omitted. Default 280.
@@ -406,7 +416,7 @@ A11y:
 
 CSS classes: chart, chart-plot, chart-svg, chart-hits, chart-s0, chart-s1, chart-s2, chart-s3, chart-s4, chart-tick, chart-value, chart-rule, chart-zero, chart-outline, chart-pat, chart-pat-dot, chart-line, chart-area, chart-hit, chart-tip, chart-tip-title, chart-tip-row, chart-tip-value, chart-legend, chart-legend-detail, chart-swatch, chart-empty, chart-marks, chart-bar
 Data attributes: data-active; data-align: start | end
-Source: registry/bar-chart.json
+Source: https://monoline.prashantdasari.com/registry/bar-chart.json
 
 ## Bento grid (bento-grid)
 A responsive asymmetric grid of cards with column and row spans.
@@ -436,7 +446,7 @@ A11y:
 - Spans collapse to a single column on narrow screens; nothing depends on colour or motion.
 
 CSS classes: bento-grid, bento-card, bento-col-2, bento-col-3, bento-row-2
-Source: registry/bento-grid.json
+Source: https://monoline.prashantdasari.com/registry/bento-grid.json
 
 ## Call to action block (block-cta)
 A closing call to action with one sentence and one next step.
@@ -464,7 +474,7 @@ A11y:
 - A section named by its title; actions are ordinary buttons or links.
 
 CSS classes: container, container-text, container-page, container-full, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, block-cta, block-cta-box, block-cta-copy, block-cta-actions
-Source: registry/block-cta.json
+Source: https://monoline.prashantdasari.com/registry/block-cta.json
 
 ## Dashboard shell block (block-dashboard-shell)
 App frame with sidebar, top bar and content that collapses to a drawer on small screens.
@@ -502,7 +512,7 @@ A11y:
 
 CSS classes: link, divider, skip-link, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-icon, tooltip, dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, sidebar, sidebar-inner, sidebar-header, sidebar-footer, sidebar-content, sidebar-group, sidebar-group-label, sidebar-list, sidebar-item, sidebar-icon, sidebar-label, sidebar-toggle, sidebar-drawer, sidebar-trigger, navbar, navbar-brand, navbar-links, navbar-list, navbar-link, navbar-actions, navbar-drawer, navbar-menu, app-shell, app-shell-navbar, app-shell-main, app-shell-aside, block-shell, block-shell-brand
 Data attributes: data-side: right | end | left | start | top | bottom; data-collapsed; data-sticky; data-scroll: contained
-Source: registry/block-dashboard-shell.json
+Source: https://monoline.prashantdasari.com/registry/block-dashboard-shell.json
 
 ## Empty page block (block-empty-page)
 A full-page message for not found, nothing yet or no access.
@@ -533,7 +543,7 @@ A11y:
 - The large code is decorative and hidden from assistive technology.
 
 CSS classes: heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-empty-page, block-empty-page-code, block-empty-page-description, block-empty-page-actions
-Source: registry/block-empty-page.json
+Source: https://monoline.prashantdasari.com/registry/block-empty-page.json
 
 ## Feature grid block (block-feature-grid)
 A section title above a responsive grid of short features.
@@ -575,7 +585,7 @@ A11y:
 
 CSS classes: container, container-text, container-page, container-full, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-features, block-features-head, block-features-grid, block-feature, block-feature-icon
 Data attributes: data-columns: 3 | 4
-Source: registry/block-feature-grid.json
+Source: https://monoline.prashantdasari.com/registry/block-feature-grid.json
 
 ## Footer block (block-footer)
 A site footer with brand, link columns and small print.
@@ -611,7 +621,7 @@ A11y:
 - Each link column is a nav named by its title, with a heading at the chosen level.
 
 CSS classes: container, container-text, container-page, container-full, link, block-footer, block-footer-top, block-footer-brand, block-footer-name, block-footer-columns, block-footer-heading, block-footer-col, block-footer-legal
-Source: registry/block-footer.json
+Source: https://monoline.prashantdasari.com/registry/block-footer.json
 
 ## Hero block (block-hero)
 A page opener with eyebrow, title, description, actions and optional media.
@@ -647,7 +657,7 @@ A11y:
 
 CSS classes: container, container-text, container-page, container-full, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-hero, block-hero-inner, block-hero-copy, block-hero-eyebrow, block-hero-description, block-hero-actions, block-hero-media
 Data attributes: data-align: center
-Source: registry/block-hero.json
+Source: https://monoline.prashantdasari.com/registry/block-hero.json
 
 ## Login block (block-login)
 Email and password sign-in form with validation messages.
@@ -681,7 +691,7 @@ A11y:
 
 CSS classes: form, form-errors, form-errors-title, form-actions, field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-login, block-login-head, block-login-footer
 Data attributes: data-valid: true
-Source: registry/block-login.json
+Source: https://monoline.prashantdasari.com/registry/block-login.json
 
 ## Pricing block (block-pricing)
 Plan cards with a monthly and yearly switch.
@@ -720,7 +730,7 @@ A11y:
 
 CSS classes: container, container-text, container-page, container-full, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, swatch, check, check-pass, check-fail, badge, badge-solid, badge-accent, kbd, key-hints, dot, heat-0, heat-1, heat-2, heat-3, heat-4, segmented, segment, block-pricing, block-pricing-head, block-pricing-tiers, block-tier, block-tier-head, block-tier-price, block-tier-amount, block-tier-period, block-tier-features
 Data attributes: data-state: on; data-highlighted
-Source: registry/block-pricing.json
+Source: https://monoline.prashantdasari.com/registry/block-pricing.json
 
 ## Settings form block (block-settings-form)
 Settings sections of switches and selects, each in a fieldset.
@@ -764,7 +774,7 @@ A11y:
 
 CSS classes: form, form-errors, form-errors-title, form-actions, fieldset, fieldset-legend, checkbox, radio, sw, checkbox-mark, radio-dot, radio-group, sw-thumb, choice, choice-group, field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-settings, block-settings-head, block-settings-row
 Data attributes: data-state: checked | indeterminate; data-orientation: horizontal; data-valid: true
-Source: registry/block-settings-form.json
+Source: https://monoline.prashantdasari.com/registry/block-settings-form.json
 
 ## Sign-up block (block-signup)
 Name, email and password account form with validation messages.
@@ -799,7 +809,7 @@ A11y:
 
 CSS classes: form, form-errors, form-errors-title, form-actions, field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate, block-signup, block-signup-head, block-signup-footer
 Data attributes: data-valid: true
-Source: registry/block-signup.json
+Source: https://monoline.prashantdasari.com/registry/block-signup.json
 
 ## Testimonials block (block-testimonials)
 Quotes with their authors, as figures with blockquotes.
@@ -830,7 +840,7 @@ A11y:
 - Avatars are decorative and hidden from assistive technology.
 
 CSS classes: container, container-text, container-page, container-full, heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm, block-testimonials, block-testimonials-title, block-testimonials-grid, block-testimonial, block-testimonial-avatar, block-testimonial-name, block-testimonial-role
-Source: registry/block-testimonials.json
+Source: https://monoline.prashantdasari.com/registry/block-testimonials.json
 
 ## Border beam (border-beam)
 A thin bordered box with a light that travels around its edge. CSS only.
@@ -854,7 +864,7 @@ A11y:
 - The beam is hidden under prefers-reduced-motion, leaving a plain thin border.
 
 CSS classes: border-beam, border-beam-light
-Source: registry/border-beam.json
+Source: https://monoline.prashantdasari.com/registry/border-beam.json
 
 ## Box (box)
 A div with padding and a thin border mapped to the spacing tokens.
@@ -880,7 +890,7 @@ A11y:
 
 CSS classes: box, box-border
 Data attributes: data-border: top | right | end | bottom | left | start
-Source: registry/box.json
+Source: https://monoline.prashantdasari.com/registry/box.json
 
 ## Breadcrumb (breadcrumb)
 The path to the current page.
@@ -906,7 +916,7 @@ A11y:
 
 CSS classes: crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel, link, divider, skip-link
 Data attributes: data-state: done
-Source: registry/breadcrumb.json
+Source: https://monoline.prashantdasari.com/registry/breadcrumb.json
 
 ## Breadcrumbs from path (breadcrumbs-auto)
 A breadcrumb built from the current URL path.
@@ -930,15 +940,15 @@ A11y:
 
 CSS classes: crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel, link, divider, skip-link
 Data attributes: data-state: done
-Source: registry/breadcrumbs-auto.json
+Source: https://monoline.prashantdasari.com/registry/breadcrumbs-auto.json
 
 ## Button (button)
 Triggers an action. Native button with solid, line, ghost and danger variants.
-Status: stable | Category: buttons | Primitive: radix-ui/Slot | Related: button-group, copy-button, icon-button
+Status: stable | Category: buttons | Primitive: radix-ui/Slot | Related: shimmer-button, toggle
 Import: import {Button} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- variant?: "danger" | "line" | "solid" | "ghost" = 'solid' — Default `solid`: the one main action per view. `line` for the rest, `ghost` for inline links, `danger` for destructive.
+- variant?: "line" | "danger" | "solid" | "ghost" = 'solid' — Default `solid`: the one main action per view. `line` for the rest, `ghost` for inline links, `danger` for destructive.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense toolbars and table rows, or `lg` for prominent calls to action. Same heights as Input and Select.
 - loading?: boolean = false — Shows a spinner, sets `aria-busy` and ignores clicks. The label stays so the width does not jump.
 - asChild?: boolean = false — Render the child element (a link, a router link) with the button styles instead of a `<button>`.
@@ -961,7 +971,7 @@ A11y:
 - asChild renders a link without losing link semantics.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch
-Source: registry/button.json
+Source: https://monoline.prashantdasari.com/registry/button.json
 
 ## Button group (button-group)
 Join related buttons into one segmented bar.
@@ -986,7 +996,7 @@ A11y:
 - role="group" with a required accessible name.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-group
-Source: registry/button-group.json
+Source: https://monoline.prashantdasari.com/registry/button-group.json
 
 ## Calendar (calendar)
 A month grid for picking one date.
@@ -1024,7 +1034,7 @@ A11y:
 
 CSS classes: calendar, calendar-head, calendar-title, calendar-nav, calendar-grid, calendar-day
 Data attributes: data-outside; data-today
-Source: registry/calendar.json
+Source: https://monoline.prashantdasari.com/registry/calendar.json
 
 ## Card (card)
 A bordered group for one thing you can pick up or open.
@@ -1061,7 +1071,7 @@ A11y:
 - With asChild on a link or button the whole card is one keyboard-focusable control.
 
 CSS classes: card, card-hover, banner, banner-accent, banner-warning, banner-danger, card-header, card-title, card-description, card-content, card-footer
-Source: registry/card.json
+Source: https://monoline.prashantdasari.com/registry/card.json
 
 ## Carousel (carousel)
 A row of slides you scroll or step through with buttons.
@@ -1086,7 +1096,7 @@ A11y:
 - No auto-play, so nothing moves without the user.
 
 CSS classes: carousel, carousel-track, carousel-slide, carousel-controls
-Source: registry/carousel.json
+Source: https://monoline.prashantdasari.com/registry/carousel.json
 
 ## Checkbox (checkbox)
 A box to turn one choice on or off, with an indeterminate state.
@@ -1115,7 +1125,7 @@ A11y:
 
 CSS classes: checkbox, radio, sw, checkbox-mark, radio-dot, radio-group, sw-thumb, choice, choice-group
 Data attributes: data-state: checked | indeterminate; data-orientation: horizontal
-Source: registry/checkbox.json
+Source: https://monoline.prashantdasari.com/registry/checkbox.json
 
 ## Code block (code-block)
 A block of code with a copy button.
@@ -1150,14 +1160,19 @@ A11y:
 
 CSS classes: code-block, code-head, code-title, code-copy, code-line, tok-keyword, tok-string, tok-number, tok-comment, tok-tag, tok-attr, tok-fn, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner
 Data attributes: data-copied; data-headless; data-lines
-Source: registry/code-block.json
+Source: https://monoline.prashantdasari.com/registry/code-block.json
 
 ## Collapsible (collapsible)
 Show or hide one region of content from a trigger.
 Status: stable | Category: data-display | Primitive: radix-ui/Collapsible | Related: accordion, area-chart, avatar
 Import: import {Collapsible} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- asChild?: boolean
+- disabled?: boolean
+- defaultOpen?: boolean
+- open?: boolean
+- onOpenChange?: ((open: boolean) => void)
 
 Usage:
 ```tsx
@@ -1178,7 +1193,7 @@ A11y:
 - Space and Enter toggle it.
 
 CSS classes: collapsible-content
-Source: registry/collapsible.json
+Source: https://monoline.prashantdasari.com/registry/collapsible.json
 
 ## Color picker (color-picker)
 Choose a colour from preset swatches, the native colour control, or a hex value.
@@ -1213,7 +1228,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, color-picker, color-picker-swatches, color-picker-swatch, color-picker-row, color-picker-native, color-picker-hex, color-picker-error
 Data attributes: data-disabled
-Source: registry/color-picker.json
+Source: https://monoline.prashantdasari.com/registry/color-picker.json
 
 ## Combobox (combobox)
 Type to filter a list and pick one option.
@@ -1249,7 +1264,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, combobox, combobox-list, combobox-option, combobox-empty
 Data attributes: data-active
-Source: registry/combobox.json
+Source: https://monoline.prashantdasari.com/registry/combobox.json
 
 ## Command (command)
 A searchable palette of actions that opens over the page, with an optional global shortcut.
@@ -1296,7 +1311,7 @@ A11y:
 
 CSS classes: dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, command-input, command-list, command-heading, command-item, command-hint, command-empty
 Data attributes: data-active
-Source: registry/command.json
+Source: https://monoline.prashantdasari.com/registry/command.json
 
 ## Confetti (confetti)
 A short burst of square confetti on a canvas, triggered by a prop or a ref method.
@@ -1332,7 +1347,7 @@ A11y:
 - Off under prefers-reduced-motion: no burst is drawn. Announce the event it celebrates in text as well.
 
 CSS classes: confetti
-Source: registry/confetti.json
+Source: https://monoline.prashantdasari.com/registry/confetti.json
 
 ## Container (container)
 Centre content in a column with a sensible maximum width and side padding.
@@ -1340,7 +1355,7 @@ Status: stable | Category: layout | Related: app-shell, aspect-ratio, box
 Import: import {Container} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- size?: "page" | "text" | "full" = 'page' — `text` is a reading column, `page` the widest main column, `full` no limit.
+- size?: "text" | "page" | "full" = 'page' — `text` is a reading column, `page` the widest main column, `full` no limit.
 - asChild?: boolean — Render the child (a `main`, `section`) with the container styles.
 
 Usage:
@@ -1356,7 +1371,7 @@ A11y:
 - A plain div; adds no roles.
 
 CSS classes: container, container-text, container-page, container-full
-Source: registry/container.json
+Source: https://monoline.prashantdasari.com/registry/container.json
 
 ## Context menu (context-menu)
 A menu of actions opened by right click or long press on an area.
@@ -1383,7 +1398,7 @@ A11y:
 
 CSS classes: popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, dropdown, menu, menu-end, danger, menu-sep
 Data attributes: data-highlighted; data-disabled; data-variant: danger
-Source: registry/context-menu.json
+Source: https://monoline.prashantdasari.com/registry/context-menu.json
 
 ## Copy button (copy-button)
 A button that copies a value to the clipboard, shows 'Copied' for a moment and announces it.
@@ -1417,7 +1432,7 @@ A11y:
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-icon
 Data attributes: data-copied
-Source: registry/copy-button.json
+Source: https://monoline.prashantdasari.com/registry/copy-button.json
 
 ## Data grid (data-grid)
 A virtualised, keyboard-navigable grid for very large data sets, with sortable columns and row selection.
@@ -1433,7 +1448,7 @@ Props (name: type = default, ? means optional):
 - rowHeight?: number = 36 — Row height in px. Every row has the same height; that is what makes virtualising cheap. Default 36.
 - height?: string | number = 400 — Height of the scrolling grid, header included. Default 400.
 - overscan?: number = 5 — Extra rows rendered above and below the visible ones. Default 5.
-- selectionMode?: "none" | "multiple" | "single" = 'none' — Whether rows can be selected: `none` (default), `single` or `multiple`.
+- selectionMode?: "none" | "single" | "multiple" = 'none' — Whether rows can be selected: `none` (default), `single` or `multiple`.
 - selectedIds?: string[] — Controlled selected row ids. Pair with `onSelectedIdsChange`.
 - defaultSelectedIds?: string[] — Initially selected row ids when uncontrolled.
 - onSelectedIdsChange?: ((ids: string[]) => void) — Called with the new list of selected row ids.
@@ -1483,7 +1498,7 @@ A11y:
 
 CSS classes: empty, empty-icon, empty-title, empty-description, empty-actions, data-grid, data-grid-head, data-grid-body, data-grid-row, data-grid-body-row, data-grid-cell, data-grid-text, data-grid-th, data-grid-sort, data-grid-empty-row, data-grid-empty
 Data attributes: data-state: selected; data-align: end; data-sortable; data-direction: desc
-Source: registry/data-grid.json
+Source: https://monoline.prashantdasari.com/registry/data-grid.json
 
 ## Data table (data-table)
 A table with sortable columns, row selection and pagination.
@@ -1539,7 +1554,7 @@ A11y:
 
 CSS classes: table-wrap, table, num, checkbox, radio, sw, checkbox-mark, radio-dot, radio-group, sw-thumb, crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel, empty, empty-icon, empty-title, empty-description, empty-actions, data-table-sort-btn, data-table-sort, data-table, data-table-check, data-table-footer
 Data attributes: data-state: checked | indeterminate | done | selected; data-orientation: horizontal; data-direction: desc
-Source: registry/data-table.json
+Source: https://monoline.prashantdasari.com/registry/data-table.json
 
 ## Date picker (date-picker)
 A button that opens a calendar and shows the chosen date.
@@ -1574,7 +1589,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, calendar, calendar-head, calendar-title, calendar-nav, calendar-grid, calendar-day, date-trigger, date-popover
 Data attributes: data-highlighted; data-disabled; data-variant: danger; data-outside; data-today; data-empty
-Source: registry/date-picker.json
+Source: https://monoline.prashantdasari.com/registry/date-picker.json
 
 ## Date range picker (date-range-picker)
 A button that opens a range calendar and two typed date fields.
@@ -1608,7 +1623,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, calendar, calendar-head, calendar-title, calendar-nav, calendar-grid, calendar-day, date-trigger, date-popover, range-cell, range-calendar, date-range-popover, date-range-fields, date-range-field, date-range-error
 Data attributes: data-highlighted; data-disabled; data-variant: danger; data-outside; data-today; data-empty; data-in-range; data-range-start; data-preview
-Source: registry/date-range-picker.json
+Source: https://monoline.prashantdasari.com/registry/date-range-picker.json
 
 ## Description list (description-list)
 Label and value pairs, like the details of a record.
@@ -1632,11 +1647,11 @@ A11y:
 - A native dl with dt and dd, so assistive tech pairs each label with its value.
 
 CSS classes: dlist, dlist-row, dlist-stacked
-Source: registry/description-list.json
+Source: https://monoline.prashantdasari.com/registry/description-list.json
 
 ## Dialog (dialog)
 A modal window for a question or short task that blocks the page.
-Status: stable | Category: overlays | Primitive: native <dialog> | Related: alert-dialog, command, context-menu
+Status: stable | Category: overlays | Primitive: native <dialog> | Related: alert-dialog, drawer, popover
 Import: import {Dialog} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -1661,7 +1676,7 @@ A11y:
 - Escape and the Close button close it; the page behind is inert.
 
 CSS classes: dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title
-Source: registry/dialog.json
+Source: https://monoline.prashantdasari.com/registry/dialog.json
 
 ## Direction provider (direction-provider)
 Sets the reading direction (ltr or rtl) once for every Radix-based component below it.
@@ -1693,7 +1708,7 @@ import {DirectionProvider, Tabs, TabsContent, TabsList, TabsTrigger} from '@mono
 A11y:
 - Arrow keys follow the reading direction: in rtl, ArrowLeft moves to the next tab, slider step up or toolbar item.
 - Pair it with a dir attribute on html so the stylesheet mirrors layout too.
-Source: registry/direction-provider.json
+Source: https://monoline.prashantdasari.com/registry/direction-provider.json
 
 ## Dot pattern (dot-pattern)
 A decorative dot grid background drawn in SVG with currentColor.
@@ -1720,7 +1735,7 @@ A11y:
 - Static; no motion.
 
 CSS classes: dot-pattern, dot-pattern-fade
-Source: registry/dot-pattern.json
+Source: https://monoline.prashantdasari.com/registry/dot-pattern.json
 
 ## Drawer (drawer)
 A panel that slides in from an edge for secondary tasks, details or navigation.
@@ -1752,7 +1767,7 @@ A11y:
 
 CSS classes: dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title
 Data attributes: data-side: right | end | left | start | top | bottom
-Source: registry/drawer.json
+Source: https://monoline.prashantdasari.com/registry/drawer.json
 
 ## Dropdown menu (dropdown-menu)
 A list of actions that opens from a button.
@@ -1785,7 +1800,7 @@ A11y:
 
 CSS classes: popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, dropdown, menu, menu-end, danger, menu-sep
 Data attributes: data-highlighted; data-disabled; data-variant: danger
-Source: registry/dropdown-menu.json
+Source: https://monoline.prashantdasari.com/registry/dropdown-menu.json
 
 ## Empty state (empty-state)
 Say that there is nothing here yet and offer the next step.
@@ -1811,7 +1826,7 @@ A11y:
 - Plain heading and text; put the action in children as a button or link.
 
 CSS classes: empty, empty-icon, empty-title, empty-description, empty-actions
-Source: registry/empty-state.json
+Source: https://monoline.prashantdasari.com/registry/empty-state.json
 
 ## Field (field)
 Connects a label, a control, a hint and an error with the right ids and ARIA.
@@ -1845,7 +1860,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row
 Data attributes: data-valid: true
-Source: registry/field.json
+Source: https://monoline.prashantdasari.com/registry/field.json
 
 ## Fieldset (fieldset)
 Group related controls under one legend.
@@ -1876,7 +1891,7 @@ A11y:
 - disabled on the fieldset disables every control inside.
 
 CSS classes: fieldset, fieldset-legend
-Source: registry/fieldset.json
+Source: https://monoline.prashantdasari.com/registry/fieldset.json
 
 ## File upload (file-upload)
 Choose files by browsing or dropping them, and see what is selected.
@@ -1903,7 +1918,7 @@ A11y:
 
 CSS classes: upload, upload-zone, upload-list, upload-name, upload-remove, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner
 Data attributes: data-over
-Source: registry/file-upload.json
+Source: https://monoline.prashantdasari.com/registry/file-upload.json
 
 ## Flex (flex)
 A flex container with direction, wrap, align, justify, gap and an inline form. Stack covers the common case.
@@ -1934,7 +1949,7 @@ A11y:
 
 CSS classes: flex, flex-inline, flex-wrap
 Data attributes: data-direction: column | row-reverse | column-reverse; data-align: start | center | end | stretch | baseline; data-justify: start | center | end | between | around
-Source: registry/flex.json
+Source: https://monoline.prashantdasari.com/registry/flex.json
 
 ## Form (form)
 A form wrapper with a submit helper, an error summary that links to invalid fields, and an actions footer.
@@ -1984,7 +1999,7 @@ A11y:
 - Pass each error once, in the Form's errors; a Field with the same name shows it inline and sets aria-invalid and aria-describedby on its control. The summary announces it, so the inline text is not announced twice.
 
 CSS classes: form, form-errors, form-errors-title, form-actions
-Source: registry/form.json
+Source: https://monoline.prashantdasari.com/registry/form.json
 
 ## Grid (grid)
 A responsive grid of equal columns with one gap.
@@ -2009,7 +2024,7 @@ A11y:
 - A plain div; source order is reading order.
 
 CSS classes: grid, grid-fixed
-Source: registry/grid.json
+Source: https://monoline.prashantdasari.com/registry/grid.json
 
 ## Grid pattern (grid-pattern)
 A decorative line grid background drawn in SVG with currentColor.
@@ -2035,7 +2050,7 @@ A11y:
 - Static; no motion.
 
 CSS classes: grid-pattern, grid-pattern-fade
-Source: registry/grid-pattern.json
+Source: https://monoline.prashantdasari.com/registry/grid-pattern.json
 
 ## Heading (heading)
 A heading whose level (for structure) is separate from its size (for looks).
@@ -2062,7 +2077,7 @@ A11y:
 - Renders a real h1 to h6; choose the level for the outline, not the size.
 
 CSS classes: heading, heading-display, heading-xl, heading-lg, heading-md, heading-sm
-Source: registry/heading.json
+Source: https://monoline.prashantdasari.com/registry/heading.json
 
 ## Hover card (hover-card)
 Preview extra content when a link or element is hovered or focused.
@@ -2099,7 +2114,7 @@ A11y:
 
 CSS classes: popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check
 Data attributes: data-highlighted; data-disabled; data-variant: danger
-Source: registry/hover-card.json
+Source: https://monoline.prashantdasari.com/registry/hover-card.json
 
 ## Icon button (icon-button)
 A square button holding only an icon. The accessible name is required.
@@ -2134,7 +2149,7 @@ A11y:
 - Space and Enter activate it.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-icon
-Source: registry/icon-button.json
+Source: https://monoline.prashantdasari.com/registry/icon-button.json
 
 ## Image (image)
 An image with required alt text, a ratio, and a fallback when it fails to load.
@@ -2162,7 +2177,7 @@ A11y:
 - The fallback shows the alt text so the content is not lost when loading fails.
 
 CSS classes: image, image-cover, image-contain, image-fallback
-Source: registry/image.json
+Source: https://monoline.prashantdasari.com/registry/image.json
 
 ## Image gallery (image-gallery)
 A thumbnail grid that opens a lightbox with previous and next.
@@ -2194,11 +2209,11 @@ A11y:
 - A polite status message announces the new image's alt text and position. Neighbouring images are preloaded.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, image-gallery, image-gallery-thumb, image-gallery-lightbox, image-gallery-title, image-gallery-figure, image-gallery-nav
-Source: registry/image-gallery.json
+Source: https://monoline.prashantdasari.com/registry/image-gallery.json
 
 ## Input (input)
 A single-line text field.
-Status: stable | Category: forms | Related: field
+Status: stable | Category: forms | Related: textarea, password-input, field
 Import: import {Input} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -2220,7 +2235,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row
 Data attributes: data-valid: true
-Source: registry/input.json
+Source: https://monoline.prashantdasari.com/registry/input.json
 
 ## Kbd (kbd)
 Show a keyboard key or shortcut.
@@ -2240,7 +2255,7 @@ A11y:
 - Native kbd element, announced as text.
 
 CSS classes: swatch, check, check-pass, check-fail, badge, badge-solid, badge-accent, kbd, key-hints, dot, heat-0, heat-1, heat-2, heat-3, heat-4
-Source: registry/kbd.json
+Source: https://monoline.prashantdasari.com/registry/kbd.json
 
 ## Label (label)
 The visible name of a form control.
@@ -2265,7 +2280,7 @@ A11y:
 - required adds a visual marker; set required on the control for assistive tech.
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt
-Source: registry/label.json
+Source: https://monoline.prashantdasari.com/registry/label.json
 
 ## Line chart (line-chart)
 Show how one or more values change across an ordered axis, with straight or stepped lines.
@@ -2296,7 +2311,7 @@ A11y:
 
 CSS classes: chart, chart-plot, chart-svg, chart-hits, chart-s0, chart-s1, chart-s2, chart-s3, chart-s4, chart-tick, chart-value, chart-rule, chart-zero, chart-outline, chart-pat, chart-pat-dot, chart-line, chart-area, chart-hit, chart-tip, chart-tip-title, chart-tip-row, chart-tip-value, chart-legend, chart-legend-detail, chart-swatch, chart-empty, chart-marks, chart-point, chart-guide
 Data attributes: data-active; data-align: start | end
-Source: registry/line-chart.json
+Source: https://monoline.prashantdasari.com/registry/line-chart.json
 
 ## Link (link)
 An underlined link. External links open safely and say so.
@@ -2319,7 +2334,7 @@ A11y:
 - External links get rel="noopener noreferrer" and a hidden "(opens in a new tab)".
 
 CSS classes: link, divider, skip-link
-Source: registry/link.json
+Source: https://monoline.prashantdasari.com/registry/link.json
 
 ## Marquee (marquee)
 Scroll a row of items endlessly; pauses on hover and stops for reduced motion.
@@ -2348,7 +2363,7 @@ A11y:
 
 CSS classes: marquee, marquee-track, marquee-reverse, marquee-pause, marquee-controlled, marquee-toggle
 Data attributes: data-paused
-Source: registry/marquee.json
+Source: https://monoline.prashantdasari.com/registry/marquee.json
 
 ## Mentions (mentions)
 A textarea that suggests people when you type @.
@@ -2393,7 +2408,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, mentions, mentions-list, mentions-option, mentions-note
 Data attributes: data-active
-Source: registry/mentions.json
+Source: https://monoline.prashantdasari.com/registry/mentions.json
 
 ## Menubar (menubar)
 A horizontal bar of menus, like File, Edit and View in a desktop app.
@@ -2419,7 +2434,7 @@ A11y:
 
 CSS classes: popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, dropdown, menu, menu-end, danger, menu-sep, menubar, menubar-trigger
 Data attributes: data-highlighted; data-disabled; data-variant: danger; data-state: open
-Source: registry/menubar.json
+Source: https://monoline.prashantdasari.com/registry/menubar.json
 
 ## Multi select (multi-select)
 Type to filter a list and pick several options, shown as removable tags.
@@ -2459,7 +2474,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note, multi-select, multi-select-box, multi-select-input, multi-select-list, multi-select-option, multi-select-empty
 Data attributes: data-invalid; data-disabled; data-active; data-size: sm | lg
-Source: registry/multi-select.json
+Source: https://monoline.prashantdasari.com/registry/multi-select.json
 
 ## Native select (native-select)
 The browser select, styled. Best on mobile and for long simple lists.
@@ -2490,7 +2505,7 @@ A11y:
 - Inside a Field it is labelled and described automatically.
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt
-Source: registry/native-select.json
+Source: https://monoline.prashantdasari.com/registry/native-select.json
 
 ## Navbar (navbar)
 A top bar with brand, links and an actions slot; links move into a drawer on small screens.
@@ -2523,14 +2538,23 @@ A11y:
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, navbar, navbar-brand, navbar-links, navbar-list, navbar-link, navbar-actions, navbar-drawer, navbar-menu
 Data attributes: data-side: right | end | left | start | top | bottom; data-sticky
-Source: registry/navbar.json
+Source: https://monoline.prashantdasari.com/registry/navbar.json
 
 ## Navigation menu (navigation-menu)
 Site navigation with links and menus that open panels of links.
 Status: stable | Category: navigation | Primitive: radix-ui/NavigationMenu | Related: breadcrumb, breadcrumbs-auto, menubar
 Import: import {NavigationMenu} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- defaultValue?: string
+- dir?: Direction
+- asChild?: boolean
+- value?: string
+- onValueChange?: ((value: string) => void)
+- orientation?: Orientation
+- activationMode?: ActivationMode — Whether an item is activated automatically or manually. - `"automatic"`: hovering or focusing a trigger opens its item, and moving away closes it after a short delay. - `"manual"`: clicking a trigger toggles the item; hover and focus are ignored
+- delayDuration?: number — The duration from when the pointer enters the trigger until the tooltip gets opened. When `activationMode` is `manual`, this prop is ignored.
+- skipDelayDuration?: number — How much time a user has to enter another trigger without incurring a delay again. When `activationMode` is `manual`, this prop is ignored.
 
 Usage:
 ```tsx
@@ -2557,7 +2581,7 @@ A11y:
 
 CSS classes: navmenu, navmenu-list, navmenu-link, navmenu-viewport-wrap, navmenu-viewport, navmenu-content, navmenu-panel
 Data attributes: data-state: open | closed; data-active
-Source: registry/navigation-menu.json
+Source: https://monoline.prashantdasari.com/registry/navigation-menu.json
 
 ## Notification center (notification-center)
 A bell button with an unread count that opens a list of notifications, with mark read, clear and an empty state.
@@ -2608,7 +2632,7 @@ A11y:
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, swatch, check, check-pass, check-fail, badge, badge-solid, badge-accent, kbd, key-hints, dot, heat-0, heat-1, heat-2, heat-3, heat-4, btn-icon, popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, notification-center, notification-center-badge, notification-center-panel, notification-center-head, notification-center-actions, notification-center-list, notification-center-item, notification-center-text, notification-center-title, notification-center-desc, notification-center-time, notification-center-empty
 Data attributes: data-highlighted; data-disabled; data-variant: danger; data-unread
-Source: registry/notification-center.json
+Source: https://monoline.prashantdasari.com/registry/notification-center.json
 
 ## Number input (number-input)
 A numeric field with decrease and increase buttons.
@@ -2635,7 +2659,7 @@ A11y:
 - The step buttons are named "Decrease" and "Increase" and are skipped by Tab.
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, number-input, number-field, number-step
-Source: registry/number-input.json
+Source: https://monoline.prashantdasari.com/registry/number-input.json
 
 ## Number ticker (number-ticker)
 Count up to a number when it scrolls into view. Shows the final value at once for reduced motion.
@@ -2663,7 +2687,7 @@ A11y:
 - With prefers-reduced-motion the final number shows immediately and nothing animates.
 
 CSS classes: number-ticker
-Source: registry/number-ticker.json
+Source: https://monoline.prashantdasari.com/registry/number-ticker.json
 
 ## Orbiting circles (orbiting-circles)
 Small items circling a centre. Decorative.
@@ -2693,7 +2717,7 @@ A11y:
 - Under prefers-reduced-motion the items stop, evenly spaced around the ring.
 
 CSS classes: orbit, orbit-ring, orbit-center, orbit-item, orbit-reverse
-Source: registry/orbiting-circles.json
+Source: https://monoline.prashantdasari.com/registry/orbiting-circles.json
 
 ## OTP input (otp-input)
 Enter a one-time code, one digit per box, with paste support.
@@ -2730,7 +2754,7 @@ A11y:
 - inputmode="numeric" and autocomplete="one-time-code" for mobile and autofill.
 
 CSS classes: otp, otp-box
-Source: registry/otp-input.json
+Source: https://monoline.prashantdasari.com/registry/otp-input.json
 
 ## Overflow list (overflow-list)
 A row of items that shows as many as fit and puts the rest in a '+N' menu.
@@ -2759,7 +2783,7 @@ A11y:
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, dropdown, menu, menu-end, menu-item, danger, menu-sep, overflow-list, overflow-list-items, overflow-list-item, overflow-list-more
 Data attributes: data-hidden
-Source: registry/overflow-list.json
+Source: https://monoline.prashantdasari.com/registry/overflow-list.json
 
 ## Page header (page-header)
 The top of a page: breadcrumbs, title, description and actions.
@@ -2790,7 +2814,7 @@ A11y:
 - Breadcrumbs and actions are slots, so they keep their own landmark and keyboard behaviour.
 
 CSS classes: page-header, page-header-row, page-header-text, page-header-title, page-header-description, page-header-actions
-Source: registry/page-header.json
+Source: https://monoline.prashantdasari.com/registry/page-header.json
 
 ## Pagination (pagination)
 Move between pages of results.
@@ -2824,11 +2848,11 @@ A11y:
 
 CSS classes: crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel
 Data attributes: data-state: done
-Source: registry/pagination.json
+Source: https://monoline.prashantdasari.com/registry/pagination.json
 
 ## Password input (password-input)
 A password field with a show/hide toggle.
-Status: stable | Category: forms | Related: input
+Status: stable | Category: forms | Related: input, field
 Import: import {PasswordInput} from '@monoline/react'
 
 Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
@@ -2849,7 +2873,7 @@ A11y:
 - The field keeps autocomplete hints so password managers work.
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt
-Source: registry/password-input.json
+Source: https://monoline.prashantdasari.com/registry/password-input.json
 
 ## Pie chart (pie-chart)
 Parts of a whole as a pie, or a donut with innerRadius.
@@ -2882,11 +2906,11 @@ A11y:
 
 CSS classes: chart, chart-plot, chart-svg, chart-hits, chart-s0, chart-s1, chart-s2, chart-s3, chart-s4, chart-tick, chart-value, chart-rule, chart-zero, chart-outline, chart-pat, chart-pat-dot, chart-line, chart-area, chart-hit, chart-tip, chart-tip-title, chart-tip-row, chart-tip-value, chart-legend, chart-legend-detail, chart-swatch, chart-empty, chart-marks, chart-slice
 Data attributes: data-active; data-align: start | end
-Source: registry/pie-chart.json
+Source: https://monoline.prashantdasari.com/registry/pie-chart.json
 
 ## Popover (popover)
 A floating panel of content or controls anchored to a button.
-Status: stable | Category: overlays | Primitive: native ARIA (shared positioning) | Related: alert-dialog, command, context-menu
+Status: stable | Category: overlays | Primitive: native ARIA (shared positioning) | Related: tooltip, dropdown-menu, dialog
 Import: import {Popover} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -2921,7 +2945,7 @@ A11y:
 
 CSS classes: popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check
 Data attributes: data-highlighted; data-disabled; data-variant: danger
-Source: registry/popover.json
+Source: https://monoline.prashantdasari.com/registry/popover.json
 
 ## Progress (progress)
 How far along a task is, or that it is still working.
@@ -2948,7 +2972,7 @@ A11y:
 
 CSS classes: progress-bar, progress-fill
 Data attributes: data-state: indeterminate
-Source: registry/progress.json
+Source: https://monoline.prashantdasari.com/registry/progress.json
 
 ## Radio group (radio-group)
 Pick exactly one option from a short list.
@@ -2975,7 +2999,7 @@ A11y:
 
 CSS classes: checkbox, radio, sw, checkbox-mark, radio-dot, radio-group, sw-thumb, choice, choice-group
 Data attributes: data-state: checked | indeterminate; data-orientation: horizontal
-Source: registry/radio-group.json
+Source: https://monoline.prashantdasari.com/registry/radio-group.json
 
 ## Range calendar (range-calendar)
 A month grid for picking a start and an end date.
@@ -3009,7 +3033,7 @@ A11y:
 
 CSS classes: calendar, calendar-head, calendar-title, calendar-nav, calendar-grid, calendar-day, range-cell, range-calendar
 Data attributes: data-outside; data-today; data-in-range; data-range-start; data-preview
-Source: registry/range-calendar.json
+Source: https://monoline.prashantdasari.com/registry/range-calendar.json
 
 ## Rating (rating)
 Pick or show a score from 1 to a maximum, as stars.
@@ -3038,7 +3062,7 @@ A11y:
 
 CSS classes: rating, rating-star
 Data attributes: data-on
-Source: registry/rating.json
+Source: https://monoline.prashantdasari.com/registry/rating.json
 
 ## Resizable (resizable)
 Panels separated by handles you drag or move with the keyboard.
@@ -3047,7 +3071,7 @@ Import: import {ResizablePanelGroup} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
 ResizablePanelGroupProps:
-- direction?: "vertical" | "horizontal" = 'horizontal' — `horizontal` puts panels side by side; `vertical` stacks them. Default `horizontal`.
+- direction?: "horizontal" | "vertical" = 'horizontal' — `horizontal` puts panels side by side; `vertical` stacks them. Default `horizontal`.
 - step?: number = 5 — Percent a panel grows or shrinks per arrow-key press (PageUp/PageDown use double). Default 5.
 - onLayoutChange?: ((sizes: number[]) => void) — Called with every panel's size in percent (they add up to 100) after each resize.
 - children: ReactNode — `ResizablePanel` and `ResizableHandle` elements, alternating, as direct children: panel, handle, panel...
@@ -3079,7 +3103,7 @@ A11y:
 
 CSS classes: resizable, resizable-panel, resizable-handle
 Data attributes: data-direction: vertical | horizontal; data-dragging
-Source: registry/resizable.json
+Source: https://monoline.prashantdasari.com/registry/resizable.json
 
 ## Rich text editor (rich-text-editor)
 A dependency-free rich text editor with a formatting toolbar and sanitized HTML in and out.
@@ -3113,7 +3137,7 @@ A11y:
 
 CSS classes: toolbar, toolbar-item, toolbar-sep, popover, menu-content, menu-item, menu-label, menu-indicator, menu-item-check, btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row, rte, rte-toolbar, rte-content, rte-link, rte-link-label, rte-link-error, rte-link-actions
 Data attributes: data-state: on; data-highlighted; data-disabled; data-variant: danger; data-valid: true; data-empty; data-readonly
-Source: registry/rich-text-editor.json
+Source: https://monoline.prashantdasari.com/registry/rich-text-editor.json
 
 ## Rolling number (rolling-number)
 A number whose digits roll to the new value when it changes. Screen readers read the final value.
@@ -3150,7 +3174,7 @@ A11y:
 - Not interactive: no focus stops.
 
 CSS classes: rolling-number, rolling-number-visual, rolling-number-digit, rolling-number-strip, rolling-number-char
-Source: registry/rolling-number.json
+Source: https://monoline.prashantdasari.com/registry/rolling-number.json
 
 ## Scroll area (scroll-area)
 A scrollable region with thin, themed scrollbars.
@@ -3158,7 +3182,7 @@ Status: stable | Category: layout | Primitive: radix-ui/ScrollArea | Related: ap
 Import: import {ScrollArea} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- orientation?: "vertical" | "horizontal" | "both" = 'vertical' — Which scrollbars to render.
+- orientation?: "both" | "horizontal" | "vertical" = 'vertical' — Which scrollbars to render.
 - viewportProps?: Omit<Radix.ScrollAreaViewportProps & RefAttributes<HTMLDivElement>, "ref"> — Passed to the focusable viewport, e.g. a name for the region.
 
 Usage:
@@ -3181,7 +3205,7 @@ A11y:
 
 CSS classes: scroll-area, scroll-viewport, scroll-bar, scroll-thumb
 Data attributes: data-orientation: vertical | horizontal
-Source: registry/scroll-area.json
+Source: https://monoline.prashantdasari.com/registry/scroll-area.json
 
 ## Scroll progress (scroll-progress)
 A thin bar fixed to the top of the window that fills as the page scrolls.
@@ -3204,7 +3228,7 @@ A11y:
 - No transition, so there is no motion beyond the scroll itself.
 
 CSS classes: scroll-progress, scroll-progress-bar
-Source: registry/scroll-progress.json
+Source: https://monoline.prashantdasari.com/registry/scroll-progress.json
 
 ## Segmented control (segmented-control)
 Pick exactly one option from a short row, shown as joined segments.
@@ -3235,7 +3259,7 @@ A11y:
 
 CSS classes: segmented, segment
 Data attributes: data-state: on
-Source: registry/segmented-control.json
+Source: https://monoline.prashantdasari.com/registry/segmented-control.json
 
 ## Select (select)
 Pick one value from a list of five or more options.
@@ -3292,14 +3316,17 @@ A11y:
 
 CSS classes: select-trigger, select-content, select-item, select-label, input-sm, input-lg
 Data attributes: data-placeholder; data-state: open; data-highlighted; data-disabled; data-invalid
-Source: registry/select.json
+Source: https://monoline.prashantdasari.com/registry/select.json
 
 ## Separator (separator)
 A thin rule between groups.
 Status: stable | Category: layout | Primitive: radix-ui/Separator | Related: app-shell, aspect-ratio, box
 Import: import {Separator} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- asChild?: boolean
+- orientation?: Orientation = 'horizontal' — Either `vertical` or `horizontal`. Defaults to `horizontal`.
+- decorative?: boolean = true — Whether or not the component is purely decorative. When true, accessibility-related attributes are updated so that the rendered element is removed from the accessibility tree.
 
 Usage:
 ```tsx
@@ -3323,7 +3350,7 @@ A11y:
 
 CSS classes: separator
 Data attributes: data-orientation: horizontal | vertical
-Source: registry/separator.json
+Source: https://monoline.prashantdasari.com/registry/separator.json
 
 ## Shimmer button (shimmer-button)
 The Button with a light sweep across it. Still a native button.
@@ -3344,7 +3371,7 @@ A11y:
 - The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch, shimmer-button
-Source: registry/shimmer-button.json
+Source: https://monoline.prashantdasari.com/registry/shimmer-button.json
 
 ## Sidebar (sidebar)
 A collapsible navigation sidebar with groups, icons and a mobile drawer.
@@ -3426,7 +3453,7 @@ A11y:
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, btn-icon, tooltip, dialog-content, drawer-content, command, dialog-overlay, dialog-header, dialog-footer, dialog-description, dialog-close, dialog-title, sidebar, sidebar-inner, sidebar-header, sidebar-footer, sidebar-content, sidebar-group, sidebar-group-label, sidebar-list, sidebar-item, sidebar-icon, sidebar-label, sidebar-toggle, sidebar-drawer, sidebar-trigger
 Data attributes: data-side: right | end | left | start | top | bottom; data-collapsed
-Source: registry/sidebar.json
+Source: https://monoline.prashantdasari.com/registry/sidebar.json
 
 ## Skeleton (skeleton)
 A still placeholder shaped like the content that is loading.
@@ -3452,7 +3479,7 @@ A11y:
 - Pair with an aria-busy region or a Spinner so loading is announced once.
 
 CSS classes: spinner, skeleton, skeleton-block, skeleton-hatch
-Source: registry/skeleton.json
+Source: https://monoline.prashantdasari.com/registry/skeleton.json
 
 ## Slider (slider)
 Pick a number, or a range, by dragging or with the keyboard.
@@ -3482,7 +3509,7 @@ A11y:
 
 CSS classes: slider, slider-track, slider-range, slider-thumb, toggle, toggle-group, range, progress
 Data attributes: data-disabled; data-state: on
-Source: registry/slider.json
+Source: https://monoline.prashantdasari.com/registry/slider.json
 
 ## Sortable list (sortable-list)
 A list the user reorders by dragging a handle or with the keyboard, with live announcements.
@@ -3494,7 +3521,7 @@ Props (name: type = default, ? means optional):
 - value?: SortableItem[] — The items in their current order when controlled. Pair with `onValueChange`.
 - defaultValue?: SortableItem[] = [] — The items in their starting order when uncontrolled.
 - onValueChange?: ((items: SortableItem[]) => void) — Called with the new order when the user drops an item in a new place. Not called for a cancelled move or a drop where it started.
-- orientation?: "vertical" | "horizontal" = 'vertical' — `vertical` (default) moves with ArrowUp and ArrowDown; `horizontal` lays the items in a row and moves with ArrowLeft and ArrowRight.
+- orientation?: "horizontal" | "vertical" = 'vertical' — `vertical` (default) moves with ArrowUp and ArrowDown; `horizontal` lays the items in a row and moves with ArrowLeft and ArrowRight.
 
 Usage:
 ```tsx
@@ -3515,7 +3542,7 @@ A11y:
 
 CSS classes: sortable-list, sortable-list-horizontal, sortable-list-item, sortable-list-handle, sortable-list-label
 Data attributes: data-dragging
-Source: registry/sortable-list.json
+Source: https://monoline.prashantdasari.com/registry/sortable-list.json
 
 ## Sparkline (sparkline)
 A tiny inline trend line for a table cell or a sentence.
@@ -3544,7 +3571,7 @@ A11y:
 - Decorative at a glance: it has no tooltip and no tab stops.
 
 CSS classes: sparkline, sparkline-line, sparkline-area, sparkline-dot, sparkline-empty
-Source: registry/sparkline.json
+Source: https://monoline.prashantdasari.com/registry/sparkline.json
 
 ## Spinner (spinner)
 A small indicator that something is loading.
@@ -3569,7 +3596,7 @@ A11y:
 - Animation stops under prefers-reduced-motion.
 
 CSS classes: spinner, skeleton, skeleton-block, skeleton-hatch
-Source: registry/spinner.json
+Source: https://monoline.prashantdasari.com/registry/spinner.json
 
 ## Spotlight (spotlight)
 A surface with a soft highlight that follows the pointer.
@@ -3595,7 +3622,7 @@ A11y:
 - No fade transition under prefers-reduced-motion.
 
 CSS classes: spotlight
-Source: registry/spotlight.json
+Source: https://monoline.prashantdasari.com/registry/spotlight.json
 
 ## Stack (stack)
 Lay children out in a column or row with one gap from the spacing scale.
@@ -3625,7 +3652,7 @@ A11y:
 
 CSS classes: stack, stack-row, stack-wrap
 Data attributes: data-align: start | center | end | stretch; data-justify: start | center | end | between
-Source: registry/stack.json
+Source: https://monoline.prashantdasari.com/registry/stack.json
 
 ## Stat (stat)
 One number with its label and a note.
@@ -3651,7 +3678,7 @@ A11y:
 - A description list (dl) pairs the label with its value.
 
 CSS classes: avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note
-Source: registry/stat.json
+Source: https://monoline.prashantdasari.com/registry/stat.json
 
 ## Stepper (stepper)
 Show progress through a numbered sequence of steps.
@@ -3679,7 +3706,7 @@ A11y:
 
 CSS classes: crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel
 Data attributes: data-state: done
-Source: registry/stepper.json
+Source: https://monoline.prashantdasari.com/registry/stepper.json
 
 ## Switch (switch)
 An on/off setting that takes effect immediately.
@@ -3706,7 +3733,7 @@ A11y:
 
 CSS classes: checkbox, radio, sw, checkbox-mark, radio-dot, radio-group, sw-thumb
 Data attributes: data-state: checked | indeterminate; data-orientation: horizontal
-Source: registry/switch.json
+Source: https://monoline.prashantdasari.com/registry/switch.json
 
 ## Table (table)
 Rows and columns of data with a header, in a horizontally scrolling wrapper.
@@ -3738,14 +3765,21 @@ A11y:
 - The scroll wrapper is focusable and named so keyboard users can scroll wide tables.
 
 CSS classes: table-wrap, table, num
-Source: registry/table.json
+Source: https://monoline.prashantdasari.com/registry/table.json
 
 ## Tabs (tabs)
 Switch between related views in the same place.
-Status: stable | Category: navigation | Primitive: radix-ui/Tabs | Related: breadcrumb, breadcrumbs-auto, menubar
+Status: stable | Category: navigation | Primitive: radix-ui/Tabs | Related: accordion, toggle-group
 Import: import {Tabs} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- defaultValue?: string — The value of the tab to select by default, if uncontrolled
+- dir?: Direction — The direction of navigation between toolbar items.
+- asChild?: boolean
+- value?: string — The value for the selected tab, if controlled
+- onValueChange?: ((value: string) => void) — A function called when a new tab is selected
+- orientation?: Orientation — The orientation the tabs are layed out. Mainly so arrow navigation is done accordingly (left & right vs. up & down)
+- activationMode?: ActivationMode — Whether a tab is activated automatically or manually.
 
 Usage:
 ```tsx
@@ -3770,7 +3804,7 @@ A11y:
 
 CSS classes: tabs-root, tabs-list, tabs-trigger, tabs-content, crumbs, pager, steps, step, topbar, brand, topbar-nav, tab, tabpanel
 Data attributes: data-orientation: vertical | horizontal; data-state: active | done
-Source: registry/tabs.json
+Source: https://monoline.prashantdasari.com/registry/tabs.json
 
 ## Tag (tag)
 A short label, optionally removable.
@@ -3792,7 +3826,7 @@ A11y:
 - The remove control is a real button named "Remove <label>".
 
 CSS classes: avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note
-Source: registry/tag.json
+Source: https://monoline.prashantdasari.com/registry/tag.json
 
 ## Tags input (tags-input)
 Type text and press Enter or comma to add it as a removable tag.
@@ -3824,7 +3858,7 @@ A11y:
 
 CSS classes: avatar, avatar-sm, avatar-lg, avatar-line, avatar-group, tag, stat, stat-value, stat-note, tags-input, tags-input-field
 Data attributes: data-invalid; data-disabled; data-size: sm | lg
-Source: registry/tags-input.json
+Source: https://monoline.prashantdasari.com/registry/tags-input.json
 
 ## Text (text)
 Body text with a size and tone from the scale.
@@ -3854,7 +3888,7 @@ A11y:
 - A plain p (or the child with asChild); tone is never the only signal, so pair danger text with words.
 
 CSS classes: text, text-full, text-xs, text-sm, text-md, text-lg, text-muted, text-danger, text-success, text-ok, text-warning, text-accent, text-truncate
-Source: registry/text.json
+Source: https://monoline.prashantdasari.com/registry/text.json
 
 ## Text reveal (text-reveal)
 Fade a sentence in word by word. Static for reduced motion.
@@ -3880,7 +3914,7 @@ A11y:
 - With prefers-reduced-motion every word is visible at once.
 
 CSS classes: text-reveal-word
-Source: registry/text-reveal.json
+Source: https://monoline.prashantdasari.com/registry/text-reveal.json
 
 ## Textarea (textarea)
 A multi-line text field.
@@ -3905,7 +3939,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, field-error, field-ok, input-group, input-affix, field-required, form-row
 Data attributes: data-valid: true
-Source: registry/textarea.json
+Source: https://monoline.prashantdasari.com/registry/textarea.json
 
 ## Theme provider (theme-provider)
 Set and save the theme, accent, font, corners, density and direction from React with useTheme(), and avoid the first-paint flash with themeScript().
@@ -3949,7 +3983,7 @@ A11y:
 - The theme follows the system colour scheme until the user chooses one.
 - ThemeSwitcher is a labelled group of native selects, fully keyboard operable.
 - Changing direction also sets dir on the page so arrow keys follow the reading direction.
-Source: registry/theme-provider.json
+Source: https://monoline.prashantdasari.com/registry/theme-provider.json
 
 ## Time field (time-field)
 Hour, minute and AM/PM segments you step with arrow keys or type into.
@@ -3984,7 +4018,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, time-field, time-segment, time-sep
 Data attributes: data-empty; data-disabled
-Source: registry/time-field.json
+Source: https://monoline.prashantdasari.com/registry/time-field.json
 
 ## Time picker (time-picker)
 Pick a time of day with hour, minute and AM/PM segments, using the browser's own control.
@@ -4015,7 +4049,7 @@ A11y:
 - The control takes its name from a label or aria-label; min, max and step are passed through.
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, time-picker
-Source: registry/time-picker.json
+Source: https://monoline.prashantdasari.com/registry/time-picker.json
 
 ## Timeline (timeline)
 A vertical list of events with times, joined by a rule.
@@ -4042,14 +4076,28 @@ A11y:
 - An ordered list of events; the time is a real time element when a datetime is given.
 
 CSS classes: timeline, timeline-item, timeline-title, timeline-time, timeline-body
-Source: registry/timeline.json
+Source: https://monoline.prashantdasari.com/registry/timeline.json
 
 ## Toast (toast)
 A short message that appears briefly and does not block the page.
 Status: stable | Category: feedback | Primitive: radix-ui/Toast | Related: alert, empty-state, notification-center
 Import: import {Toast} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- onPause?: (() => void)
+- asChild?: boolean
+- type?: ToastType
+- defaultOpen?: boolean
+- open?: boolean
+- onOpenChange?: ((open: boolean) => void)
+- duration?: number — Time in milliseconds that toast should remain visible for. Overrides value given to `ToastProvider`.
+- onEscapeKeyDown?: ((event: KeyboardEvent) => void)
+- onResume?: (() => void)
+- onSwipeStart?: ((event: SwipeEvent) => void)
+- onSwipeMove?: ((event: SwipeEvent) => void)
+- onSwipeCancel?: ((event: SwipeEvent) => void)
+- onSwipeEnd?: ((event: SwipeEvent) => void)
+- forceMount?: true — Used to force mounting when more control is needed. Useful when controlling animation with React animation libraries.
 
 Usage:
 ```tsx
@@ -4082,7 +4130,7 @@ A11y:
 
 CSS classes: toast-viewport, toast-item, toast-title, toast-description, toast-action, toast-close
 Data attributes: data-state: open | closed
-Source: registry/toast.json
+Source: https://monoline.prashantdasari.com/registry/toast.json
 
 ## Toaster (toaster)
 Show a toast from anywhere with toast('Saved'). Mount one Toaster; call toast.success, toast.error or toast.promise from handlers.
@@ -4125,7 +4173,7 @@ A11y:
 
 CSS classes: toast-viewport, toast-item, toast-title, toast-description, toast-action, toast-close, toaster-viewport, toaster-item
 Data attributes: data-state: open | closed; data-position: start | center; data-kind: success | warning | error | loading; data-swipe: move | cancel
-Source: registry/toaster.json
+Source: https://monoline.prashantdasari.com/registry/toaster.json
 
 ## Table of contents (toc)
 An on-this-page list of links to the headings of the current page, with the heading being read highlighted.
@@ -4174,14 +4222,18 @@ A11y:
 
 CSS classes: toc, toc-heading, toc-body, toc-list, toc-link, toc-rule, toc-bend, toc-thumb
 Data attributes: data-level: 3 | 4 | 5 | 6; data-bend-start; data-bend-end
-Source: registry/toc.json
+Source: https://monoline.prashantdasari.com/registry/toc.json
 
 ## Toggle (toggle)
 A button that stays pressed or not.
-Status: stable | Category: buttons | Primitive: radix-ui/Toggle | Related: button, button-group, copy-button
+Status: stable | Category: buttons | Primitive: radix-ui/Toggle | Related: toggle-group
 Import: import {Toggle} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- asChild?: boolean
+- pressed?: boolean — The controlled state of the toggle.
+- defaultPressed?: boolean — The state of the toggle when initially rendered. Use `defaultPressed` if you do not need to control the state of the toggle.
+- onPressedChange?: ((pressed: boolean) => void) — The callback that fires when the state of the toggle changes.
 
 Usage:
 ```tsx
@@ -4200,14 +4252,24 @@ A11y:
 
 CSS classes: slider, slider-track, slider-range, slider-thumb, toggle, toggle-group
 Data attributes: data-disabled; data-state: on
-Source: registry/toggle.json
+Source: https://monoline.prashantdasari.com/registry/toggle.json
 
 ## Toggle group (toggle-group)
 A row of toggles where one or several can be on.
-Status: stable | Category: buttons | Primitive: radix-ui/ToggleGroup | Related: button, button-group, copy-button
+Status: stable | Category: buttons | Primitive: radix-ui/ToggleGroup | Related: toggle, tabs
 Import: import {ToggleGroup} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- defaultValue?: string | string[] — The value of the item that is pressed when initially rendered. Use `defaultValue` if you do not need to control the state of a toggle group. The value of the items that are pressed when initially rendered. Use `defaultValue` if you do not need to control the state of a toggle group.
+- dir?: Direction
+- asChild?: boolean
+- type: "single" | "multiple"
+- value?: string | string[] — The controlled stateful value of the item that is pressed. The controlled stateful value of the items that are pressed.
+- onValueChange?: ((value: string) => void) | ((value: string[]) => void) — The callback that fires when the value of the toggle group changes. The callback that fires when the state of the toggle group changes.
+- disabled?: boolean — Whether the group is disabled from user interaction.
+- orientation?: Orientation
+- rovingFocus?: boolean — Whether the group should maintain roving focus of its buttons.
+- loop?: boolean
 
 Usage:
 ```tsx
@@ -4227,14 +4289,15 @@ A11y:
 
 CSS classes: slider, slider-track, slider-range, slider-thumb, toggle, toggle-group
 Data attributes: data-disabled; data-state: on
-Source: registry/toggle-group.json
+Source: https://monoline.prashantdasari.com/registry/toggle-group.json
 
 ## Toolbar (toolbar)
 A row of related controls that share one tab stop and arrow-key movement.
 Status: stable | Category: buttons | Primitive: radix-ui/Toolbar | Related: button, button-group, copy-button
 Import: import {Toolbar} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- aria-label: string — Names the toolbar, for example "Text formatting".
 
 Usage:
 ```tsx
@@ -4255,7 +4318,7 @@ A11y:
 
 CSS classes: toolbar, toolbar-item, toolbar-sep
 Data attributes: data-state: on
-Source: registry/toolbar.json
+Source: https://monoline.prashantdasari.com/registry/toolbar.json
 
 ## Tooltip (tooltip)
 Short hint text on hover and keyboard focus.
@@ -4293,7 +4356,7 @@ A11y:
 - Never the only place for essential information: touch users do not get hover.
 
 CSS classes: tooltip
-Source: registry/tooltip.json
+Source: https://monoline.prashantdasari.com/registry/tooltip.json
 
 ## Tour (tour)
 A guided walkthrough: a spotlight on one element at a time with a card and Next, Back and Skip.
@@ -4350,7 +4413,7 @@ A11y:
 - The overlay and spotlight are hidden from assistive technology; animation stops under prefers-reduced-motion.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, tour, tour-overlay, tour-spotlight, tour-card, tour-count, tour-title, tour-content, tour-actions, tour-spacer
-Source: registry/tour.json
+Source: https://monoline.prashantdasari.com/registry/tour.json
 
 ## Tree (tree)
 A nested list of items that open and close, with one selected item.
@@ -4391,7 +4454,7 @@ A11y:
 
 CSS classes: tree, tree-group, tree-item, tree-row, tree-twisty
 Data attributes: data-selected
-Source: registry/tree.json
+Source: https://monoline.prashantdasari.com/registry/tree.json
 
 ## Tree select (tree-select)
 A select whose options are a nested tree, with search and single or multiple selection.
@@ -4436,7 +4499,7 @@ A11y:
 
 CSS classes: field, field-hint, input, select, textarea, input-sm, input-lg, input-wrap, input-end, input-bare, switch, setting, seg, muted, seg-opt, tree-select, tree-select-list, tree-select-item, tree-select-twisty, tree-select-empty
 Data attributes: data-active
-Source: registry/tree-select.json
+Source: https://monoline.prashantdasari.com/registry/tree-select.json
 
 ## Typewriter (typewriter)
 Type a string one character at a time. Static for reduced motion.
@@ -4464,7 +4527,7 @@ A11y:
 - With prefers-reduced-motion the full text shows immediately and the caret does not blink.
 
 CSS classes: typewriter-caret
-Source: registry/typewriter.json
+Source: https://monoline.prashantdasari.com/registry/typewriter.json
 
 ## Virtual list (virtual-list)
 A windowed list for thousands of rows: only the rows in view are in the page.
@@ -4498,14 +4561,19 @@ A11y:
 - The list needs an aria-label.
 
 CSS classes: virtual-list, virtual-list-body, virtual-list-row
-Source: registry/virtual-list.json
+Source: https://monoline.prashantdasari.com/registry/virtual-list.json
 
 ## useClickOutside (use-click-outside)
 Calls a function when a pointer goes down outside an element, to close menus and popovers.
-Status: stable | Category: hooks | Related: use-clipboard, use-controllable-state, use-counter
+Status: stable | Category: hooks | Related: use-focus-trap, use-hotkeys
 Import: import {useClickOutside} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- onOutside: (event: Event) => void — Called with the pointerdown event.
+- enabled?: boolean = true — Set false to stop listening. Default `true`.
+Returns:
+- return: RefObject<T | null> — A ref to attach to the element that counts as inside.
 
 Usage:
 ```tsx
@@ -4533,7 +4601,7 @@ function PopoverDemo() {
 A11y:
 - No DOM output. Close popovers with Escape too; this hook covers pointer only.
 - Listens to pointerdown on the document and removes the listener on unmount.
-Source: registry/use-click-outside.json
+Source: https://monoline.prashantdasari.com/registry/use-click-outside.json
 
 ## useClipboard (use-clipboard)
 Copy text with the Clipboard API, with a copied flag that resets after a delay and an error when it fails.
@@ -4570,7 +4638,7 @@ function ClipboardDemo() {
 A11y:
 - No DOM output. Pair the copied state with a visible or aria-live status message in the UI.
 - A failed copy returns false and sets error; it never throws.
-Source: registry/use-clipboard.json
+Source: https://monoline.prashantdasari.com/registry/use-clipboard.json
 
 ## useControllableState (use-controllable-state)
 The value, defaultValue and onChange pattern for custom components that can be controlled or uncontrolled.
@@ -4609,7 +4677,7 @@ function Counter({value, defaultValue = 0, onValueChange}: CounterProps) {
 A11y:
 - No DOM output. Lets a custom widget accept value/defaultValue/onValueChange like the Monoline components do.
 - onChange fires only when the new value differs from the current one.
-Source: registry/use-controllable-state.json
+Source: https://monoline.prashantdasari.com/registry/use-controllable-state.json
 
 ## useCounter (use-counter)
 A number with increment, decrement, set and reset, bounded by optional min and max.
@@ -4634,11 +4702,11 @@ function Demo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-counter.json
+Source: https://monoline.prashantdasari.com/registry/use-counter.json
 
 ## useDebounce (use-debounce)
 Debounced value and debounced callback: wait for input to settle before acting.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-timeout, use-interval
 Import: import {useDebounce} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -4670,11 +4738,11 @@ function SearchDemo() {
 A11y:
 - No DOM output. Use for search fields so the list updates after typing stops.
 - A pending callback is dropped on unmount.
-Source: registry/use-debounce.json
+Source: https://monoline.prashantdasari.com/registry/use-debounce.json
 
 ## useDisclosure (use-disclosure)
 Open and closed state with open, close and toggle functions, and callbacks when it changes.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-toggle, use-controllable-state
 Import: import {useDisclosure} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -4708,14 +4776,15 @@ function DisclosureDemo() {
 A11y:
 - No DOM output. Pair with aria-expanded and aria-controls on the trigger.
 - Callbacks run only when the state actually changes, not on mount.
-Source: registry/use-disclosure.json
+Source: https://monoline.prashantdasari.com/registry/use-disclosure.json
 
 ## useDocumentTitle (use-document-title)
 Set document.title while a component is mounted, then restore it.
 Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
 Import: import {useDocumentTitle} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- title: string — The text to show in the browser tab.
 
 Usage:
 ```tsx
@@ -4733,14 +4802,18 @@ function Demo() {
 
 A11y:
 - Sets the page title, which screen readers announce on navigation. Make each view title unique and meaningful.
-Source: registry/use-document-title.json
+Source: https://monoline.prashantdasari.com/registry/use-document-title.json
 
 ## useFocusTrap (use-focus-trap)
 Keeps Tab focus inside an element while it is active, and returns focus when it closes.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-click-outside, use-hotkeys
 Import: import {useFocusTrap} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- active: boolean — Whether Tab is trapped right now.
+Returns:
+- return: RefObject<T | null> — A ref to attach to the container that holds focus.
 
 Usage:
 ```tsx
@@ -4770,14 +4843,15 @@ function TrapDemo() {
 A11y:
 - Tab and Shift+Tab cycle inside the container while active. Focus moves in on activation.
 - Focus returns to the element that had it before when the trap ends. Escape to close is the caller's job.
-Source: registry/use-focus-trap.json
+Source: https://monoline.prashantdasari.com/registry/use-focus-trap.json
 
 ## useHash (use-hash)
 Read and set location.hash as state.
 Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
 Import: import {useHash} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- return: [string, (hash: string) => void] — The current hash without "#", and a function that sets it.
 
 Usage:
 ```tsx
@@ -4793,11 +4867,11 @@ function Demo() {
 
 A11y:
 - No DOM output. Changing the hash adds a history entry, so Back works.
-Source: registry/use-hash.json
+Source: https://monoline.prashantdasari.com/registry/use-hash.json
 
 ## useHotkeys (use-hotkeys)
 Keyboard shortcuts such as mod+k or escape, ignored while typing in fields unless allowed.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-focus-trap, use-click-outside
 Import: import {useHotkeys} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -4831,14 +4905,15 @@ function HotkeysDemo() {
 A11y:
 - No DOM output. Shortcuts are additions: every control must still be reachable by keyboard and Tab.
 - mod means Cmd on macOS and Ctrl elsewhere. Typing in inputs is ignored unless allowInInputs is set.
-Source: registry/use-hotkeys.json
+Source: https://monoline.prashantdasari.com/registry/use-hotkeys.json
 
 ## useHover (use-hover)
 Track whether the pointer is over an element.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-long-press, use-intersection
 Import: import {useHover} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- return: [RefCallback<T>, boolean] — A ref callback for the element, and whether the pointer is over it.
 
 Usage:
 ```tsx
@@ -4854,11 +4929,11 @@ function Demo() {
 
 A11y:
 - No DOM output. Hover is pointer-only: never hide essential content or actions behind it.
-Source: registry/use-hover.json
+Source: https://monoline.prashantdasari.com/registry/use-hover.json
 
 ## useIntersection (use-intersection)
 Know whether an element is in view, with an IntersectionObserver.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-scroll-spy
 Import: import {useIntersection} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -4884,14 +4959,16 @@ function Demo() {
 
 A11y:
 - No DOM output. When IntersectionObserver is unavailable, it reports not intersecting.
-Source: registry/use-intersection.json
+Source: https://monoline.prashantdasari.com/registry/use-intersection.json
 
 ## useInterval (use-interval)
 Calls a function on a timer, with a null delay to pause it. Cleared on unmount.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-timeout, use-debounce
 Import: import {useInterval} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- callback: () => void — Runs on every tick. The latest version is used.
+- delay: number | null — Milliseconds between ticks, or `null` to pause.
 
 Usage:
 ```tsx
@@ -4916,14 +4993,19 @@ function IntervalDemo() {
 A11y:
 - No DOM output. Clears its timer on unmount so nothing runs after the component is gone.
 - Pass null as the delay to pause.
-Source: registry/use-interval.json
+Source: https://monoline.prashantdasari.com/registry/use-interval.json
 
 ## useLocalStorage (use-local-storage)
 A JSON value kept in localStorage, shaped like useState, that stays in sync across tabs.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-hash, use-controllable-state
 Import: import {useLocalStorage} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- key: string — The `localStorage` key.
+- initialValue: T — Used on the server, on first render and when nothing is stored.
+Returns:
+- return: [T, SetLocalStorageValue<T>] — The value and a setter that accepts a value or an updater function.
 
 Usage:
 ```tsx
@@ -4945,11 +5027,11 @@ function CountDemo() {
 A11y:
 - No DOM output. Storage failures (blocked, full) fall back to memory and do not throw.
 - Other tabs receive changes through the storage event.
-Source: registry/use-local-storage.json
+Source: https://monoline.prashantdasari.com/registry/use-local-storage.json
 
 ## useLongPress (use-long-press)
 Call a handler when an element is held down, cancelling if the pointer moves or lifts early.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-hover
 Import: import {useLongPress} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -4972,14 +5054,19 @@ function Demo() {
 
 A11y:
 - Press and hold is hard for many people: always offer a normal click or keyboard action for the same result.
-Source: registry/use-long-press.json
+Source: https://monoline.prashantdasari.com/registry/use-long-press.json
 
 ## useMediaQuery (use-media-query)
 Whether a CSS media query matches, updated live, and safe to render on the server.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-reduced-motion
 Import: import {useMediaQuery} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- query: string — A CSS media query, for example `(min-width: 768px)`.
+- defaultValue?: boolean = false — Returned for the first render, before the real value is known. Default `false`.
+Returns:
+- return: boolean — Whether the query matches.
 
 Usage:
 ```tsx
@@ -4996,14 +5083,15 @@ function WidthDemo() {
 A11y:
 - No DOM output. The first render returns defaultValue so server and client markup match.
 - Listens to matchMedia changes and removes the listener on unmount.
-Source: registry/use-media-query.json
+Source: https://monoline.prashantdasari.com/registry/use-media-query.json
 
 ## useMounted (use-mounted)
 True after the first client render. Use it to avoid server and client markup differences.
 Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
 Import: import {useMounted} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- return: boolean — `false` until the component has mounted, then `true`.
 
 Usage:
 ```tsx
@@ -5019,14 +5107,18 @@ function Demo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-mounted.json
+Source: https://monoline.prashantdasari.com/registry/use-mounted.json
 
 ## usePrevious (use-previous)
 The value from the previous render, for comparing a change.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-counter
 Import: import {usePrevious} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- value: T — The current value.
+Returns:
+- return: T | undefined — The value from the previous render, or `undefined` on the first.
 
 Usage:
 ```tsx
@@ -5049,14 +5141,15 @@ function PreviousDemo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-previous.json
+Source: https://monoline.prashantdasari.com/registry/use-previous.json
 
 ## useReducedMotion (use-reduced-motion)
 Whether the user has asked the system to reduce motion, for skipping or simplifying animation in code.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-media-query
 Import: import {useReducedMotion} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- return: boolean — Whether the user prefers reduced motion.
 
 Usage:
 ```tsx
@@ -5072,14 +5165,19 @@ function MotionDemo() {
 
 A11y:
 - No DOM output. CSS already disables animation under prefers-reduced-motion; use this for JS-driven motion.
-Source: registry/use-reduced-motion.json
+Source: https://monoline.prashantdasari.com/registry/use-reduced-motion.json
 
 ## useScrollSpy (use-scroll-spy)
 Find which section is currently in view, for a table of contents or sticky nav.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-intersection
 Import: import {useScrollSpy} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- ids: readonly string[] — Element ids in page order.
+- offset?: number = 80 — Pixels from the top of the viewport at which a section counts as reached. Default `80`.
+Returns:
+- return: string | null — The id of the active section, or `null` before the first.
 
 Usage:
 ```tsx
@@ -5095,14 +5193,19 @@ function Demo() {
 
 A11y:
 - No DOM output. Highlight the active link and keep real links so keyboard and no-JS users can navigate.
-Source: registry/use-scroll-spy.json
+Source: https://monoline.prashantdasari.com/registry/use-scroll-spy.json
 
 ## useTimeout (use-timeout)
 Run a callback after a delay, with start and clear controls.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-interval, use-debounce
 Import: import {useTimeout} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- callback: () => void — Runs when the timer fires. The latest version is used.
+- delay: number — Milliseconds to wait.
+Returns:
+- return: { start: () => void; clear: () => void; } — `start` (re)starts the timer and `clear` cancels it.
 
 Usage:
 ```tsx
@@ -5120,14 +5223,18 @@ function Demo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-timeout.json
+Source: https://monoline.prashantdasari.com/registry/use-timeout.json
 
 ## useToggle (use-toggle)
 Cycle through a list of values, or flip a boolean.
-Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
+Status: stable | Category: hooks | Related: use-disclosure, use-controllable-state
 Import: import {useToggle} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+Parameters:
+- initial?: boolean — Starting value. Default `false`.
+Returns:
+- return: [boolean, (value?: ToggleArg) => void] — The value and a function that flips it, or sets it when given a boolean.
 
 Usage:
 ```tsx
@@ -5145,14 +5252,17 @@ function Demo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-toggle.json
+Source: https://monoline.prashantdasari.com/registry/use-toggle.json
 
 ## useWindowEvent (use-window-event)
 Add a typed window event listener that is removed on unmount.
 Status: stable | Category: hooks | Related: use-click-outside, use-clipboard, use-controllable-state
 Import: import {useWindowEvent} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- type: K — A `window` event name, for example `resize`.
+- listener: (event: WindowEventMap[K]) => void — Handler for the event. The latest version is used.
+- options?: boolean | AddEventListenerOptions — Passed to `addEventListener`.
 
 Usage:
 ```tsx
@@ -5170,4 +5280,4 @@ function Demo() {
 
 A11y:
 - No DOM output.
-Source: registry/use-window-event.json
+Source: https://monoline.prashantdasari.com/registry/use-window-event.json

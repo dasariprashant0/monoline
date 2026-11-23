@@ -41,7 +41,7 @@
       "props": [
         {
           "name": "orientation",
-          "type": "\"vertical\" | \"horizontal\" | \"both\"",
+          "type": "\"both\" | \"horizontal\" | \"vertical\"",
           "optional": true,
           "default": "'vertical'",
           "description": "Which scrollbars to render."

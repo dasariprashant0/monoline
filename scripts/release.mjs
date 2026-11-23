@@ -371,6 +371,8 @@ function bump(spec, {tag, allowDirty, date}) {
   const section = renderSection(next, date, groupCommits(commitsSince(tag0)));
   const names = pkgs.map((p) => p.name);
   for (const p of pkgs) writeJson(p.file, bumpInternalRanges({...p.json, version: next}, names, next));
+  // Starters depend on the published packages: keep their ranges on the new version.
+  for (const file of readdirSync(join(ROOT, 'examples/starters')).map((d) => join(ROOT, 'examples/starters', d, 'package.json')).filter(existsSync)) writeJson(file, bumpInternalRanges(readJson(file), names, next));
   const rootFile = join(ROOT, 'package.json');
   writeJson(rootFile, {...readJson(rootFile), version: next});
   writeFileSync(changelogPath, prependChangelog(changelog, section));

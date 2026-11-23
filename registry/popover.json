@@ -20,6 +20,11 @@
     "popup",
     "overlay"
   ],
+  "related": [
+    "tooltip",
+    "dropdown-menu",
+    "dialog"
+  ],
   "kind": "components",
   "import": "import {Popover} from '@monoline/react'",
   "path": "packages/react/src/components/popover",
@@ -30,11 +35,6 @@
     "packages/react/src/components/popover/popover.demo.tsx",
     "packages/react/src/components/popover/popover.test.tsx",
     "packages/react/src/components/popover/popover.tsx"
-  ],
-  "related": [
-    "alert-dialog",
-    "command",
-    "context-menu"
   ],
   "props": [
     {
@@ -143,7 +143,7 @@
     },
     {
       "path": "packages/react/src/components/popover/meta.json",
-      "content": "{\"name\":\"popover\",\"title\":\"Popover\",\"category\":\"overlays\",\"description\":\"A floating panel of content or controls anchored to a button.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"popover.css\"],\"a11y\":[\"The trigger has aria-expanded and aria-controls; the panel is role=dialog.\",\"Focus moves into the panel; Escape or an outside click closes it and focus returns to the trigger.\"],\"keywords\":[\"floating\",\"popup\",\"overlay\"]}\n"
+      "content": "{\"name\":\"popover\",\"title\":\"Popover\",\"category\":\"overlays\",\"description\":\"A floating panel of content or controls anchored to a button.\",\"status\":\"stable\",\"primitive\":\"native ARIA (shared positioning)\",\"css\":[\"popover.css\"],\"a11y\":[\"The trigger has aria-expanded and aria-controls; the panel is role=dialog.\",\"Focus moves into the panel; Escape or an outside click closes it and focus returns to the trigger.\"],\"keywords\":[\"floating\",\"popup\",\"overlay\"],\"related\":[\"tooltip\",\"dropdown-menu\",\"dialog\"]}\n"
     },
     {
       "path": "packages/react/src/components/popover/popover.tsx",

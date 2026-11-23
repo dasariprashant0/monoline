@@ -109,7 +109,13 @@ function Missing({path}: {path: string}) {
 
 /** Title and description of a route, shared by the browser (setMeta) and the prerender script. */
 export function pageMeta(route: Route) {
-  if (route.kind === 'page') return {title: `${route.entry.title} · ${SITE}`, description: route.entry.description};
+  if (route.kind === 'page') {
+    const {entry} = route;
+    // Two pages are both called "Overview" in the sidebar: give them distinct document titles. Short descriptions get a suffix so search results have something to show.
+    const name = entry.title === 'Overview' ? `${entry.tab[0]!.toUpperCase()}${entry.tab.slice(1)} overview` : entry.title;
+    const description = entry.description.length < 60 && (entry.kind === 'component' || entry.kind === 'hook') ? `${entry.description.replace(/\.?$/, '.')} Props, examples and accessibility notes for the Monoline ${entry.kind === 'hook' ? 'hook' : 'React component'}.` : entry.description;
+    return {title: `${name} · ${SITE}`, description};
+  }
   if (route.kind === 'missing') return {title: `Page not found · ${SITE}`, description: HOME_DESCRIPTION};
   if (route.kind === 'playground') return {title: `Playground · ${SITE}`, description: 'Edit Monoline code and see it run: every component, no setup.'};
   return {title: `${SITE}: plain CSS and accessible React components`, description: HOME_DESCRIPTION};
@@ -138,6 +144,17 @@ export function App() {
     setMeta(title, description);
   }, [path]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Demos and blocks render real <h1>s (a hero, a page header). The page keeps one: the others become level-2 headings for assistive tech.
+  useEffect(() => {
+    const root = main.current;
+    if (!root) return;
+    const demote = () => root.querySelectorAll('h1').forEach((h, i) => { if (i > 0 && !h.hasAttribute('aria-level')) { h.setAttribute('role', 'heading'); h.setAttribute('aria-level', '2'); } });
+    demote();
+    const mo = new MutationObserver(demote); // childList only: setting attributes does not retrigger it
+    mo.observe(root, {childList: true, subtree: true});
+    return () => mo.disconnect();
+  }, [path]);
+
   // After every navigation: scroll to the hash anchor or the top, and move focus to the page heading
   // (not on first load, so a fresh visit keeps the browser's own focus).
   useEffect(() => {
@@ -154,7 +171,7 @@ export function App() {
     <DirectionProvider dir={prefs.dir === 'rtl' ? 'rtl' : 'ltr'}>
     <PrefsContext.Provider value={[prefs, set] as const}>
     {route.kind === 'playground' ? <PlaygroundPage /> : (
-    <div className="docs" data-home={route.kind === 'home' || undefined} data-rail={(route.kind !== 'home' && headings.length > 1) || undefined}>
+    <div className="docs" data-home={route.kind === 'home' || undefined} data-rail={(route.kind !== 'home' && (headings.length > 1 || (route.kind === 'page' && (route.entry.kind === 'component' || route.entry.kind === 'hook')))) || undefined}>
       <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); const m = main.current; if (m) { m.tabIndex = -1; m.focus(); } }}>Skip to main content</a>
       <Topbar path={path} route={route} prefs={prefs} set={set} onSearch={() => setSearch(true)} />
       <aside className="docs-side" id="docs-side" aria-label="Documentation sidebar">

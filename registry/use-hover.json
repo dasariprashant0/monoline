@@ -13,6 +13,10 @@
     "pointer",
     "mouseover"
   ],
+  "related": [
+    "use-long-press",
+    "use-intersection"
+  ],
   "kind": "hooks",
   "import": "import {useHover} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-hover",
@@ -23,12 +27,20 @@
     "packages/react/src/hooks/use-hover/use-hover.test.tsx",
     "packages/react/src/hooks/use-hover/use-hover.ts"
   ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
+  "props": [
+    {
+      "name": "Returns",
+      "props": [
+        {
+          "name": "return",
+          "type": "[RefCallback<T>, boolean]",
+          "optional": false,
+          "default": null,
+          "description": "A ref callback for the element, and whether the pointer is over it."
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {useHover} from '@monoline/react';\n\nfunction Demo() {\n  const [ref, hovered] = useHover<HTMLDivElement>();\n  return <div ref={ref} style={{padding: 'var(--s5)', border: '1px solid var(--rule)', background: hovered ? 'var(--wash-2)' : 'transparent'}}>{hovered ? 'Pointer is over this box' : 'Move the pointer here'}</div>;\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
@@ -42,11 +54,11 @@
     },
     {
       "path": "packages/react/src/hooks/use-hover/meta.json",
-      "content": "{\"name\":\"use-hover\",\"title\":\"useHover\",\"category\":\"hooks\",\"description\":\"Track whether the pointer is over an element.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Hover is pointer-only: never hide essential content or actions behind it.\"],\"keywords\":[\"hover\",\"pointer\",\"mouseover\"]}\n"
+      "content": "{\"name\":\"use-hover\",\"title\":\"useHover\",\"category\":\"hooks\",\"description\":\"Track whether the pointer is over an element.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Hover is pointer-only: never hide essential content or actions behind it.\"],\"keywords\":[\"hover\",\"pointer\",\"mouseover\"],\"related\":[\"use-long-press\",\"use-intersection\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-hover/use-hover.ts",
-      "content": "'use client';\nimport {useCallback, useEffect, useRef, useState, type RefCallback} from 'react';\n\n/** Returns `[ref, hovered]`. Attach `ref` to the element. Pointer only, so keep it for decoration. */\nexport function useHover<T extends HTMLElement = HTMLElement>(): [RefCallback<T>, boolean] {\n  const [hovered, setHovered] = useState(false);\n  const node = useRef<T | null>(null);\n  const on = useCallback(() => setHovered(true), []);\n  const off = useCallback(() => setHovered(false), []);\n  const ref = useCallback<RefCallback<T>>((el) => {\n    if (node.current) { node.current.removeEventListener('mouseenter', on); node.current.removeEventListener('mouseleave', off); }\n    node.current = el;\n    if (el) { el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off); }\n  }, [on, off]);\n  useEffect(() => () => { node.current?.removeEventListener('mouseenter', on); node.current?.removeEventListener('mouseleave', off); }, [on, off]);\n  return [ref, hovered];\n}\n"
+      "content": "'use client';\nimport {useCallback, useEffect, useRef, useState, type RefCallback} from 'react';\n\n/**\n * Returns `[ref, hovered]`. Attach `ref` to the element. Pointer only, so keep it for decoration.\n *\n * @returns A ref callback for the element, and whether the pointer is over it.\n */\nexport function useHover<T extends HTMLElement = HTMLElement>(): [RefCallback<T>, boolean] {\n  const [hovered, setHovered] = useState(false);\n  const node = useRef<T | null>(null);\n  const on = useCallback(() => setHovered(true), []);\n  const off = useCallback(() => setHovered(false), []);\n  const ref = useCallback<RefCallback<T>>((el) => {\n    if (node.current) { node.current.removeEventListener('mouseenter', on); node.current.removeEventListener('mouseleave', off); }\n    node.current = el;\n    if (el) { el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off); }\n  }, [on, off]);\n  useEffect(() => () => { node.current?.removeEventListener('mouseenter', on); node.current?.removeEventListener('mouseleave', off); }, [on, off]);\n  return [ref, hovered];\n}\n"
     }
   ],
   "utils": []

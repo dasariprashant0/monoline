@@ -14,6 +14,9 @@
     "lazy",
     "scroll"
   ],
+  "related": [
+    "use-scroll-spy"
+  ],
   "kind": "hooks",
   "import": "import {useIntersection} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-intersection",
@@ -23,11 +26,6 @@
     "packages/react/src/hooks/use-intersection/use-intersection.demo.tsx",
     "packages/react/src/hooks/use-intersection/use-intersection.test.tsx",
     "packages/react/src/hooks/use-intersection/use-intersection.ts"
-  ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
   ],
   "props": [
     {
@@ -56,7 +54,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-intersection/meta.json",
-      "content": "{\"name\":\"use-intersection\",\"title\":\"useIntersection\",\"category\":\"hooks\",\"description\":\"Know whether an element is in view, with an IntersectionObserver.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. When IntersectionObserver is unavailable, it reports not intersecting.\"],\"keywords\":[\"in view\",\"visible\",\"lazy\",\"scroll\"]}\n"
+      "content": "{\"name\":\"use-intersection\",\"title\":\"useIntersection\",\"category\":\"hooks\",\"description\":\"Know whether an element is in view, with an IntersectionObserver.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. When IntersectionObserver is unavailable, it reports not intersecting.\"],\"keywords\":[\"in view\",\"visible\",\"lazy\",\"scroll\"],\"related\":[\"use-scroll-spy\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-intersection/use-intersection.ts",

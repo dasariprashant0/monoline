@@ -5,6 +5,9 @@ import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
 import {useUntilFound} from '../../utils/until-found';
 
+/** Props of Collapsible: `open`, `defaultOpen`, `onOpenChange`, `disabled`. */
+export type CollapsibleProps = ComponentPropsWithoutRef<typeof Radix.Root>;
+
 /** A single open-and-close region. Holds the open state (`open`, `defaultOpen`, `onOpenChange`); put a `CollapsibleTrigger` and `CollapsibleContent` inside. */
 export const Collapsible = Radix.Root;
 /** The button that toggles the region; use `asChild` to render your own element. */

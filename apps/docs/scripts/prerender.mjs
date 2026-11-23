@@ -1,4 +1,4 @@
-// After `vite build`: writes dist/<route>/index.html for every docs route (real HTML, status 200 on GitHub Pages),
+// After `vite build`: writes dist/<route>/index.html for every docs route (real HTML, status 200 on any static host),
 // plus dist/sitemap.xml and dist/robots.txt. Each page is the built index.html with its own title, description,
 // canonical URL, Open Graph and Twitter tags, and the server-rendered page inside #root (the client hydrates it).
 // Env: DOCS_ORIGIN (default https://monoline.prashantdasari.com), DOCS_BASE (same value the build used).
@@ -28,7 +28,7 @@ for (const r of routes) {
     `<link rel="canonical" href="${url(path)}" />`,
     `<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="Monoline" />`,
     `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(description)}" />`, `<meta property="og:url" content="${url(path)}" />`,
-    `<meta name="twitter:card" content="summary" />`, `<meta name="twitter:title" content="${esc(title)}" />`, `<meta name="twitter:description" content="${esc(description)}" />`,
+    `<meta property="og:image" content="${origin}${base}og.png" />`, `<meta property="og:image:width" content="1200" />`, `<meta property="og:image:height" content="630" />`, `<meta name="twitter:card" content="summary_large_image" />`, `<meta name="twitter:image" content="${origin}${base}og.png" />`, `<meta name="twitter:title" content="${esc(title)}" />`, `<meta name="twitter:description" content="${esc(description)}" />`,
   ].join('\n  ');
   const html = template
     .replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`)
