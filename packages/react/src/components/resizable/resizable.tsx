@@ -2,6 +2,7 @@
 import {Children, createContext, forwardRef, isValidElement, useContext, useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type PointerEvent, type ReactNode} from 'react';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
+import {setRefs} from '../../utils/overlay';
 
 interface GroupCtx {
   direction: 'horizontal' | 'vertical';
@@ -47,12 +48,14 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
   const items = Children.toArray(children);
   const panels = items.filter((c) => isValidElement<ResizablePanelProps>(c) && c.type === ResizablePanel) as React.ReactElement<ResizablePanelProps>[];
   const limits = panels.map((p) => ({min: p.props.minSize ?? 10, max: p.props.maxSize ?? 100}));
-  const [sizes, setSizes] = useState<number[]>(() => {
+  const fromDefaults = () => {
     const given = panels.reduce((a, p) => a + (p.props.defaultSize ?? 0), 0);
     const open = panels.filter((p) => p.props.defaultSize === undefined).length;
     return panels.map((p) => p.props.defaultSize ?? (open ? Math.max(0, 100 - given) / open : 100 / panels.length));
-  });
-  const live = sizes.length === panels.length ? sizes : panels.map(() => 100 / panels.length);
+  };
+  const [sizes, setSizes] = useState<number[]>(fromDefaults);
+  // A panel added or removed (a side panel toggled): lay out again from the panels' own `defaultSize`s, not as an equal split.
+  const live = sizes.length === panels.length ? sizes : fromDefaults();
 
   const resize = (h: number, from: number[], delta: number) => {
     const a = from[h], b = from[h + 1], la = limits[h], lb = limits[h + 1];
@@ -69,7 +72,7 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
   let p = -1;
   return (
     <Group.Provider value={{direction, sizes: live, limits, base, step, resize, root}}>
-      <div ref={(el) => { root.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }} className={cx('resizable', className)} data-direction={direction} {...rest}>
+      <div ref={(el) => setRefs(el, root, ref)} className={cx('resizable', className)} data-direction={direction} {...rest}>
         {items.map((c, i) => {
           if (isValidElement(c) && c.type === ResizablePanel) p++;
           return <Index.Provider key={isValidElement(c) && c.key !== null ? c.key : i} value={Math.max(p, 0)}>{c}</Index.Provider>;
@@ -88,7 +91,7 @@ export const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(fu
 });
 
 /** The draggable divider between two panels. It is a separator you can focus: arrow keys resize, Home and End go to the limits. Drag with a pointer too. */
-export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(function ResizableHandle({className, onKeyDown, onPointerDown, 'aria-label': label = 'Resize panels', ...rest}, ref) {
+export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(function ResizableHandle({className, onKeyDown, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, 'aria-label': label = 'Resize panels', ...rest}, ref) {
   const g = useContext(Group);
   const i = useContext(Index); // index of the panel before this handle
   const isRtl = useIsRtl();
@@ -125,12 +128,13 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
     setDrag(true);
   };
   const move = (e: PointerEvent<HTMLDivElement>) => {
+    onPointerMove?.(e);
     const s = start.current;
     if (!s) return;
     const px = (horizontal ? e.clientX : e.clientY) - s.pos;
     g.resize(i, s.from, ((horizontal && isRtl(e.currentTarget) ? -px : px) / s.span) * 100);
   };
-  const up = (e: PointerEvent<HTMLDivElement>) => { start.current = null; setDrag(false); e.currentTarget.releasePointerCapture?.(e.pointerId); };
+  const end = (e: PointerEvent<HTMLDivElement>) => { start.current = null; setDrag(false); e.currentTarget.releasePointerCapture?.(e.pointerId); };
 
   return (
     <div
@@ -148,8 +152,8 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
       onKeyDown={keydown}
       onPointerDown={down}
       onPointerMove={move}
-      onPointerUp={up}
-      onPointerCancel={up}
+      onPointerUp={(e) => { onPointerUp?.(e); end(e); }}
+      onPointerCancel={(e) => { onPointerCancel?.(e); end(e); }}
       {...rest}
     />
   );
