@@ -17,6 +17,7 @@
       "Read","Edit(/**)","WebFetch","WebSearch",
       "Bash(git status*)","Bash(git diff*)","Bash(git log*)","Bash(git show*)",
       "Bash(git branch)","Bash(git branch --list*)","Bash(git branch -a*)","Bash(git branch -v*)","Bash(git branch --show-current)",
+      "Bash(git -C * status*)","Bash(git -C * diff*)","Bash(git -C * log*)","Bash(git -C * show*)","Bash(git -C * branch --list*)","Bash(git -C * branch --show-current)","Bash(git -C * rev-parse*)","Bash(git -C * fetch*)","Bash(git -C * ls-files*)","Bash(git -C * worktree list*)",
       "Bash(git fetch*)","Bash(git rev-parse*)","Bash(git ls-files*)","Bash(git blame*)","Bash(git worktree list*)","Bash(git stash list*)","Bash(git remote -v)","Bash(git config --get*)",
       "Bash(git add *)","Bash(git commit *)","Bash(git switch -c *)","Bash(git checkout -b *)","Bash(git merge *)","Bash(git cherry-pick *)",
       "Bash(npm ci*)","Bash(npm install*)","Bash(npm run *)","Bash(npm test*)","Bash(npm ls*)","Bash(npm view *)","Bash(npm audit*)","Bash(npm pack --dry-run*)",
@@ -25,7 +26,10 @@
       "Bash(ls*)","Bash(cat *)","Bash(head *)","Bash(tail *)","Bash(wc *)","Bash(grep *)","Bash(rg *)","Bash(find *)","Bash(mkdir *)","Bash(cp *)","Bash(sed -n *)","Bash(jq *)",
       "Bash(curl *)","Bash(wget *)",
       "Bash(gh pr view*)","Bash(gh pr list*)","Bash(gh pr status*)","Bash(gh pr checks*)","Bash(gh pr diff*)","Bash(gh run list*)","Bash(gh run view*)","Bash(gh issue list*)","Bash(gh issue view*)","Bash(gh api *)",
-      "Bash(lsof*)","Bash(ps*)"
+      "Bash(lsof*)","Bash(ps*)",
+      "Bash(cd *)","Bash(pwd)","Bash(echo *)","Bash(printf *)","Bash(which *)","Bash(test *)","Bash([ *)","Bash(sort *)","Bash(uniq *)","Bash(diff *)","Bash(stat *)","Bash(file *)","Bash(du *)","Bash(df *)","Bash(date*)","Bash(env)","Bash(touch *)","Bash(tee $TMPDIR/*)","Bash(rtk *)",
+      "Bash(git -C * add *)","Bash(git -C * commit *)","Bash(git -C * merge *)","Bash(git -C * switch *)","Bash(git -C * checkout -b *)","Bash(git switch *)","Bash(git stash push*)","Bash(git stash apply*)","Bash(git tag)","Bash(git tag -l*)","Bash(git remote*)","Bash(git ls-remote*)","Bash(git describe*)","Bash(git reflog*)",
+      "Bash(npm run build*)","Bash(npm run test*)","Bash(npm run lint*)","Bash(npm run typecheck*)","Bash(npx *)"
     ],
     "ask": [
       "Bash(git push*)",
