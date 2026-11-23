@@ -8,3 +8,10 @@
 .banner-danger { box-shadow: inset calc(3px * var(--dir, 1)) 0 0 var(--danger); }
 .banner-warning strong { color: var(--warning); }
 .banner-danger strong { color: var(--danger); }
+/* Forced colours: card edges and banner bars are box-shadows; give them borders. */
+@media (forced-colors: active) {
+  .card { border: 1px solid CanvasText; }
+  .banner { border-inline-start: 3px solid CanvasText; }
+  .banner-accent { border-inline-start-color: Highlight; }
+  .banner-warning, .banner-danger { border-inline-start-color: LinkText; }
+}

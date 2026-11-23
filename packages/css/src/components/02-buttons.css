@@ -14,3 +14,10 @@
 .btn-lg { height: var(--control-lg); padding: 0 32px; font-size: var(--text-base); }
 .btn-ghost.btn-sm, .btn-ghost.btn-lg { height: auto; padding-block: var(--s2); }
 .btn-block { width: 100%; }
+/* Forced colours: box-shadow is dropped, so the outline buttons need a real border; the solid one gets explicit system colours. */
+@media (forced-colors: active) {
+  .btn-solid, .btn-solid:hover:not(:disabled) { background: ButtonText; color: ButtonFace; }
+  .btn-line, .btn-danger { outline: 1px solid ButtonText; outline-offset: -1px; }
+  .btn-line:hover:not(:disabled), .btn-danger:hover:not(:disabled) { background: Highlight; color: HighlightText; }
+  .btn:disabled { color: GrayText; outline-color: GrayText; }
+}

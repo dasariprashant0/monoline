@@ -28,3 +28,9 @@
 .theme { padding: var(--s2) 0; font-size: var(--text-xs); text-align: center; text-transform: capitalize; color: var(--muted); }
 .theme + .theme { border-inline-start: 1px solid var(--rule); }
 .theme[aria-checked="true"] { background: var(--foreground); color: var(--background); }
+/* Forced colours: the current marker is a box-shadow, which is dropped; draw it as a border/outline. */
+@media (forced-colors: active) {
+  .nav-item[aria-current="true"], .nav-item[aria-current="page"] { border-inline-start: 3px solid Highlight; }
+  .tab[aria-current="page"] { border-block-start: 2px solid Highlight; }
+  .theme[aria-checked="true"] { background: Highlight; color: HighlightText; }
+}
