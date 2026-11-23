@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, type HTMLAttributes, type ReactElement} from 'react';
 import {ChartShell, fillFor, YAxis, type Hit} from './chart-parts';
-import {DASHES, axisLeft, formatCompact, formatFull, labelStride, linearScale, markerPath, niceTicks, normalize, polyline, r2, stack, truncate, SERIES_STYLES, type ChartDatum, type ChartSeries} from './chart';
+import {DASHES, axisLeft, maxOf, minOf, formatCompact, formatFull, labelStride, linearScale, markerPath, niceTicks, normalize, polyline, r2, stack, truncate, SERIES_STYLES, type ChartDatum, type ChartSeries} from './chart';
 
 export interface SeriesChartProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Accessible name and table caption. Required. */
@@ -29,7 +29,7 @@ export const SeriesChart = forwardRef<HTMLDivElement, SeriesChartProps & {kind: 
   const area = kind === 'area';
   const stk = stack(series.map((s) => s.values));
   const all = (area && stacked ? stk.flat().flatMap((x) => [x.lo, x.hi]) : series.flatMap((s) => s.values));
-  const t = niceTicks(area ? Math.min(0, ...all) : Math.min(...all), area ? Math.max(0, ...all) : Math.max(...all));
+  const t = niceTicks(area ? minOf(all, 0) : minOf(all), area ? maxOf(all, 0) : maxOf(all));
   const fmt = valueFormat ?? formatFull;
   const axisFmt = valueFormat ?? formatCompact;
   const step = curve === 'step';

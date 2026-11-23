@@ -3,7 +3,8 @@ import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {renderToString} from 'react-dom/server';
 import {axe} from '../../test/axe';
-import {ThemeProvider, useTheme} from './theme-provider';
+import {ThemeProvider, themeOptions, useTheme} from './theme-provider';
+import {SCRIPT_OPTIONS} from './theme-script';
 import {themeScript} from './index';
 import themeScriptSource from './theme-script.ts?raw';
 import {ThemeSwitcher} from './theme-switcher';
@@ -86,6 +87,12 @@ describe('ThemeProvider', () => {
   });
 });
 
+describe('themeScript options', () => {
+  it('lists the same values as themeOptions', () => {
+    expect(SCRIPT_OPTIONS).toEqual(themeOptions);
+  });
+});
+
 describe('themeScript', () => {
   it('lives in a file without "use client", so a Server Component can call it', () => {
     expect(themeScriptSource).not.toMatch(/^\s*['"]use client['"]/);
@@ -100,6 +107,15 @@ describe('themeScript', () => {
     expect(root).toHaveAttribute('data-theme', 'midnight');
     expect(root).toHaveAttribute('data-accent', 'blue');
     expect(root).toHaveAttribute('dir', 'rtl');
+  });
+  it('ignores saved values that are not valid options', () => {
+    localStorage.setItem('monoline-theme', 'neon');
+    localStorage.setItem('monoline-dir', 'foo');
+    localStorage.setItem('monoline-accent', '"><x>');
+    new Function(themeScript())();
+    expect(root).not.toHaveAttribute('dir', 'foo');
+    expect(root.getAttribute('data-accent')).not.toBe('"><x>');
+    expect(root.getAttribute('data-theme')).not.toBe('neon');
   });
   it('uses a custom key and never throws', () => {
     localStorage.setItem('app-theme', 'dark');
