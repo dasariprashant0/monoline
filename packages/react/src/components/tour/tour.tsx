@@ -135,7 +135,9 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
   }, [isOpen, box, s, spotlightPadding]); // isRtl is a fresh function each render, so it is left out on purpose
 
   // Each step moves focus to the card so a screen reader reads its title and text.
-  useEffect(() => { if (isOpen) card.current?.focus({preventScroll: true}); }, [isOpen, index]);
+  // The card is visibility:hidden until it has a position, and a hidden element cannot take focus, so wait for `placed`.
+  const placed = pos !== null;
+  useEffect(() => { if (isOpen && placed) card.current?.focus({preventScroll: true}); }, [isOpen, placed, index]);
 
   if (!isOpen || !s || typeof document === 'undefined') return <span ref={anchor} hidden />;
 

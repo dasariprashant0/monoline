@@ -131,3 +131,12 @@ test('tooltip: hover shows it, moving away hides it', async (p) => {
   await p.mouse('mouseMoved', 5, 700); await p.mouse('mouseMoved', 8, 705); // Radix closes on the next move after a grace-area exit
   await p.waitFor(`!document.querySelector('[role=tooltip]')`, 'tooltip stayed after the pointer left', 3000);
 });
+
+test('tour: the card takes focus on start, Escape ends the tour and focus returns to the trigger', async (p) => {
+  await p.open('components/tour'); const ex = await p.example('Three steps');
+  await ex.focus('button|Start tour'); await p.key('Enter');
+  await p.waitFor(`(() => { const d = document.querySelector('.tour-card'); return d && d.contains(document.activeElement); })()`, 'focus did not move into the tour card', 3000);
+  await p.key('Escape');
+  await p.waitFor(`!document.querySelector('.tour-card')`, 'tour still open');
+  await p.expectActive('button|Start tour', 'focus return');
+});

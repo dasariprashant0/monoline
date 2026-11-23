@@ -32,7 +32,9 @@ export const ContextMenuTrigger = forwardRef<HTMLSpanElement, HTMLAttributes<HTM
   return (
     <Comp
       ref={(n: HTMLSpanElement | null) => setRefs(n, c.trigger, ref)} data-state={c.open ? 'open' : 'closed'} {...rest}
-      onContextMenu={(e: React.MouseEvent) => { onContextMenu?.(e as never); if (e.defaultPrevented) return; e.preventDefault(); clearTimeout(timer.current); open(e.clientX, e.clientY); }}
+      onContextMenu={(e: React.MouseEvent) => { onContextMenu?.(e as never); if (e.defaultPrevented) return; e.preventDefault(); clearTimeout(timer.current);
+        // Keyboard-invoked contextmenu (Shift+F10, the Menu key): some browsers report 0,0, so anchor to the trigger instead.
+        if (e.clientX === 0 && e.clientY === 0) { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); open(r.left + r.width / 2, r.top + r.height / 2); } else open(e.clientX, e.clientY); }}
       onPointerDown={(e: PointerEvent) => { onPointerDown?.(e as never); if (e.pointerType === 'touch') { const {clientX: x, clientY: y} = e; timer.current = setTimeout(() => open(x, y), 700); } }}
       onPointerMove={(e: PointerEvent) => { onPointerMove?.(e as never); clearTimeout(timer.current); }}
       onPointerUp={(e: PointerEvent) => { onPointerUp?.(e as never); clearTimeout(timer.current); }}
