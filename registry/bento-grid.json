@@ -84,10 +84,5 @@
       "content": "{\"name\":\"bento-grid\",\"title\":\"Bento grid\",\"category\":\"effects\",\"description\":\"A responsive asymmetric grid of cards with column and row spans.\",\"status\":\"stable\",\"css\":[\"bento-grid.css\"],\"a11y\":[\"Plain divs in source order, so reading and tab order match the visual order on phones and follow the DOM elsewhere.\",\"Spans collapse to a single column on narrow screens; nothing depends on colour or motion.\"],\"keywords\":[\"layout\",\"tiles\",\"masonry\",\"features\",\"cards\",\"grid\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

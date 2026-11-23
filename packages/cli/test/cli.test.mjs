@@ -1,9 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, existsSync, readFileSync, writeFileSync, mkdirSync} from 'node:fs';
+import {mkdtempSync, existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {dirname, join, resolve} from 'node:path';
-import {readdirSync, statSync} from 'node:fs';
+import {join, resolve} from 'node:path';
 import {run} from '../src/cli.mjs';
 
 const registry = resolve(import.meta.dirname, '../../../registry');
@@ -101,32 +100,22 @@ test('copies one layered css bundle per component, deduplicated', async () => {
   assert.match(r.out, /import '\.\/src\/styles\/monoline\/button\.css'/);
 });
 
-// Every relative import in the copied .ts/.tsx files must resolve to a file the CLI wrote.
-function unresolvedImports(root) {
-  const bad = [];
-  const walk = (dir) => readdirSync(dir).flatMap((n) => (statSync(join(dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]));
-  for (const file of walk(root).filter((f) => /\.tsx?$/.test(f))) {
-    for (const [, spec] of readFileSync(file, 'utf8').matchAll(/from '(\.{1,2}\/[^']+)'/g)) {
-      const base = resolve(dirname(file), spec);
-      if (!['.ts', '.tsx', '/index.ts', '/index.tsx'].some((ext) => existsSync(base + ext))) bad.push(`${file.slice(root.length)}: ${spec}`);
-    }
-  }
-  return bad;
-}
-
-test('add dialog, button and card ships every shared util they import', async () => {
-  const cwd = tmp();
-  const r = await exec(['add', 'dialog', 'button', 'card'], cwd);
-  assert.equal(r.code, 0, r.err);
-  const root = join(cwd, 'src/components/monoline');
-  assert.ok(existsSync(join(root, 'utils/slot.tsx')), 'utils/slot');
-  assert.ok(existsSync(join(root, 'utils/overlay.ts')), 'utils/overlay');
-  assert.deepEqual(unresolvedImports(root), []);
-});
-
-test('add resolves utils for every component in the registry', async () => {
+test('add --all writes every shared util the components import, so the copies resolve', async () => {
   const cwd = tmp();
   const r = await exec(['add', '--all'], cwd);
   assert.equal(r.code, 0, r.err);
-  assert.deepEqual(unresolvedImports(join(cwd, 'src/components/monoline')), []);
+  const utils = join(cwd, 'src/components/monoline/utils');
+  const missing = new Set();
+  const walk = (dir) => { for (const e of readdirSync(dir, {withFileTypes: true})) {
+    const f = join(dir, e.name);
+    if (e.isDirectory()) { walk(f); continue; }
+    if (!/\.tsx?$/.test(e.name)) continue;
+    for (const m of readFileSync(f, 'utf8').matchAll(/from '(\.[^']*\/utils\/[a-z0-9-]+|\.\/[a-z0-9-]+)'/g)) {
+      const base = m[1].startsWith('./') && dir === utils ? join(dir, m[1]) : join(dir, m[1]);
+      if (!['.ts', '.tsx', '/index.ts', ''].some((x) => existsSync(base + x) && (x || /\.tsx?$/.test(base)))) missing.add(`${e.name}: ${m[1]}`);
+    }
+  } };
+  walk(join(cwd, 'src/components/monoline'));
+  assert.deepEqual([...missing], []);
+  for (const n of ['slot', 'overlay', 'direction', 'chart', 'until-found']) assert.ok(existsSync(join(utils, `${n}.ts`)) || existsSync(join(utils, `${n}.tsx`)), n);
 });

@@ -89,10 +89,5 @@
       "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {ScrollArea as Radix} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\nexport interface ScrollAreaProps extends ComponentPropsWithoutRef<typeof Radix.Root> {\n  /** Which scrollbars to render. */\n  orientation?: 'vertical' | 'horizontal' | 'both';\n  /** Passed to the focusable viewport, e.g. a name for the region. */\n  viewportProps?: ComponentPropsWithoutRef<typeof Radix.Viewport>;\n}\n\n/** Give it a height or width; content that overflows scrolls. */\nexport const ScrollArea = forwardRef<ElementRef<typeof Radix.Root>, ScrollAreaProps>(function ScrollArea({orientation = 'vertical', viewportProps, className, children, ...rest}, ref) {\n  return (\n    <Radix.Root ref={ref} className={cx('scroll-area', className)} {...rest}>\n      <Radix.Viewport tabIndex={0} className=\"scroll-viewport\" {...viewportProps}>{children}</Radix.Viewport>\n      {orientation !== 'horizontal' && <Radix.Scrollbar orientation=\"vertical\" className=\"scroll-bar\"><Radix.Thumb className=\"scroll-thumb\" /></Radix.Scrollbar>}\n      {orientation !== 'vertical' && <Radix.Scrollbar orientation=\"horizontal\" className=\"scroll-bar\"><Radix.Thumb className=\"scroll-thumb\" /></Radix.Scrollbar>}\n    </Radix.Root>\n  );\n});\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

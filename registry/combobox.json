@@ -143,10 +143,5 @@
       "content": "{\"name\":\"combobox\",\"title\":\"Combobox\",\"category\":\"forms\",\"description\":\"Type to filter a list and pick one option.\",\"status\":\"stable\",\"uses\":[\"field\"],\"css\":[\"03-form-fields.css\",\"combobox.css\"],\"a11y\":[\"ARIA 1.2 combobox: the input has role=\\\"combobox\\\" with aria-expanded, aria-controls and aria-activedescendant.\",\"ArrowDown/ArrowUp move through options, Enter picks, Escape closes (and clears the typed text on a second press), Tab leaves.\",\"Options are in a listbox with aria-selected; an empty result is announced as text.\"],\"keywords\":[\"autocomplete\",\"typeahead\",\"search select\",\"filter\",\"searchable select\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

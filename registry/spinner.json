@@ -73,10 +73,5 @@
       "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface SpinnerProps extends HTMLAttributes<HTMLSpanElement> {\n  /** What is loading, read by screen readers. */\n  label?: string;\n}\n\n/** A small stepped spinner. It stops under reduced motion (base styles). */\nexport const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner({label = 'Loading', className, ...rest}, ref) {\n  return <span ref={ref} role=\"status\" aria-label={label} className={cx('spinner', className)} {...rest} />;\n});\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

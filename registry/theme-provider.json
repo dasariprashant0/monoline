@@ -131,10 +131,5 @@
       "content": "'use client';\nimport {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {NativeSelect} from '../native-select';\nimport {themeOptions, useTheme} from './theme-provider';\n\nexport interface ThemeSwitcherProps extends HTMLAttributes<HTMLDivElement> {\n  /** Which choices to offer. Default both: `['theme', 'accent']`. */\n  show?: ('theme' | 'accent')[];\n}\n\nconst cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);\n\n/** Two selects, theme and accent, wired to `useTheme()`. Must sit under `ThemeProvider`. Build your own with `useTheme` for more control. */\nexport const ThemeSwitcher = forwardRef<HTMLDivElement, ThemeSwitcherProps>(function ThemeSwitcher({show = ['theme', 'accent'], className, ...rest}, ref) {\n  const {theme, accent, setTheme, setAccent} = useTheme();\n  return (\n    <div ref={ref} role=\"group\" aria-label=\"Appearance\" className={cx('theme-switcher', className)} style={{display: 'flex', gap: 'var(--s2)'}} {...rest}>\n      {show.includes('theme') && (\n        <NativeSelect aria-label=\"Theme\" value={theme} onChange={(e) => setTheme(e.target.value as typeof theme)}>\n          {themeOptions.theme.map((t) => <option key={t} value={t}>{cap(t)}</option>)}\n        </NativeSelect>\n      )}\n      {show.includes('accent') && (\n        <NativeSelect aria-label=\"Accent\" value={accent} onChange={(e) => setAccent(e.target.value as typeof accent)}>\n          {themeOptions.accent.map((a) => <option key={a} value={a}>{cap(a)}</option>)}\n        </NativeSelect>\n      )}\n    </div>\n  );\n});\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

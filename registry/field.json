@@ -139,10 +139,5 @@
       "content": "{\"name\": \"field\", \"title\": \"Field\", \"category\": \"forms\", \"description\": \"Connects a label, a control, a hint and an error with the right ids and ARIA.\", \"status\": \"stable\", \"uses\": [\"label\"], \"css\": [\"03-form-fields.css\", \"11-field-states.css\"], \"a11y\": [\"The label is bound to the control by id, so it has an accessible name.\", \"Hint and error are linked with aria-describedby; an error sets aria-invalid and is announced via role=alert.\", \"required sets the native required attribute on the control.\", \"Inside a Form with errors, a Field with a matching name shows that error once; the form summary announces it, so the inline text is not a second alert.\"], \"keywords\": [\"form\", \"validation\", \"input wrapper\"]}"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

@@ -106,10 +106,5 @@
       "content": "{\"name\":\"checkbox\",\"title\":\"Checkbox\",\"category\":\"forms\",\"description\":\"A box to turn one choice on or off, with an indeterminate state.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Checkbox\",\"uses\":[\"field\"],\"css\":[\"checkbox.css\",\"10-choices.css\"],\"a11y\":[\"role=checkbox; Space toggles; Tab focuses.\",\"indeterminate is exposed as aria-checked=mixed.\",\"A visible label is clickable; without one, aria-label is required.\"],\"keywords\":[\"tick\",\"check\",\"boolean\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

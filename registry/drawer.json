@@ -105,10 +105,5 @@
       "content": "{\"name\":\"drawer\",\"title\":\"Drawer\",\"category\":\"overlays\",\"description\":\"A panel that slides in from an edge for secondary tasks, details or navigation.\",\"status\":\"stable\",\"primitive\":\"native <dialog>\",\"css\":[\"dialog.css\",\"drawer.css\"],\"a11y\":[\"role=\\\"dialog\\\" named by the title.\",\"Focus is trapped while open and returns to the trigger on close.\",\"Escape and the overlay close it.\"],\"keywords\":[\"sheet\",\"side panel\",\"slide over\",\"offcanvas\"],\"uses\":[\"dialog\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

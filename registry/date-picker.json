@@ -187,10 +187,5 @@
       "content": "{\"name\":\"date-picker\",\"title\":\"Date picker\",\"category\":\"forms\",\"description\":\"A button that opens a calendar and shows the chosen date.\",\"status\":\"stable\",\"uses\":[\"calendar\",\"popover\",\"field\"],\"css\":[\"03-form-fields.css\",\"popover.css\",\"calendar.css\",\"date-picker.css\"],\"a11y\":[\"The trigger is a button naming the field and the current value; it opens a dialog with the calendar.\",\"Choosing a date closes the dialog and returns focus to the trigger; Escape closes without changing.\",\"All calendar keyboard behaviour applies inside.\",\"With `clearable`, a \\\"Clear date\\\" button in the popover removes the date, closes it and returns focus to the trigger.\"],\"keywords\":[\"datepicker\",\"date input\",\"calendar popup\",\"choose date\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

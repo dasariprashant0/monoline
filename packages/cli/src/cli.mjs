@@ -47,22 +47,18 @@ async function load(base, name) {
   return JSON.parse(readFileSync(file, 'utf8'));
 }
 
-// '../../utils/x' and '../../hooks/x' live elsewhere in the repo; here utils are in <dir>/utils and hooks are sibling folders.
+// '../../utils/cx' and '../../hooks/x' live elsewhere in the repo; here everything is a sibling folder.
 const fixImports = (src) => src.replace(/'\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g, `'../utils/$1'`).replace(/'\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g, `'../$1'`);
 const siblingNames = (src) => [...src.matchAll(/from '\.\.\/([a-z0-9-]+)'/g)].map((m) => m[1]).concat([...src.matchAll(/from '\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g)].map((m) => m[1]));
 const styleBundle = (c) => `@layer monoline.components {\n${c.css.map((s) => s.content.trim()).join('\n\n')}\n}\n`;
-const usesCx = (c) => c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx'));
-// Shared utils a component imports come from the registry entry (`utils`). An older registry has none, so cx falls back to the built-in copy.
-const utilFiles = (c, compDir) => {
-  const files = (c.utils ?? []).map((u) => ({path: join(compDir, 'utils', basename(u.path)), content: u.content}));
-  if (usesCx(c) && !files.some((f) => basename(f.path) === 'cx.ts')) files.push(cxFile(compDir));
-  return files;
-};
+const usesCx = (c) => c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx')) || (c.utils ?? []).some((u) => u.content.includes("'./cx'"));
 
 // Files one component writes, paths relative to the project root. The shared utils/cx.ts is added by the caller.
 function componentFiles(c, compDir, styleDir) {
   const files = c.source.filter((s) => basename(s.path) !== 'meta.json')
     .map((s) => ({path: join(compDir, c.name, basename(s.path)), content: fixImports(s.content)}));
+  // Shared helpers (slot, overlay, chart...) the registry lists for this component; they sit in utils/ next to cx.ts.
+  for (const u of c.utils ?? []) files.push({path: join(compDir, 'utils', basename(u.path)), content: u.content});
   // One file per component: the CSS it lists, in the components layer (core.css declares the layer order).
   if (c.css.length) files.push({path: join(styleDir, `${c.name}.css`), content: styleBundle(c)});
   return files;
@@ -204,7 +200,7 @@ export async function run(argv, {out = console.log, err = console.error, confirm
       let code = 0;
       for (const name of names) {
         const c = await loadComponent(name);
-        const files = compare(cwd, [...componentFiles(c, compDir, styleDir), ...utilFiles(c, compDir)]);
+        const files = compare(cwd, [...componentFiles(c, compDir, styleDir), ...(usesCx(c) ? [cxFile(compDir)] : [])]);
         if (files.every((f) => f.current === null)) throw new Error(`${name} is not in the project (run: monoline add ${name})`);
         const changed = files.filter((f) => f.changed);
         if (!changed.length) { out(`${name}: same as the registry`); continue; }
@@ -246,10 +242,13 @@ export async function run(argv, {out = console.log, err = console.error, confirm
 
     const files = [];
     const deps = {};
+    let needsCx = false;
     for (const c of items.values()) {
       Object.assign(deps, c.dependencies);
-      files.push(...componentFiles(c, compDir, styleDir), ...utilFiles(c, compDir));
+      needsCx ||= usesCx(c);
+      files.push(...componentFiles(c, compDir, styleDir));
     }
+    if (needsCx) files.push(cxFile(compDir));
     const seen = new Set();
     const unique = files.filter((f) => !seen.has(f.path) && seen.add(f.path));
 

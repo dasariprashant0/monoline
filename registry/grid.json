@@ -85,10 +85,5 @@
       "content": "{\"name\":\"grid\",\"title\":\"Grid\",\"category\":\"layout\",\"description\":\"A responsive grid of equal columns with one gap.\",\"status\":\"stable\",\"css\":[\"grid.css\"],\"a11y\":[\"A plain div; source order is reading order.\"],\"keywords\":[\"columns\",\"layout\",\"cards\",\"responsive\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

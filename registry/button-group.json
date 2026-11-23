@@ -82,10 +82,5 @@
       "content": "{\"name\":\"button-group\",\"title\":\"Button group\",\"category\":\"buttons\",\"description\":\"Join related buttons into one segmented bar.\",\"status\":\"stable\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"button-group.css\"],\"a11y\":[\"role=\\\"group\\\" with a required accessible name.\"],\"keywords\":[\"join\",\"segmented\",\"toolbar\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

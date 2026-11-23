@@ -71,10 +71,5 @@
       "content": "{\"name\":\"kbd\",\"title\":\"Kbd\",\"category\":\"typography\",\"description\":\"Show a keyboard key or shortcut.\",\"status\":\"stable\",\"css\":[\"05-marks.css\"],\"a11y\":[\"Native kbd element, announced as text.\"],\"keywords\":[\"keyboard\",\"shortcut\",\"key\",\"hotkey\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

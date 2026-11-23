@@ -167,10 +167,5 @@
       "content": "{\"name\": \"block-hero\", \"title\": \"Hero block\", \"category\": \"blocks\", \"description\": \"A page opener with eyebrow, title, description, actions and optional media.\", \"status\": \"beta\", \"uses\": [\"container\", \"heading\", \"text\"], \"css\": [\"container.css\", \"heading.css\", \"text.css\", \"block-hero.css\"], \"a11y\": [\"A section named by its title through aria-labelledby.\", \"The title is a real heading; headingLevel sets the outline level (h1 by default).\", \"Media is passed in: give images alt text.\"], \"keywords\": [\"hero\", \"landing\", \"banner\", \"header section\"]}"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

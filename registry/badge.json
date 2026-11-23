@@ -85,10 +85,5 @@
       "content": "{\"name\":\"badge\",\"title\":\"Badge\",\"category\":\"data-display\",\"description\":\"A short status word or count.\",\"status\":\"stable\",\"css\":[\"05-marks.css\"],\"a11y\":[\"Plain text in a span; the word carries the meaning, not the colour.\",\"For a count that changes, put it inside an aria-live region yourself.\"],\"keywords\":[\"status\",\"pill\",\"chip\",\"count\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

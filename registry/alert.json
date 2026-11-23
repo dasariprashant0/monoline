@@ -96,10 +96,5 @@
       "content": "{\"name\":\"alert\",\"title\":\"Alert\",\"category\":\"feedback\",\"description\":\"A message that stays on screen, with a title and a tone.\",\"status\":\"stable\",\"css\":[\"alert.css\"],\"a11y\":[\"danger and warning are role=alert and announced at once; info and success are role=status and polite.\",\"The title always states the meaning in words; colour is not the only signal.\"],\"keywords\":[\"notice\",\"message\",\"banner\",\"callout\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

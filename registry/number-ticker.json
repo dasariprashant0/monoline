@@ -105,10 +105,5 @@
       "content": "'use client';\nimport {useEffect, useState} from 'react';\n\nconst QUERY = '(prefers-reduced-motion: reduce)';\n\n/** True when the user asked for less motion. Guarded: jsdom and old browsers have no matchMedia. Safe to call at event time. */\nexport function prefersReducedMotion(): boolean {\n  return typeof window !== 'undefined' && !!window.matchMedia?.(QUERY)?.matches;\n}\n\n/** Tracks `prefers-reduced-motion`. First render is `false` so server and client markup match. Shared by the effects components. */\nexport function usePrefersReducedMotion(): boolean {\n  const [reduced, setReduced] = useState(false);\n  useEffect(() => {\n    const mq = typeof window !== 'undefined' ? window.matchMedia?.(QUERY) : undefined;\n    if (!mq) return;\n    setReduced(mq.matches);\n    const on = (e: MediaQueryListEvent) => setReduced(e.matches);\n    mq.addEventListener?.('change', on);\n    return () => mq.removeEventListener?.('change', on);\n  }, []);\n  return reduced;\n}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

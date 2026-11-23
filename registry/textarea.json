@@ -102,10 +102,5 @@
       "content": "import {forwardRef, type TextareaHTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {\n  /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */\n  invalid?: boolean;\n}\n\n/** A native multi-line text field. Inside a Field it is labelled and described automatically. */\nexport const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({invalid, disabled, className, ...rest}, ref) {\n  const f = useFieldControl();\n  return <textarea ref={ref} className={cx('textarea', className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...f} {...invalidAttrs(invalid)} {...rest} />;\n});\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

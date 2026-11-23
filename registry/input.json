@@ -109,10 +109,5 @@
       "content": "{\"name\":\"input\",\"title\":\"Input\",\"category\":\"forms\",\"description\":\"A single-line text field.\",\"status\":\"stable\",\"uses\":[\"field\"],\"css\":[\"03-form-fields.css\",\"11-field-states.css\"],\"a11y\":[\"Native <input>: all keyboard and autofill behaviour is the browser's.\",\"Inside a Field it is labelled and described automatically; invalid sets aria-invalid.\"],\"keywords\":[\"text\",\"textbox\",\"form\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }

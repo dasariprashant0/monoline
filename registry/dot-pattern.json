@@ -87,10 +87,5 @@
       "content": "{\"name\":\"dot-pattern\",\"title\":\"Dot pattern\",\"category\":\"effects\",\"description\":\"A decorative dot grid background drawn in SVG with currentColor.\",\"status\":\"stable\",\"css\":[\"dot-pattern.css\"],\"a11y\":[\"Decorative: aria-hidden and not focusable, so it adds nothing to the reading order.\",\"Static; no motion.\"],\"keywords\":[\"background\",\"dots\",\"grid\",\"texture\",\"decoration\"]}\n"
     }
   ],
-  "utils": [
-    {
-      "path": "packages/react/src/utils/cx.ts",
-      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
-    }
-  ]
+  "utils": []
 }
