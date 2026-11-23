@@ -50,7 +50,7 @@ export function Footer() {
       <div className="foot-mark" aria-hidden="true"><span>monoline</span></div>
       <div className="foot-bottom">
         <p>Built with <span aria-label="love">❤️</span> in the open. <a href={GITHUB}>Source on GitHub</a></p>
-        <p>Copyright © 2026 Monoline contributors. MIT licence.</p>
+        <p>Copyright © 2026 Monoline contributors. MIT licence. <a href={href('docs/guides/accessibility-statement')}>Accessibility statement</a></p>
         <a className="foot-top" href="#main" onClick={(e) => { e.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); }}>Back to top <ArrowIcon /></a>
       </div>
     </footer>

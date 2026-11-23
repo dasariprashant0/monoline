@@ -9,3 +9,5 @@ Short records of choices that shaped the code. One file each: context, decision,
 | [0003](0003-css-cascade-layers.md) | Cascade layers added at bundle time, app CSS wins |
 | [0004](0004-baseline-policy-with-js-fallback.md) | Baseline widely available by default, newer features behind detection |
 | [0005](0005-find-in-page-for-closed-panels.md) | `hidden="until-found"` for closed Accordion and Collapsible panels |
+| [0006](0006-native-anchor-positioning-status.md) | Native anchor positioning: padding and flipped side applied, still opt-in (supersedes part of 0004) |
+| [0007](0007-until-found-panels-stay-mounted.md) | Closed Accordion and Collapsible panels stay mounted where `until-found` is supported (note on 0005) |

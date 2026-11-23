@@ -88,7 +88,7 @@ export const sitePages = [
 
 const GUIDE_PLACE: Record<string, [Tab, string]> = {
   'getting-started': ['start', 'Overview'], theming: ['start', 'Overview'],
-  forms: ['start', 'Guides'], i18n: ['start', 'Guides'], accessibility: ['start', 'Guides'], contributing: ['start', 'Guides'],
+  forms: ['start', 'Guides'], i18n: ['start', 'Guides'], accessibility: ['start', 'Guides'], 'accessibility-statement': ['start', 'Guides'], contributing: ['start', 'Guides'],
   cli: ['tools', 'Tools'], 'theme-builder': ['tools', 'Tools'], 'for-ai-tools': ['tools', 'Tools'],
 };
 /** The rich text editor and its mentions live under the Editor tab, as a feature, not under Components. */

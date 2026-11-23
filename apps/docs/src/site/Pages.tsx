@@ -215,7 +215,7 @@ export function Editor() {
       </section>
       <section className="cdoc-section" aria-labelledby="ed-usage"><H2 id="ed-usage">Usage</H2>
         <p className="cdoc-muted">Controlled with a value and <code>onValueChange</code>, the same pattern as every other input. The value is an HTML string.</p>
-        <div className="cdoc-stage"><RichTextEditor aria-label="Release notes" value={html} onValueChange={setHtml} /></div>
+        <div className="cdoc-stage" role="group" aria-label="Rich text editor example"><RichTextEditor aria-label="Release notes" value={html} onValueChange={setHtml} /></div>
         <CodeBlock title="notes.tsx" language="tsx" code={`const [html, setHtml] = useState('<p>Hello</p>');\n\n<RichTextEditor aria-label="Release notes" value={html} onValueChange={setHtml} />`} />
       </section>
       <section className="cdoc-section" aria-labelledby="ed-data"><H2 id="ed-data">Handling data</H2>
