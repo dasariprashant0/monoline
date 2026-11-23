@@ -22,6 +22,15 @@ describe('TagsInput', () => {
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith(['a', 'b']);
   });
+  it('keeps every tag of a pasted comma list, in one change', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<TagsInput aria-label="Keywords" onValueChange={fn} />);
+    await user.click(screen.getByRole('textbox'));
+    await user.paste('a, b, c, a,');
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(['a', 'b', 'c']);
+  });
   it('removes the last tag with Backspace only when the field is empty', async () => {
     const user = userEvent.setup();
     render(<TagsInput aria-label="Keywords" defaultValue={['a', 'b']} />);
