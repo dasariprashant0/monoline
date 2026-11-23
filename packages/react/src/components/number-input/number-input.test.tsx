@@ -41,4 +41,14 @@ describe('NumberInput', () => {
     const {container} = render(<NumberInput aria-label="Quantity" defaultValue={1} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('steps by 1 with step="any", where the native stepUp throws', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<NumberInput aria-label="Amount" step="any" defaultValue={1} min={0} max={2} onChange={fn} />);
+    await user.click(screen.getByRole('button', {name: 'Increase'}));
+    expect(screen.getByRole('spinbutton')).toHaveValue(2);
+    await user.click(screen.getByRole('button', {name: 'Increase'}));
+    expect(screen.getByRole('spinbutton')).toHaveValue(2);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
 });

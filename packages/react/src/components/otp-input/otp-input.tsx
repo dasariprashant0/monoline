@@ -44,7 +44,7 @@ export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpIn
       else if (i > 0) { commit(current.slice(0, i - 1) + current.slice(i)); focus(i - 1); }
     } else if (e.key === 'ArrowLeft') { e.preventDefault(); focus(isRtl(e.currentTarget) ? i + 1 : i - 1); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); focus(isRtl(e.currentTarget) ? i - 1 : i + 1); }
-    else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    else if (e.key?.length === 1 && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       if (!ok(e.key)) return;
       const padded = current.padEnd(i, ' ');
