@@ -62,6 +62,17 @@ describe('Toc', () => {
     expect(screen.queryByRole('link', {current: 'location'})).not.toBeInTheDocument();
     spy.mockRestore();
   });
+  it('re-evaluates on scroll, because the 1px band does not fire while the heading top moves back below the offset', () => {
+    const tops: Record<string, number> = {a: -300, b: -10, c: 400};
+    const spy = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) { return {top: tops[this.id] ?? 0} as DOMRect; });
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => { cb(0); return 1; });
+    render(<Page />);
+    expect(screen.getByRole('link', {current: 'location'})).toHaveTextContent('Beta');
+    tops.b = 200; // scrolled up: Beta's top is below the offset again, but no IntersectionObserver callback fired
+    act(() => { window.dispatchEvent(new Event('scroll')); });
+    expect(screen.getByRole('link', {current: 'location'})).toHaveTextContent('Alpha');
+    spy.mockRestore();
+  });
   it('measures the thumb path from the inline-start edge in RTL (the CSS mirrors it) and from the left in LTR', () => {
     // jsdom has no layout: fake the rects of a 200px-wide body whose rules sit at the inline-start edge (and one bend 10px further in).
     const rect = (l: number, r: number, t: number, b: number) => ({left: l, right: r, top: t, bottom: b, width: r - l, height: b - t, x: l, y: t, toJSON() {}}) as DOMRect;

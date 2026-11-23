@@ -82,7 +82,11 @@ export const Toc = forwardRef<HTMLElement, TocProps>(function Toc({items, contai
     order.forEach((id) => { const h = document.getElementById(id); if (h) io.observe(h); });
     // A jump (hash link, Home/End, restored scroll) can skip the band entirely; `scrollend` fires once when scrolling stops, so resync then.
     window.addEventListener('scrollend', update);
-    return () => { io.disconnect(); window.removeEventListener('scrollend', update); };
+    // Scrolling up, the band fires when a heading's bottom reaches the line but the current heading only changes when its top does, up to one heading height later: resync on scroll too (one frame at most; setActive bails out when unchanged).
+    let raf = 0;
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; update(); }); };
+    window.addEventListener('scroll', onScroll, {passive: true});
+    return () => { io.disconnect(); window.removeEventListener('scrollend', update); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
   }, [ids, offset, vh]);
 
   const at = list.findIndex((i) => i.id === active);
