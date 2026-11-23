@@ -26,8 +26,10 @@ const toText = (d: Date | null) => (d ? `${d.getFullYear()}-${pad(d.getMonth() +
 const parse = (s: string): Date | null => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.trim());
   if (!m) return null;
-  const d = new Date(+m[1]!, +m[2]! - 1, +m[3]!);
-  return d.getMonth() === +m[2]! - 1 && d.getDate() === +m[3]! ? d : null;
+  // `new Date(24, ...)` means 1924: set the year separately, and check the year survived.
+  const d = new Date(2000, 0, 1);
+  d.setFullYear(+m[1]!, +m[2]! - 1, +m[3]!);
+  return d.getFullYear() === +m[1]! && d.getMonth() === +m[2]! - 1 && d.getDate() === +m[3]! ? d : null;
 };
 
 /** Pick a date range from a popover. It holds two typed fields (YYYY-MM-DD) and a range calendar that stay in sync. Value is `{start, end}`. Same `value` / `defaultValue` / `onValueChange` as RangeCalendar. */
@@ -76,7 +78,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', className)} {...f} aria-label={label} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>
+        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', className)} {...f} aria-label={`${label}: ${text || placeholder}`} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>
           {text || placeholder}
         </button>
       </PopoverTrigger>
