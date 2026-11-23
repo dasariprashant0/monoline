@@ -119,10 +119,13 @@ export const Floating = forwardRef<HTMLDivElement, FloatingProps>(function Float
     if (a0 instanceof HTMLElement && nativeAnchor()) return placeNative(a0, p, name, {side, align, sideOffset, alignOffset, collisionPadding});
     const go = () => { const a = anchor(); if (a) place(a, p, {side, align, sideOffset, alignOffset, collisionPadding}); };
     go();
-    addEventListener('resize', go); addEventListener('scroll', go, true);
+    // Scroll and resize come in bursts: place once per frame, not once per event.
+    let raf = 0;
+    const later = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; go(); }); };
+    addEventListener('resize', later); addEventListener('scroll', later, true);
     const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(go);
     ro?.observe(p);
-    return () => { removeEventListener('resize', go); removeEventListener('scroll', go, true); ro?.disconnect(); };
+    return () => { removeEventListener('resize', later); removeEventListener('scroll', later, true); if (raf) cancelAnimationFrame(raf); ro?.disconnect(); };
   }, [side, align, sideOffset, alignOffset, collisionPadding]);
   if (typeof document === 'undefined') return null;
   return createPortal(<div ref={(n) => setRefs(n, el, forwarded)} style={{position: 'fixed', ...style}} {...rest} />, anchor()?.closest('dialog[open]') ?? document.body);
