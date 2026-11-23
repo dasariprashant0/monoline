@@ -18,7 +18,16 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
   const bump = (dir: 1 | -1) => {
     const el = inner.current;
     if (!el) return;
-    if (dir === 1) el.stepUp(); else el.stepDown();
+    try {
+      if (dir === 1) el.stepUp(); else el.stepDown();
+    } catch {
+      // `step="any"` has no step to take (stepUp throws): add or subtract 1, within min and max.
+      const start = Number.isFinite(el.valueAsNumber) ? el.valueAsNumber : 0;
+      const lo = el.min === '' ? -Infinity : Number(el.min), hi = el.max === '' ? Infinity : Number(el.max);
+      const next = String(Math.min(hi, Math.max(lo, start + dir)));
+      // The native setter, so React sees the change when the input event fires.
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(el, next);
+    }
     el.dispatchEvent(new Event('input', {bubbles: true}));
     el.focus();
   };

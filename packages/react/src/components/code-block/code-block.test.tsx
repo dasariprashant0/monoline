@@ -82,4 +82,13 @@ describe('highlight', () => {
     expect(t.find((x) => x.text === '"name"')!.type).toBe('attr');
     expect(t.find((x) => x.text === '"monoline"')!.type).toBe('string');
   });
+  it('says so when the clipboard is unavailable', async () => {
+    const user = userEvent.setup();
+    render(<CodeBlock code="x" />);
+    const spy = vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
+    await user.click(screen.getByRole('button', {name: 'Copy code'}));
+    expect(await screen.findByRole('button', {name: 'Copy failed'})).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Copy failed');
+    spy.mockRestore();
+  });
 });

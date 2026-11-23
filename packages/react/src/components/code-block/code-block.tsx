@@ -39,15 +39,24 @@ function toLines(tokens: Token[]): Token[][] {
  */
 export const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(function CodeBlock({code, title, language, lineNumbers, hideCopy, className, ...rest}, ref) {
   const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   const lang = language ?? languageFromName(title);
   const lines = useMemo(() => toLines(highlight(code.replace(/\n$/, ''), lang)), [code, lang]);
   const copy = async () => {
-    try { await navigator.clipboard.writeText(code); setCopied(true); clearTimeout(timer.current); timer.current = setTimeout(() => setCopied(false), 1800); } catch { setCopied(false); }
+    clearTimeout(timer.current);
+    try {
+      await navigator.clipboard.writeText(code);
+      setFailed(false); setCopied(true);
+    } catch {
+      // No clipboard (an http page, a blocked permission): say so instead of doing nothing.
+      setCopied(false); setFailed(true);
+    }
+    timer.current = setTimeout(() => { setCopied(false); setFailed(false); }, 1800);
   };
   const button = !hideCopy && (
-    <button type="button" className="code-copy" onClick={copy} aria-label={copied ? 'Copied' : 'Copy code'} data-copied={copied || undefined}>
+    <button type="button" className="code-copy" onClick={copy} aria-label={copied ? 'Copied' : failed ? 'Copy failed' : 'Copy code'} data-copied={copied || undefined} data-failed={failed || undefined}>
       {copied ? <CheckIcon /> : <CopyIcon />}
     </button>
   );
@@ -70,7 +79,7 @@ export const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(function Cod
           ))}
         </code>
       </pre>
-      <span className="sr-only" role="status">{copied ? 'Copied to clipboard' : ''}</span>
+      <span className="sr-only" role="status">{copied ? 'Copied to clipboard' : failed ? 'Copy failed' : ''}</span>
     </div>
   );
 });
