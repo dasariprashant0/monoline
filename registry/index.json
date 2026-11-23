@@ -1924,7 +1924,7 @@
         "17-dropdown-menu.css"
       ],
       "a11y": [
-        "Opens with right click, long press or the context-menu key (Shift+F10).",
+        "Opens with right click, long press or the context-menu key (Shift+F10). The trigger must be focusable for the key to work: use asChild with a button, or an element with tabIndex 0.",
         "Arrow keys move, Enter or Space selects, Escape closes and returns focus.",
         "Every action must also exist elsewhere in the UI for people who cannot open it."
       ],
@@ -5688,6 +5688,54 @@
         "position",
         "label",
         "dismissLabel"
+      ]
+    },
+    {
+      "name": "toc",
+      "title": "Table of contents",
+      "category": "navigation",
+      "description": "An on-this-page list of links to the headings of the current page, with the heading being read highlighted.",
+      "status": "stable",
+      "css": [
+        "toc.css"
+      ],
+      "a11y": [
+        "A nav landmark with an aria-label (default \"On this page\") containing a list of links.",
+        "The heading being read has aria-current=location; it is tracked with an IntersectionObserver, not scroll handlers.",
+        "Links are real anchors: Tab reaches each one, Enter follows it, and the URL hash updates.",
+        "Links are plain anchors, so scrolling follows the browser and the page's own motion settings.",
+        "Focus uses the shared ring; the current link is also marked with a bar and heavier weight, not colour alone; works in forced-colors."
+      ],
+      "keywords": [
+        "on this page",
+        "table of contents",
+        "toc",
+        "headings",
+        "scroll spy",
+        "anchor links"
+      ],
+      "kind": "components",
+      "import": "import {Toc} from '@monoline/react'",
+      "path": "packages/react/src/components/toc",
+      "files": [
+        "packages/react/src/components/toc/index.ts",
+        "packages/react/src/components/toc/meta.json",
+        "packages/react/src/components/toc/toc.demo.tsx",
+        "packages/react/src/components/toc/toc.test.tsx",
+        "packages/react/src/components/toc/toc.tsx"
+      ],
+      "related": [
+        "breadcrumb",
+        "breadcrumbs-auto",
+        "menubar"
+      ],
+      "propNames": [
+        "items",
+        "container",
+        "levels",
+        "heading",
+        "aria-label",
+        "offset"
       ]
     },
     {

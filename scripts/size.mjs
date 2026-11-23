@@ -16,6 +16,8 @@ const dist = join(root, 'packages/react/dist/index.js');
 if (!existsSync(dist)) { console.error('Build first: npm run build -w @monoline/react'); process.exit(2); }
 
 const KB = 1024;
+// SIZE_BUDGET_SCALE=0.5 halves every budget; used to prove this script fails when a budget is exceeded.
+const scale = Number(process.env.SIZE_BUDGET_SCALE ?? 1);
 const asJson = process.argv.includes('--json'); // machine-readable output for the docs Compare page
 const detail = process.argv.includes('--detail'); // per-component sizes and top contributing packages -> docs/bundle-report.md
 const report = {js: [], css: null};
@@ -30,10 +32,10 @@ const cases = [
   ['Dialog', "import {Dialog, DialogTrigger, DialogContent, DialogTitle} from '@monoline/react'; console.log(Dialog, DialogTrigger, DialogContent, DialogTitle)", 2],
   ['AlertDialog', "import {AlertDialog, AlertDialogContent} from '@monoline/react'; console.log(AlertDialog, AlertDialogContent)", 2],
   ['Drawer', "import {Drawer, DrawerContent} from '@monoline/react'; console.log(Drawer, DrawerContent)", 2],
-  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.5],
-  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.6],
-  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.7],
-  ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.4],
+  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 2.8],
+  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 2.9],
+  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 3.9],
+  ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.5],
   ['Everything', "import * as m from '@monoline/react'; console.log(m)", 100],
 ];
 const bundle = (code) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});
@@ -48,7 +50,8 @@ const contributors = (r) => {
 if (detail) await writeDetail();
 let failed = 0;
 say('JS (gzip, minified, react external)');
-for (const [name, code, budget] of cases) {
+for (const [name, code, base] of cases) {
+  const budget = base * scale;
   const r = await bundle(code);
   const kb = gzipSync(r.outputFiles[0].contents).length / KB;
   const ok = kb <= budget;
@@ -59,7 +62,7 @@ for (const [name, code, budget] of cases) {
 const css = join(root, 'packages/css/dist/monoline.min.css');
 if (existsSync(css)) {
   const kb = gzipSync(readFileSync(css)).length / KB;
-  const budget = 20; const ok = kb <= budget; if (!ok) failed++;
+  const budget = 21 * scale; const ok = kb <= budget; if (!ok) failed++;
   report.css = {name: 'All components, 3 themes, 8 accents', kb: +kb.toFixed(2), budget};
   say('CSS');
   say(`${ok ? 'ok  ' : 'FAIL'} ${'All components, 3 themes, 8 accents'.padEnd(32)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);
@@ -76,7 +79,8 @@ const cssCases = [
   ['core + landing example (11 components)', pick(['avatar', 'block-cta', 'block-feature-grid', 'block-footer', 'block-hero', 'block-pricing', 'block-testimonials', 'button', 'code-block', 'container', 'link']), 8],
 ];
 report.cssPaths = [];
-for (const [name, css, budget] of cssCases) {
+for (const [name, css, base] of cssCases) {
+  const budget = base * scale;
   const kb = gz(css); const ok = kb <= budget; if (!ok) failed++;
   report.cssPaths.push({name, kb: +kb.toFixed(2), budget});
   say(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(42)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);

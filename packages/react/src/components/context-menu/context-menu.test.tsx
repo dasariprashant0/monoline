@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger} from './context-menu';
@@ -17,6 +17,14 @@ describe('ContextMenu', () => {
     await user.pointer({keys: '[MouseRight]', target: screen.getByText('Right click here')});
     expect(await screen.findByRole('menu')).toBeInTheDocument();
     expect(screen.getAllByRole('menuitem')).toHaveLength(2);
+  });
+  it('opens from the keyboard context-menu event when the trigger is focusable (e2e F7)', async () => {
+    const user = userEvent.setup();
+    render(<ContextMenu><ContextMenuTrigger asChild><button>Area</button></ContextMenuTrigger><ContextMenuContent><ContextMenuItem>Rename</ContextMenuItem></ContextMenuContent></ContextMenu>);
+    await user.tab();
+    expect(screen.getByRole('button', {name: 'Area'})).toHaveFocus();
+    fireEvent.contextMenu(screen.getByRole('button', {name: 'Area'}));
+    expect(await screen.findByRole('menu')).toBeInTheDocument();
   });
   it('runs an item and closes', async () => {
     const user = userEvent.setup();

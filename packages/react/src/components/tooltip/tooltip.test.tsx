@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {act, fireEvent, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Tooltip, TooltipProvider} from './tooltip';
@@ -22,6 +22,19 @@ describe('Tooltip', () => {
     await user.tab();
     expect(await screen.findByRole('tooltip')).toBeInTheDocument();
     await user.keyboard('{Escape}');
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+  it('stays open when scrolling brings the focused trigger into view, closes on scroll otherwise (e2e F7)', async () => {
+    const user = userEvent.setup();
+    render(ui());
+    await user.tab();
+    await screen.findByRole('tooltip');
+    act(() => { fireEvent.scroll(document); });
+    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    (document.activeElement as HTMLElement).blur();
+    await user.hover(screen.getByRole('button', {name: 'Save'}));
+    await screen.findByRole('tooltip');
+    act(() => { fireEvent.scroll(document); });
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
   it('describes its trigger while open', async () => {

@@ -13,7 +13,7 @@ What it cannot tell you: how a given screen reader words those things, whether t
 ## Summary
 
 - Components and examples checked: **41**, plus the docs page landmarks and heading order.
-- Checks that fail: **0**. Open findings that are understood and not fixed: **11**.
+- Checks that fail: **0**. Open findings that are understood and not fixed: **10**.
 - Problems found and fixed in components while building this check: **5 groups** (listed below).
 - Generic checks on every example: every control has a role and a non-empty name; no focusable element with no role ("generic"); `aria-labelledby` and `aria-describedby` resolve to text; an invalid field says why; every dialog has a name, a description (unless noted) and reports modal, and nothing outside it stays in the tree.
 - Chrome does not surface `aria-current` or `aria-sort` in the tree through this protocol; those are read from the DOM and marked as such.
@@ -31,7 +31,20 @@ What it cannot tell you: how a given screen reader words those things, whether t
 - **toast** (shown, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Radix Toast viewport: two unnamed focusable proxy elements that hand focus to the first and last toast. Upstream behaviour, reachable by Tab only while a toast is open.
 - **toaster** (shown, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Radix Toast viewport: two unnamed focusable proxy elements that hand focus to the first and last toast. Upstream behaviour, reachable by Tab only while a toast is open.
 - **docs-page-structure** (landmarks and headings, generic): focusable element with role "generic" : a screen reader has nothing to announce Reason it stays open: Scrollable code blocks and panels in the docs page are focusable regions without a role (apps/docs, not a component).
-- **docs-page-structure** (landmarks and headings, check): more than one complementary landmark and this one has no name Reason it stays open: The docs sidebar is a second unnamed complementary landmark (apps/docs shell, not a component).
+
+## Triage: what to fix, where, and how to re-check
+
+Every row is reproduced by a command in this repo (last run 2026-11-20, real Chrome). "Owner" is the work package that edits the file. Browser probes come from `node scripts/e2e/probe.mjs`; the rest from `npm run ax`.
+
+| ID | Component | WCAG | Sev | Evidence | Suggested fix | Owner |
+|---|---|---|---|---|---|---|
+| T1 | toast, toaster | 2.1.1, 4.1.2 | M | ax: two focusable `generic` proxy elements in the Toast viewport, reachable by Tab while a toast is open | Confirm whether Toast still uses Radix after the 0.4 rewrite. If so, give the proxies `aria-hidden` plus `tabindex=-1` or replace the viewport; if upstream, keep the finding and document it in the toast `meta.json` a11y list | WP2 `packages/react/src/components/toast` |
+| T2 | docs sidebar | 1.3.1, 2.4.1 | M | ax: second `complementary` landmark with no name | Give the sidebar `aria-label` (for example "Components") or make it `nav` | WP5 `apps/docs` |
+| T3 | docs code blocks | 4.1.2, 2.1.1 | L | ax: 5 scrollable code blocks/panels focusable with role `generic` | Add `role="region"` plus `aria-label` (or `tabindex=0` only when it scrolls, with a name) | WP5 `apps/docs` |
+| T4 | context-menu demo | 2.1.1 | M | FIXED (WP2/WP4; probe F7a passes on the integration tree, 2026-11-20). Was: probe F7a: demo trigger is a `span` with tabIndex -1; `meta.json` promises Shift+F10 but nothing can take focus | Demo with a focusable trigger (button or `tabindex=0` wrapper); say in the docs that the trigger must be focusable | WP2 `context-menu.demo.tsx` |
+| T5 | tooltip | 1.4.13, 2.1.1 | M | FIXED (WP2/WP4; probe F7c passes on the integration tree, 2026-11-20). Was: probe F7c: Tab that scrolls the trigger into view leaves no tooltip in the DOM; the same focus with the trigger already visible shows it | Ignore scroll events caused by focus (do not close on scroll for ~100 ms after focus, or only on user scroll) | WP2 `packages/react/src/components/tooltip`, `popover/float.tsx` |
+| T6 | combobox | 3.2.1 | L | FIXED (WP2/WP4; probe F7d passes on the integration tree, 2026-11-20). Was: probe F7d: `aria-expanded="true"` as soon as the input is focused | Open on typing or ArrowDown (APG), keep an opt-in prop for open-on-focus. Product decision, not a strict failure | WP2 `packages/react/src/components/combobox` |
+| T7 | all (CSS) | 1.4.11, 2.4.7 | M | FIXED (WP2/WP4; probe F5a passes on the integration tree, 2026-11-20). Was: probe F5a: 0 `forced-colors` and 0 `prefers-contrast` media rules in the shipped stylesheet. Focus ring stays visible in forced-colors today (2px solid outline, probe F5b), but selected, checked and border states have no forced-colors rules | Add `@media (forced-colors: active)` for borders, checked/selected/pressed indicators, and `prefers-contrast: more` for rules and muted text | WP4 `tokens/base.css`, WP2 component CSS |
 
 ## What the owner should test by hand
 
@@ -769,5 +782,4 @@ Page `components/button`.
 - Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
 - Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
 - Open finding (generic): focusable element with role "generic" : a screen reader has nothing to announce
-- Open finding (check): more than one complementary landmark and this one has no name
 

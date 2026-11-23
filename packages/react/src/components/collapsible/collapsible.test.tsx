@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from './collapsible';
@@ -11,7 +11,7 @@ describe('Collapsible', () => {
     render(ui());
     const trigger = screen.getByRole('button', {name: 'Details'});
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByText('Hidden text')).not.toBeInTheDocument();
+    expect(screen.getByText('Hidden text')).not.toBeVisible(); // kept in the DOM with hidden=until-found, so Find in page reaches it
     await user.click(trigger);
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText('Hidden text')).toBeVisible();
@@ -23,7 +23,12 @@ describe('Collapsible', () => {
     await user.keyboard('{Enter}');
     expect(screen.getByText('Hidden text')).toBeVisible();
     await user.keyboard(' ');
-    expect(screen.queryByText('Hidden text')).not.toBeInTheDocument();
+    expect(screen.getByText('Hidden text')).not.toBeVisible(); // kept in the DOM with hidden=until-found, so Find in page reaches it
+  });
+  it('opens when the browser finds its text (beforematch)', async () => {
+    render(ui());
+    act(() => { screen.getByText('Hidden text').dispatchEvent(new Event('beforematch')); });
+    await waitFor(() => expect(screen.getByRole('button', {name: 'Details'})).toHaveAttribute('aria-expanded', 'true'));
   });
   it('can start open', () => {
     render(<Collapsible defaultOpen><CollapsibleTrigger>Details</CollapsibleTrigger><CollapsibleContent>Shown</CollapsibleContent></Collapsible>);

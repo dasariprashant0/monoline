@@ -9,14 +9,16 @@ const RADII = ['square', 'soft', 'round'];
 const DENSITIES = ['compact', 'comfortable', 'spacious'];
 const opts = (v: string[]) => v.map((x) => ({value: x, label: x}));
 
-const hex = /^#([0-9a-f]{6})$/i;
+const hex = /^#([0-9a-f]{6}|[0-9a-f]{3})$/i;
+/** #rgb to #rrggbb, so the export and the preview always use the long form. */
+const long = (v: string) => (/^#[0-9a-f]{3}$/i.test(v) ? '#' + [...v.slice(1)].map((x) => x + x).join('') : v);
 const lum = (h: string) => {
   const m = hex.exec(h); if (!m) return null;
-  const n = parseInt(m[1]!, 16);
+  const n = parseInt(long(h).slice(1), 16);
   const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { const s = v / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; });
   return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
 };
-/** WCAG contrast ratio of two #rrggbb colours, or null if either is not a valid hex. */
+/** WCAG contrast ratio of two #rrggbb or #rgb colours, or null if either is not a valid hex. */
 export function contrast(a: string, b: string): number | null {
   const x = lum(a), y = lum(b);
   if (x === null || y === null) return null;
@@ -29,12 +31,15 @@ export function ThemeBuilder() {
   const [c, setC] = useState({accent: '#0E7A5F', background: '#FAFAF5', foreground: '#16120E'});
   const set = (k: keyof typeof s) => (v: string) => setS((p) => ({...p, [k]: v}));
   const ratio = custom ? contrast(c.accent, c.background) : null;
-  const style = custom ? ({'--accent': c.accent, '--accent-text': c.accent, '--background': c.background, '--foreground': c.foreground} as CSSProperties) : undefined;
+  const textRatio = custom ? contrast(c.foreground, c.background) : null;
+  const reset = () => { setC({accent: '#0E7A5F', background: '#FAFAF5', foreground: '#16120E'}); setCustom(false); };
+  const ok = custom && ratio !== null && textRatio !== null;
+  const style = ok ? ({'--accent': long(c.accent), '--accent-text': long(c.accent), '--background': long(c.background), '--foreground': long(c.foreground)} as CSSProperties) : undefined;
 
   const css = useMemo(() => {
     const attrs = `<html data-theme="${s.theme}" data-accent="${s.accent}" data-font="${s.font}" data-radius="${s.radius}" data-density="${s.density}">`;
     return custom
-      ? `${attrs}\n\n/* your overrides, after @monoline/css */\n:root, [data-theme] {\n  --accent: ${c.accent};\n  --accent-text: ${c.accent};\n  --background: ${c.background};\n  --foreground: ${c.foreground};\n}`
+      ? `${attrs}\n\n/* your overrides: outside any @layer, so they beat @monoline/css without !important */\n:root, [data-theme] {\n  --accent: ${long(c.accent)};\n  --accent-text: ${long(c.accent)};\n  --background: ${long(c.background)};\n  --foreground: ${long(c.foreground)};\n}`
       : attrs;
   }, [s, c, custom]);
 
@@ -49,15 +54,17 @@ export function ThemeBuilder() {
           <div className="custom-row"><span className="label">Corners</span><SegmentedControl aria-label="Corners" options={opts(RADII)} value={s.radius} onValueChange={set('radius')} /></div>
           <div className="custom-row"><span className="label">Density</span><SegmentedControl aria-label="Density" options={opts(DENSITIES)} value={s.density} onValueChange={set('density')} /></div>
           <div className="builder-switch"><Switch id="custom-colours" checked={custom} onCheckedChange={setCustom} aria-label="Use custom colours" /><label htmlFor="custom-colours">Use custom colours</label></div>
+          {custom && <div className="builder-switch"><Button variant="ghost" onClick={reset}>Reset colours</Button></div>}
         </div>
         {custom && (
           <div className="builder-colours">
             {(['accent', 'background', 'foreground'] as const).map((k) => (
-              <Field key={k} label={k[0]!.toUpperCase() + k.slice(1)} hint="#rrggbb">
+              <Field key={k} label={k[0]!.toUpperCase() + k.slice(1)} hint="#rrggbb or #rgb">
                 <Input value={c[k]} onChange={(e) => setC((p) => ({...p, [k]: e.target.value}))} invalid={!hex.test(c[k])} spellCheck={false} />
               </Field>
             ))}
             <p className="builder-ratio" role="status">
+              {textRatio !== null && <>Text on background: <strong>{textRatio.toFixed(2)}:1</strong> {textRatio >= 4.5 ? '(passes)' : '(below the 4.5:1 minimum for text)'}. </>}
               {ratio === null ? 'Enter valid #rrggbb colours.' : <>Accent text on background: <strong>{ratio.toFixed(2)}:1</strong> {ratio >= 4.5 ? '(passes WCAG AA for text)' : ratio >= 3 ? '(large text and graphics only; below 4.5:1 for body text)' : '(fails: too low to read)'}</>}
             </p>
           </div>

@@ -74,6 +74,7 @@ export function Home() {
           <Button variant="line" asChild><a href={href('docs/components')}>Explore {components.length} components</a></Button>
           <InstallBox />
         </div>
+        <p className="home-sub">Also install <code>@monoline/css</code> and import <code>core.css</code>: the <a href={href('docs/getting-started')}>ten-minute guide</a> shows every step.</p>
       </section>
       <section className="home-board" aria-label="Components in use"><Board /></section>
       <StatRow />

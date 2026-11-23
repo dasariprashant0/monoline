@@ -134,6 +134,7 @@ Start with AGENTS.md (how to work in this repo) and DESIGN.md (the look and rule
 - Sidebar (sidebar, beta): A collapsible navigation sidebar with groups, icons and a mobile drawer. Source: packages/react/src/components/sidebar/
 - Stepper (stepper, stable): Show progress through a numbered sequence of steps. Source: packages/react/src/components/stepper/
 - Tabs (tabs, stable): Switch between related views in the same place. Source: packages/react/src/components/tabs/
+- Table of contents (toc, stable): An on-this-page list of links to the headings of the current page, with the heading being read highlighted. Source: packages/react/src/components/toc/
 
 ### effects
 - Animated list (animated-list, stable): A list whose items enter one by one without shifting the layout. Source: packages/react/src/components/animated-list/

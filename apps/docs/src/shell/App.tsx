@@ -1,19 +1,12 @@
 // The docs frame: skip link, top bar, sidebar, main column, "On this page" rail, search palette.
 // Routing, titles, scroll and focus are handled here; page bodies come from ../page and ../guides.
-import {useEffect, useRef, useState, type ReactNode} from 'react';
+import {use, useEffect, useRef, useState, type ReactNode} from 'react';
 import {Button, DirectionProvider} from '@monoline/react';
 import {Astro, Editor, Extensions, IconsLibrary, IconsPage, Nextjs, Overview, PlainCss, Remix, Upgrade, Vite} from '../site/Pages';
 import {PlaygroundPage} from '../page/live';
 import {Tokens} from '../site/Tokens';
 import {CopyMarkdown, OpenMenu, domToMarkdown} from '../page/doc-actions';
 import {GITHUB} from './Topbar';
-import {VERSION} from './registry';
-import {Blocks} from '../site/Blocks';
-import {Compare} from '../site/Compare';
-import {Changelog, Roadmap} from '../site/Doc';
-import {Themes} from '../site/Themes';
-import {ComponentDoc} from '../page/component-doc';
-import {Home} from './Home';
 import {Nav} from './Nav';
 import {Pager} from './Pager';
 import {Search} from './Search';
@@ -21,7 +14,8 @@ import {Toc} from './Toc';
 import {Topbar} from './Topbar';
 import {useHeadings} from './headings';
 import {PrefsContext, usePrefs} from './prefs';
-import {components, guides, hooks, type Entry} from './registry';
+import {VERSION, components, guides, hooks, inCategory, loadDemos, type Entry} from './registry';
+import {loader, type Tracked} from './lazy';
 import {href, resolve, useNavCount, usePathname, type Route} from './router';
 
 const SITE = 'Monoline';
@@ -34,7 +28,7 @@ function setMeta(title: string, description: string) {
   m.content = description;
 }
 
-const SITE_BODIES: Record<string, () => ReactNode> = {blocks: Blocks, themes: Themes, compare: Compare, changelog: Changelog, roadmap: Roadmap, components: Overview, tokens: Tokens, nextjs: Nextjs, vite: Vite, astro: Astro, remix: Remix, 'plain-css': PlainCss, icons: IconsPage, 'icons-library': IconsLibrary, editor: Editor, tools: Extensions, upgrade: Upgrade};
+const SITE_BODIES: Record<string, () => ReactNode> = {components: Overview, tokens: Tokens, nextjs: Nextjs, vite: Vite, astro: Astro, remix: Remix, 'plain-css': PlainCss, icons: IconsPage, 'icons-library': IconsLibrary, editor: Editor, tools: Extensions, upgrade: Upgrade};
 
 /** Title area of every page that is not a component: 30px heading and a grey description. */
 export function PageHead({title, description, actions = true}: {title: string; description: string; actions?: boolean}) {
@@ -52,9 +46,37 @@ export function PageHead({title, description, actions = true}: {title: string; d
   );
 }
 
+// The big page bodies are separate chunks. The prerender awaits them all (preloadAll); the browser awaits the route's
+// chunks (preloadRoute) before hydrating and before it shows a new route, so rendering never suspends.
+const loadComponentDoc = loader(() => import('../page/component-doc'));
+const loadHome = loader(() => import('./Home'));
+const siteLoaders: Record<string, () => Tracked<Record<string, unknown>>> = {
+  blocks: loader(() => import('../site/Blocks')),
+  themes: loader(() => import('../site/Themes')),
+  compare: loader(() => import('../site/Compare')),
+  changelog: loader(() => import('../site/Doc')),
+  roadmap: loader(() => import('../site/Doc')),
+};
+const SITE_EXPORT: Record<string, string> = {blocks: 'Blocks', themes: 'Themes', compare: 'Compare', changelog: 'Changelog', roadmap: 'Roadmap'};
+
+/** Loads everything a route needs to render. main.tsx awaits it before hydrating (the server HTML is kept) and App awaits it before it shows a new route. */
+export function preloadRoute(route: Route): Promise<unknown> {
+  if (route.kind === 'home') return loadHome();
+  if (route.kind !== 'page') return Promise.resolve();
+  const {entry} = route;
+  if (entry.kind === 'site') return siteLoaders[entry.name] ? siteLoaders[entry.name]!().then(() => entry.name === 'blocks' ? Promise.all(inCategory('blocks').map((m) => loadDemos(m.name))) : undefined) : Promise.resolve();
+  if (entry.kind === 'guide') return Promise.resolve();
+  return Promise.all([loadComponentDoc(), loadDemos(entry.name)]);
+}
+
+/** Loads every page body. The prerender awaits it once, then renders each route synchronously. */
+export const preloadAll = () => Promise.all([loadHome(), loadComponentDoc(), ...Object.values(siteLoaders).map((l) => l()), ...[...components, ...hooks].map((m) => loadDemos(m.name))]);
+
+function HomePage() { const {Home} = use(loadHome()); return <Home />; }
+
 function Page({entry}: {entry: Entry}) {
   if (entry.kind === 'site') {
-    const Body = SITE_BODIES[entry.name]!;
+    const Body = siteLoaders[entry.name] ? (use(siteLoaders[entry.name]!()) as Record<string, () => ReactNode>)[SITE_EXPORT[entry.name]!]! : SITE_BODIES[entry.name]!;
     return (
       <>
         <PageHead title={entry.title} description={entry.description} />
@@ -72,6 +94,7 @@ function Page({entry}: {entry: Entry}) {
     );
   }
   const meta = [...components, ...hooks].find((m) => m.name === entry.name)!;
+  const {ComponentDoc} = use(loadComponentDoc());
   return <ComponentDoc meta={meta} />;
 }
 
@@ -93,7 +116,14 @@ export function pageMeta(route: Route) {
 }
 
 export function App() {
-  const pathname = usePathname();
+  const requested = usePathname();
+  // Show a new route only once its chunks have loaded, so nothing suspends and the old page stays until then.
+  const [pathname, setShown] = useState(requested);
+  useEffect(() => {
+    let live = true;
+    preloadRoute(resolve(requested)).then(() => live && setShown(requested), () => live && setShown(requested));
+    return () => { live = false; };
+  }, [requested]);
   const navs = useNavCount();
   const route = resolve(pathname);
   const path = route.kind === 'page' ? route.entry.path : route.kind === 'missing' ? route.path : route.kind === 'playground' ? 'playground' : '';
@@ -135,7 +165,7 @@ export function App() {
         <Nav tab={route.kind === 'page' ? route.entry.tab : undefined} current={route.kind === 'page' ? route.entry.path : ''} />
       </aside>
       <main className="docs-main" id="main" ref={main}>
-        {route.kind === 'home' ? <Home /> : route.kind === 'missing' ? <Missing path={route.path} /> : (
+        {route.kind === 'home' ? <HomePage /> : route.kind === 'missing' ? <Missing path={route.path} /> : (
           <>
             <Page key={route.entry.path} entry={route.entry} />
             <Pager entry={route.entry} />

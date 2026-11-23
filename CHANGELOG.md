@@ -2,6 +2,27 @@
 
 Versions follow [semver](https://semver.org). Before 1.0, a minor version may change class names; each change is listed here.
 
+## Unreleased
+
+### Added
+
+- **`Toc` component** (`@monoline/react`, `toc.css`): an "On this page" list of links to a page's headings, with the current one marked `aria-current="location"` and an accent bar that follows it along a thin rule. The docs rail uses it.
+- **Accessibility settings in `@monoline/css`:** under `prefers-contrast: more`, `--muted`, `--border` and `--rule` move towards the text colour (`npm run check` tests 7:1). Under `forced-colors: active`, the colour tokens map to system colours so fills, SVG strokes and the focus ring stay visible. Both are in `utilities.css`, the last layer. `npm run check` also fails if a stylesheet re-enables motion with `!important` and lists literal animation durations.
+- **Find in page for closed Accordion and Collapsible panels.** Where the browser supports `hidden="until-found"`, closed panels stay in the DOM so Ctrl+F finds their text and opens them. Other browsers unmount them as before.
+- **CSS anchor positioning** for the shared floating layer (`anchor-name`, `position-area`), opt-in with `data-anchor="native"` on `<html>` (and only where the browser supports it); `place()` stays the default, because in Chrome e2e the native path let a Select near the viewport edge shrink instead of flip. Collision padding is applied on viewport edges and the flipped side is reported in `data-side`.
+- **Install and cross-browser checks:** CI runs the unit tests on React 18 and 19, `npm run install-smoke` installs the packed packages into clean Vite, Next.js, Astro and React Router starters (`examples/starters/`), and `scripts/e2e/cross-browser` smoke-tests Chromium, WebKit and Firefox.
+
+### Changed
+
+- Built CSS has a new layer, `monoline.options`, between components and utilities. `data-radius`, `data-font` and `data-density` rules moved out of `monoline.tokens` into it, so options restyle components in every bundle. The layer order is `base, tokens, components, options, utilities`.
+- The all-CSS size budget is 21 KB (was 20); the Tooltip, Popover and DropdownMenu budgets are 0.2 KB higher for the anchor-positioning path.
+
+### Fixed
+
+- A tooltip no longer closes when keyboard focus scrolls its trigger into view.
+- A combobox no longer opens on focus alone, and the toast's focus proxies are out of the Tab order.
+- The context-menu demo trigger is a focusable button, so Shift+F10 works.
+
 ## 0.5.0 - 2026-11-20
 
 New design tokens, a redesigned docs site, and the docs now live at https://monoline.prashantdasari.com.

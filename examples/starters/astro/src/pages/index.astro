@@ -1,0 +1,13 @@
+---
+import '@monoline/css/core.css'; // tokens, themes, base; then one file per component you use
+import '@monoline/css/components/button.css';
+import '@monoline/css/components/dialog.css';
+import {Demo} from '../components/Demo';
+---
+<html lang="en" data-theme="warm">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><title>Monoline + Astro</title></head>
+  <body>
+    <!-- client:load hydrates the island; drop it for a static, JS-free render -->
+    <Demo client:load />
+  </body>
+</html>

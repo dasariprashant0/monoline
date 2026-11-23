@@ -1,6 +1,6 @@
 'use client';
 import {createPortal} from 'react-dom';
-import {forwardRef, useEffect, useLayoutEffect, useRef, useSyncExternalStore, type HTMLAttributes, type RefObject} from 'react';
+import {forwardRef, useEffect, useId, useLayoutEffect, useRef, useSyncExternalStore, type HTMLAttributes, type RefObject} from 'react';
 import {setRefs} from '../../utils/overlay';
 
 /* Shared floating layer for Popover, Tooltip, HoverCard, Select and the menus: one positioning function (side,
@@ -46,6 +46,43 @@ export function place(anchor: Element, panel: HTMLElement, {side = 'bottom', ali
   panel.dataset.side = side; panel.dataset.align = align;
 }
 
+/** CSS anchor positioning (`anchor-name` + `position-area`) is Baseline newly available, not widely, and in Chrome e2e it
+ *  let a Select near the viewport edge shrink instead of flip. So it is opt-in: set `data-anchor="native"` on <html> and the
+ *  browser must also support it. The default is `place()` above, everywhere. */
+export const nativeAnchor = () => typeof document !== 'undefined' && document.documentElement.dataset.anchor === 'native' && typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('anchor-name: --a') && CSS.supports('position-area: top');
+
+/** Same placement as `place()` done by the browser: the panel is anchored with `position-area` (shifts to stay in view),
+ *  `position-try-fallbacks` flips it when it does not fit, a margin for `sideOffset`, margins on the viewport edges for `collisionPadding`.
+ *  Returns a cleanup. */
+function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {side = 'bottom', align = 'center', sideOffset = 0, alignOffset = 0, collisionPadding: pad = 8}: Placement) {
+  const rtl = getComputedStyle(anchor).direction === 'rtl';
+  const vertical = side === 'top' || side === 'bottom';
+  const start = vertical ? (rtl ? 'span-left' : 'span-right') : 'span-bottom', end = vertical ? (rtl ? 'span-right' : 'span-left') : 'span-top';
+  const along = align === 'center' ? 'center' : align === 'start' ? start : end;
+  const s = panel.style;
+  anchor.style.setProperty('anchor-name', name);
+  s.setProperty('position-anchor', name);
+  s.setProperty('position-area', `${side} ${along}`);
+  s.setProperty('position-try-fallbacks', vertical ? 'flip-block' : 'flip-inline');
+  s.margin = '0';
+  s.setProperty(`margin-${OPPOSITE[side]}`, `${sideOffset}px`);
+  // Collision padding: the position-area box runs from the anchor to the viewport edge, so pad only the viewport edges
+  // (the one beyond the anchor, and the one the panel grows towards along the anchor's edge), never the anchor-facing ones.
+  // Insets do not work here: a non-auto inset makes the browser ignore position-area.
+  for (const edge of [side, along.slice(5)]) if (edge) s.setProperty(`margin-${edge}`, `${pad}px`);
+  s.translate = vertical ? `${rtl ? -alignOffset : alignOffset}px 0` : `0 ${alignOffset}px`;
+  s.setProperty('--anchor-width', 'anchor-size(width)');
+  s.setProperty('--available-height', '100%'); // the position-area box is the containing block, so this is the room on that side
+  // The browser may flip the panel when it does not fit: read the side it ended up on from the layout.
+  const sync = () => {
+    const a = anchor.getBoundingClientRect(), r = panel.getBoundingClientRect();
+    panel.dataset.side = vertical ? (r.top >= a.bottom - 1 ? 'bottom' : 'top') : (r.left >= a.right - 1 ? 'right' : 'left');
+  };
+  panel.dataset.align = align; panel.dataset.side = side; sync();
+  addEventListener('resize', sync); addEventListener('scroll', sync, true);
+  return () => { anchor.style.removeProperty('anchor-name'); removeEventListener('resize', sync); removeEventListener('scroll', sync, true); };
+}
+
 const noop = () => () => {};
 /** False while hydrating server HTML (portals have no server markup to match), true on the client from then on. */
 export const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
@@ -61,8 +98,11 @@ export interface FloatingProps extends HTMLAttributes<HTMLDivElement>, Placement
  *  inside a modal) or `document.body`. Repositions on resize, scroll and size changes. */
 export const Floating = forwardRef<HTMLDivElement, FloatingProps>(function Floating({anchor, side, align, sideOffset, alignOffset, collisionPadding, style, ...rest}, forwarded) {
   const el = useRef<HTMLDivElement | null>(null);
+  const name = '--mono-' + useId().replace(/[^a-zA-Z0-9]/g, '');
   useLayout(() => {
-    const p = el.current!, go = () => { const a = anchor(); if (a) place(a, p, {side, align, sideOffset, alignOffset, collisionPadding}); };
+    const p = el.current!, a0 = anchor();
+    if (a0 instanceof HTMLElement && nativeAnchor()) return placeNative(a0, p, name, {side, align, sideOffset, alignOffset, collisionPadding});
+    const go = () => { const a = anchor(); if (a) place(a, p, {side, align, sideOffset, alignOffset, collisionPadding}); };
     go();
     addEventListener('resize', go); addEventListener('scroll', go, true);
     const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(go);

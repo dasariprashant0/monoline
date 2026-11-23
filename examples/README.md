@@ -8,6 +8,10 @@ Three small apps that use Monoline the way a consumer would: `import '@monoline/
 | `auth-settings` | sign-in and sign-up with validation (`Form`, `Field`, `PasswordInput`), `Tabs`, `Switch`, `Select`, `NativeSelect`, `FileUpload`, `AlertDialog` danger zone. Routes by hash: `#signin`, `#signup`, `#settings` |
 | `landing` | `BlockHero`, `BlockFeatureGrid`, `BlockPricing` with billing toggle, `BlockTestimonials`, `BlockCta`, `BlockFooter`, light and dark switch |
 
+## Starter
+
+Starters in `starters/`: `vite`, `next` (App Router), `astro` and `react-router` (the framework mode Remix became). Each is a standalone app with no aliases: it imports `@monoline/react` and `@monoline/css` like any consumer. `npm run install-smoke` (repo root, after `npm run build`) packs both packages, installs the tarballs into a fresh temp dir with React 18 and with React 19, builds every starter (Next.js only on React 19, which it needs) and server-renders from the ESM and CJS entry points.
+
 ## Run them
 
 From the repo root:

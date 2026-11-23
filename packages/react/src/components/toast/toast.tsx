@@ -1,13 +1,27 @@
-import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';
+'use client';
+import {forwardRef, useEffect, useRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';
+import {setRefs} from '../../utils/overlay';
 import {Toast as Radix} from 'radix-ui';
 import {cx} from '../../utils/cx';
 
 /** Wrap the app once. `duration` is in ms; `label` names the region for assistive tech. */
 export const ToastProvider = Radix.Provider;
 
-/** Where toasts appear on screen. Render it once inside `ToastProvider`. */
+/** Where toasts appear on screen. Render it once inside `ToastProvider`. F8 moves focus into it. */
 export const ToastViewport = forwardRef<ElementRef<typeof Radix.Viewport>, ComponentPropsWithoutRef<typeof Radix.Viewport>>(function ToastViewport({className, ...rest}, ref) {
-  return <Radix.Viewport ref={ref} className={cx('toast-viewport', className)} {...rest} />;
+  const ol = useRef<HTMLOListElement | null>(null);
+  // Radix puts two unnamed, silent focus proxies around the list (a Tab stop that says nothing to a screen reader). Take them
+  // out of the Tab order: Tab still reaches each toast's own buttons in order, F8 still jumps in, and Radix can still focus them from code.
+  useEffect(() => {
+    const region = ol.current?.parentElement;
+    if (!region) return;
+    const fix = () => region.querySelectorAll<HTMLElement>(':scope > [tabindex="0"]').forEach((n) => n.setAttribute('tabindex', '-1'));
+    fix();
+    const mo = new MutationObserver(fix);
+    mo.observe(region, {childList: true});
+    return () => mo.disconnect();
+  }, []);
+  return <Radix.Viewport ref={(n) => setRefs(n, ol, ref)} className={cx('toast-viewport', className)} {...rest} />;
 });
 
 /** One message. Control it with `open` / `onOpenChange`. */
