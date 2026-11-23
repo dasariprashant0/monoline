@@ -81,7 +81,7 @@ export interface ToastFn {
 }
 
 /**
- * Show a message from anywhere, no hook needed. Mount one `<Toaster />` first.
+ * Show a message from anywhere, no hook needed. Mount exactly one `<Toaster />` first: the list is shared, so a second one would show and announce every toast twice.
  * @example toast.success('Saved', {description: 'Draft stored.', action: {label: 'Undo', onClick: undo}})
  */
 export const toast: ToastFn = Object.assign(
@@ -93,11 +93,15 @@ export const toast: ToastFn = Object.assign(
     warning: (m: ReactNode, o?: ToastOptions) => show('warning', m, o),
     promise: <T,>(promise: Promise<T>, messages: ToastPromiseMessages<T>, options?: ToastOptions) => {
       const id = show('loading', messages.loading, {...options, duration: Infinity});
-      const text = <A,>(m: ReactNode | ((a: A) => ReactNode), a: A) => (typeof m === 'function' ? (m as (a: A) => ReactNode)(a) : m);
-      promise.then(
-        (v) => { show('success', text(messages.success, v), {...options, id}); },
-        (e) => { show('error', text(messages.error, e), {...options, id}); },
-      );
+      // A toast the user dismissed while waiting stays dismissed. A message function that throws must not become an unhandled rejection.
+      const settle = (kind: ToastKind, m: ReactNode | ((a: never) => ReactNode), a: unknown) => {
+        const cur = items.find((i) => i.id === id);
+        if (!cur || !cur.open) return;
+        let message: ReactNode;
+        try { message = typeof m === 'function' ? (m as (a: unknown) => ReactNode)(a) : m; } catch { message = kind === 'error' ? 'Something went wrong' : 'Done'; }
+        show(kind, message, {...options, id});
+      };
+      promise.then((v) => settle('success', messages.success, v), (e) => settle('error', messages.error, e));
       return promise;
     },
     dismiss,
