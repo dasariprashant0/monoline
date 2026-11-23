@@ -951,7 +951,7 @@ Props (name: type = default, ? means optional):
 - variant?: "line" | "danger" | "solid" | "ghost" = 'solid' — Default `solid`: the one main action per view. `line` for the rest, `ghost` for inline links, `danger` for destructive.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense toolbars and table rows, or `lg` for prominent calls to action. Same heights as Input and Select.
 - loading?: boolean = false — Shows a spinner, sets `aria-busy` and ignores clicks. The label stays so the width does not jump.
-- asChild?: boolean = false — Render the child element (a link, a router link) with the button styles instead of a `<button>`.
+- asChild?: boolean = false — Render the child element (a link, a router link) with the button styles instead of a `<button>`. With `disabled` the link gets `aria-disabled`, leaves the tab order and ignores clicks.
 
 Usage:
 ```tsx
@@ -1205,6 +1205,7 @@ Props (name: type = default, ? means optional):
 - value?: string — The colour as "#rrggbb".
 - defaultValue?: string = '#000000' — The initial colour as "#rrggbb" when uncontrolled.
 - onValueChange?: ((value: string) => void) — Called with the new colour as "#rrggbb" when the user picks a swatch or types a valid hex.
+- name?: string — Form field name. A hidden input submits the colour as `#rrggbb`.
 - colors?: string[] = PRESETS — Preset swatches, each a CSS hex colour. Set from this prop, never from the stylesheet.
 - disabled?: boolean — Stops the user changing the colour.
 - aria-label?: string — Accessible name for the group.
@@ -1241,6 +1242,7 @@ Props (name: type = default, ? means optional):
 - value?: string — The selected option's `value` when controlled; `''` means none. Pair with `onValueChange`.
 - defaultValue?: string = '' — The initially selected option's `value` when uncontrolled. Default none.
 - onValueChange?: ((value: string) => void) — Called with the chosen option's value, or '' when cleared.
+- name?: string — Form field name. A hidden input submits the chosen option `value` (not its label); the visible text box is not submitted.
 - emptyText?: string = 'No matches' — Shown when nothing matches.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the field as having an error: sets `aria-invalid` and shows the error border.
@@ -1569,6 +1571,7 @@ Props (name: type = default, ? means optional):
 - defaultOpen?: boolean = false — Whether the popover starts open. Default false.
 - onOpenChange?: ((open: boolean) => void) — Called with the next open state when the popover opens or closes.
 - disabled?: boolean — Stops the user opening the calendar.
+- name?: string — Form field name. A hidden input submits the date as `YYYY-MM-DD` (empty when none is chosen).
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the field as having an error: sets `aria-invalid` and shows the error border.
 - className?: string — Extra class name for the trigger button.
@@ -1609,6 +1612,7 @@ Props (name: type = default, ? means optional):
 - disabled?: boolean — Stops the user opening the calendar.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the field as having an error: sets `aria-invalid` and shows the error border.
+- name?: string — Form field name. Two hidden inputs submit `YYYY-MM-DD` dates as `<name>-start` and `<name>-end` (empty when not chosen).
 - className?: string — Extra class name for the trigger button.
 - aria-label?: string — Names the control when it is not inside a Field.
 
@@ -2456,6 +2460,7 @@ Props (name: type = default, ? means optional):
 - value?: string[] — The chosen option values when controlled. Pair with `onValueChange`.
 - defaultValue?: string[] = [] — The initially chosen option values when uncontrolled. Default empty.
 - onValueChange?: ((value: string[]) => void) — Called with the full list of chosen values.
+- name?: string — Form field name. A hidden input submits one entry per chosen `value`; the visible text box is not submitted.
 - emptyText?: string = 'No matches' — Shown when nothing matches.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the field as having an error: sets `aria-invalid` and shows the error border.
@@ -2653,6 +2658,7 @@ Props (name: type = default, ? means optional):
 - labels?: { decrease?: string; increase?: string; } — Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase".
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`.
+- wrapperClassName?: string — Extra class name for the wrapper around the input and the step buttons. `className` goes to the input.
 
 Usage:
 ```tsx
@@ -2744,6 +2750,7 @@ Props (name: type = default, ? means optional):
 - onComplete?: ((value: string) => void) — Called once when every box is filled.
 - alphanumeric?: boolean — Allow letters as well as digits.
 - disabled?: boolean — Disables every box.
+- name?: string — Form field name. A hidden input submits the whole code.
 - invalid?: boolean — Marks the boxes as having an error: sets `aria-invalid` and shows the error border.
 
 Usage:
@@ -2867,7 +2874,9 @@ A password field with a show/hide toggle.
 Status: stable | Category: forms | Related: input, field
 Import: import {PasswordInput} from '@monoline/react'
 
-Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
+Props (name: type = default, ? means optional):
+- labels?: { show?: string; hide?: string; password?: string; } — Button text, for other languages. Defaults "Show", "Hide" and "password" (the last is read by screen readers only).
+- wrapperClassName?: string — Extra class name for the wrapper around the input and the button. `className` goes to the input.
 
 Usage:
 ```tsx
@@ -3057,10 +3066,11 @@ Props (name: type = default, ? means optional):
 - aria-label: string — Names the control, for example "Rate this article".
 - value?: number — The current score (0 to `max`) when controlled. Pair with `onValueChange`.
 - defaultValue?: number = 0 — The initial score when uncontrolled. Default 0.
-- onValueChange?: ((value: number) => void) — Called with the new score (1 to `max`) when the user picks a star.
+- onValueChange?: ((value: number) => void) — Called with the new score (1 to `max`, or 0 when `clearable` and the chosen star is clicked again) when the user picks a star.
 - max?: number = 5 — Number of stars. Default 5.
 - readOnly?: boolean — Shows the score without letting anyone change it.
 - name?: string — Name of the underlying radio inputs, so the score submits with a native form. A unique name is generated if omitted.
+- clearable?: boolean = false — Lets a click on the chosen star clear the score back to 0. Default false.
 
 Usage:
 ```tsx
@@ -3401,7 +3411,7 @@ SidebarProps:
 - label?: string = 'Toggle sidebar' — Names the navigation landmark, in the sidebar and in the drawer. Default "Main".
 - drawerTitle?: ReactNode = 'Menu' — Names the drawer on small screens (its dialog title). Default "Menu".
 - renderLink?: RenderLink — Renders each `SidebarItem` link, so a client router can handle the click. Default a plain `<a href>`. The returned element must forward its ref and spread extra props (collapsed tooltips need that).
-- children: ReactNode = 'Menu' — A `SidebarHeader`, `SidebarContent` and `SidebarFooter`. They render twice: in the sidebar (from 800px) and in the drawer (below 800px).
+- children: ReactNode = 'Menu' — A `SidebarHeader`, `SidebarContent` and `SidebarFooter`. They render twice: in the sidebar (from 800px) and in the drawer (below 800px), so keep them free of fixed `id`s and local state.
 SidebarGroupProps:
 - label?: ReactNode = 'Toggle sidebar' — A heading for the group. Hidden visually (a rule shows instead) when the sidebar is collapsed, still read by screen readers.
 - children: ReactNode = 'Menu' — `SidebarItem`s.
@@ -3852,6 +3862,7 @@ Props (name: type = default, ? means optional):
 - value?: string[] — The current tags when controlled. Pair with `onValueChange`.
 - defaultValue?: string[] = [] — The tags present at first when uncontrolled. Default empty.
 - onValueChange?: ((value: string[]) => void) — Called with the full list of tags after one is added or removed.
+- name?: string — Form field name. A hidden input submits one entry per tag; the visible text box is not submitted.
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the field as having an error: sets `aria-invalid` and shows the error border.
 
@@ -4479,6 +4490,7 @@ Import: import {TreeSelect} from '@monoline/react'
 Props (name: type = default, ? means optional):
 - items: TreeNode[] — The tree: top-level nodes, each with an `id`, a `label` and optional `children`. Same shape as `Tree`.
 - value?: string[] — Selected node ids when controlled. Always an array, also in single mode (zero or one id). Pair with `onValueChange`.
+- name?: string — Form field name. Hidden inputs submit one entry per selected node id; the visible box is not submitted.
 - defaultValue?: string[] = [] — Ids selected at first when uncontrolled. Default none.
 - onValueChange?: ((ids: string[]) => void) — Called with the full list of selected ids after each change.
 - multiple?: boolean = false — Allows several selections: choosing a node toggles it and the list stays open. Default false (choosing closes the list).

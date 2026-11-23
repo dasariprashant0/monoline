@@ -1744,6 +1744,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "colors",
         "disabled",
         "aria-label"
@@ -1792,6 +1793,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "emptyText",
         "size",
         "invalid"
@@ -2206,6 +2208,7 @@
         "defaultOpen",
         "onOpenChange",
         "disabled",
+        "name",
         "size",
         "invalid",
         "className",
@@ -2268,6 +2271,7 @@
         "disabled",
         "size",
         "invalid",
+        "name",
         "className",
         "aria-label"
       ]
@@ -3453,6 +3457,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "emptyText",
         "size",
         "invalid"
@@ -3699,7 +3704,8 @@
       "propNames": [
         "labels",
         "size",
-        "invalid"
+        "invalid",
+        "wrapperClassName"
       ]
     },
     {
@@ -3730,8 +3736,7 @@
         "packages/react/src/components/number-ticker/meta.json",
         "packages/react/src/components/number-ticker/number-ticker.demo.tsx",
         "packages/react/src/components/number-ticker/number-ticker.test.tsx",
-        "packages/react/src/components/number-ticker/number-ticker.tsx",
-        "packages/react/src/components/number-ticker/use-reduced-motion.ts"
+        "packages/react/src/components/number-ticker/number-ticker.tsx"
       ],
       "related": [
         "animated-list",
@@ -3835,6 +3840,7 @@
         "onComplete",
         "alphanumeric",
         "disabled",
+        "name",
         "invalid"
       ]
     },
@@ -4008,7 +4014,10 @@
         "packages/react/src/components/password-input/password-input.test.tsx",
         "packages/react/src/components/password-input/password-input.tsx"
       ],
-      "propNames": []
+      "propNames": [
+        "labels",
+        "wrapperClassName"
+      ]
     },
     {
       "name": "pie-chart",
@@ -4277,7 +4286,8 @@
         "onValueChange",
         "max",
         "readOnly",
-        "name"
+        "name",
+        "clearable"
       ]
     },
     {
@@ -5347,6 +5357,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "size",
         "invalid"
       ]
@@ -6135,6 +6146,7 @@
       "propNames": [
         "items",
         "value",
+        "name",
         "defaultValue",
         "onValueChange",
         "multiple",
