@@ -11,3 +11,7 @@
 .navmenu-content { padding: var(--s2); }
 .navmenu-panel { display: grid; gap: var(--s1); }
 .navmenu-content .navmenu-link { display: flex; }
+/* Forced colours: the active underline is a box-shadow. */
+@media (forced-colors: active) {
+  .navmenu-link[aria-current="page"], .navmenu-link[data-active] { border-block-end: 2px solid Highlight; }
+}

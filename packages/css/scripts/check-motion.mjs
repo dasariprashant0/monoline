@@ -18,11 +18,17 @@ for (const d of ['animation: none !important', 'transition: none !important', 's
   if (!rm || !rm[1].includes(d)) fails.push(`base.css: the prefers-reduced-motion rule must contain "${d}"`);
 }
 
+// The global rule only covers a file if it matches every element and both pseudo-elements, and sits in base.css (the first layer).
+const globalCovers = !!rm && /\*\s*,\s*\*::before\s*,\s*\*::after\s*\{/.test(rm[1]);
+if (!globalCovers) fails.push('base.css: the prefers-reduced-motion rule must select "*, *::before, *::after" so pseudo-element animations stop too');
 let animating = 0;
 const literal = [];
 for (const f of [...shared, ...comps]) {
   const css = strip(read(f));
+  // Every file that animates must be covered by the global rule (checked above), or carry its own reduced-motion guard.
+  const moves = [...css.matchAll(/(?:^|[\s;{])(?:animation|transition)(?:-name|-duration)?\s*:\s*([^;}]*)/g)].some((m) => !/^(none|auto|0s)\b/.test(m[1].replace(/!important/, '').trim()));
   if (/(^|[\s;{])(animation|transition)[a-z-]*\s*:|@keyframes/.test(css)) animating++;
+  if (moves && f !== 'src/base.css' && !globalCovers && !/@media \(prefers-reduced-motion:\s*reduce\)/.test(css)) fails.push(`${f}: declares animation or transition but neither base.css's reduced-motion rule nor a guard of its own covers it`);
   // !important is fine when it switches motion off (value none, auto or 0s); anything else could re-enable it.
   if (f !== 'src/base.css' && [...css.matchAll(/(?:^|[\s;{])(?:animation|transition|scroll-behavior)[a-z-]*\s*:\s*([^;}]*)!important/g)].some((m) => !/^(none|auto|0s)\s*$/.test(m[1].trim()))) fails.push(`${f}: !important on animation, transition or scroll-behavior would override the reduced-motion rule`);
   if (f.startsWith('src/components/')) {
