@@ -79,7 +79,10 @@ function PrevNext({path}: {path: string}) {
   );
 }
 
-export const markdownUrl = (name: string) => new URL(`docs/${name}.md`, new URL(import.meta.env.BASE_URL, typeof document === 'undefined' ? 'http://localhost/' : document.baseURI)).href;
+/** Origin used while prerendering (no `document`): the same DOCS_ORIGIN the prerender script puts in canonical URLs. */
+const ssrOrigin = () => ((globalThis as {process?: {env?: Record<string, string | undefined>}}).process?.env?.DOCS_ORIGIN ?? 'https://monoline.prashantdasari.com').replace(/\/+$/, '') + '/';
+
+export const markdownUrl = (name: string) => new URL(`docs/${name}.md`, new URL(import.meta.env.BASE_URL, typeof document === 'undefined' ? ssrOrigin() : document.baseURI)).href;
 
 const noop = () => () => {};
 /** False in the prerendered HTML and during hydration, true afterwards. Live demos wait for it: they may depend on the viewer's clock, locale or screen. */

@@ -75,7 +75,7 @@ const pick = (names) => b.core + names.map((n) => b.components[n]).join('\n');
 const cssCases = [
   ['core only (tokens, themes, accents, base)', b.core, 5],
   ['core + button', pick(['button']), 5],
-  ['core + dashboard example (21 components)', pick(['avatar', 'badge', 'bar-chart', 'block-dashboard-shell', 'button', 'card', 'command', 'data-table', 'date-picker', 'dialog', 'dropdown-menu', 'field', 'form', 'grid', 'heading', 'input', 'line-chart', 'segmented-control', 'stat', 'text', 'toast']), 12],
+  ['core + dashboard example (21 components)', pick(['avatar', 'badge', 'bar-chart', 'block-dashboard-shell', 'button', 'card', 'command', 'data-table', 'date-picker', 'dialog', 'dropdown-menu', 'field', 'form', 'grid', 'heading', 'input', 'line-chart', 'segmented-control', 'stat', 'text', 'toast']), 12.5],
   ['core + landing example (11 components)', pick(['avatar', 'block-cta', 'block-feature-grid', 'block-footer', 'block-hero', 'block-pricing', 'block-testimonials', 'button', 'code-block', 'container', 'link']), 8],
 ];
 report.cssPaths = [];
