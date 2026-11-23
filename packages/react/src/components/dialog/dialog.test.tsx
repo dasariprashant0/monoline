@@ -50,4 +50,15 @@ describe('Dialog', () => {
     const dlg = await screen.findByRole('dialog');
     expect(await axe(dlg)).toHaveNoViolations();
   });
+  it('has no dangling aria-labelledby when there is no title', async () => {
+    const user = userEvent.setup();
+    render(<Dialog><DialogTrigger>Open</DialogTrigger><DialogContent aria-label="Plain"><p>body</p></DialogContent></Dialog>);
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    expect(await screen.findByRole('dialog', {name: 'Plain'})).not.toHaveAttribute('aria-labelledby');
+  });
+  it('says which root is missing when a part is rendered outside it', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => render(<DialogTrigger>Open</DialogTrigger>)).toThrow(/inside its root/);
+    spy.mockRestore();
+  });
 });

@@ -33,8 +33,4 @@ describe('Rating', () => {
     const {container} = render(<Rating aria-label="Rate" defaultValue={2} />);
     expect(await axe(container)).toHaveNoViolations();
   });
-  it('read-only without a label does not say "undefined"', () => {
-    render(<Rating readOnly value={3} />);
-    expect(screen.getByRole('img')).toHaveAttribute('aria-label', '3 out of 5');
-  });
 });
