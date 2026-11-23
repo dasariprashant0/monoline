@@ -5,6 +5,10 @@ import {EmptyState} from './empty-state';
 import {createRef} from 'react';
 
 describe('EmptyState', () => {
+  it('renders no heading when the title is empty', () => {
+    render(<EmptyState title="" description="Nothing here" />);
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
   it('shows the title, description and action', () => {
     render(<EmptyState title="No projects" description="Create one to start."><Button>Create project</Button></EmptyState>);
     expect(screen.getByRole('heading', {name: 'No projects'})).toBeInTheDocument();

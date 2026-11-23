@@ -3,5 +3,9 @@
 .marquee-track { display: flex; flex: none; min-width: 100%; align-items: center; justify-content: space-around; animation: marquee-run var(--marquee-duration, 30s) linear infinite; }
 .marquee-reverse .marquee-track { animation-direction: reverse; }
 .marquee-pause:hover .marquee-track, .marquee-pause:focus-within .marquee-track { animation-play-state: paused; }
+[data-paused] .marquee-track { animation-play-state: paused; }
+.marquee-controlled { position: relative; }
+.marquee-toggle { position: absolute; z-index: 1; inset-block-start: 0; inset-inline-end: 0; min-height: 24px; padding: 0 var(--s2); border: 1px solid var(--rule); background: var(--background); color: var(--foreground); font: inherit; font-size: var(--text-xs); cursor: pointer; }
+.marquee-toggle:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 @keyframes marquee-run { from { transform: translateX(0); } to { transform: translateX(calc(-100% * var(--dir, 1))); } }
-@media (prefers-reduced-motion: reduce) { .marquee { flex-wrap: wrap; } .marquee-track { animation: none; flex-wrap: wrap; } .marquee-track[aria-hidden="true"] { display: none; } }
+@media (prefers-reduced-motion: reduce) { .marquee-toggle { display: none; } .marquee { flex-wrap: wrap; } .marquee-track { animation: none; flex-wrap: wrap; } .marquee-track[aria-hidden="true"] { display: none; } }
