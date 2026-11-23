@@ -7,7 +7,7 @@ on:
     branches: [master]
 concurrency:
   group: audit-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   # One job per accent, in parallel (each accent is ~170 pages x 3 themes x 2 viewports in one Chrome).
   audit:

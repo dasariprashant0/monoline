@@ -34,10 +34,9 @@ jobs:
       - run: npx playwright install --with-deps firefox webkit
         working-directory: scripts/e2e/cross-browser
       - run: node scripts/e2e/cross-browser/smoke.mjs --browsers firefox,webkit
-  # Known barriers (docs/e2e-findings.md). Informational until WP2/WP4 fixes land; then drop continue-on-error.
+  # Known barriers (docs/e2e-findings.md). The fixes have landed and this passes on master, so it now blocks.
   probe:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
