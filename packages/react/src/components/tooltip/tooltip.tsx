@@ -68,7 +68,7 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
 }
 
 /** The floating tooltip box. `Tooltip` renders one for you; it works only inside a `Tooltip`. */
-export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', ...rest}, forwarded) {
+export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', onPointerEnter, onPointerLeave, ...rest}, forwarded) {
   const c = useContext(Context);
   const el = useRef<HTMLDivElement | null>(null);
   useDismiss(c.open, [el, c.trigger], () => c.show(false));
@@ -79,5 +79,5 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivE
     addEventListener('scroll', close, true);
     return () => removeEventListener('scroll', close, true);
   }, []);
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} side={side} sideOffset={sideOffset} role="tooltip" id={c.id} data-state="open" onPointerEnter={() => c.show(true)} onPointerLeave={() => c.show(false, 100)} className={cx('tooltip', className)} {...rest} />;
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} side={side} sideOffset={sideOffset} role="tooltip" id={c.id} data-state="open" className={cx('tooltip', className)} {...rest} onPointerEnter={(e) => { onPointerEnter?.(e); c.show(true); }} onPointerLeave={(e) => { onPointerLeave?.(e); c.show(false, 100); }} />;
 });
