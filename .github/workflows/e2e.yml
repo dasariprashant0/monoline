@@ -21,7 +21,8 @@ jobs:
           CHROME: /usr/bin/google-chrome
   # Firefox and WebKit: five flows (dialog, menu, select, combobox, tabs) with real key input via Playwright. Chrome above stays the full suite.
   cross-browser:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.56 cannot install Firefox/WebKit dependencies on ubuntu-latest (26.04). Unpin when Playwright is bumped.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
