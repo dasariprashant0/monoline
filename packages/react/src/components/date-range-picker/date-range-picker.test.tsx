@@ -78,4 +78,9 @@ describe('DateRangePicker', () => {
     render(<DateRangePicker aria-label="Stay" />);
     expect(screen.getByRole('button', {name: 'Stay: Pick dates'})).toBeInTheDocument();
   });
+  it('takes a size and a controlled open state', async () => {
+    const {container} = render(<DateRangePicker aria-label="Stay" size="sm" open={false} />);
+    expect(container.querySelector('.date-trigger')).toHaveClass('input-sm');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 });

@@ -66,4 +66,13 @@ describe('DatePicker', () => {
     await user.keyboard('{Enter}');
     expect(screen.getByRole('button', {name: /^Start: /})).toHaveTextContent('Pick a date');
   });
+  it('exposes open, defaultOpen and onOpenChange', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    const {rerender} = render(<DatePicker aria-label="Due" onOpenChange={fn} />);
+    await user.click(screen.getByRole('button', {name: /^Due: /}));
+    expect(fn).toHaveBeenCalledWith(true);
+    rerender(<DatePicker aria-label="Due" open={false} onOpenChange={fn} />);
+    expect(screen.queryByRole('dialog', {name: 'Choose a date'})).not.toBeInTheDocument();
+  });
 });
