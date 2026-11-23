@@ -11,5 +11,47 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Read","Edit(/**)","WebFetch","WebSearch",
+      "Bash(git status*)","Bash(git diff*)","Bash(git log*)","Bash(git show*)",
+      "Bash(git branch)","Bash(git branch --list*)","Bash(git branch -a*)","Bash(git branch -v*)","Bash(git branch --show-current)",
+      "Bash(git fetch*)","Bash(git rev-parse*)","Bash(git ls-files*)","Bash(git blame*)","Bash(git worktree list*)","Bash(git stash list*)","Bash(git remote -v)","Bash(git config --get*)",
+      "Bash(git add *)","Bash(git commit *)","Bash(git switch -c *)","Bash(git checkout -b *)","Bash(git merge *)","Bash(git cherry-pick *)",
+      "Bash(npm ci*)","Bash(npm install*)","Bash(npm run *)","Bash(npm test*)","Bash(npm ls*)","Bash(npm view *)","Bash(npm audit*)","Bash(npm pack --dry-run*)",
+      "Bash(npx playwright *)","Bash(npx tsc*)","Bash(npx vite*)","Bash(npx astro*)","Bash(npx vitest*)","Bash(npx eslint*)","Bash(npx prettier*)",
+      "Bash(node *)","Bash(sh scripts/*)",
+      "Bash(ls*)","Bash(cat *)","Bash(head *)","Bash(tail *)","Bash(wc *)","Bash(grep *)","Bash(rg *)","Bash(find *)","Bash(mkdir *)","Bash(cp *)","Bash(sed -n *)","Bash(jq *)",
+      "Bash(curl *)","Bash(wget *)",
+      "Bash(gh pr view*)","Bash(gh pr list*)","Bash(gh pr status*)","Bash(gh pr checks*)","Bash(gh pr diff*)","Bash(gh run list*)","Bash(gh run view*)","Bash(gh issue list*)","Bash(gh issue view*)","Bash(gh api *)",
+      "Bash(lsof*)","Bash(ps*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(gh pr create*)","Bash(gh pr merge*)","Bash(gh pr close*)","Bash(gh pr comment*)","Bash(gh pr review*)","Bash(gh pr edit*)",
+      "Bash(gh issue create*)","Bash(gh issue comment*)","Bash(gh issue close*)","Bash(gh release*)",
+      "Bash(gh api * -X POST*)","Bash(gh api * -X PUT*)","Bash(gh api * -X PATCH*)","Bash(gh api * -X DELETE*)","Bash(gh api * --method *)","Bash(gh api * -f *)","Bash(gh api * -F *)","Bash(gh api * --field *)","Bash(gh api * --raw-field *)","Bash(gh api * --input *)",
+      "Bash(npm publish*)","Bash(npm deprecate*)","Bash(npm unpublish*)","Bash(npm dist-tag*)",
+      "Bash(curl * -X *)","Bash(curl * --request *)","Bash(curl * -d *)","Bash(curl * --data*)","Bash(curl * -F *)","Bash(curl * --form*)","Bash(curl * -T *)","Bash(curl * --upload-file*)",
+      "Bash(rm)","Bash(rm *)","Bash(rmdir*)",
+      "Bash(git reset*)","Bash(git clean*)","Bash(git checkout -- *)","Bash(git restore*)",
+      "Bash(git branch -d*)","Bash(git branch -D*)","Bash(git branch -m*)","Bash(git branch -M*)","Bash(git branch --delete*)",
+      "Bash(git tag -d*)","Bash(git tag --delete*)","Bash(git worktree remove*)","Bash(git worktree prune*)",
+      "Bash(git stash drop*)","Bash(git stash clear*)","Bash(git gc*)","Bash(git prune*)","Bash(git reflog expire*)",
+      "Bash(git rebase*)","Bash(git commit * --amend*)","Bash(git commit --amend*)","Bash(git filter-*)",
+      "Bash(mv *)","Bash(truncate*)","Bash(dd *)","Bash(find * -delete*)","Bash(find * -exec rm*)",
+      "Bash(*DROP *)","Bash(*TRUNCATE *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)","Bash(git push -f*)","Bash(git push * --force*)","Bash(git push * -f*)","Bash(git push * --force-with-lease*)",
+      "Bash(sudo*)",
+      "Bash(rm -rf /)","Bash(rm -rf / *)","Bash(rm -rf /*)","Bash(rm -rf ~*)","Bash(rm -rf $HOME*)","Bash(rm -rf \"$HOME\"*)",
+      "Bash(chmod -R 777*)",
+      "Bash(curl * | sh*)","Bash(curl * | bash*)","Bash(curl * | zsh*)","Bash(wget * | sh*)","Bash(wget * | bash*)","Bash(wget * | zsh*)",
+      "Edit(~/.ssh/**)","Edit(~/.aws/**)","Edit(~/.config/gh/**)","Edit(~/.netrc)","Edit(~/.npmrc)","Edit(~/.gnupg/**)",
+      "Read(~/.ssh/**)","Read(~/.aws/**)","Read(~/.config/gh/**)","Read(~/.netrc)","Read(~/.npmrc)","Read(~/.gnupg/**)",
+      "Bash(*~/.ssh*)","Bash(*~/.aws*)","Bash(*~/.config/gh*)","Bash(*.ssh/*)","Bash(*.aws/*)"
+    ]
   }
 }
