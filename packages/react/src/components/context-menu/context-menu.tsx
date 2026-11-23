@@ -23,19 +23,22 @@ export function ContextMenu({children, ...props}: MenuProps) {
 export const ContextMenuTrigger = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement> & {
   /** Render your own element instead of a span; it receives the props and handlers. */
   asChild?: boolean;
-}>(function ContextMenuTrigger({asChild, onContextMenu, onPointerDown, onPointerUp, onPointerMove, ...rest}, ref) {
+}>(function ContextMenuTrigger({asChild, onContextMenu, onPointerDown, onPointerUp, onPointerMove, onPointerCancel, tabIndex, ...rest}, ref) {
   const c = useContext(MenuContext), at = useContext(Point);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const origin = useRef<{x: number; y: number} | null>(null);
   useEffect(() => () => clearTimeout(timer.current), []);
   const open = (x: number, y: number) => { at(x, y); openWith('panel'); c.setOpen(true); };
   const Comp = asChild ? Slot : 'span';
   return (
     <Comp
-      ref={(n: HTMLSpanElement | null) => setRefs(n, c.trigger, ref)} data-state={c.open ? 'open' : 'closed'} {...rest}
+      ref={(n: HTMLSpanElement | null) => setRefs(n, c.trigger, ref)} data-state={c.open ? 'open' : 'closed'} tabIndex={tabIndex ?? (asChild ? undefined : 0)} /* focusable, so the ContextMenu key and Shift+F10 (which the browser turns into a contextmenu event) reach it */ {...rest}
       onContextMenu={(e: React.MouseEvent) => { onContextMenu?.(e as never); if (e.defaultPrevented) return; e.preventDefault(); clearTimeout(timer.current); open(e.clientX, e.clientY); }}
-      onPointerDown={(e: PointerEvent) => { onPointerDown?.(e as never); if (e.pointerType === 'touch') { const {clientX: x, clientY: y} = e; timer.current = setTimeout(() => open(x, y), 700); } }}
-      onPointerMove={(e: PointerEvent) => { onPointerMove?.(e as never); clearTimeout(timer.current); }}
+      onPointerDown={(e: PointerEvent) => { onPointerDown?.(e as never); if (e.pointerType === 'touch') { const {clientX: x, clientY: y} = e; origin.current = {x, y}; clearTimeout(timer.current); timer.current = setTimeout(() => open(x, y), 700); } }}
+      onPointerMove={(e: PointerEvent) => { onPointerMove?.(e as never); const o = origin.current; if (!o || Math.hypot(e.clientX - o.x, e.clientY - o.y) > 10) clearTimeout(timer.current); }}
       onPointerUp={(e: PointerEvent) => { onPointerUp?.(e as never); clearTimeout(timer.current); }}
+      // A touch scroll ends in pointercancel, not pointerup: stop the long-press timer there too.
+      onPointerCancel={(e: PointerEvent) => { onPointerCancel?.(e as never); clearTimeout(timer.current); }}
     />
   );
 });
