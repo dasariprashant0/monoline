@@ -57,7 +57,7 @@
     "test": "npm run gen && vitest run",
     "test:watch": "vitest",
     "typecheck": "npm run gen && tsc --noEmit",
-    "check:docs": "node scripts/check-docs.mjs"
+    "check:docs": "node scripts/check-docs.mjs && node scripts/check-use-client.mjs"
   },
   "dependencies": {
     "radix-ui": "^1.4.2"

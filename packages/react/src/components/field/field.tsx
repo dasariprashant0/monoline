@@ -1,3 +1,4 @@
+'use client';
 import {createContext, forwardRef, useContext, useId, type HTMLAttributes, type ReactNode} from 'react';
 import {cx} from '../../utils/cx';
 import {Label} from '../label';
