@@ -51,4 +51,9 @@ describe('NumberInput', () => {
     expect(screen.getByRole('spinbutton')).toHaveValue(2);
     expect(fn).toHaveBeenCalledTimes(1);
   });
+  it('takes the step button names from labels', () => {
+    render(<NumberInput aria-label="Menge" labels={{decrease: 'Weniger', increase: 'Mehr'}} />);
+    expect(screen.getByRole('button', {name: 'Weniger'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Mehr'})).toBeInTheDocument();
+  });
 });
