@@ -21,6 +21,11 @@
     "popup",
     "confirm"
   ],
+  "related": [
+    "alert-dialog",
+    "drawer",
+    "popover"
+  ],
   "kind": "components",
   "import": "import {Dialog} from '@monoline/react'",
   "path": "packages/react/src/components/dialog",
@@ -31,11 +36,6 @@
     "packages/react/src/components/dialog/index.ts",
     "packages/react/src/components/dialog/meta.json",
     "packages/react/src/components/dialog/modal.tsx"
-  ],
-  "related": [
-    "alert-dialog",
-    "command",
-    "context-menu"
   ],
   "props": [
     {
@@ -78,7 +78,7 @@
     },
     {
       "path": "packages/react/src/components/dialog/meta.json",
-      "content": "{\"name\":\"dialog\",\"title\":\"Dialog\",\"category\":\"overlays\",\"description\":\"A modal window for a question or short task that blocks the page.\",\"status\":\"stable\",\"primitive\":\"native <dialog>\",\"css\":[\"dialog.css\"],\"a11y\":[\"role=dialog with aria-modal; the title names it and the description describes it.\",\"Focus moves into the dialog, is trapped there, and returns to the trigger on close.\",\"Escape and the Close button close it; the page behind is inert.\"],\"keywords\":[\"modal\",\"popup\",\"confirm\"]}\n"
+      "content": "{\"name\":\"dialog\",\"title\":\"Dialog\",\"category\":\"overlays\",\"description\":\"A modal window for a question or short task that blocks the page.\",\"status\":\"stable\",\"primitive\":\"native <dialog>\",\"css\":[\"dialog.css\"],\"a11y\":[\"role=dialog with aria-modal; the title names it and the description describes it.\",\"Focus moves into the dialog, is trapped there, and returns to the trigger on close.\",\"Escape and the Close button close it; the page behind is inert.\"],\"keywords\":[\"modal\",\"popup\",\"confirm\"],\"related\":[\"alert-dialog\",\"drawer\",\"popover\"]}\n"
     },
     {
       "path": "packages/react/src/components/dialog/modal.tsx",

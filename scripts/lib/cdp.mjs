@@ -9,7 +9,7 @@ import {extname, join, normalize} from 'node:path';
 const mime = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.txt': 'text/plain', '.xml': 'application/xml', '.md': 'text/markdown'};
 
 /**
- * Serves `dist` on a random local port the way GitHub Pages does: a file as is, a folder through its index.html,
+ * Serves `dist` on a random local port the way a static host does: a file as is, a folder through its index.html,
  * and anything else with status 404 and the body of 404.html (which redirects into the app).
  */
 export async function serveDist(dist) {

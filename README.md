@@ -48,7 +48,7 @@ createRoot(document.getElementById('root')!).render(
 npm run dev
 ```
 
-`core.css` (tokens, themes, base) is always needed; each component has one small CSS file next to it. A component that looks unstyled is missing its CSS file. To load everything while exploring, use `import '@monoline/css'` (about 18 KB gzip).
+`core.css` (tokens, themes, base) is always needed; each component has one small CSS file next to it. A component that looks unstyled is missing its CSS file. To load everything while exploring, use `import '@monoline/css'` (about 21 KB gzip).
 
 The [full guide](https://monoline.prashantdasari.com/docs/getting-started/) continues with theme, dark mode and a dialog. Using Next.js? Read the [Next.js guide](https://monoline.prashantdasari.com/docs/frameworks/nextjs/): `themeScript()` cannot be called from a Server Component, and the guide shows the fix.
 

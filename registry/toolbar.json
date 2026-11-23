@@ -35,7 +35,20 @@
     "button-group",
     "copy-button"
   ],
-  "props": [],
+  "props": [
+    {
+      "name": "ToolbarProps",
+      "props": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "optional": false,
+          "default": null,
+          "description": "Names the toolbar, for example \"Text formatting\"."
+        }
+      ]
+    }
+  ],
   "usage": "import {Toolbar, ToolbarButton, ToolbarSeparator} from '@monoline/react';\n\n<Toolbar aria-label=\"Text formatting\">\n  <ToolbarButton>Bold</ToolbarButton>\n  <ToolbarButton>Italic</ToolbarButton>\n  <ToolbarButton>Underline</ToolbarButton>\n  <ToolbarSeparator />\n  <ToolbarButton>Link</ToolbarButton>\n</Toolbar>",
   "dataAttributes": [
     {
@@ -64,7 +77,7 @@
     },
     {
       "path": "packages/react/src/components/toolbar/toolbar.tsx",
-      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Toolbar as Radix} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\ntype RootProps = Omit<ComponentPropsWithoutRef<typeof Radix.Root>, 'aria-label'> & {\n  /** Names the toolbar, for example \"Text formatting\". */\n  'aria-label': string;\n};\n\n/** A single tab stop that groups related controls; arrow keys move between them. Requires an `aria-label`. */\nexport const Toolbar = forwardRef<ElementRef<typeof Radix.Root>, RootProps>(function Toolbar({className, ...rest}, ref) {\n  return <Radix.Root ref={ref} className={cx('toolbar', className)} {...rest} />;\n});\n/** A button inside the toolbar. */\nexport const ToolbarButton = forwardRef<ElementRef<typeof Radix.Button>, ComponentPropsWithoutRef<typeof Radix.Button>>(function ToolbarButton({className, ...rest}, ref) {\n  return <Radix.Button ref={ref} className={cx('toolbar-item', className)} {...rest} />;\n});\n/** A link inside the toolbar. */\nexport const ToolbarLink = forwardRef<ElementRef<typeof Radix.Link>, ComponentPropsWithoutRef<typeof Radix.Link>>(function ToolbarLink({className, ...rest}, ref) {\n  return <Radix.Link ref={ref} className={cx('toolbar-item', className)} {...rest} />;\n});\n/** A thin divider between groups of controls. */\nexport const ToolbarSeparator = forwardRef<ElementRef<typeof Radix.Separator>, ComponentPropsWithoutRef<typeof Radix.Separator>>(function ToolbarSeparator({className, ...rest}, ref) {\n  return <Radix.Separator ref={ref} className={cx('toolbar-sep', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Toolbar as Radix} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\ntype RootProps = Omit<ComponentPropsWithoutRef<typeof Radix.Root>, 'aria-label'> & {\n  /** Names the toolbar, for example \"Text formatting\". */\n  'aria-label': string;\n};\n\n/** Props of Toolbar: `orientation`, `dir`, `loop`. */\nexport type ToolbarProps = RootProps;\n\n/** A single tab stop that groups related controls; arrow keys move between them. Requires an `aria-label`. */\nexport const Toolbar = forwardRef<ElementRef<typeof Radix.Root>, RootProps>(function Toolbar({className, ...rest}, ref) {\n  return <Radix.Root ref={ref} className={cx('toolbar', className)} {...rest} />;\n});\n/** A button inside the toolbar. */\nexport const ToolbarButton = forwardRef<ElementRef<typeof Radix.Button>, ComponentPropsWithoutRef<typeof Radix.Button>>(function ToolbarButton({className, ...rest}, ref) {\n  return <Radix.Button ref={ref} className={cx('toolbar-item', className)} {...rest} />;\n});\n/** A link inside the toolbar. */\nexport const ToolbarLink = forwardRef<ElementRef<typeof Radix.Link>, ComponentPropsWithoutRef<typeof Radix.Link>>(function ToolbarLink({className, ...rest}, ref) {\n  return <Radix.Link ref={ref} className={cx('toolbar-item', className)} {...rest} />;\n});\n/** A thin divider between groups of controls. */\nexport const ToolbarSeparator = forwardRef<ElementRef<typeof Radix.Separator>, ComponentPropsWithoutRef<typeof Radix.Separator>>(function ToolbarSeparator({className, ...rest}, ref) {\n  return <Radix.Separator ref={ref} className={cx('toolbar-sep', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []

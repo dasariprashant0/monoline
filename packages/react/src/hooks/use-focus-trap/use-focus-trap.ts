@@ -18,6 +18,9 @@ const FOCUSABLE = [
  * Focus moves to the first focusable element on activation, and goes back to the element that
  * had focus before when the trap deactivates or unmounts.
  * Visibility is not checked (jsdom has no layout); hidden elements with `tabindex` are still reached.
+ *
+ * @param active Whether Tab is trapped right now.
+ * @returns A ref to attach to the container that holds focus.
  */
 export function useFocusTrap<T extends HTMLElement = HTMLElement>(active: boolean) {
   const ref = useRef<T | null>(null);

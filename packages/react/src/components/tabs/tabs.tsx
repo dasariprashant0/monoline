@@ -2,6 +2,9 @@ import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react'
 import {Tabs as RadixTabs} from 'radix-ui';
 import {cx} from '../../utils/cx';
 
+/** Props of Tabs: `value`, `defaultValue`, `onValueChange`, `orientation`, `activationMode`. */
+export type TabsProps = ComponentPropsWithoutRef<typeof RadixTabs.Root>;
+
 /** The root of a tabbed interface. Use `value` and `onValueChange` (or `defaultValue`); put a `TabsList` and one `TabsContent` per tab inside. */
 export const Tabs = forwardRef<ElementRef<typeof RadixTabs.Root>, ComponentPropsWithoutRef<typeof RadixTabs.Root>>(function Tabs({className, ...rest}, ref) {
   return <RadixTabs.Root ref={ref} className={cx('tabs-root', className)} {...rest} />;

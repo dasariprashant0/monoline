@@ -88,7 +88,7 @@
         },
         {
           "name": "orientation",
-          "type": "\"vertical\" | \"horizontal\"",
+          "type": "\"horizontal\" | \"vertical\"",
           "optional": true,
           "default": "'vertical'",
           "description": "`vertical` draws columns, `horizontal` draws rows (better for long labels). Default `vertical`."

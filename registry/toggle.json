@@ -20,6 +20,9 @@
     "bold",
     "on off button"
   ],
+  "related": [
+    "toggle-group"
+  ],
   "kind": "components",
   "import": "import {Toggle} from '@monoline/react'",
   "path": "packages/react/src/components/toggle",
@@ -30,12 +33,41 @@
     "packages/react/src/components/toggle/toggle.test.tsx",
     "packages/react/src/components/toggle/toggle.tsx"
   ],
-  "related": [
-    "button",
-    "button-group",
-    "copy-button"
+  "props": [
+    {
+      "name": "ToggleProps",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "pressed",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "The controlled state of the toggle."
+        },
+        {
+          "name": "defaultPressed",
+          "type": "boolean",
+          "optional": true,
+          "default": null,
+          "description": "The state of the toggle when initially rendered. Use `defaultPressed`\nif you do not need to control the state of the toggle."
+        },
+        {
+          "name": "onPressedChange",
+          "type": "((pressed: boolean) => void)",
+          "optional": true,
+          "default": null,
+          "description": "The callback that fires when the state of the toggle changes."
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {Toggle} from '@monoline/react';\n\n<div style={{display: 'flex', gap: 'var(--s3)'}}>\n  <Toggle>Bold</Toggle>\n  <Toggle defaultPressed>Italic</Toggle>\n  <Toggle disabled>Locked</Toggle>\n</div>",
   "dataAttributes": [
     {
@@ -67,11 +99,11 @@
     },
     {
       "path": "packages/react/src/components/toggle/meta.json",
-      "content": "{\"name\":\"toggle\",\"title\":\"Toggle\",\"category\":\"buttons\",\"description\":\"A button that stays pressed or not.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Toggle\",\"css\":[\"slider.css\"],\"a11y\":[\"A button with aria-pressed; Space and Enter toggle it.\",\"Icon-only toggles need an aria-label.\"],\"keywords\":[\"pressed\",\"bold\",\"on off button\"]}\n"
+      "content": "{\"name\":\"toggle\",\"title\":\"Toggle\",\"category\":\"buttons\",\"description\":\"A button that stays pressed or not.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Toggle\",\"css\":[\"slider.css\"],\"a11y\":[\"A button with aria-pressed; Space and Enter toggle it.\",\"Icon-only toggles need an aria-label.\"],\"keywords\":[\"pressed\",\"bold\",\"on off button\"],\"related\":[\"toggle-group\"]}\n"
     },
     {
       "path": "packages/react/src/components/toggle/toggle.tsx",
-      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Toggle as RadixToggle} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** A two-state button (pressed or not), for things like Bold. Use a Switch for a setting. */\nexport const Toggle = forwardRef<ElementRef<typeof RadixToggle.Root>, ComponentPropsWithoutRef<typeof RadixToggle.Root>>(function Toggle({className, ...rest}, ref) {\n  return <RadixToggle.Root ref={ref} className={cx('toggle', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Toggle as RadixToggle} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** Props of Toggle: `pressed`, `defaultPressed`, `onPressedChange`. */\nexport type ToggleProps = ComponentPropsWithoutRef<typeof RadixToggle.Root>;\n\n/** A two-state button (pressed or not), for things like Bold. Use a Switch for a setting. */\nexport const Toggle = forwardRef<ElementRef<typeof RadixToggle.Root>, ComponentPropsWithoutRef<typeof RadixToggle.Root>>(function Toggle({className, ...rest}, ref) {\n  return <RadixToggle.Root ref={ref} className={cx('toggle', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []

@@ -45,7 +45,7 @@
       "props": [
         {
           "name": "direction",
-          "type": "\"vertical\" | \"horizontal\"",
+          "type": "\"horizontal\" | \"vertical\"",
           "optional": true,
           "default": "'horizontal'",
           "description": "`horizontal` puts panels side by side; `vertical` stacks them. Default `horizontal`."

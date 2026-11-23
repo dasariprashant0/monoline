@@ -33,6 +33,9 @@
     "glow",
     "button"
   ],
+  "related": [
+    "button"
+  ],
   "kind": "components",
   "import": "import {ShimmerButton} from '@monoline/react'",
   "path": "packages/react/src/components/shimmer-button",
@@ -42,9 +45,6 @@
     "packages/react/src/components/shimmer-button/shimmer-button.demo.tsx",
     "packages/react/src/components/shimmer-button/shimmer-button.test.tsx",
     "packages/react/src/components/shimmer-button/shimmer-button.tsx"
-  ],
-  "related": [
-    "button"
   ],
   "props": [],
   "usage": "import {ShimmerButton} from '@monoline/react';\n\n<ShimmerButton>Start free trial</ShimmerButton>",
@@ -74,7 +74,7 @@
     },
     {
       "path": "packages/react/src/components/shimmer-button/meta.json",
-      "content": "{\"name\":\"shimmer-button\",\"title\":\"Shimmer button\",\"category\":\"effects\",\"description\":\"The Button with a light sweep across it. Still a native button.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Slot\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"13-loading.css\",\"shimmer-button.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.\",\"The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.\"],\"keywords\":[\"cta\",\"animated button\",\"shine\",\"glow\",\"button\"]}\n"
+      "content": "{\"name\":\"shimmer-button\",\"title\":\"Shimmer button\",\"category\":\"effects\",\"description\":\"The Button with a light sweep across it. Still a native button.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Slot\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"13-loading.css\",\"shimmer-button.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.\",\"The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.\"],\"keywords\":[\"cta\",\"animated button\",\"shine\",\"glow\",\"button\"],\"related\":[\"button\"]}\n"
     },
     {
       "path": "packages/react/src/components/shimmer-button/shimmer-button.tsx",

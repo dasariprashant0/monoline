@@ -7,7 +7,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger,
 } from '@monoline/react';
 import {href} from '../shell/router';
-import {VERSION, entryAt, neighbours} from '../shell/registry';
+import {VERSION, entryAt, neighbours, pathOf} from '../shell/registry';
 import {CopyMarkdown, OpenMenu} from './doc-actions';
 import type {ComponentMeta, Demo} from '@monoline/react';
 import {keyboardRows} from '../../scripts/lib/a11y.mjs';
@@ -185,21 +185,32 @@ function anatomySnippet(parts: string[]) {
   return [`<${root}>`, ...rest.map((p) => `  <${p} />`), `</${root}>`].join('\n');
 }
 
+/** Components whose props come from another component or the DOM: said in words, because there is no table of their own. */
+const INHERITED: Record<string, ReactNode> = {
+  'alert-dialog': <>Same props as <code>Dialog</code>, except that <code>AlertDialogContent</code> has no <code>dismissOnOutside</code>: an alert dialog never closes on an outside click. <code>AlertDialogAction</code> and <code>AlertDialogCancel</code> take the standard button attributes.</>,
+  kbd: <><code>Kbd</code> has no props of its own. It takes the standard attributes of a <code>kbd</code> element.</>,
+  'password-input': <>Every <code>Input</code> prop except <code>type</code>, which the component sets itself. Set <code>autoComplete</code> to <code>current-password</code> or <code>new-password</code>.</>,
+  'shimmer-button': <>Same props as <code>Button</code>. <code>variant</code> defaults to <code>solid</code>.</>,
+};
+
 export interface ComponentDocProps {
   meta: ComponentMeta;
-  /** Where a related component lives. Default: the hash route `#<name>`. */
+  /** Where a related component lives. Default: its page route. */
   linkTo?: (name: string) => string;
 }
 
 /** The body of a component or hook page. The page shell renders the title area around it, and reads the h2 ids for its "On this page" list. */
-export function ComponentDoc({meta, linkTo = (n) => `#${n}`}: ComponentDocProps) {
+export function ComponentDoc({meta, linkTo}: ComponentDocProps) {
   const hook = meta.category === 'hooks';
   const extra: Extra = extras[meta.name] ?? {importName: meta.title, parts: [], dependencies: [], demos: []};
   const demos = demosFor(meta.name);
   const groups = propsByName[meta.name] ?? [];
   const styleFiles = styling[meta.name] ?? [];
   const keys = useMemo(() => keyboardRows(meta.a11y), [meta.a11y]);
-  const related = allMetas.filter((m) => m.category === meta.category && m.name !== meta.name).slice(0, 4);
+  const linkOf = linkTo ?? ((n: string) => { const m = allMetas.find((x) => x.name === n); return m ? href(pathOf(m)) : `#${n}`; });
+  // Same rule as the registry: the names in meta.related first, else the first siblings in the category.
+  const named = ((meta as ComponentMeta & {related?: string[]}).related ?? []).flatMap((n) => allMetas.filter((m) => m.name === n));
+  const related = named.length ? named : allMetas.filter((m) => m.category === meta.category && m.name !== meta.name).slice(0, 4);
   const usage = extra.demos[0]?.code ?? `import {${extra.importName}} from '@monoline/react';`;
   const kind = hook ? 'hooks' : 'components';
   const showAnatomy = !hook && extra.parts.length > 1;
@@ -252,6 +263,7 @@ export function ComponentDoc({meta, linkTo = (n) => `#${n}`}: ComponentDocProps)
       )}
 
       {groups.length > 0 && <Section id="props" title="Props"><PropsTables groups={groups} /></Section>}
+      {groups.length === 0 && INHERITED[meta.name] && <Section id="props" title="Props"><p className="cdoc-muted">{INHERITED[meta.name]}</p></Section>}
 
       {(attrRows.length > 0 || classRows.length > 0) && (
         <Section id="data-attributes" title="Data Attributes">
@@ -298,7 +310,7 @@ export function ComponentDoc({meta, linkTo = (n) => `#${n}`}: ComponentDocProps)
 
       {related.length > 0 && (
         <Section id="related" title="Related">
-          <ul className="cdoc-related">{related.map((m) => <li key={m.name}><a href={linkTo(m.name)}>{m.title}</a><span className="cdoc-muted">{m.description}</span></li>)}</ul>
+          <ul className="cdoc-related">{related.map((m) => <li key={m.name}><a href={linkOf(m.name)}>{m.title}</a><span className="cdoc-muted">{m.description}</span></li>)}</ul>
         </Section>
       )}
     </div>

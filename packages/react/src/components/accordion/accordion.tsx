@@ -5,6 +5,9 @@ import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
 import {useUntilFound} from '../../utils/until-found';
 
+/** Props of Accordion: `type` is 'single' or 'multiple', plus the Radix accordion root props. */
+export type AccordionProps = ComponentPropsWithoutRef<typeof RadixAccordion.Root>;
+
 /** `type="single"` (optionally `collapsible`) or `type="multiple"`. */
 export const Accordion = RadixAccordion.Root;
 

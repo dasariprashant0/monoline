@@ -13,15 +13,15 @@ export interface Guide {slug: string; title: string; summary: string; body: () =
 const moreStart = () => (
   <>
     <Section title="Load only the CSS you use">
-      <P><code>import '@monoline/css'</code> is the easy start: one file with every component (about 18 KB gzip). Most apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.</P>
+      <P><code>import '@monoline/css'</code> is the easy start: one file with every component (about 21 KB gzip). Most apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.</P>
       <CodeBlock title="main.tsx" code={"import '@monoline/css/core.css';              // tokens, themes, accents, base: always\nimport '@monoline/css/components/button.css';\nimport '@monoline/css/components/dialog.css';\nimport '@monoline/css/components/card.css';"} />
       <P>Each component page shows its import line under Details. In code, <code>import {'{styles}'} from '@monoline/react'</code> is a map from component name to its file, for tooling and for checking what you load (<code>styles.core</code>, <code>styles.button</code>). Measured, minified and gzipped (<code>npm run size</code>):</P>
       <Table><TableHeader><TableRow><TableHead>You load</TableHead><TableHead>CSS gzip</TableHead></TableRow></TableHeader><TableBody>
-        <TableRow><TableCell>everything: <code>@monoline/css</code></TableCell><TableCell>18.3 KB</TableCell></TableRow>
-        <TableRow><TableCell>core only</TableCell><TableCell>3.4 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + Button</TableCell><TableCell>3.8 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + the 11 components of the landing example</TableCell><TableCell>6.2 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + the 21 components of the dashboard example</TableCell><TableCell>10.3 KB</TableCell></TableRow>
+        <TableRow><TableCell>everything: <code>@monoline/css</code></TableCell><TableCell>20.6 KB</TableCell></TableRow>
+        <TableRow><TableCell>core only</TableCell><TableCell>3.7 KB</TableCell></TableRow>
+        <TableRow><TableCell>core + Button</TableCell><TableCell>4.1 KB</TableCell></TableRow>
+        <TableRow><TableCell>core + the 11 components of the landing example</TableCell><TableCell>6.6 KB</TableCell></TableRow>
+        <TableRow><TableCell>core + the 21 components of the dashboard example</TableCell><TableCell>11.7 KB</TableCell></TableRow>
       </TableBody></Table>
       <P>The three example apps in <code>examples/</code> use this path. Without a bundler, link <code>core.css</code> and the component files from <code>node_modules/@monoline/css/dist/</code> in the same way, or copy the source files with the CLI.</P>
       <P>If you write your own CSS, it wins over Monoline without specificity tricks, because Monoline lives in <code>@layer monoline.*</code> and unlayered CSS beats any layer. Your <code>.card</code> or <code>.badge</code> rules apply as written.</P>

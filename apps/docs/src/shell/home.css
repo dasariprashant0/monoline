@@ -157,3 +157,6 @@
   .hc-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bd-install { flex-wrap: wrap; }
 }
+
+/* Muted text on the alert's tinted surface is 4.29:1 in the dark theme (needs 4.5): use the secondary ink here. */
+.docs[data-home] .alert-description { color: var(--ink-2); }
