@@ -9,15 +9,15 @@ const start = new Date(2026, 0, 15);
 describe('DateRangePicker', () => {
   it('shows the placeholder, then the chosen range', () => {
     const {rerender} = render(<DateRangePicker aria-label="Stay" placeholder="Choose" />);
-    expect(screen.getByRole('button', {name: 'Stay'})).toHaveTextContent('Choose');
+    expect(screen.getByRole('button', {name: /^Stay: /})).toHaveTextContent('Choose');
     rerender(<DateRangePicker aria-label="Stay" locale="en-US" value={{start, end: new Date(2026, 0, 20)}} />);
-    expect(screen.getByRole('button', {name: 'Stay'})).toHaveTextContent('Jan 15, 2026 – Jan 20, 2026');
+    expect(screen.getByRole('button', {name: /^Stay: /})).toHaveTextContent('Jan 15, 2026 – Jan 20, 2026');
   });
   it('picks a range in the calendar, closes and returns focus', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
     render(<DateRangePicker aria-label="Stay" locale="en-US" defaultValue={{start, end: start}} onValueChange={fn} />);
-    const trigger = screen.getByRole('button', {name: 'Stay'});
+    const trigger = screen.getByRole('button', {name: /^Stay: /});
     await user.click(trigger);
     await user.click(await screen.findByRole('button', {name: 'Monday, January 5, 2026'}));
     await user.click(screen.getByRole('button', {name: 'Wednesday, January 7, 2026'}));
@@ -29,7 +29,7 @@ describe('DateRangePicker', () => {
     const user = userEvent.setup();
     const fn = vi.fn();
     render(<DateRangePicker aria-label="Stay" locale="en-US" defaultValue={{start, end: new Date(2026, 0, 20)}} onValueChange={fn} />);
-    await user.click(screen.getByRole('button', {name: 'Stay'}));
+    await user.click(screen.getByRole('button', {name: /^Stay: /}));
     const end = await screen.findByLabelText('End');
     await user.clear(end);
     await user.type(end, '2026-01-25{Enter}');
@@ -43,7 +43,7 @@ describe('DateRangePicker', () => {
     const user = userEvent.setup();
     const fn = vi.fn();
     render(<DateRangePicker aria-label="Stay" locale="en-US" defaultValue={{start, end: new Date(2026, 0, 20)}} onValueChange={fn} />);
-    await user.click(screen.getByRole('button', {name: 'Stay'}));
+    await user.click(screen.getByRole('button', {name: /^Stay: /}));
     const s = await screen.findByLabelText('Start');
     await user.clear(s);
     await user.type(s, '2026-01-30{Enter}');
@@ -52,7 +52,7 @@ describe('DateRangePicker', () => {
   it('opens a named dialog and closes with Escape', async () => {
     const user = userEvent.setup();
     render(<DateRangePicker aria-label="Stay" />);
-    await user.click(screen.getByRole('button', {name: 'Stay'}));
+    await user.click(screen.getByRole('button', {name: /^Stay: /}));
     expect(await screen.findByRole('dialog', {name: 'Choose a date range'})).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -64,5 +64,18 @@ describe('DateRangePicker', () => {
   it('has no axe violations', async () => {
     const {container} = render(<DateRangePicker aria-label="Stay" />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+  it('rejects a two-digit year typed as 0024 instead of reading it as 1924', async () => {
+    const user = userEvent.setup();
+    const fn = vi.fn();
+    render(<DateRangePicker aria-label="Stay" onValueChange={fn} />);
+    await user.click(screen.getByRole('button', {name: /^Stay: /}));
+    const [start] = await screen.findAllByRole('textbox');
+    await user.type(start!, '0024-05-10{Enter}');
+    expect(fn).not.toHaveBeenCalledWith(expect.objectContaining({start: new Date(1924, 4, 10)}));
+  });
+  it('names its trigger with the visible text too', () => {
+    render(<DateRangePicker aria-label="Stay" />);
+    expect(screen.getByRole('button', {name: 'Stay: Pick dates'})).toBeInTheDocument();
   });
 });

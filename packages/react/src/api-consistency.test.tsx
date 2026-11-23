@@ -68,7 +68,7 @@ describe('state attributes: data-invalid and data-disabled', () => {
   it('Checkbox and DatePicker expose data-invalid', () => {
     render(<><Checkbox aria-label="c" invalid /><DatePicker aria-label="d" invalid /></>);
     expect(screen.getByRole('checkbox')).toHaveAttribute('data-invalid');
-    expect(screen.getByRole('button', {name: 'd'})).toHaveAttribute('data-invalid');
+    expect(screen.getByRole('button', {name: /^d: /})).toHaveAttribute('data-invalid');
   });
   it('disabled form controls expose data-disabled, like Radix parts do', () => {
     render(<><Input aria-label="a" disabled /><Textarea aria-label="b" disabled /><Button disabled>c</Button><Combobox aria-label="d" options={opts} disabled /><TimePicker aria-label="e" disabled /></>);
