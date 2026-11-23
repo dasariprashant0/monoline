@@ -1,3 +1,4 @@
+'use client';
 import {forwardRef, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {invalidAttrs, useFieldControl} from '../field';
