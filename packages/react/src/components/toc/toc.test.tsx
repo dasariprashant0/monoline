@@ -62,6 +62,32 @@ describe('Toc', () => {
     expect(screen.queryByRole('link', {current: 'location'})).not.toBeInTheDocument();
     spy.mockRestore();
   });
+  it('measures the thumb path from the inline-start edge in RTL (the CSS mirrors it) and from the left in LTR', () => {
+    // jsdom has no layout: fake the rects of a 200px-wide body whose rules sit at the inline-start edge (and one bend 10px further in).
+    const rect = (l: number, r: number, t: number, b: number) => ({left: l, right: r, top: t, bottom: b, width: r - l, height: b - t, x: l, y: t, toJSON() {}}) as DOMRect;
+    const spy = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      const rtl = this.closest('[dir=rtl]') !== null;
+      if (this.classList.contains('toc-body')) return rect(0, 200, 0, 90);
+      if (this.classList.contains('toc-rule')) {
+        const i = [...document.querySelectorAll('.toc-rule')].indexOf(this);
+        const inset = i === 1 ? 10 : 0; // the level-3 entry is indented
+        return rtl ? rect(199 - inset, 200 - inset, i * 30, i * 30 + 30) : rect(inset, inset + 1, i * 30, i * 30 + 30);
+      }
+      return rect(0, 0, 0, 0);
+    });
+    const xs = (container: HTMLElement) => {
+      const mask = (container.querySelector('.toc-thumb') as HTMLElement).style.maskImage || (container.querySelector('.toc-thumb') as HTMLElement).style.webkitMaskImage;
+      const d = /d%3D%22([^%]+(?:%20[^%]+)*)%22/.exec(mask)?.[1] ?? decodeURIComponent(mask).match(/d="([^"]+)"/)![1]!;
+      return [...decodeURIComponent(d).matchAll(/[ML](\S+) /g)].map((m) => Number(m[1]));
+    };
+    const ltr = render(<div dir="ltr"><Toc items={items} /></div>);
+    expect(new Set(xs(ltr.container))).toEqual(new Set([0.5, 10.5]));
+    ltr.unmount();
+    const rtl = render(<div dir="rtl"><Toc items={items} /></div>);
+    // inline-start distances, identical to LTR: the stylesheet's `scale: -1 1` then puts the thumb on the right
+    expect(new Set(xs(rtl.container))).toEqual(new Set([0.5, 10.5]));
+    spy.mockRestore();
+  });
   it('is reachable and operable by keyboard', async () => {
     render(<Page />);
     await userEvent.tab();

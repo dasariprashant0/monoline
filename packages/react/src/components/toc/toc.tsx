@@ -94,11 +94,14 @@ export const Toc = forwardRef<HTMLElement, TocProps>(function Toc({items, contai
     if (!el) return;
     const measure = () => {
       const b = el.getBoundingClientRect();
+      // x is the distance from the inline-start edge: the thumb is anchored there and toc.css mirrors it in RTL, so a physical x would land on the wrong side.
+      const attr = el.closest('[dir]')?.getAttribute('dir');
+      const rtl = (attr === 'rtl' || attr === 'ltr' ? attr : getComputedStyle(el).direction) === 'rtl';
       const pts: Array<[number, number]> = [];
       let top = 0, len = 0, w = 1;
       el.querySelectorAll<HTMLElement>('.toc-rule').forEach((r) => {
         const q = r.getBoundingClientRect();
-        const x = Math.round(q.left - b.left) + 0.5, y1 = q.top - b.top, y2 = q.bottom - b.top;
+        const x = Math.round(rtl ? b.right - q.right : q.left - b.left) + 0.5, y1 = q.top - b.top, y2 = q.bottom - b.top;
         pts.push([x, y1], [x, y2]);
         w = Math.max(w, x + 1);
         if (r.closest('a')?.hasAttribute('aria-current')) { top = y1; len = y2 - y1; }
