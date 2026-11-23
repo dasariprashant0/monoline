@@ -46,6 +46,14 @@ export function place(anchor: Element, panel: HTMLElement, {side = 'bottom', ali
   panel.dataset.side = side; panel.dataset.align = align;
 }
 
+/** The `--available-height` for native placement: the larger of the room on the preferred side and on the opposite one,
+ *  so a panel too tall for the preferred side overflows its box and the browser flips it, instead of being capped to fit. */
+export function nativeHeight(a: DOMRect, root: HTMLElement, side: Side, sideOffset: number, pad: number) {
+  const vh = root.clientHeight;
+  if (side === 'left' || side === 'right') return Math.max(0, vh - 2 * pad);
+  return Math.max(0, Math.max(a.top, vh - a.bottom) - sideOffset - pad);
+}
+
 /** CSS anchor positioning (`anchor-name` + `position-area`) is Baseline newly available, not widely, and in Chrome e2e it
  *  let a Select near the viewport edge shrink instead of flip. So it is opt-in: set `data-anchor="native"` on <html> and the
  *  browser must also support it. The default is `place()` above, everywhere. */
@@ -72,10 +80,11 @@ function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {sid
   for (const edge of [side, along.slice(5)]) if (edge) s.setProperty(`margin-${edge}`, `${pad}px`);
   s.translate = vertical ? `${rtl ? -alignOffset : alignOffset}px 0` : `0 ${alignOffset}px`;
   s.setProperty('--anchor-width', 'anchor-size(width)');
-  s.setProperty('--available-height', '100%'); // the position-area box is the containing block, so this is the room on that side
-  // The browser may flip the panel when it does not fit: read the side it ended up on from the layout.
+  // The browser may flip the panel when it does not fit: read the side it ended up on from the layout. The height cap is
+  // computed here like place() does: capping to the position-area box (100%) would let the panel shrink instead of flip.
   const sync = () => {
     const a = anchor.getBoundingClientRect(), r = panel.getBoundingClientRect();
+    s.setProperty('--available-height', nativeHeight(a, document.documentElement, side, sideOffset, pad) + 'px');
     panel.dataset.side = vertical ? (r.top >= a.bottom - 1 ? 'bottom' : 'top') : (r.left >= a.right - 1 ? 'right' : 'left');
   };
   panel.dataset.align = align; panel.dataset.side = side; sync();
