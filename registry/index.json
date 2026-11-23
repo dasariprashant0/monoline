@@ -5447,6 +5447,7 @@
         "packages/react/src/components/theme-provider/theme-provider.demo.tsx",
         "packages/react/src/components/theme-provider/theme-provider.test.tsx",
         "packages/react/src/components/theme-provider/theme-provider.tsx",
+        "packages/react/src/components/theme-provider/theme-script.ts",
         "packages/react/src/components/theme-provider/theme-switcher.tsx"
       ],
       "related": [
