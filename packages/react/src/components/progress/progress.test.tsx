@@ -62,4 +62,8 @@ describe('Progress', () => {
     const {container} = render(<Progress aria-label="Upload" value={40} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('does not write NaN% when max is 0', () => {
+    const {container} = render(<Progress aria-label="Load" value={5} max={0} />);
+    expect(container.querySelector('.progress-fill')!.getAttribute('style') ?? '').not.toContain('NaN');
+  });
 });

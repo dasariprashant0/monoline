@@ -59,4 +59,8 @@ describe('VirtualList', () => {
     const {container} = render(ui());
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('still renders rows when itemHeight is 0', () => {
+    render(<VirtualList aria-label="Rows" count={20} itemHeight={0} height={100} renderItem={(i) => `row ${i}`} />);
+    expect(screen.getAllByRole('listitem').length).toBeGreaterThan(0);
+  });
 });
