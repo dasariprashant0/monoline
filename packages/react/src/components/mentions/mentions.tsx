@@ -2,6 +2,7 @@
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {useFieldControl} from '../field';
+import {setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
 export interface MentionOption {
@@ -132,7 +133,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
   return (
     <div className={cx('mentions', className)}>
       <textarea
-        ref={(el) => { area.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }}
+        ref={(el) => setRefs(el, area, ref)}
         className="textarea"
         aria-haspopup="listbox"
         aria-autocomplete="list"
