@@ -67,6 +67,21 @@ describe('toast() and Toaster', () => {
     act(() => { void toast.promise(failing, {loading: 'Again', success: 'Yes', error: 'Failed'}).catch(() => {}); });
     expect(await screen.findByText('Failed')).toBeInTheDocument();
   });
+  it('does not bring back a promise toast the user dismissed, and survives a throwing message', async () => {
+    render(<Toaster />);
+    let resolve!: (v: number) => void;
+    let id: string | number = '';
+    act(() => { void toast.promise(new Promise<number>((r) => { resolve = r; }), {loading: 'Working', success: 'Finished', error: 'Failed'}, {id: 'dismissable'}); id = 'dismissable'; });
+    await screen.findByText('Working');
+    act(() => { toast.dismiss(id); });
+    await act(async () => { resolve(1); });
+    expect(screen.queryByText('Finished')).not.toBeInTheDocument();
+    let resolve2!: (v: number) => void;
+    act(() => { void toast.promise(new Promise<number>((r) => { resolve2 = r; }), {loading: 'Second', success: () => { throw new Error('bad message'); }, error: 'Failed'}); });
+    await screen.findByText('Second');
+    await act(async () => { resolve2(1); });
+    expect(await screen.findByText('Done')).toBeInTheDocument();
+  });
   it('names the region and moves focus to it with F8', async () => {
     render(<Toaster label="Alerts" />);
     act(() => { toast('Hello'); });
