@@ -3,7 +3,7 @@ import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from '
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {useIsRtl} from '../../utils/direction';
-import {useFieldControl, useFieldLabelId} from '../field';
+import {useFieldControl, useFieldLabelId, fieldOwn} from '../field';
 import type {TreeNode} from '../tree';
 
 export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'> {
@@ -86,7 +86,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
     const rtl = isRtl(e.currentTarget);
     const key = rtl && e.key === 'ArrowRight' ? 'ArrowLeft' : rtl && e.key === 'ArrowLeft' ? 'ArrowRight' : e.key;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else step(e.key === 'ArrowDown' ? 1 : -1); }
-    else if (e.key === 'Enter' && open && row) { e.preventDefault(); pick(row.node); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && row) { e.preventDefault(); pick(row.node); }
     else if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } else if (text !== null) setText(null); }
     else if (open && !q && row && key === 'ArrowRight') {
       e.preventDefault();
@@ -120,7 +120,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
-        {...rest}
+        {...rest} {...fieldOwn(f, rest)}
       />
       {open && (
         <ul id={listId} role="tree" className="tree-select-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId} aria-multiselectable={multiple || undefined}>

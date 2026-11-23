@@ -1,4 +1,4 @@
-import {forwardRef, type AnchorHTMLAttributes, type ReactNode} from 'react';
+import {forwardRef, type AnchorHTMLAttributes, type ReactNode, type Ref} from 'react';
 import {Slot} from '../../utils/slot';
 import {cx} from '../../utils/cx';
 
@@ -12,9 +12,9 @@ export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 /**
  * Lets blocks hand a link to your router. Return a router link built from these props, for example
  * `renderLink={({href, ...rest}) => <RouterLink to={href} {...rest} />}` (React Router) or
- * `renderLink={(p) => <NextLink {...p} />}` (Next.js). The block adds `className` and `aria-current` for you.
+ * `renderLink={(p) => <NextLink {...p} />}` (Next.js). The block adds `className` and `aria-current` for you. `SidebarItem` also passes the props you gave the item (`onClick`, `id`, `data-*`) and its `ref`, so spread all of them.
  */
-export type RenderLink = (props: {href: string; className?: string; 'aria-current'?: 'page'; children: ReactNode}) => ReactNode;
+export type RenderLink = (props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'className' | 'aria-current' | 'children'> & {href: string; className?: string; 'aria-current'?: 'page'; children: ReactNode; ref?: Ref<HTMLAnchorElement>}) => ReactNode;
 
 /** An anchor with the Monoline underline. */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({external, asChild, className, children, ...rest}, ref) {

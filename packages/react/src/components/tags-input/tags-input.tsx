@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
 import {Tag} from '../tag';
 
 export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
@@ -59,11 +59,11 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
         onKeyDown={(e) => {
           onKeyDown?.(e);
           if (e.defaultPrevented) return;
-          if (e.key === 'Enter') { e.preventDefault(); add(text); }
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); add(text); }
           else if (e.key === 'Backspace' && !text && tags.length) commit(tags.slice(0, -1));
         }}
         onBlur={(e) => { onBlur?.(e); add(text); }}
-        {...rest}
+        {...rest} {...fieldOwn(f, rest)}
       />
     </div>
   );

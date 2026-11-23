@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
 import {Tag} from '../tag';
 
 export interface MultiSelectOption {
@@ -65,7 +65,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
     if (e.defaultPrevented) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) setOpen(true); else move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else move(-1); }
-    else if (e.key === 'Enter' && open && shown[active]) { e.preventDefault(); toggle(shown[active]!); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && shown[active]) { e.preventDefault(); toggle(shown[active]!); }
     else if (e.key === 'Escape' && open) { e.preventDefault(); setOpen(false); }
     else if (e.key === 'Backspace' && !text && current.length) { commit(current.slice(0, -1)); }
   };
@@ -98,7 +98,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
           onClick={(e) => { onClick?.(e); setOpen(true); }}
           onBlur={(e) => { onBlur?.(e); setOpen(false); setText(''); }}
           onKeyDown={keydown}
-          {...rest}
+          {...rest} {...fieldOwn(f, rest)}
         />
       </div>
       {open && (

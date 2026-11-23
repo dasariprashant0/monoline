@@ -81,7 +81,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
         aria-describedby={bad === which ? errId : undefined}
         onChange={(e) => setTyped({...typed, [which]: e.target.value})}
         onBlur={() => apply(which)}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); apply(which); } }}
+        onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); apply(which); } }}
       />
     </label>
   );

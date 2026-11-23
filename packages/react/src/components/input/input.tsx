@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button and the other form controls at each size. */
@@ -21,7 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({si
       data-disabled={disabled ? '' : undefined}
       {...f}
       {...invalidAttrs(invalid)}
-      {...rest}
+      {...rest} {...fieldOwn(f, rest)}
     />
   );
 });

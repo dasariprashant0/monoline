@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
 
 export interface TimePickerProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'defaultValue' | 'onChange' | 'size'> {
   /** 24-hour "HH:mm" (or "HH:mm:ss" when `step` is under 60), or '' for no time. */
@@ -35,7 +35,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
       {...invalidAttrs(invalid)}
       value={value ?? inner}
       onChange={(e) => { if (value === undefined) setInner(e.target.value); onValueChange?.(e.target.value); }}
-      {...rest}
+      {...rest} {...fieldOwn(f, rest)}
     />
   );
 });

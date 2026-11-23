@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
 
 export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** Suggestions shown while typing; matched by substring, case-insensitive. */
@@ -65,10 +65,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
           if (e.defaultPrevented) return;
           if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active + 1) % shown.length); }
           else if (e.key === 'ArrowUp') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active <= 0 ? shown.length : active) - 1); }
-          else if (e.key === 'Enter' && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
+          else if (e.key === 'Enter' && !e.nativeEvent.isComposing && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
           else if (e.key === 'Escape' && isOpen) { e.preventDefault(); setOpen(false); setActive(-1); }
         }}
-        {...rest}
+        {...rest} {...fieldOwn(f, rest)}
       />
       {isOpen && (
         <ul id={listId} role="listbox" className="autocomplete-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

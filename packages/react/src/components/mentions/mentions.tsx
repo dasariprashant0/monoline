@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {useFieldControl} from '../field';
+import {useFieldControl, fieldOwn} from '../field';
 import {setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
@@ -124,7 +124,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     if (e.defaultPrevented || !open) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-    else if ((e.key === 'Enter' || e.key === 'Tab') && shown[at] && !e.shiftKey) { e.preventDefault(); pick(shown[at]); }
+    else if ((e.key === 'Enter' || e.key === 'Tab') && !e.nativeEvent.isComposing && shown[at] && !e.shiftKey) { e.preventDefault(); pick(shown[at]); }
     else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setDismissed(active!.start); }
     else if (e.key === 'Home' && e.ctrlKey) { e.preventDefault(); setIndex(0); }
   };
@@ -146,7 +146,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         onKeyDown={keydown}
         onSelect={(e) => { onSelect?.(e); sync(e.currentTarget); }}
         onBlur={(e) => { onBlur?.(e); setActive(null); setDismissed(null); }}
-        {...rest}
+        {...rest} {...fieldOwn(f, rest)}
       />
       {open && (
         <ul id={listId} role="listbox" className="mentions-list" aria-label={rest['aria-label'] ? `${rest['aria-label']} suggestions` : 'Suggestions'}>

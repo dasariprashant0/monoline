@@ -31,6 +31,14 @@ export function useFieldControl(): {id?: string; 'aria-describedby'?: string; 'a
   };
 }
 
+/**
+ * Spread after the caller's own props: inside a Field the Field's `id` wins (the label points at it), and the caller's
+ * `aria-describedby` is joined to the Field's hint and error ids instead of replacing them.
+ */
+export function fieldOwn(f: {id?: string; 'aria-describedby'?: string}, own: {id?: string; 'aria-describedby'?: string}): {id?: string; 'aria-describedby'?: string} {
+  return {id: f.id ?? own.id, 'aria-describedby': [f['aria-describedby'], own['aria-describedby']].filter(Boolean).join(' ') || undefined};
+}
+
 /** The id of the surrounding Field's label, or undefined outside a Field. For popups that need a name (`aria-labelledby`). */
 export function useFieldLabelId(): string | undefined {
   return useContext(FieldContext)?.labelId;

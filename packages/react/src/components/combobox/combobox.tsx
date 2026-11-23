@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
 
 export interface ComboboxOption {
   value: string;
@@ -63,7 +63,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
     if (e.defaultPrevented) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) { setOpen(true); } else move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else move(-1); }
-    else if (e.key === 'Enter' && open && shown[active]) { e.preventDefault(); pick(shown[active]!); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && shown[active]) { e.preventDefault(); pick(shown[active]!); }
     else if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } else if (text !== null) { setText(null); } }
     else if (e.key === 'Home' && open) { e.preventDefault(); setActive(0); }
     else if (e.key === 'End' && open) { e.preventDefault(); setActive(Math.max(0, shown.length - 1)); }
@@ -92,7 +92,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
-        {...rest}
+        {...rest} {...fieldOwn(f, rest)}
       />
       {open && (
         <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

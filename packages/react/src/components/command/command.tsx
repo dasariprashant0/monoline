@@ -66,7 +66,12 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
 
   useEffect(() => {
     if (!shortcut) return;
-    const h = (e: KeyboardEvent) => { if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
+    const plain = !/(^|\+)(mod|alt)(\+|$)/.test(shortcut.toLowerCase());
+    const h = (e: KeyboardEvent) => {
+      // A plain-key shortcut such as "/" must not fire, or swallow the key, while someone types in a field.
+      const t = e.target as HTMLElement | null;
+      if (plain && t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
     document.addEventListener('keydown', h);
     return () => document.removeEventListener('keydown', h);
   });
@@ -95,7 +100,7 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
     else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
     else if (e.key === 'End') { e.preventDefault(); setActive(Math.max(0, flat.length - 1)); }
-    else if (e.key === 'Enter' && activeItem) { e.preventDefault(); run(activeItem); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && activeItem) { e.preventDefault(); run(activeItem); }
   };
 
   return (
