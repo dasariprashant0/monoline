@@ -4,6 +4,7 @@ import {Button} from '../button';
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '../dropdown-menu';
 import {cx} from '../../utils/cx';
 import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
+import {setRefs} from '../../utils/overlay';
 
 
 export interface OverflowItem {
@@ -67,7 +68,7 @@ export const OverflowList = forwardRef<HTMLDivElement, OverflowListProps>(functi
 
   const hidden = items.slice(shown);
   return (
-    <div ref={(el) => { root.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }} className={cx('overflow-list', className)} {...rest}>
+    <div ref={(el) => setRefs(el, root, ref)} className={cx('overflow-list', className)} {...rest}>
       <ul ref={list} className="overflow-list-items">
         {items.map((it, i) => <li key={it.id} className="overflow-list-item" data-hidden={i >= shown || undefined}>{it.label}</li>)}
       </ul>

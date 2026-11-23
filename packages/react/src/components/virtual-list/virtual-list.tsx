@@ -1,6 +1,7 @@
 'use client';
 import {forwardRef, useEffect, useRef, useState, type HTMLAttributes, type ReactNode} from 'react';
 import {cx} from '../../utils/cx';
+import {setRefs} from '../../utils/overlay';
 
 export interface VirtualListProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** Required: names the list for screen readers. */
@@ -70,7 +71,7 @@ export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function
 
   return (
     <div
-      ref={(el) => { root.current = el; if (typeof ref === 'function') ref(el); else if (ref) ref.current = el; }}
+      ref={(el) => setRefs(el, root, ref)}
       role="list"
       className={cx('virtual-list', className)}
       style={{height, ...style}}

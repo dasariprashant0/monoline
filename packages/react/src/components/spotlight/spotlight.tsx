@@ -1,6 +1,7 @@
 'use client';
 import {forwardRef, useRef, type CSSProperties, type HTMLAttributes, type PointerEvent} from 'react';
 import {cx} from '../../utils/cx';
+import {setRefs} from '../../utils/overlay';
 
 export interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {
   /** Radius of the glow in px. Default 240. */
@@ -23,7 +24,7 @@ export const Spotlight = forwardRef<HTMLDivElement, SpotlightProps>(function Spo
     onPointerMove?.(e);
   };
   return (
-    <div ref={(node) => { local.current = node; if (typeof ref === 'function') ref(node); else if (ref) ref.current = node; }} className={cx('spotlight', className)} style={{'--spotlight-size': `${size}px`, ...style} as CSSProperties} onPointerMove={move} {...rest}>
+    <div ref={(node) => setRefs(node, local, ref)} className={cx('spotlight', className)} style={{'--spotlight-size': `${size}px`, ...style} as CSSProperties} onPointerMove={move} {...rest}>
       {children}
     </div>
   );
