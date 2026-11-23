@@ -2,6 +2,8 @@
 
 Written 2026-11-20 from [BENCHMARK.md](BENCHMARK.md) and the repo as it stands on branch `claude/ds-benchmark-5b768f`. It is for two readers: a human deciding what to fund, and an AI agent picking a task. Every task has an ID, an owner area, an effort, and a test for "done", so either reader can act without asking.
 
+> **Status on master (5a4ffa8), checked 2026-11-23.** Done since this was written: starters (`examples/starters/{vite,next,astro,react-router}`; React Router stands in for Remix), the React 18/19 matrix and install smoke in `ci.yml`, CSS cascade layers (ADR 0003), install tabs on component pages, route-level code splitting of the docs (`apps/docs/src/shell/lazy.ts`), and `--provenance` in `release.yml` (A7: set up, nothing published with it yet). Still open: `npm create monoline` (A4), npm publish of 0.5.0, a screen-reader pass, the `monoline add` bug, `themeScript`, forced-colors for `.btn-solid`, CJS types. Rows below carry their own status where it changed.
+
 How this fits with other docs:
 
 | Doc | Role |
@@ -67,11 +69,11 @@ From [BENCHMARK §1](BENCHMARK.md). "Gap" is what the plan closes.
 
 | Axis | Today | Best other | Gap | Plan IDs |
 |---|---|---|---|---|
-| Install friction | `npm i` + one import, no provider. Published 0.4.0 on 2026-11-16 | Mantine templates; shadcn `init` | No starters; first-run not tested in CI | A2 to A4 |
+| Install friction | `npm i` + one import, no provider. Published 0.4.0 on 2026-11-16 | Mantine templates; shadcn `init` | Starters and an install smoke exist (A2 done, A3 partial); `npm create monoline` (A4) is open | A4 |
 | Theming | 5 `data-*` axes, contrast enforced | HeroUI Theme Builder; shadcn themes | No presets, no brand-colour tool, no auto dark mode (unverified, §4 F8) | C1 to C4 |
 | Accessibility | axe and AX-tree per component; keyboard tests | React Aria (reputation); GOV.UK (public statement) | No human screen-reader results; no public statement | F6, E1, E2 |
 | Coverage | 135 component folders | Mantine 122 components + 83 hooks | Level. Fill the gaps in ROADMAP Phase 2 | B-series |
-| Docs | Per-page examples, props, a11y, search, Markdown | Radix (keyboard tables), Mantine (playground, Styles API), shadcn (install tabs) | Install tabs, keyboard table as a section, styling reference, wider playground | B1 to B6 |
+| Docs | Per-page examples, props, a11y, search, Markdown | Radix (keyboard tables), Mantine (playground, Styles API), shadcn (install tabs) | Install tabs are done (B1); keyboard table as a section, styling reference, wider playground | B2 to B6 |
 | Customization | Copy or install from one source | shadcn | Add "recipes" and templates | B7, C7 |
 | Bundle | Per-module build, budgets | Base UI (tree-shakable) | Ahead. Keep the budgets | E3 |
 | TypeScript | Doc-comment gate, typed props | All | Level | none |
@@ -118,12 +120,12 @@ Each phase has a goal, a list of tasks, and an exit test. Do not start a phase's
 | ID | Task | Pattern from | Effort | Owner area | Acceptance |
 |---|---|---|---|---|---|
 | A1 | Fix F1, F2, F3, F8 | n/a | S | core, overlays, css | those four done |
-| A2 | **Starter templates**: `examples/starter-vite`, `starter-next` (App Router), `starter-astro`, `starter-remix`. Each imports the CSS once and renders a Button and a Dialog | Mantine templates | M | cli, examples | each builds and passes a Playwright smoke test |
-| A3 | **`first-run` CI job**: on a clean runner, follow the README commands verbatim against the published packages, then run the smoke test | all npm libs | S | ci | job green daily; failure opens an issue |
+| A2 | **DONE.** **Starter templates**: `examples/starters/vite`, `next` (App Router), `astro` and `react-router` (stands in for Remix; run by `npm run install-smoke`). Each imports the CSS once and renders a Button and a Dialog | Mantine templates | M | cli, examples | each builds and passes a Playwright smoke test |
+| A3 | **PARTIAL** (the `install-smoke` job in `ci.yml` packs the tarballs; it does not run daily against the published packages). **`first-run` CI job**: on a clean runner, follow the README commands verbatim against the published packages, then run the smoke test | all npm libs | S | ci | job green daily; failure opens an issue |
 | A4 | **`npm create monoline`** (or `npx monoline create <name> --template vite`) that copies a starter | shadcn `init` | M | cli | one command to a running app in under 2 minutes on a warm cache |
 | A5 | **README rewrite for the first 10 minutes**: the checklist in §8, install tabs, a screenshot, a "what you will not get" line | Bootstrap quick start | S | docs | README passes a read-through by someone who has never seen it |
 | A6 | **CDN quick start** for CSS-only users: one `<link>` and one `<script>` from a CDN, copy-pasteable | Bootstrap | S | css | an HTML file with no build renders a styled page |
-| A7 | **Publish provenance**: npm provenance on `@monoline/css`, `@monoline/react`, `monoline` | all | S | release | provenance badge on npm |
+| A7 | **DONE in the workflow** (`release.yml` publishes with `--provenance`; no release has used it yet). **Publish provenance**: npm provenance on `@monoline/css`, `@monoline/react`, `monoline` | all | S | release | provenance badge on npm |
 
 **Exit test:** A3 is green on four frameworks for 7 days in a row.
 
@@ -133,7 +135,7 @@ Each phase has a goal, a list of tasks, and an exit test. Do not start a phase's
 
 | ID | Task | Pattern from | Effort | Owner area | Acceptance |
 |---|---|---|---|---|---|
-| B1 | **Install tabs** on every component page: npm, pnpm, yarn, bun, CLI. Remembered across pages | shadcn, Magic UI | S | docs | selection persists after reload |
+| B1 | **DONE** (`InstallTabs` in `apps/docs/src/page/component-doc.tsx`). **Install tabs** on every component page: npm, pnpm, yarn, bun, CLI. Remembered across pages | shadcn, Magic UI | S | docs | selection persists after reload |
 | B2 | **Keyboard table and anatomy** as fixed sections on every page, generated from `meta.json` `a11y` and compound parts | Radix, Headless UI | S to M | docs, meta.json | all 135 pages show both; a CI check fails if a component has an empty `a11y` list |
 | B3 | **Playground controls** (variant, size, state) above the first example on every component | Mantine | M | docs | controls change the live preview and the copied code |
 | B4 | **Styling reference per page**: class names, `data-*` states, tokens the component reads, generated from the CSS | Base UI, HeroUI, daisyUI, Ant | M | docs, css scripts | generated, never hand-written; a CI check fails on drift |
@@ -207,7 +209,7 @@ This is the menu the docs home page should show. Existing items are real; **new*
 | Dimension | Options today | New (plan ID) |
 |---|---|---|
 | Install route | npm packages; CLI copy | `npm create monoline` (A4); CDN link (A6) |
-| Framework | React; any (CSS only) | starters for Vite, Next, Astro, Remix (A2); server-template recipes (D7) |
+| Framework | React; any (CSS only) | starters for Vite, Next, Astro, React Router (A2, done); server-template recipes (D7) |
 | Theme | warm, dark, midnight | auto (C2), high contrast (C2), presets (C1) |
 | Accent | 8 | any hex via brand tool (C4) |
 | Font | mono, sans, serif | system and second monospace (C10) |
@@ -309,8 +311,8 @@ Task states for the tracker **(proposal)**: `ready` (acceptance clear), `blocked
 ## 12. Order of work, as a list you can start tomorrow
 
 1. F1, F2, F3, F8: one afternoon each; they remove visible rough edges.
-2. A3: write the `first-run` CI job before the starters, and watch it fail. That is the baseline.
-3. A2, A4, A5: starters, `create`, README. Re-run A3 until green on four frameworks.
+2. ~~A3 before the starters~~ The starters and install smoke exist; the daily first-run job against published packages is still open.
+3. ~~A2~~ done. A4, A5: `create`, README.
 4. B1, B2, B6: the three cheapest docs wins.
 5. E1: publish the accessibility statement with known gaps. It costs a page and buys trust.
 6. C2, C3, C1: colour mode, motion, presets, in that order, because presets depend on the other two.

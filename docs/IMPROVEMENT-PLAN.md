@@ -25,30 +25,32 @@ Date 2026-11-20, branch `claude/ds-recon-plan-215911`, version 0.5.0 (released 2
 | React | `packages/react` (`@monoline/react`) | 135 components, 23 hooks, ESM + CJS, `sideEffects:false`, peer react >=18, dep `radix-ui` |
 | Other packages | `packages/cli` (`monoline`), `mcp`, `tokens` (private), `vscode` | all 0.5.0 |
 | Docs | `apps/docs` (Vite, prerendered, playground, theme builder, Themes, Blocks, Compare) | no Storybook; the docs site is the catalogue |
-| Registry | `registry/` (159 files), `llms.txt`, `llms-full.txt` | generated, maintainer-only |
+| Registry | `registry/` (160 files: `index.json` plus 159 entries, 136 components and 23 hooks), `llms.txt`, `llms-full.txt` | generated, maintainer-only |
 | Examples | `examples/{dashboard,auth-settings,landing}` | |
 | CI | ``.github/workflows/{ci,audit,ax,e2e,release}.yml` (`pages.yml` removed in 0.5.0; docs now served from monoline.prashantdasari.com, host config not in this repo) | release publishes with provenance, needs `NPM_TOKEN` |
 | Design rules | `DESIGN.md`, `AGENTS.md`, `docs/ROADMAP.md` | |
 
 ## A. Findings
 
+> **Status on master (5a4ffa8), checked 2026-11-23.** This is the 2026-11-20 audit; it is kept as written and the rows below carry a status where master moved. Done: F1 (React matrix), F2 (starters and install smoke; React Router in place of Remix), F9 (ROADMAP rewritten), F10 (AGENTS.md updated), F11 (ADRs 0001 to 0006), F12 (docs version aligned), F13 (route-level splitting, `apps/docs/src/shell/lazy.ts`), F8 (Firefox and WebKit smoke), M2 (`until-found`, ADR 0005), M5 (cascade layers, ADR 0003), G3 (starters). Open: F3/G1 (npm publish of 0.5.0), F4/G8 (screen-reader pass), F6 (three accessibility-tree findings remain; see `docs/a11y-report.md`), M1 (native anchor stays opt-in, rework in progress on another branch), the `monoline add` bug, `themeScript`, forced-colors on `.btn-solid`, CJS types.
+
 Severity: H blocks adoption or violates the stated a11y bar; M real gap; L polish.
 
 | ID | Area | Sev | Evidence | Fix |
 |---|---|---|---|---|
-| F1 | library | H | `.github/workflows/ci.yml` runs one Node 22 job; no React 18/19 matrix, while `packages/react/package.json` peer is `>=18` | Add a matrix job (React 18 and 19) running `npm test -w @monoline/react` |
-| F2 | library | H | No clean-install test anywhere (`ROADMAP.md` 0.4 open); no `examples/` Vite/Next/Astro/Remix starters | Add install smoke tests that pack the tarballs and render Button + Dialog in 4 starters |
+| F1 (done on master) | library | H | `.github/workflows/ci.yml` runs one Node 22 job; no React 18/19 matrix, while `packages/react/package.json` peer is `>=18` | Add a matrix job (React 18 and 19) running `npm test -w @monoline/react` |
+| F2 (done on master) | library | H | No clean-install test anywhere (`ROADMAP.md` 0.4 open); no `examples/` Vite/Next/Astro/Remix starters | Add install smoke tests that pack the tarballs and render Button + Dialog in 4 starters |
 | F3 | library | H | `ROADMAP.md` 0.3: "not on npm yet" (stale?). 0.5.0 is tagged in `CHANGELOG.md` and the README now has an npm badge, so it may be published; **not verified** (no network check run). `release.yml` needs `NPM_TOKEN` and the `release` environment | Owner decides when to publish (see E1); dry-run `npm pack` per package first |
 | F4 | a11y | H | `docs/a11y-report.md` line 7: no NVDA/JAWS/VoiceOver/TalkBack testing has been done by anyone | Owner-run manual pass on the 15 flows (report lines 36-115); agents only prepare scripts |
 | F5 | a11y | M | `grep forced-colors\|prefers-contrast packages/css/src` returns 0 files | Add `forced-colors` and `prefers-contrast` rules for focus ring, borders, selected states; check in `scripts/css-computed.mjs` |
 | F6 | a11y | M | `docs/a11y-report.md` "Open findings" (now 11, was 9; the two new ones are focusable `generic` elements with nothing to announce): Toast viewport has two unnamed focusable proxies; docs sidebar is a second unnamed complementary landmark; scrollable code blocks are focusable with no role | Name/role the docs items (`apps/docs`); for Toast, confirm after the 0.4 rewrite whether it is still Radix and fix or document |
 | F7 | a11y | M | `docs/e2e-findings.md` "Not fixed": context-menu demo trigger not focusable, Drawer has no visible close, tooltip closes on scroll, combobox opens on focus. Written before the 0.4 native-dialog/floating-layer rewrite, so some may be stale | Re-test each in real Chrome; fix demos (focusable trigger, `DrawerClose`) and update the file |
-| F8 | a11y | M | `.github/workflows/e2e.yml` and `scripts/e2e/` are Chrome only; no Firefox/WebKit grep hits | Add Firefox and WebKit smoke for dialog, menu, select, combobox, tabs (roadmap 0.6) |
-| F9 | docs | M | `docs/ROADMAP.md` says 114 components, 1182 tests, Radix size risk, "Button 1.7 KB"; reality is 135 components, 1446 tests, Radix mostly removed, Button 0.7 KB (`CHANGELOG.md` 0.4.0) | Rewrite the status table and risks; mark done phases |
-| F10 | docs | M | `AGENTS.md` says deps are only `radix-ui` and `asChild` uses Radix `Slot`; `CHANGELOG.md` 0.4.0 says Slot is now `utils/slot.tsx` and overlays are native | Update AGENTS.md conventions (it is the contract for agents) |
-| F11 | docs | M | No `docs/decisions` or ADR folder; big choices (native `<dialog>`, own floating layer, per-module build, CSS split) live only in CHANGELOG | Add 4-5 short ADRs from `CHANGELOG.md` 0.4.0 |
-| F12 | docs | L | `apps/docs/package.json` version 0.3.0 vs 0.5.0 elsewhere | Align or leave (private) |
-| F13 | code | M | Build log (measured before the docs redesign, **not re-measured**): docs `index-*.js` 1,159 KB / 320 KB gzip in one chunk (`vite build` warning) | Route-level `import()` code splitting for docs pages |
+| F8 (done on master) | a11y | M | `.github/workflows/e2e.yml` and `scripts/e2e/` are Chrome only; no Firefox/WebKit grep hits | Add Firefox and WebKit smoke for dialog, menu, select, combobox, tabs (roadmap 0.6) |
+| F9 (done on master) | docs | M | `docs/ROADMAP.md` says 114 components, 1182 tests, Radix size risk, "Button 1.7 KB"; reality is 135 components, 1446 tests, Radix mostly removed, Button 0.7 KB (`CHANGELOG.md` 0.4.0) | Rewrite the status table and risks; mark done phases |
+| F10 (done on master) | docs | M | `AGENTS.md` says deps are only `radix-ui` and `asChild` uses Radix `Slot`; `CHANGELOG.md` 0.4.0 says Slot is now `utils/slot.tsx` and overlays are native | Update AGENTS.md conventions (it is the contract for agents) |
+| F11 (done on master) | docs | M | No `docs/decisions` or ADR folder; big choices (native `<dialog>`, own floating layer, per-module build, CSS split) live only in CHANGELOG | Add 4-5 short ADRs from `CHANGELOG.md` 0.4.0 |
+| F12 (done on master) | docs | L | `apps/docs/package.json` version 0.3.0 vs 0.5.0 elsewhere | Align or leave (private) |
+| F13 (done on master) | code | M | Build log (measured before the docs redesign, **not re-measured**): docs `index-*.js` 1,159 KB / 320 KB gzip in one chunk (`vite build` warning) | Route-level `import()` code splitting for docs pages |
 | F14 | code | M | `npm run size` (pre-0.5.0 numbers): all CSS 19.9/20 KB, Everything 96.2/100 KB; any new component will trip the budget | Re-baseline budgets deliberately or trim; document the policy |
 | F15 | code | L | No linter or formatter script in root `package.json`; "lint" is only `packages/css/scripts/check.mjs` and `check-docs.mjs` | Decide (E3): add ESLint with `jsx-a11y`, or keep custom checks |
 | F16 | code | L | `CHANGELOG.md` Unreleased: `--bp-*` tokens are not used by any media query (stylesheets use 560/600/760/800/860/900/1100 px, 40/64rem) | Leave until the owner decides on tablet layout change |
@@ -63,7 +65,7 @@ Checked and fine: `outline:none` uses in `packages/css/src` are either programma
 |---|---|---|---|---|
 | G1 | Install | Install path unverified: roadmap 0.3 says not published, but 0.5.0 is released and the README has an npm badge. Run `npm view @monoline/react` first | `README.md` "Use it"; `docs/ROADMAP.md` Phase 0 | Publish (E1), then verify on a clean machine (F2) |
 | G2 | Install | README's first path loads all CSS (`import '@monoline/css'` = 19.9 KB gzip) while CHANGELOG 0.4.0 calls `core.css` plus per-component CSS the recommended path (core 3.6 KB) | `README.md`, `CHANGELOG.md`, `npm run size` | Make the small-CSS path the README default, with `@monoline/react` `styles` map |
-| G3 | Install | No starter a newcomer can clone for Vite, Next.js, Astro or Remix; `npx monoline init` exists but no "create app" route | `examples/` (3 apps, built from workspace), `packages/cli` | Starters per framework (WP1); decide on `npm create` (E8) |
+| G3 (done on master) | Install | No starter a newcomer can clone for Vite, Next.js, Astro or Remix; `npx monoline init` exists but no "create app" route | `examples/` (3 apps, built from workspace), `packages/cli` | Starters per framework (WP1); decide on `npm create` (E8) |
 | G4 | Install | Framework notes (Next.js `'use client'`, SSR, CSS import order, React 18 vs 19) are not tested or documented | `ci.yml`, `AGENTS.md` ("Server-safe") | Test in the install smoke, then add a short guide per framework |
 | G5 | Docs | Guides exist (getting started, CLI, theming, forms, i18n, a11y, contributing, AI) but there is no migration guide, no "why Monoline / when not to use", no versioned docs | `apps/docs/src/guides.tsx:155-163`, `CHANGELOG.md` breaking changes only | Add migration and "choosing" pages; versioned docs after 1.0 (roadmap 3.7) |
 | G6 | Docs | First-run view: docs build is one 1.16 MB JS chunk | build log (F13) | Code-split (WP5) |
@@ -78,10 +80,10 @@ The platform picture and priorities are in the "Modern web platform" section of 
 | ID | Area | Sev | Evidence in repo | Native option (guide id) | Fix |
 |---|---|---|---|---|---|
 | M1 | components | M | `packages/react/src/components/popover/float.tsx` (99 lines): `getBoundingClientRect` placement, flip, shift for Popover, Tooltip, HoverCard, Select and menus; no `popover` attribute, `anchor-name` or `position-anchor` anywhere in `packages/` (grep: 0 files) | `viewport-aware-dropdowns`, `position-aware-tooltips`, `interest-triggered-tooltips`, `declarative-dialog-popover-control`, `animate-to-from-top-layer` | Prototype CSS anchor positioning plus `popover` with `float.tsx` as the fallback behind feature detection; keep the same props and tests; measure the size win |
-| M2 | components | M | `components/accordion/accordion.tsx` and `collapsible` wrap Radix (`radix-ui`); no `interpolate-size`/`calc-size` (0 files), no `hidden="until-found"` (0 files), so closed content is not findable with Find in page | `accordion`, `animate-to-intrinsic-sizes`, `search-hidden-content` | Evaluate native `<details name>` plus `interpolate-size` for Accordion; at least add `until-found` to hidden panels |
+| M2 (done on master) | components | M | `components/accordion/accordion.tsx` and `collapsible` wrap Radix (`radix-ui`); no `interpolate-size`/`calc-size` (0 files), no `hidden="until-found"` (0 files), so closed content is not findable with Find in page | `accordion`, `animate-to-intrinsic-sizes`, `search-hidden-content` | Evaluate native `<details name>` plus `interpolate-size` for Accordion; at least add `until-found` to hidden panels |
 | M3 | motion | L | `components/scroll-progress/scroll-progress.tsx:15-16` reads `scrollY` in a scroll handler to set a percentage; 7 files add scroll listeners; `animation-timeline`/`scroll-timeline` in 0 CSS/TS files | `scroll-progress-indicator`, `motion`, `scroll-entry-exit-effects` | CSS scroll-driven animation for ScrollProgress and similar effects, JS fallback; the base `prefers-reduced-motion` rule stays |
 | M4 | motion | L | `@starting-style` in 0 files; overlay enter/exit animation approach not verified | `animate-to-from-top-layer`, `animate-element-entry-exit` | Check dialog/drawer/popover CSS; adopt `@starting-style` plus `transition-behavior: allow-discrete` where animations are JS-timed |
-| M5 | code | M | `@layer` in 0 files under `packages/css/src` while roadmap 0.7 requires "`@layer` so app styles always win"; also dogfood bugs A1-A3 were specificity fights (`docs/dogfood-log.md`) | `css` | Wrap tokens, base, components in cascade layers (WP4 core, WP2 components); document the override order |
+| M5 (done on master) | code | M | `@layer` in 0 files under `packages/css/src` while roadmap 0.7 requires "`@layer` so app styles always win"; also dogfood bugs A1-A3 were specificity fights (`docs/dogfood-log.md`) | `css` | Wrap tokens, base, components in cascade layers (WP4 core, WP2 components); document the override order |
 | M6 | code | L | `@container` in 0 files; component responsiveness uses `@media` widths (see F16) | `css-layout`, `card` | Use container queries for card-like and dashboard components where they sit in variable-width slots |
 | M7 | components | L | Select, Switch use Radix/own layer; native `switch` attribute is used in 1 file; customizable `<select>` not used | `switch`, `branded-select-styling`, `animated-select-picker` | Low priority; evaluate after M1 |
 | M8 | a11y | L | `grep light-dark( packages/css/src` = 0; themes use `data-theme` custom properties (fine) but `prefers-color-scheme` default not verified | `browser-ui-theming`, `css` | Check `color-scheme` is set so native controls and scrollbars follow the theme |
@@ -95,15 +97,15 @@ Already native, no action: `<dialog>` with `showModal()` for Dialog, AlertDialog
 | 0.1 Per-module build and size budget | done | `scripts/size.mjs`, `npm run size` passes (Button well under 2.5 KB) |
 | 0.2 Green CI on GitHub | unverified | workflows exist; run state not readable here |
 | 0.3 Publish to npm with provenance | partial | `.github/workflows/release.yml`, `scripts/release.mjs`, `docs/releasing.md`; roadmap says not yet published |
-| 0.4 Clean installs in Vite/Next/Astro/Remix | not started | no such tests or starters in repo |
-| 0.5 React 18 and 19 matrix | not started | `ci.yml` |
+| 0.4 Clean installs in Vite/Next/Astro/Remix | done on master | `npm run install-smoke`, `examples/starters/{vite,next,astro,react-router}` (React Router stands in for Remix) |
+| 0.5 React 18 and 19 matrix | done on master | `react-matrix` job in `ci.yml` |
 | 0.6 Real-browser interaction tests | partial | `scripts/e2e` (114 tests, Chrome only); no Firefox/Safari |
-| 0.7 CSS split with `@layer` | partial | `core.css` + per-component files done (`packages/css/dist`); `@layer` is in 0 files under `packages/css/src` (M5) |
+| 0.7 CSS split with `@layer` | done on master | `packages/css/scripts/bundle.mjs` adds the layers when it builds `dist/` (ADR 0003) |
 | 1.1 API audit | done | `docs/api-audit.md` |
 | 1.2 State attributes | partial | convention in `AGENTS.md`; `packages/react/src/api-consistency.test.tsx` covers some |
 | 1.3 Slot/class naming | partial | rule in `AGENTS.md`; not audited per page |
 | 1.4 Token completeness | done (unreleased) | `CHANGELOG.md` Unreleased, merged in #16; breakpoint tokens unused in CSS |
-| 1.5 WAI-ARIA behaviour parity | partial | `docs/a11y-report.md` 41 components checked, 9 open findings |
+| 1.5 WAI-ARIA behaviour parity | partial | `docs/a11y-report.md` 41 components checked; 3 distinct findings open when last run (10 occurrences) |
 | 1.6 Bug sweep | partial | `docs/e2e-findings.md`, `docs/dogfood-log.md`; unfixed items in F7 |
 | 1.7 Docs playground | done | `apps/docs/src/page/playground.tsx` |
 | 2 Fill gaps (date range, range calendar, time field, tour, resizable, mentions, tree-select, overflow list, copy button, image gallery, notification, sortable, virtual list) | done | all present under `packages/react/src/components`; no "splitter" or "lightbox" names (resizable and image-gallery cover them) |
@@ -121,7 +123,7 @@ Already native, no action: `<dialog>` with `showModal()` for Dialog, AlertDialog
 | 4 Governance | partial | `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`; no RFC process |
 | 4 Real users | not started | no evidence |
 
-Open items: 15 not done (not started 5, partial 10 counting 0.2 and 0.3 as open). Not started: 0.4, 0.5, RHF/TanStack tests, manual screen-reader pass, real users.
+Open items as of this audit: 15 not done. Since then 0.4, 0.5 and 0.7 are done on master. Still not started: RHF/TanStack tests, manual screen-reader pass, real users.
 
 ## Skills used and not used
 
