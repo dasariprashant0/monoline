@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {waitFor, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Field} from '../field';
@@ -117,5 +117,23 @@ describe('Mentions', () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.type(box(), '@');
     expect(await axe(container)).toHaveNoViolations();
+  });
+  it('reports a failing search through onSearchError and shows no options', async () => {
+    const user = userEvent.setup();
+    const err = vi.fn();
+    render(<Mentions aria-label="Comment" onSearch={() => { throw new Error('boom'); }} onSearchError={err} />);
+    await user.type(screen.getByRole('textbox', {name: 'Comment'}), '@a');
+    await waitFor(() => expect(err).toHaveBeenCalledWith(expect.objectContaining({message: 'boom'})));
+    expect(screen.queryAllByRole('option')).toHaveLength(0);
+  });
+  it('does not search again when the parent re-renders with a new inline onSearch', async () => {
+    const user = userEvent.setup();
+    const calls = vi.fn(() => [{value: 'ada', label: 'Ada'}]);
+    const {rerender} = render(<Mentions aria-label="Comment" onSearch={(q, t) => calls(q, t)} />);
+    await user.type(screen.getByRole('textbox'), '@a');
+    await screen.findByRole('option', {name: 'Ada'});
+    const n = calls.mock.calls.length;
+    rerender(<Mentions aria-label="Comment" onSearch={(q, t) => calls(q, t)} />);
+    expect(calls.mock.calls.length).toBe(n);
   });
 });
