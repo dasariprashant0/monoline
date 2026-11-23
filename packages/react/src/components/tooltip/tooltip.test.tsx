@@ -37,6 +37,18 @@ describe('Tooltip', () => {
     act(() => { fireEvent.scroll(document); });
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
+  it('closes on scroll when a hover opened it on a click-focused trigger', async () => {
+    const user = userEvent.setup();
+    render(ui());
+    const save = screen.getByRole('button', {name: 'Save'});
+    await user.click(save); // focuses the trigger with the pointer, not the keyboard
+    expect(save).toHaveFocus();
+    await user.unhover(save);
+    await user.hover(save);
+    await screen.findByRole('tooltip');
+    act(() => { fireEvent.scroll(document); });
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
   it('describes its trigger while open', async () => {
     const user = userEvent.setup();
     render(ui());
