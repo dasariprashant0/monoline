@@ -28,11 +28,14 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
   const tags = value ?? inner;
   const [text, setText] = useState('');
   const commit = (next: string[]) => { if (value === undefined) setInner(next); onValueChange?.(next); };
-  const add = (raw: string) => {
-    const t = raw.trim();
+  /** Adds every new, non-empty tag in one commit, so several tags from one paste are not lost to a stale `tags`. */
+  const addAll = (raws: string[]) => {
     setText('');
-    if (t && !tags.includes(t)) commit([...tags, t]);
+    const fresh: string[] = [];
+    for (const raw of raws) { const t = raw.trim(); if (t && !tags.includes(t) && !fresh.includes(t)) fresh.push(t); }
+    if (fresh.length) commit([...tags, ...fresh]);
   };
+  const add = (raw: string) => addAll([raw]);
 
   return (
     <div className={cx('tags-input', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
@@ -47,7 +50,7 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
         value={text}
         onChange={(e) => {
           const v = e.target.value;
-          if (v.includes(',')) { const parts = v.split(','); parts.slice(0, -1).forEach(add); setText(parts[parts.length - 1]!); }
+          if (v.includes(',')) { const parts = v.split(','); addAll(parts.slice(0, -1)); setText(parts[parts.length - 1]!); }
           else setText(v);
         }}
         onKeyDown={(e) => {

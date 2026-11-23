@@ -29,6 +29,22 @@ describe('useIntersection', () => {
     act(() => cb([{isIntersecting: true} as IntersectionObserverEntry], {} as IntersectionObserver));
     expect(disconnect).toHaveBeenCalled();
   });
+  it('does not rebuild the observer when an inline threshold array is passed each render', () => {
+    let made = 0;
+    globalThis.IntersectionObserver = class {
+      constructor(c: IntersectionObserverCallback) { cb = c; made++; }
+      observe() {} unobserve() {} disconnect = disconnect; takeRecords() { return []; }
+    } as never;
+    function Inline() {
+      const [ref, entry] = useIntersection<HTMLDivElement>({threshold: [0, 0.5]});
+      return <div ref={ref}>{entry ? 'seen' : 'unseen'}</div>;
+    }
+    render(<Inline />);
+    expect(made).toBe(1);
+    act(() => cb([{isIntersecting: true} as IntersectionObserverEntry], {} as IntersectionObserver));
+    expect(screen.getByText('seen')).toBeInTheDocument();
+    expect(made).toBe(1);
+  });
   it('does not throw without IntersectionObserver', () => {
     // @ts-expect-error remove for this test
     delete globalThis.IntersectionObserver;
