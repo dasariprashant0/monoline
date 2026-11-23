@@ -21,6 +21,25 @@ const pascal = (name) => name.split('-').map((p) => p[0].toUpperCase() + p.slice
 const camel = (name) => { const p = pascal(name); return p[0].toLowerCase() + p.slice(1); };
 const oneLine = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
 
+// Shared files under src/utils/ that a component's source imports ('../../utils/x'), plus the ones those import ('./x').
+// The CLI writes them next to the components, so a copied component compiles without the rest of the repo.
+const utilsDir = join(pkgRoot, 'src', 'utils');
+function sharedUtils(source) {
+  const found = new Map();
+  const visit = (text, re) => {
+    for (const [, name] of text.matchAll(re)) {
+      if (found.has(name)) continue;
+      const file = ['.ts', '.tsx'].map((ext) => name + ext).find((f) => existsSync(join(utilsDir, f)));
+      if (!file) throw new Error(`utils/${name} is imported but src/utils/${name}.ts(x) does not exist`);
+      const content = readFileSync(join(utilsDir, file), 'utf8');
+      found.set(name, {path: `packages/react/src/utils/${file}`, content});
+      visit(content, /from '\.\/([a-z0-9-]+)'/g);
+    }
+  };
+  for (const s of source) if (/\.tsx?$/.test(s.path)) visit(s.content, /from '\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g);
+  return [...found.values()].sort((a, b) => a.path.localeCompare(b.path));
+}
+
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'));
 const all = units();
 const known = new Set(all.map((u) => u.name));
@@ -79,8 +98,9 @@ for (const u of all) {
   records.push(entry);
   const source = readdirSync(u.dir).filter((f) => /\.(tsx?|json)$/.test(f) && !/\.(test|demo)\./.test(f)).sort()
     .map((f) => ({path: `${path}/${f}`, content: readFileSync(join(u.dir, f), 'utf8')}));
+  const utils = sharedUtils(source);
   const css = meta.css.map((f, i) => ({path: `packages/css/src/components/${f}`, content: cssTexts[i]}));
-  perComponent.set(u.name, JSON.stringify({...entry, dependencies: {'radix-ui': '^1.4.2'}, source, css}, null, 2) + '\n');
+  perComponent.set(u.name, JSON.stringify({...entry, dependencies: {'radix-ui': '^1.4.2'}, source, utils, css}, null, 2) + '\n');
 }
 
 // index.json: the light list (no props, usage or classes; the per-component file has those). Prop names are here so search can match them.

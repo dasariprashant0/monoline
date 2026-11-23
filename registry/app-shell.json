@@ -253,5 +253,11 @@
       "path": "packages/react/src/components/app-shell/meta.json",
       "content": "{\n  \"name\": \"app-shell\",\n  \"title\": \"App shell\",\n  \"category\": \"layout\",\n  \"description\": \"The frame of an app: skip link, navbar, sidebar, main and aside in one responsive grid.\",\n  \"status\": \"beta\",\n  \"uses\": [\n    \"sidebar\",\n    \"navbar\"\n  ],\n  \"css\": [\n    \"09-links.css\",\n    \"02-buttons.css\",\n    \"icon-button.css\",\n    \"tooltip.css\",\n    \"dialog.css\",\n    \"drawer.css\",\n    \"sidebar.css\",\n    \"navbar.css\",\n    \"app-shell.css\"\n  ],\n  \"a11y\": [\n    \"Landmarks: banner (the navbar), navigation (the sidebar), main and complementary (the aside, named by asideLabel).\",\n    \"The first focusable element is a skip link to the main region; main takes focus when it is used.\",\n    \"The sidebar shows from 800px and the aside beside the page from 1100px; below those they move into a drawer or stack under the page.\",\n    \"scroll=\\\"page\\\" keeps the navbar and sidebar in view while the page scrolls; scroll=\\\"contained\\\" scrolls the regions on their own.\"\n  ],\n  \"keywords\": [\n    \"app shell\",\n    \"layout\",\n    \"dashboard\",\n    \"admin\",\n    \"frame\",\n    \"skip link\",\n    \"sticky\"\n  ]\n}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

@@ -128,5 +128,11 @@
       "path": "packages/react/src/components/block-footer/meta.json",
       "content": "{\"name\": \"block-footer\", \"title\": \"Footer block\", \"category\": \"blocks\", \"description\": \"A site footer with brand, link columns and small print.\", \"status\": \"beta\", \"uses\": [\"container\", \"link\"], \"css\": [\"container.css\", \"link.css\", \"block-footer.css\"], \"a11y\": [\"A footer element: the page contentinfo landmark. Use one per page.\", \"Each link column is a nav named by its title, with a heading at the chosen level.\"], \"keywords\": [\"footer\", \"site links\", \"legal\", \"sitemap\"]}"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

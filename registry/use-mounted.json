@@ -48,5 +48,6 @@
       "path": "packages/react/src/hooks/use-mounted/use-mounted.ts",
       "content": "'use client';\nimport {useEffect, useState} from 'react';\n\n/** False on the server and during the first render, true afterwards. */\nexport function useMounted(): boolean {\n  const [mounted, setMounted] = useState(false);\n  useEffect(() => setMounted(true), []);\n  return mounted;\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

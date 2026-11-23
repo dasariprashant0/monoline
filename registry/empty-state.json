@@ -94,5 +94,11 @@
       "path": "packages/react/src/components/empty-state/meta.json",
       "content": "{\"name\":\"empty-state\",\"title\":\"Empty state\",\"category\":\"feedback\",\"description\":\"Say that there is nothing here yet and offer the next step.\",\"status\":\"stable\",\"css\":[\"empty-state.css\"],\"a11y\":[\"Plain heading and text; put the action in children as a button or link.\"],\"keywords\":[\"no results\",\"blank\",\"zero data\",\"placeholder\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

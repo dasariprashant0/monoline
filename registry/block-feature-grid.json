@@ -150,5 +150,11 @@
       "path": "packages/react/src/components/block-feature-grid/meta.json",
       "content": "{\"name\": \"block-feature-grid\", \"title\": \"Feature grid block\", \"category\": \"blocks\", \"description\": \"A section title above a responsive grid of short features.\", \"status\": \"beta\", \"uses\": [\"container\", \"heading\", \"text\"], \"css\": [\"container.css\", \"heading.css\", \"text.css\", \"block-feature-grid.css\"], \"a11y\": [\"A section named by its title; features are a list of items.\", \"Feature titles are headings one level below the section title, so the outline stays in order.\"], \"keywords\": [\"features\", \"benefits\", \"grid\", \"landing\"]}"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

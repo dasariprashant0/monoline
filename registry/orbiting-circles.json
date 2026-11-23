@@ -104,5 +104,11 @@
       "path": "packages/react/src/components/orbiting-circles/orbiting-circles.tsx",
       "content": "import {Children, forwardRef, type CSSProperties, type HTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface OrbitingCirclesProps extends HTMLAttributes<HTMLDivElement> {\n  /** Orbit radius in px. Default 96. */\n  radius?: number;\n  /** Seconds for one full turn. Default 20. */\n  duration?: number;\n  /** Turn the other way. */\n  reverse?: boolean;\n  /** Draw the orbit as a thin ring. Default true. */\n  ring?: boolean;\n  /** Fixed content in the centre. */\n  center?: ReactNode;\n}\n\n/**\n * Small items (icons, logos) circling a centre. Purely decorative: the whole thing is `aria-hidden`, so do not put anything\n * users must read or operate inside it. Items sit evenly spaced and stay still under reduced motion.\n */\nexport const OrbitingCircles = forwardRef<HTMLDivElement, OrbitingCirclesProps>(function OrbitingCircles({radius = 96, duration = 20, reverse, ring = true, center, className, style, children, ...rest}, ref) {\n  const items = Children.toArray(children);\n  return (\n    <div ref={ref} aria-hidden=\"true\" className={cx('orbit', reverse && 'orbit-reverse', className)} style={{'--orbit-radius': `${radius}px`, '--orbit-duration': `${duration}s`, '--n': items.length, ...style} as CSSProperties} {...rest}>\n      {ring && <span className=\"orbit-ring\" />}\n      {center != null && <span className=\"orbit-center\">{center}</span>}\n      {items.map((child, i) => (\n        <span key={i} className=\"orbit-item\" style={{'--i': i} as CSSProperties}>{child}</span>\n      ))}\n    </div>\n  );\n});\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

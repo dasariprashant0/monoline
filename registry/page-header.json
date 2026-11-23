@@ -104,5 +104,11 @@
       "path": "packages/react/src/components/page-header/page-header.tsx",
       "content": "import {createElement, forwardRef, type HTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface PageHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {\n  /** The page title, rendered as a heading. */\n  title: ReactNode;\n  /** One sentence under the title saying what the page is for. */\n  description?: ReactNode;\n  /** Shown above the title: a `Breadcrumb` or `BreadcrumbsAuto`. */\n  breadcrumbs?: ReactNode;\n  /** Buttons at the end of the title row. They wrap under the title on small screens. */\n  actions?: ReactNode;\n  /** The heading level, 1 to 4. Default 1: one per page. */\n  level?: 1 | 2 | 3 | 4;\n}\n\n/**\n * The top of a page: breadcrumbs, a title, a description and actions.\n * @example <PageHeader title=\"Customers\" description=\"Everyone who has signed up.\" actions={<Button variant=\"solid\">Add customer</Button>} />\n */\nexport const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function PageHeader({title, description, breadcrumbs, actions, level = 1, className, ...rest}, ref) {\n  return (\n    <div ref={ref} className={cx('page-header', className)} {...rest}>\n      {breadcrumbs}\n      <div className=\"page-header-row\">\n        <div className=\"page-header-text\">\n          {createElement(`h${level}`, {className: 'page-header-title'}, title)}\n          {description && <p className=\"page-header-description\">{description}</p>}\n        </div>\n        {actions && <div className=\"page-header-actions\">{actions}</div>}\n      </div>\n    </div>\n  );\n});\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

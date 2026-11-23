@@ -106,5 +106,6 @@
       "path": "packages/react/src/components/breadcrumbs-auto/meta.json",
       "content": "{\n  \"name\": \"breadcrumbs-auto\",\n  \"title\": \"Breadcrumbs from path\",\n  \"category\": \"navigation\",\n  \"description\": \"A breadcrumb built from the current URL path.\",\n  \"status\": \"beta\",\n  \"uses\": [\n    \"breadcrumb\"\n  ],\n  \"css\": [\n    \"18-navigation.css\",\n    \"09-links.css\"\n  ],\n  \"a11y\": [\n    \"Same as Breadcrumb: a navigation landmark with an ordered list; the last crumb is the current page and not a link.\"\n  ],\n  \"keywords\": [\n    \"breadcrumb\",\n    \"path\",\n    \"url\",\n    \"router\"\n  ]\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

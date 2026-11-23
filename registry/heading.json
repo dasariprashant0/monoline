@@ -81,5 +81,11 @@
       "path": "packages/react/src/components/heading/meta.json",
       "content": "{\"name\":\"heading\",\"title\":\"Heading\",\"category\":\"typography\",\"description\":\"A heading whose level (for structure) is separate from its size (for looks).\",\"status\":\"stable\",\"css\":[\"heading.css\"],\"a11y\":[\"Renders a real h1 to h6; choose the level for the outline, not the size.\"],\"keywords\":[\"title\",\"h1\",\"display\",\"header\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

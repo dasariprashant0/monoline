@@ -85,5 +85,11 @@
       "path": "packages/react/src/components/avatar-group/meta.json",
       "content": "{\"name\":\"avatar-group\",\"title\":\"Avatar group\",\"category\":\"data-display\",\"description\":\"Overlap several avatars and show how many more there are.\",\"status\":\"stable\",\"uses\":[\"avatar\"],\"css\":[\"19-avatar.css\"],\"a11y\":[\"role=\\\"group\\\" with an accessible name; the overflow count is plain text.\"],\"keywords\":[\"stack\",\"people\",\"team\",\"users\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }

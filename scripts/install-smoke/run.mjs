@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Clean-install smoke test. Packs @monoline/css and @monoline/react, installs the tarballs (not workspace links)
 // into a fresh temp dir with React 18 and React 19, then builds the Vite starter and server-renders from
-// both the ESM and CJS entry points.  Needs a prior `npm run build` and network access to the npm registry.
+// both the ESM and CJS entry points and type-checks both under Node16 resolution.  Needs a prior `npm run build` and network access to the npm registry.
 //   node scripts/install-smoke/run.mjs [--react 18|19] [--starter vite|next|astro|react-router]   (default: all)
 // Next.js App Router needs React 19, so that starter only runs against 19.
 import {spawnSync} from 'node:child_process';
@@ -65,6 +65,8 @@ for (const [starter, major] of starters.flatMap((st) => majors.filter((m) => STA
     sh('npm', ['run', 'build'], dir); // each starter's own build, with type checking where it has one
     writeFileSync(join(dir, 'ssr.mjs'), ssr);
     console.log(sh('node', ['ssr.mjs'], dir).trim());
+    // Node16/NodeNext resolution of the installed tarball: CommonJS (.cts) and ESM (.mts) must both get real types.
+    console.log(sh('node', [join(root, 'scripts/check-package-types.mjs'), '--project', dir], root).trim());
     console.log(`PASS ${starter} react ${installed}\n`);
   } catch (e) { failed = true; console.error(`FAIL ${starter} react ${major}: ${e.message}\n`); }
 }

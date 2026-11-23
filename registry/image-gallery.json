@@ -122,5 +122,15 @@
       "path": "packages/react/src/components/image-gallery/meta.json",
       "content": "{\"name\":\"image-gallery\",\"title\":\"Image gallery\",\"category\":\"data-display\",\"description\":\"A thumbnail grid that opens a lightbox with previous and next.\",\"status\":\"stable\",\"uses\":[\"button\",\"dialog\"],\"css\":[\"02-buttons.css\",\"dialog.css\",\"image-gallery.css\"],\"a11y\":[\"Each thumbnail is a button named by the image's required alt text, with aria-haspopup=dialog.\",\"The lightbox is a modal dialog titled 'Image 2 of 5'; focus moves in, is trapped, and returns to the thumbnail on close.\",\"ArrowLeft and ArrowRight (swapped in RTL) and the Previous and Next buttons move through the images and wrap; a horizontal swipe does the same; Escape closes.\",\"A polite status message announces the new image's alt text and position. Neighbouring images are preloaded.\"],\"keywords\":[\"lightbox\",\"photos\",\"carousel\",\"grid\",\"thumbnails\",\"preview\",\"media\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    },
+    {
+      "path": "packages/react/src/utils/direction.ts",
+      "content": "import {Direction} from 'radix-ui';\n\n/**\n * Returns `isRtl(element)` for custom widgets that read ArrowLeft/ArrowRight themselves.\n * The nearest `dir` attribute wins; otherwise a `DirectionProvider` value, then the computed CSS direction.\n */\nexport function useIsRtl() {\n  const ctx = Direction.useDirection();\n  return (el: Element | null | undefined): boolean => {\n    const d = el?.closest('[dir]')?.getAttribute('dir');\n    if (d === 'rtl' || d === 'ltr') return d === 'rtl';\n    return ctx === 'rtl' || (!!el && getComputedStyle(el).direction === 'rtl');\n  };\n}\n"
+    }
   ]
 }

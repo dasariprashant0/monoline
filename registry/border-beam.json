@@ -72,5 +72,11 @@
       "path": "packages/react/src/components/border-beam/meta.json",
       "content": "{\"name\":\"border-beam\",\"title\":\"Border beam\",\"category\":\"effects\",\"description\":\"A thin bordered box with a light that travels around its edge. CSS only.\",\"status\":\"stable\",\"css\":[\"border-beam.css\"],\"a11y\":[\"The beam is aria-hidden and decorative; the content keeps its normal reading order.\",\"The beam is hidden under prefers-reduced-motion, leaving a plain thin border.\"],\"keywords\":[\"glow\",\"animated border\",\"highlight\",\"light\",\"card\"]}\n"
     }
+  ],
+  "utils": [
+    {
+      "path": "packages/react/src/utils/cx.ts",
+      "content": "/** Join class names, skipping falsy values. `cx('btn', loading && 'is-loading', className)` */\nexport function cx(...parts: Array<string | false | null | undefined>): string {\n  return parts.filter(Boolean).join(' ');\n}\n"
+    }
   ]
 }
