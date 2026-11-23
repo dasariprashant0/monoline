@@ -68,7 +68,9 @@ function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {sid
   const start = vertical ? (rtl ? 'span-left' : 'span-right') : 'span-bottom', end = vertical ? (rtl ? 'span-right' : 'span-left') : 'span-top';
   const along = align === 'center' ? 'center' : align === 'start' ? start : end;
   const s = panel.style;
-  anchor.style.setProperty('anchor-name', name);
+  // Several layers can share one anchor (a Tooltip and a Popover on one button): keep a list, add and remove only our name.
+  const names = () => anchor.style.getPropertyValue('anchor-name').split(',').map((n) => n.trim()).filter(Boolean);
+  anchor.style.setProperty('anchor-name', [...names().filter((n) => n !== name), name].join(', '));
   s.setProperty('position-anchor', name);
   s.setProperty('position-area', `${side} ${along}`);
   s.setProperty('position-try-fallbacks', vertical ? 'flip-block' : 'flip-inline');
@@ -77,7 +79,7 @@ function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {sid
   // Collision padding: the position-area box runs from the anchor to the viewport edge, so pad only the viewport edges
   // (the one beyond the anchor, and the one the panel grows towards along the anchor's edge), never the anchor-facing ones.
   // Insets do not work here: a non-auto inset makes the browser ignore position-area.
-  for (const edge of [side, along.slice(5)]) if (edge) s.setProperty(`margin-${edge}`, `${pad}px`);
+  for (const edge of [side, along.startsWith('span-') && along.slice(5)]) if (edge) s.setProperty(`margin-${edge}`, `${pad}px`);
   s.translate = vertical ? `${rtl ? -alignOffset : alignOffset}px 0` : `0 ${alignOffset}px`;
   s.setProperty('--anchor-width', 'anchor-size(width)');
   // The browser may flip the panel when it does not fit: read the side it ended up on from the layout. The height cap is
@@ -89,7 +91,11 @@ function placeNative(anchor: HTMLElement, panel: HTMLElement, name: string, {sid
   };
   panel.dataset.align = align; panel.dataset.side = side; sync();
   addEventListener('resize', sync); addEventListener('scroll', sync, true);
-  return () => { anchor.style.removeProperty('anchor-name'); removeEventListener('resize', sync); removeEventListener('scroll', sync, true); };
+  return () => {
+    const rest = names().filter((n) => n !== name);
+    if (rest.length) anchor.style.setProperty('anchor-name', rest.join(', ')); else anchor.style.removeProperty('anchor-name');
+    removeEventListener('resize', sync); removeEventListener('scroll', sync, true);
+  };
 }
 
 const noop = () => () => {};
