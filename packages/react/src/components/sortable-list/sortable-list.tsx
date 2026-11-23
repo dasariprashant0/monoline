@@ -54,7 +54,7 @@ export const SortableList = forwardRef<HTMLUListElement, SortableListProps>(func
   const byId = new Map(order.map((i) => [i.id, i]));
   const shown = draft ? draft.map((id) => byId.get(id)!).filter(Boolean) : order;
   const total = order.length;
-  const label = (id: string) => nameOf(byId.get(id)!);
+  const label = (id: string) => { const it = byId.get(id); return it ? nameOf(it) : id; };
 
   const pickUp = (id: string, pointer: boolean) => {
     setDraft(order.map((i) => i.id));
@@ -62,8 +62,8 @@ export const SortableList = forwardRef<HTMLUListElement, SortableListProps>(func
     setMessage(`Picked up ${label(id)}, position ${order.findIndex((i) => i.id === id) + 1} of ${total}. ${pointer ? 'Drag to move.' : 'Use the arrow keys to move, Space to drop, Escape to cancel.'}`);
   };
   const to = (id: string, index: number) => {
-    const cur = draftRef.current!;
-    if (cur.indexOf(id) === index) return;
+    const cur = draftRef.current;
+    if (!cur || cur.indexOf(id) === index) return;
     const next = move(cur, id, index);
     setDraft(next);
     setMessage(`${label(id)} moved to position ${next.indexOf(id) + 1} of ${total}.`);
@@ -71,9 +71,11 @@ export const SortableList = forwardRef<HTMLUListElement, SortableListProps>(func
   const drop = () => {
     const ids = draftRef.current;
     if (!ids || !active) return;
-    const changed = ids.some((id, i) => id !== order[i]!.id);
+    // The list changed under the drag (a row was added or removed, for example by a live update): drop nothing, cancel.
+    if (ids.length !== order.length || ids.some((id) => !byId.has(id))) { setDraft(null); setActive(null); return; }
+    const changed = ids.some((id, i) => id !== order[i]?.id);
     setMessage(`${label(active.id)} dropped at position ${ids.indexOf(active.id) + 1} of ${total}.`);
-    if (changed) setOrder(ids.map((id) => byId.get(id)!));
+    if (changed) setOrder(ids.map((id) => byId.get(id)).filter((i): i is NonNullable<typeof i> => i !== undefined));
     setDraft(null); setActive(null);
   };
   const cancel = (quiet?: boolean) => {
@@ -121,7 +123,7 @@ export const SortableList = forwardRef<HTMLUListElement, SortableListProps>(func
     const edge = e.key === 'Home' ? 0 : e.key === 'End' ? total - 1 : undefined;
     if (step === undefined && edge === undefined) return;
     e.preventDefault();
-    to(id, edge ?? draftRef.current!.indexOf(id) + step!);
+    to(id, edge ?? (draftRef.current?.indexOf(id) ?? 0) + (step ?? 0));
   };
 
   return (
