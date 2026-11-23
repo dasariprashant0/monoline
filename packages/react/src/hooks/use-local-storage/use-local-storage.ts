@@ -16,6 +16,10 @@ function parse<T>(raw: string, fallback: T): T {
  * - Server and first client render use `initialValue`; the stored value loads after mount (no hydration mismatch).
  * - Changes in other tabs arrive through the `storage` event.
  * - Storage can throw (private mode, quota, blocked): reads fall back to `initialValue`, writes still update state.
+ *
+ * @param key The `localStorage` key.
+ * @param initialValue Used on the server, on first render and when nothing is stored.
+ * @returns The value and a setter that accepts a value or an updater function.
  */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, SetLocalStorageValue<T>] {
   const initialRef = useRef(initialValue);

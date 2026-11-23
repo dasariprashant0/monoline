@@ -28,7 +28,20 @@
     "use-clipboard",
     "use-controllable-state"
   ],
-  "props": [],
+  "props": [
+    {
+      "name": "Parameters",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "optional": false,
+          "default": null,
+          "description": "The text to show in the browser tab."
+        }
+      ]
+    }
+  ],
   "usage": "import {useState} from 'react';\nimport {Button, useDocumentTitle} from '@monoline/react';\n\nfunction Demo() {\n  const [n, setN] = useState(0);\n  useDocumentTitle(n ? `(${n}) Monoline docs` : 'Monoline docs');\n  return <Button onClick={() => setN(n + 1)}>Change the tab title ({n})</Button>;\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
@@ -46,7 +59,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-document-title/use-document-title.ts",
-      "content": "'use client';\nimport {useEffect} from 'react';\n\n/** Sets `document.title` while mounted and restores the previous title on unmount. Does nothing on the server. */\nexport function useDocumentTitle(title: string): void {\n  useEffect(() => {\n    const prev = document.title;\n    document.title = title;\n    return () => { document.title = prev; };\n  }, [title]);\n}\n"
+      "content": "'use client';\nimport {useEffect} from 'react';\n\n/**\n * Sets `document.title` while mounted and restores the previous title on unmount. Does nothing on the server.\n *\n * @param title The text to show in the browser tab.\n */\nexport function useDocumentTitle(title: string): void {\n  useEffect(() => {\n    const prev = document.title;\n    document.title = title;\n    return () => { document.title = prev; };\n  }, [title]);\n}\n"
     }
   ],
   "utils": []

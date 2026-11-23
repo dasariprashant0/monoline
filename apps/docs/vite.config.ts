@@ -24,7 +24,7 @@ function monolineCss(): Plugin {
   };
 }
 
-/** Site base. Real paths need an absolute base: DOCS_BASE=/monoline/ for GitHub Pages, default '/'. */
+/** Site base. Real paths need an absolute base: DOCS_BASE=/monoline/ for a sub-path host, default '/'. */
 const base = `/${(process.env.DOCS_BASE ?? '/').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 
 /** Writes the base into dist/404.html (public/404.html holds __BASE__ as a placeholder). */
@@ -64,5 +64,11 @@ export default defineConfig({
   plugins: [react(), monolineCss(), notFoundBase(), aiFilesPlugin()],
   resolve: {alias: {'@monoline/react': root('../../packages/react/src/index.ts'), '@css': root('../../packages/css/dist')}},
   server: {port: 5180, fs: {allow: ['../..']}},
-  build: {outDir: 'dist'},
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      // Without this, every component shared by two lazy demo chunks becomes its own tiny chunk and the entry page lists ~200 modulepreloads.
+      output: {manualChunks: (id) => (id.includes('/packages/react/src/') ? 'monoline' : /node_modules\/(@radix-ui|radix-ui|@floating-ui)\//.test(id) ? 'radix' : undefined)},
+    },
+  },
 });

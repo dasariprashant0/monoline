@@ -2,6 +2,9 @@ import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react'
 import {ToggleGroup as RadixToggleGroup} from 'radix-ui';
 import {cx} from '../../utils/cx';
 
+/** Props of ToggleGroup: `type`, `value`, `defaultValue`, `onValueChange`, `disabled`. */
+export type ToggleGroupProps = ComponentPropsWithoutRef<typeof RadixToggleGroup.Root>;
+
 /** `type="single"` for one choice (like a segmented control) or `type="multiple"`. Arrow keys move between items. */
 export const ToggleGroup = forwardRef<ElementRef<typeof RadixToggleGroup.Root>, ComponentPropsWithoutRef<typeof RadixToggleGroup.Root>>(function ToggleGroup({className, ...rest}, ref) {
   return <RadixToggleGroup.Root ref={ref} className={cx('toggle-group', className)} {...rest} />;

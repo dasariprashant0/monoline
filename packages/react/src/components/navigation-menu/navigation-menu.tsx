@@ -2,6 +2,9 @@ import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react'
 import {NavigationMenu as Radix} from 'radix-ui';
 import {cx} from '../../utils/cx';
 
+/** Props of NavigationMenu: `value`, `defaultValue`, `onValueChange`, `orientation`, delays. */
+export type NavigationMenuProps = ComponentPropsWithoutRef<typeof Radix.Root>;
+
 /** A site navigation bar whose items can open rich panels of links. Put a `NavigationMenuList` inside; the panels share one viewport. */
 export const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function NavigationMenu({className, children, ...rest}, ref) {
   return (

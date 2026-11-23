@@ -18,7 +18,7 @@
 .cdoc-steps p { max-width: var(--measure); }
 
 .cdoc-example { display: grid; gap: var(--s3); min-width: 0; }
-.cdoc-stage { padding: var(--s6) var(--s5); border: 1px solid var(--rule); background-image: radial-gradient(var(--ink-5) 1px, transparent 1px); background-size: var(--s5) var(--s5); overflow-x: auto; }
+.cdoc-stage { min-height: 6rem; /* the demo mounts after hydration: reserve the smallest real height so the page below moves less */ padding: var(--s6) var(--s5); border: 1px solid var(--rule); background-image: radial-gradient(var(--ink-5) 1px, transparent 1px); background-size: var(--s5) var(--s5); overflow-x: auto; }
 .cdoc-code { display: grid; gap: var(--s3); justify-items: start; min-width: 0; }
 .cdoc-code-body { width: 100%; min-width: 0; }
 .cdoc-code[data-long][data-state="closed"] .cdoc-code-body { max-height: calc(var(--s9) * 3); overflow: hidden; }
@@ -103,3 +103,8 @@
 .tk-bar { display: block; height: 12px; background: var(--foreground); }
 .tk-code { margin: 0; padding: var(--s3) var(--s4); border: 1px solid var(--rule); border-radius: var(--s2); background: var(--wash); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; overflow-x: auto; }
 .tk-code code { background: none; padding: 0; }
+
+/* A grid with one implicit column sizes it to its widest child, so a wide demo or code line stretches the whole page on a phone. */
+.cdoc-tabs, .cdoc-example, .cdoc-props, .cdoc-code, .cdoc-usage-live { grid-template-columns: minmax(0, 1fr); }
+.cdoc-tabs > *, .cdoc-preview-head > * { min-width: 0; }
+.cdoc-preview-head { flex-wrap: wrap; }

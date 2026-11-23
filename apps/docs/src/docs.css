@@ -275,3 +275,9 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .docs-main .table td:first-child code { font-weight: 500; }
 .docs-main .table .badge { margin-inline-start: var(--s1); }
 .docs-main .table-wrap + p, .docs-main .table-wrap + .cdoc-props { margin-top: var(--s4); }
+
+/* One implicit grid column grows to its widest child (a long code line, a row of options): pin it to the container width. */
+.theme-grid, .theme-meta, .builder-controls, .custom-row { grid-template-columns: minmax(0, 1fr); }
+.theme-meta > *, .builder-controls > * { min-width: 0; }
+.docs-main :not(pre) > code, .doc-title, .doc-lede, .doc-features, .doc-links { overflow-wrap: anywhere; }
+.custom-row .segmented { max-width: 100%; overflow-x: auto; }

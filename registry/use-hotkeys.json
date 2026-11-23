@@ -16,6 +16,10 @@
     "command",
     "cmd+k"
   ],
+  "related": [
+    "use-focus-trap",
+    "use-click-outside"
+  ],
   "kind": "hooks",
   "import": "import {useHotkeys} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-hotkeys",
@@ -25,11 +29,6 @@
     "packages/react/src/hooks/use-hotkeys/use-hotkeys.demo.tsx",
     "packages/react/src/hooks/use-hotkeys/use-hotkeys.test.tsx",
     "packages/react/src/hooks/use-hotkeys/use-hotkeys.ts"
-  ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
   ],
   "props": [
     {
@@ -72,7 +71,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-hotkeys/meta.json",
-      "content": "{\"name\":\"use-hotkeys\",\"title\":\"useHotkeys\",\"category\":\"hooks\",\"description\":\"Keyboard shortcuts such as mod+k or escape, ignored while typing in fields unless allowed.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Shortcuts are additions: every control must still be reachable by keyboard and Tab.\",\"mod means Cmd on macOS and Ctrl elsewhere. Typing in inputs is ignored unless allowInInputs is set.\"],\"keywords\":[\"shortcut\",\"keybinding\",\"keyboard\",\"command\",\"cmd+k\"]}\n"
+      "content": "{\"name\":\"use-hotkeys\",\"title\":\"useHotkeys\",\"category\":\"hooks\",\"description\":\"Keyboard shortcuts such as mod+k or escape, ignored while typing in fields unless allowed.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Shortcuts are additions: every control must still be reachable by keyboard and Tab.\",\"mod means Cmd on macOS and Ctrl elsewhere. Typing in inputs is ignored unless allowInInputs is set.\"],\"keywords\":[\"shortcut\",\"keybinding\",\"keyboard\",\"command\",\"cmd+k\"],\"related\":[\"use-focus-trap\",\"use-click-outside\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-hotkeys/use-hotkeys.ts",

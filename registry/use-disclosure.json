@@ -17,6 +17,10 @@
     "hide",
     "state"
   ],
+  "related": [
+    "use-toggle",
+    "use-controllable-state"
+  ],
   "kind": "hooks",
   "import": "import {useDisclosure} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-disclosure",
@@ -26,11 +30,6 @@
     "packages/react/src/hooks/use-disclosure/use-disclosure.demo.tsx",
     "packages/react/src/hooks/use-disclosure/use-disclosure.test.tsx",
     "packages/react/src/hooks/use-disclosure/use-disclosure.ts"
-  ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
   ],
   "props": [
     {
@@ -106,7 +105,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-disclosure/meta.json",
-      "content": "{\"name\":\"use-disclosure\",\"title\":\"useDisclosure\",\"category\":\"hooks\",\"description\":\"Open and closed state with open, close and toggle functions, and callbacks when it changes.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Pair with aria-expanded and aria-controls on the trigger.\",\"Callbacks run only when the state actually changes, not on mount.\"],\"keywords\":[\"toggle\",\"open\",\"close\",\"show\",\"hide\",\"state\"]}\n"
+      "content": "{\"name\":\"use-disclosure\",\"title\":\"useDisclosure\",\"category\":\"hooks\",\"description\":\"Open and closed state with open, close and toggle functions, and callbacks when it changes.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Pair with aria-expanded and aria-controls on the trigger.\",\"Callbacks run only when the state actually changes, not on mount.\"],\"keywords\":[\"toggle\",\"open\",\"close\",\"show\",\"hide\",\"state\"],\"related\":[\"use-toggle\",\"use-controllable-state\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-disclosure/use-disclosure.ts",

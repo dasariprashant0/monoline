@@ -107,10 +107,12 @@ for (const u of all) {
 const index = records.map(({props, usage, classes, dataAttributes, ...rest}) => ({...rest, propNames: props.flatMap((g) => g.props.map((p) => p.name))}));
 
 // llms.txt: short map. llms-full.txt: everything an agent needs in one file.
+const REPO = 'https://github.com/dasariprashant0/monoline/blob/master';
+const SITE = 'https://monoline.prashantdasari.com';
 const byCat = (c) => index.filter((e) => e.category === c);
-const section = (c) => byCat(c).length ? `\n### ${c}\n${byCat(c).map((e) => `- ${e.title} (${e.name}, ${e.status}): ${e.description} Source: ${e.path}/`).join('\n')}\n` : '';
-const head = `# Monoline\n\n> Open-source UI kit: a plain CSS core (@monoline/css) with accessible React components (@monoline/react). Three themes, eight accents, font, corner and density options, no Tailwind, no runtime CSS-in-JS.\n\nStart with AGENTS.md (how to work in this repo) and DESIGN.md (the look and rules). Every component is a folder with source, test, demo and meta.json. Install the packages, or copy one component with npx monoline add <name> (source in registry/<name>.json).\n`;
-const shortText = `${head}\n## Docs\n- [AGENTS.md](AGENTS.md): rules for AI agents and contributors\n- [DESIGN.md](DESIGN.md): design rules, tokens, copy\n- [registry/index.json](registry/index.json): machine-readable component list, with props names and related components\n\n## Components${CATEGORIES.map(section).join('')}`;
+const section = (c) => byCat(c).length ? `\n### ${c}\n${byCat(c).map((e) => `- ${e.title} (${e.name}, ${e.status}): ${e.description} Source: ${REPO}/${e.path}/`).join('\n')}\n` : '';
+const head = `# Monoline\n\n> Open-source UI kit: a plain CSS core (@monoline/css) with accessible React components (@monoline/react). Three themes, eight accents, font, corner and density options, no Tailwind, no runtime CSS-in-JS.\n\nStart with AGENTS.md (https://github.com/dasariprashant0/monoline/blob/master/AGENTS.md: how to work in this repo) and DESIGN.md (https://github.com/dasariprashant0/monoline/blob/master/DESIGN.md: the look and rules). Every component is a folder with source, test, demo and meta.json. Install the packages, or copy one component with npx monoline add <name> (source in https://monoline.prashantdasari.com/registry/<name>.json).\n`;
+const shortText = `${head}\n## Docs\n- [AGENTS.md](${REPO}/AGENTS.md): rules for AI agents and contributors\n- [DESIGN.md](${REPO}/DESIGN.md): design rules, tokens, copy\n- [registry/index.json](${SITE}/registry/index.json): machine-readable component list, with props names and related components\n\n## Components${CATEGORIES.map(section).join('')}`;
 
 /** One component as compact text: description, import, props, usage, a11y, classes. */
 function fullSection(e) {
@@ -118,7 +120,7 @@ function fullSection(e) {
   out.push(`Status: ${e.status} | Category: ${e.category}${e.primitive ? ` | Primitive: ${e.primitive}` : ''}${e.related.length ? ` | Related: ${e.related.join(', ')}` : ''}`);
   out.push(`Import: ${e.import}`, '');
   const props = e.props.flatMap((g) => g.props.map((p) => ({...p, group: g.name, multi: e.props.length > 1})));
-  if (!props.length) out.push('Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.');
+  if (!props.length) out.push(e.category === 'hooks' ? 'Parameters and return value: see the Usage example and the source file.' : 'Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.');
   else {
     out.push('Props (name: type = default, ? means optional):');
     let last = '';
@@ -131,7 +133,7 @@ function fullSection(e) {
   out.push('', 'A11y:', ...e.a11y.map((a) => `- ${oneLine(a)}`));
   if (e.classes.length) out.push('', `CSS classes: ${e.classes.join(', ')}`);
   if (e.dataAttributes.length) out.push(`Data attributes: ${e.dataAttributes.map((d) => (d.values.length ? `${d.name}: ${d.values.join(' | ')}` : d.name)).join('; ')}`);
-  out.push(`Source: registry/${e.name}.json`);
+  out.push(`Source: ${SITE}/registry/${e.name}.json`);
   return out.join('\n');
 }
 const fullText = `${head}\n${records.map(fullSection).join('\n\n')}\n`;

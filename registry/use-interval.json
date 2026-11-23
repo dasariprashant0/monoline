@@ -16,6 +16,10 @@
     "repeat",
     "tick"
   ],
+  "related": [
+    "use-timeout",
+    "use-debounce"
+  ],
   "kind": "hooks",
   "import": "import {useInterval} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-interval",
@@ -26,12 +30,27 @@
     "packages/react/src/hooks/use-interval/use-interval.test.tsx",
     "packages/react/src/hooks/use-interval/use-interval.ts"
   ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
+  "props": [
+    {
+      "name": "Parameters",
+      "props": [
+        {
+          "name": "callback",
+          "type": "() => void",
+          "optional": false,
+          "default": null,
+          "description": "Runs on every tick. The latest version is used."
+        },
+        {
+          "name": "delay",
+          "type": "number | null",
+          "optional": false,
+          "default": null,
+          "description": "Milliseconds between ticks, or `null` to pause."
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {useState} from 'react';\nimport {Button, useInterval} from '@monoline/react';\n\nfunction IntervalDemo() {\n  const [running, setRunning] = useState(true);\n  const [seconds, setSeconds] = useState(0);\n  useInterval(() => setSeconds((s) => s + 1), running ? 1000 : null);\n  return (\n    <div>\n      <p>Elapsed: {seconds} s</p>\n      <Button variant=\"line\" onClick={() => setRunning((r) => !r)}>{running ? 'Pause' : 'Resume'}</Button>\n    </div>\n  );\n}\n\n<IntervalDemo />",
   "dataAttributes": [],
   "classes": [],
@@ -45,11 +64,11 @@
     },
     {
       "path": "packages/react/src/hooks/use-interval/meta.json",
-      "content": "{\"name\":\"use-interval\",\"title\":\"useInterval\",\"category\":\"hooks\",\"description\":\"Calls a function on a timer, with a null delay to pause it. Cleared on unmount.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Clears its timer on unmount so nothing runs after the component is gone.\",\"Pass null as the delay to pause.\"],\"keywords\":[\"timer\",\"setInterval\",\"poll\",\"repeat\",\"tick\"]}\n"
+      "content": "{\"name\":\"use-interval\",\"title\":\"useInterval\",\"category\":\"hooks\",\"description\":\"Calls a function on a timer, with a null delay to pause it. Cleared on unmount.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output. Clears its timer on unmount so nothing runs after the component is gone.\",\"Pass null as the delay to pause.\"],\"keywords\":[\"timer\",\"setInterval\",\"poll\",\"repeat\",\"tick\"],\"related\":[\"use-timeout\",\"use-debounce\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-interval/use-interval.ts",
-      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * Calls `callback` every `delay` ms. Pass `null` to pause. The interval is cleared on unmount.\n * The latest callback is used, so it can read current state without restarting the timer.\n */\nexport function useInterval(callback: () => void, delay: number | null): void {\n  const callbackRef = useRef(callback);\n\n  useEffect(() => {\n    callbackRef.current = callback;\n  }, [callback]);\n\n  useEffect(() => {\n    if (delay === null) return;\n    const id = setInterval(() => callbackRef.current(), delay);\n    return () => clearInterval(id);\n  }, [delay]);\n}\n"
+      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * Calls `callback` every `delay` ms. Pass `null` to pause. The interval is cleared on unmount.\n * The latest callback is used, so it can read current state without restarting the timer.\n *\n * @param callback Runs on every tick. The latest version is used.\n * @param delay Milliseconds between ticks, or `null` to pause.\n */\nexport function useInterval(callback: () => void, delay: number | null): void {\n  const callbackRef = useRef(callback);\n\n  useEffect(() => {\n    callbackRef.current = callback;\n  }, [callback]);\n\n  useEffect(() => {\n    if (delay === null) return;\n    const id = setInterval(() => callbackRef.current(), delay);\n    return () => clearInterval(id);\n  }, [delay]);\n}\n"
     }
   ],
   "utils": []

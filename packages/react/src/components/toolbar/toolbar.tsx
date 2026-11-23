@@ -7,6 +7,9 @@ type RootProps = Omit<ComponentPropsWithoutRef<typeof Radix.Root>, 'aria-label'>
   'aria-label': string;
 };
 
+/** Props of Toolbar: `orientation`, `dir`, `loop`. */
+export type ToolbarProps = RootProps;
+
 /** A single tab stop that groups related controls; arrow keys move between them. Requires an `aria-label`. */
 export const Toolbar = forwardRef<ElementRef<typeof Radix.Root>, RootProps>(function Toolbar({className, ...rest}, ref) {
   return <Radix.Root ref={ref} className={cx('toolbar', className)} {...rest} />;

@@ -14,6 +14,9 @@
     "diff",
     "change"
   ],
+  "related": [
+    "use-counter"
+  ],
   "kind": "hooks",
   "import": "import {usePrevious} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-previous",
@@ -24,12 +27,32 @@
     "packages/react/src/hooks/use-previous/use-previous.test.tsx",
     "packages/react/src/hooks/use-previous/use-previous.ts"
   ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
+  "props": [
+    {
+      "name": "Parameters",
+      "props": [
+        {
+          "name": "value",
+          "type": "T",
+          "optional": false,
+          "default": null,
+          "description": "The current value."
+        }
+      ]
+    },
+    {
+      "name": "Returns",
+      "props": [
+        {
+          "name": "return",
+          "type": "T | undefined",
+          "optional": false,
+          "default": null,
+          "description": "The value from the previous render, or `undefined` on the first."
+        }
+      ]
+    }
   ],
-  "props": [],
   "usage": "import {useState} from 'react';\nimport {Button, usePrevious} from '@monoline/react';\n\nfunction PreviousDemo() {\n  const [value, setValue] = useState(0);\n  const previous = usePrevious(value);\n  return (\n    <div>\n      <Button variant=\"line\" onClick={() => setValue((v) => v + 1)}>Increase</Button>\n      <p>Now {value}, before {previous ?? 'nothing'}.</p>\n    </div>\n  );\n}\n\n<PreviousDemo />",
   "dataAttributes": [],
   "classes": [],
@@ -43,11 +66,11 @@
     },
     {
       "path": "packages/react/src/hooks/use-previous/meta.json",
-      "content": "{\"name\":\"use-previous\",\"title\":\"usePrevious\",\"category\":\"hooks\",\"description\":\"The value from the previous render, for comparing a change.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output.\"],\"keywords\":[\"previous\",\"compare\",\"diff\",\"change\"]}\n"
+      "content": "{\"name\":\"use-previous\",\"title\":\"usePrevious\",\"category\":\"hooks\",\"description\":\"The value from the previous render, for comparing a change.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"No DOM output.\"],\"keywords\":[\"previous\",\"compare\",\"diff\",\"change\"],\"related\":[\"use-counter\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-previous/use-previous.ts",
-      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/** The value from the previous render (`undefined` on the first). */\nexport function usePrevious<T>(value: T): T | undefined {\n  const ref = useRef<T | undefined>(undefined);\n\n  useEffect(() => {\n    ref.current = value;\n  }, [value]);\n\n  return ref.current;\n}\n"
+      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * The value from the previous render (`undefined` on the first).\n *\n * @param value The current value.\n * @returns The value from the previous render, or `undefined` on the first.\n */\nexport function usePrevious<T>(value: T): T | undefined {\n  const ref = useRef<T | undefined>(undefined);\n\n  useEffect(() => {\n    ref.current = value;\n  }, [value]);\n\n  return ref.current;\n}\n"
     }
   ],
   "utils": []

@@ -62,7 +62,7 @@ export function Compare() {
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.lib}>
-                <TableCell><a href={`${RESEARCH}${r.note}.md`}>{r.lib}</a></TableCell>
+                <TableCell>{r.note === 'monoline' ? r.lib : <a href={`${RESEARCH}${r.note}.md`}>{r.lib}</a>}</TableCell>
                 <TableCell>{inline(r.distribution)}</TableCell>
                 <TableCell>{inline(r.styling)}</TableCell>
                 <TableCell>{inline(r.a11y)}</TableCell>
@@ -86,7 +86,7 @@ export function Compare() {
                 {sizes.css && <TableRow><TableCell>All CSS: every component, 3 themes, all accents</TableCell><TableCell>{sizes.css.kb.toFixed(1)} KB</TableCell><TableCell>{sizes.css.budget} KB</TableCell></TableRow>}
               </TableBody>
             </Table>
-            <p className="prose">Overlays are small because Dialog, Drawer and AlertDialog sit on the native <code>dialog</code> element, and Popover, Tooltip, Select and the menus share one small positioning layer. The widgets still on Radix (tabs, toast, slider, navigation menu and a few more) cost the most; <code>docs/bundle-report.md</code> in the repo lists every component. If you only need a native control, <a href={href('components/native-select')}>Native select</a> costs far less. We did not measure the other libraries here, so the table makes no comparison; it only shows what Monoline costs.</p>
+            <p className="prose">Overlays are small because Dialog, Drawer and AlertDialog sit on the native <code>dialog</code> element, and Popover, Tooltip, Select and the menus share one small positioning layer. The widgets still on Radix (tabs, toast, slider, navigation menu and a few more) cost the most; <code>docs/bundle-report.md</code> in the repo lists every component. If you only need a native control, <a href={href('docs/components/native-select')}>Native select</a> costs far less. We did not measure the other libraries here, so the table makes no comparison; it only shows what Monoline costs.</p>
           </>
         )}
       </section>

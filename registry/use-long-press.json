@@ -14,6 +14,9 @@
     "touch",
     "context"
   ],
+  "related": [
+    "use-hover"
+  ],
   "kind": "hooks",
   "import": "import {useLongPress} from '@monoline/react'",
   "path": "packages/react/src/hooks/use-long-press",
@@ -23,11 +26,6 @@
     "packages/react/src/hooks/use-long-press/use-long-press.demo.tsx",
     "packages/react/src/hooks/use-long-press/use-long-press.test.tsx",
     "packages/react/src/hooks/use-long-press/use-long-press.ts"
-  ],
-  "related": [
-    "use-click-outside",
-    "use-clipboard",
-    "use-controllable-state"
   ],
   "props": [
     {
@@ -63,7 +61,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-long-press/meta.json",
-      "content": "{\"name\":\"use-long-press\",\"title\":\"useLongPress\",\"category\":\"hooks\",\"description\":\"Call a handler when an element is held down, cancelling if the pointer moves or lifts early.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"Press and hold is hard for many people: always offer a normal click or keyboard action for the same result.\"],\"keywords\":[\"hold\",\"press and hold\",\"touch\",\"context\"]}\n"
+      "content": "{\"name\":\"use-long-press\",\"title\":\"useLongPress\",\"category\":\"hooks\",\"description\":\"Call a handler when an element is held down, cancelling if the pointer moves or lifts early.\",\"status\":\"stable\",\"css\":[],\"a11y\":[\"Press and hold is hard for many people: always offer a normal click or keyboard action for the same result.\"],\"keywords\":[\"hold\",\"press and hold\",\"touch\",\"context\"],\"related\":[\"use-hover\"]}\n"
     },
     {
       "path": "packages/react/src/hooks/use-long-press/use-long-press.ts",

@@ -39,7 +39,7 @@
       "props": [
         {
           "name": "size",
-          "type": "\"page\" | \"text\" | \"full\"",
+          "type": "\"text\" | \"page\" | \"full\"",
           "optional": true,
           "default": "'page'",
           "description": "`text` is a reading column, `page` the widest main column, `full` no limit."
