@@ -1,9 +1,9 @@
 'use client';
-import {forwardRef, useContext, type ButtonHTMLAttributes, type MouseEvent} from 'react';
+import {forwardRef, type ButtonHTMLAttributes, type MouseEvent} from 'react';
 import {Slot} from '../../utils/slot';
 import {cx} from '../../utils/cx';
 import {setRefs} from '../../utils/overlay';
-import {MenuCheckboxItem, MenuContent, MenuContext, MenuGroup, MenuItem, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuRoot, MenuSeparator, openWith, type MenuCheckboxItemProps, type MenuContentProps, type MenuItemProps, type MenuProps, type MenuRadioGroupProps} from './menu';
+import {MenuCheckboxItem, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuRoot, MenuSeparator, openWith, useMenuCtx, type MenuCheckboxItemProps, type MenuContentProps, type MenuItemProps, type MenuProps, type MenuRadioGroupProps} from './menu';
 
 /** The root of a menu opened by a button. Put a `DropdownMenuTrigger` and `DropdownMenuContent` inside. */
 export function DropdownMenu(props: MenuProps) { return <MenuRoot {...props} />; }
@@ -13,7 +13,7 @@ export const DropdownMenuTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttri
   /** Render your own element instead of a button; it receives the props and handlers. */
   asChild?: boolean;
 }>(function DropdownMenuTrigger({asChild, onClick, onKeyDown, ...rest}, ref) {
-  const c = useContext(MenuContext);
+  const c = useMenuCtx();
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp
