@@ -76,7 +76,7 @@ export function CustomisePanel({prefs, set}: {prefs: Prefs; set: Set}) {
   return (
     <div ref={ref} className="docs-custom">
       <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger asChild><Button variant="line" size="sm">Customise</Button></CollapsibleTrigger>
+        <CollapsibleTrigger asChild><Button variant="line" size="sm" className="docs-custom-btn" aria-label="Customise"><span className="docs-custom-text">Customise</span><svg className="docs-custom-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7" /><circle cx="10.5" cy="4.5" r="1.5" /><circle cx="5.5" cy="11.5" r="1.5" /></svg></Button></CollapsibleTrigger>
         <CollapsibleContent className="docs-custom-panel"><Customize prefs={prefs} set={set} /></CollapsibleContent>
       </Collapsible>
     </div>

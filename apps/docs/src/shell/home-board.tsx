@@ -97,7 +97,7 @@ export function Board() {
 
       <section className="bd-card" aria-label="Package install">
         <div className="bd-row bd-between"><p className="bd-title"><Dot /> Package install</p><Eyebrow>Ready</Eyebrow></div>
-        <div className="bd-term"><p>$ npm i @monoline/react</p><p className="bd-ok">✓ Types and docs installed</p></div>
+        <div className="bd-term"><p>$ npm i @monoline/react @monoline/css</p><p className="bd-ok">✓ Types and docs installed</p></div>
         <div className="bd-row"><Input aria-label="Filter component names" placeholder="Filter component names" /><Button variant="line">Filter</Button></div>
       </section>
 
@@ -116,7 +116,7 @@ export const INSTALL_MANAGERS = ['npm', 'pnpm', 'bun', 'yarn'] as const;
 export function InstallBox() {
   const [pm, setPm] = useState<(typeof INSTALL_MANAGERS)[number]>('npm');
   const [done, setDone] = useState(false);
-  const cmd = `${{npm: 'npm i', pnpm: 'pnpm add', bun: 'bun add', yarn: 'yarn add'}[pm]} @monoline/react`;
+  const cmd = `${{npm: 'npm i', pnpm: 'pnpm add', bun: 'bun add', yarn: 'yarn add'}[pm]} @monoline/react @monoline/css`;
   const copy = async () => { try { await navigator.clipboard.writeText(cmd); setDone(true); setTimeout(() => setDone(false), 1800); } catch { /* clipboard blocked */ } };
   return (
     <div className="bd-install">

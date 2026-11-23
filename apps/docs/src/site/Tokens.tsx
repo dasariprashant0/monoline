@@ -76,7 +76,7 @@ export function Tokens() {
   return (
     <>
       <Sec id="tk-use" title="Using tokens" note={<>Every token is a CSS custom property on <code>:root</code>. Use <code>var(--s4)</code> instead of a number, and a theme or option changes it everywhere. The same values ship as W3C JSON at <code>@monoline/css/tokens.json</code> and as Figma variables in <code>@monoline/tokens</code>. See <a href={href('docs/theming')}>Theming</a> for how to override them.</>}>
-        <pre className="tk-code" tabIndex={0}><code>{'.card {\n  padding: var(--s4);\n  border: 1px solid var(--rule);\n  color: var(--foreground);\n}'}</code></pre>
+        <pre className="tk-code" tabIndex={0} role="region" aria-label="Token usage example"><code>{'.card {\n  padding: var(--s4);\n  border: 1px solid var(--rule);\n  color: var(--foreground);\n}'}</code></pre>
       </Sec>
 
       <Sec id="tk-colour" title="Colour" note="Three themes. Switch with data-theme on the html element; the accent comes from data-accent.">
