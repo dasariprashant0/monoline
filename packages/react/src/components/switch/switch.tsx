@@ -1,3 +1,4 @@
+'use client';
 import {forwardRef, type ComponentPropsWithoutRef, type ElementRef, type ReactNode} from 'react';
 import {Switch as RadixSwitch} from 'radix-ui';
 import {cx} from '../../utils/cx';
