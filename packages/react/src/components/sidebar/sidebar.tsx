@@ -1,5 +1,5 @@
 'use client';
-import {cloneElement, createContext, forwardRef, isValidElement, useContext, useEffect, useId, type AnchorHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactElement, type ReactNode} from 'react';
+import {cloneElement, createContext, forwardRef, isValidElement, useContext, useEffect, useId, useMemo, type AnchorHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactElement, type ReactNode} from 'react';
 import {Slot} from 'radix-ui';
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
@@ -48,7 +48,8 @@ export function SidebarProvider({collapsed, defaultCollapsed = false, onCollapse
   const [mobileOpen, setMobileOpen] = useControllableState({defaultValue: false});
   const wide = useMediaQuery('(min-width: 800px)');
   useEffect(() => { if (wide) setMobileOpen(false); }, [wide, setMobileOpen]); // a drawer left open must not outlive the small layout
-  const state = {collapsed: isCollapsed, setCollapsed, toggle: () => setCollapsed(!isCollapsed), mobileOpen, setMobileOpen};
+  // One object while nothing changed, so consumers of `useSidebar` do not re-render with every provider render.
+  const state = useMemo(() => ({collapsed: isCollapsed, setCollapsed, toggle: () => setCollapsed(!isCollapsed), mobileOpen, setMobileOpen}), [isCollapsed, setCollapsed, mobileOpen, setMobileOpen]);
   return (
     <StateCtx.Provider value={state}>
       <Drawer open={mobileOpen} onOpenChange={setMobileOpen}>{children}</Drawer>
