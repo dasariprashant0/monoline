@@ -7,16 +7,6 @@
   <title>Monoline</title>
   <meta name="description" content="Monoline: an open-source UI kit with plain CSS tokens and accessible React components." />
   <script>
-    // Look preferences before first paint (the same keys and defaults as src/shell/prefs.ts). Without this the prerendered page is laid out
-    // with one look and re-laid out with the saved one after hydration, which is a layout shift on every page.
-    try {
-      var d = document.documentElement, p = JSON.parse(localStorage.getItem('monoline-prefs') || '{}'), t = p.theme || 'system';
-      d.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'warm') : t;
-      ['accent', 'font', 'radius', 'density'].forEach(function (k) { if (p[k]) d.dataset[k] = p[k]; });
-      if (p.dir) d.dir = p.dir;
-    } catch (e) {}
-  </script>
-  <script>
     // Restores the deep link that public/404.html saved before redirecting here (the host serves it with status 404 for unknown paths).
     try {
       var r = sessionStorage.getItem('monoline-redirect');
