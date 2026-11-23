@@ -1,3 +1,4 @@
+'use client';
 import {forwardRef, type ComponentPropsWithoutRef, type ElementRef, type ReactNode} from 'react';
 import {Checkbox as RadixCheckbox} from 'radix-ui';
 import {cx} from '../../utils/cx';
