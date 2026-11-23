@@ -78,5 +78,6 @@
       "path": "packages/react/src/components/text-reveal/text-reveal.tsx",
       "content": "import {forwardRef, type CSSProperties, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface TextRevealProps extends HTMLAttributes<HTMLParagraphElement> {\n  /** The sentence to reveal, word by word. */\n  text: string;\n  /** Milliseconds between words. Default 80. */\n  stagger?: number;\n}\n\n/** Words fade in one after another on mount. Pure CSS, so the text is ordinary text to assistive tech. Static under reduced motion. */\nexport const TextReveal = forwardRef<HTMLParagraphElement, TextRevealProps>(function TextReveal({text, stagger = 80, className, style, ...rest}, ref) {\n  const words = text.split(/\\s+/).filter(Boolean);\n  return (\n    <p ref={ref} className={cx('text-reveal', className)} style={{'--text-reveal-step': `${stagger}ms`, ...style} as CSSProperties} {...rest}>\n      {words.map((w, i) => (\n        <span key={i}>\n          <span className=\"text-reveal-word\" style={{'--i': i} as CSSProperties}>{w}</span>\n          {i < words.length - 1 ? ' ' : null}\n        </span>\n      ))}\n    </p>\n  );\n});\n"
     }
-  ]
+  ],
+  "utils": []
 }

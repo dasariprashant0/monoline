@@ -49,5 +49,6 @@
       "path": "packages/react/src/hooks/use-reduced-motion/use-reduced-motion.ts",
       "content": "'use client';\nimport {useMediaQuery} from '../use-media-query/use-media-query';\n\n/** True when the user asks the system to reduce motion (`prefers-reduced-motion: reduce`). False on the server. */\nexport function useReducedMotion(): boolean {\n  return useMediaQuery('(prefers-reduced-motion: reduce)');\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

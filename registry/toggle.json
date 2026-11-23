@@ -73,5 +73,6 @@
       "path": "packages/react/src/components/toggle/toggle.tsx",
       "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Toggle as RadixToggle} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\n/** A two-state button (pressed or not), for things like Bold. Use a Switch for a setting. */\nexport const Toggle = forwardRef<ElementRef<typeof RadixToggle.Root>, ComponentPropsWithoutRef<typeof RadixToggle.Root>>(function Toggle({className, ...rest}, ref) {\n  return <RadixToggle.Root ref={ref} className={cx('toggle', className)} {...rest} />;\n});\n"
     }
-  ]
+  ],
+  "utils": []
 }

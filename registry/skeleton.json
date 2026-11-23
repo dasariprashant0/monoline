@@ -72,5 +72,6 @@
       "path": "packages/react/src/components/skeleton/skeleton.tsx",
       "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {\n  /** `block` is a tall panel; `hatch` shows the hatch pattern. */\n  variant?: 'line' | 'block' | 'hatch';\n}\n\n/** A still placeholder for content that is loading. Hidden from assistive tech: announce loading elsewhere (a Spinner or aria-busy region). */\nexport const Skeleton = forwardRef<HTMLSpanElement, SkeletonProps>(function Skeleton({variant = 'line', className, ...rest}, ref) {\n  return <span ref={ref} aria-hidden=\"true\" className={cx('skeleton', variant === 'block' && 'skeleton-block', variant === 'hatch' && 'skeleton-hatch skeleton-block', className)} {...rest} />;\n});\n"
     }
-  ]
+  ],
+  "utils": []
 }

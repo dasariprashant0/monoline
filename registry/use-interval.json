@@ -51,5 +51,6 @@
       "path": "packages/react/src/hooks/use-interval/use-interval.ts",
       "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * Calls `callback` every `delay` ms. Pass `null` to pause. The interval is cleared on unmount.\n * The latest callback is used, so it can read current state without restarting the timer.\n */\nexport function useInterval(callback: () => void, delay: number | null): void {\n  const callbackRef = useRef(callback);\n\n  useEffect(() => {\n    callbackRef.current = callback;\n  }, [callback]);\n\n  useEffect(() => {\n    if (delay === null) return;\n    const id = setInterval(() => callbackRef.current(), delay);\n    return () => clearInterval(id);\n  }, [delay]);\n}\n"
     }
-  ]
+  ],
+  "utils": []
 }

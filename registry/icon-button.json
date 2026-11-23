@@ -89,5 +89,6 @@
       "path": "packages/react/src/components/icon-button/meta.json",
       "content": "{\"name\":\"icon-button\",\"title\":\"Icon button\",\"category\":\"buttons\",\"description\":\"A square button holding only an icon. The accessible name is required.\",\"status\":\"stable\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"icon-button.css\"],\"a11y\":[\"Native button; aria-label is required by the type.\",\"Space and Enter activate it.\"],\"keywords\":[\"icon\",\"action\",\"toolbar\"]}\n"
     }
-  ]
+  ],
+  "utils": []
 }
