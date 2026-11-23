@@ -94,9 +94,7 @@
     "virtual-list-body",
     "virtual-list-row"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/virtual-list/index.ts",

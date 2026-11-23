@@ -112,9 +112,7 @@
     "block-footer-col",
     "block-footer-legal"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-footer/block-footer.tsx",

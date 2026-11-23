@@ -15,6 +15,9 @@ import {demosFor} from '../shell/registry';
 import {Playground} from './playground';
 import './page.css';
 
+/** Text with `inline code` spans (props and demo descriptions are written that way) shown as <code>. */
+const Inline = ({text}: {text: string}) => <>{text.split('`').map((t, i) => (i % 2 ? <code key={i}>{t}</code> : t))}</>;
+
 type PropRow = {name: string; type: string; optional: boolean; default: string | null; description: string};
 type PropGroup = {name: string; props: PropRow[]};
 type DemoCode = {title: string; description?: string; code: string};
@@ -96,7 +99,7 @@ function Example({id, demo, code, playground}: {id: string; demo: Demo; code?: D
   return (
     <div className="cdoc-example">
       <h3 id={id} className="cdoc-h3">{demo.title}</h3>
-      {demo.description && <p className="cdoc-muted">{demo.description}</p>}
+      {demo.description && <p className="cdoc-muted"><Inline text={demo.description} /></p>}
       <Tabs defaultValue="preview" className="cdoc-tabs cdoc-preview">
         <div className="cdoc-preview-head">
           <TabsList aria-label={`${demo.title}: preview or code`}>
@@ -133,7 +136,7 @@ function PropsTables({groups}: {groups: PropGroup[]}) {
                   <TableCell><code>{p.name}</code>{!p.optional && <> <Badge>required</Badge></>}</TableCell>
                   <TableCell><code className="cdoc-type">{p.type}</code></TableCell>
                   <TableCell>{p.default ? <code>{p.default}</code> : <span className="cdoc-muted" aria-label="no default">–</span>}</TableCell>
-                  <TableCell>{p.description}</TableCell>
+                  <TableCell><Inline text={p.description} /></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -146,7 +149,9 @@ function PropsTables({groups}: {groups: PropGroup[]}) {
 
 function Installation({meta, extra}: {meta: ComponentMeta; extra: Extra}) {
   const deps = extra.dependencies.join(' ');
-  const importLine = `import '@monoline/css';\nimport {${extra.importName}} from '@monoline/react';`;
+  // The per-component bundle (core once, then this file) is the recommended path; the all-CSS import is the easy start.
+  const css = meta.css.length > 0 ? `import '@monoline/css/core.css';\nimport '@monoline/css/components/${meta.name}.css';\n` : '';
+  const importLine = `${css}import {${extra.importName}} from '@monoline/react';`;
   return (
     <Section id="import" title="Import">
       <CodeBlock language="tsx" code={importLine} />
@@ -172,7 +177,7 @@ function Installation({meta, extra}: {meta: ComponentMeta; extra: Extra}) {
         </TabsContent>
         <TabsContent value="npm">
           <PmCode packages="@monoline/react @monoline/css" label="npm" />
-          {meta.css.length > 0 && <><p className="cdoc-muted">Load only this component's styles instead of all of <code>@monoline/css</code> (add the core once):</p><CodeBlock language="tsx" code={`import '@monoline/css/core.css';\nimport '@monoline/css/components/${meta.name}.css';`} /></>}
+          {meta.css.length > 0 && <><p className="cdoc-muted">Or load everything while exploring (about 21 KB gzip):</p><CodeBlock language="tsx" code={`import '@monoline/css';`} /></>}
         </TabsContent>
       </Tabs>
     </Section>
@@ -238,8 +243,8 @@ export function ComponentDoc({meta, linkTo}: ComponentDocProps) {
         <ul className="doc-features" aria-label="Features">
           {!hook && <li>{meta.primitive ? `Built on ${meta.primitive}` : 'Built on native elements'}</li>}
           {extra.parts.length > 1 && <li>{extra.parts.length} parts, named exports</li>}
-          {meta.a11y.slice(0, 3).map((a) => <li key={a}>{a}</li>)}
-          {meta.css.length > 0 && <li>Styles in one file: <code>{meta.css[0]}</code></li>}
+          {meta.a11y.slice(0, 3).map((a) => <li key={a}><Inline text={a} /></li>)}
+          {meta.css.length > 0 && <li>Styles in one file: <code>components/{meta.name}.css</code></li>}
         </ul>
       </header>
 
@@ -296,7 +301,7 @@ export function ComponentDoc({meta, linkTo}: ComponentDocProps) {
       {!hook && <Playground name={meta.name} importName={extra.importName} groups={groups} />}
 
       <Section id="accessibility" title={hook ? 'Behaviour' : 'Accessibility'}>
-        <ul className="cdoc-list">{meta.a11y.map((a) => <li key={a}>{a}</li>)}</ul>
+        <ul className="cdoc-list">{meta.a11y.map((a) => <li key={a}><Inline text={a} /></li>)}</ul>
         {keys.length > 0 && (
           <>
             <h3 id="keyboard" className="cdoc-h3">Keyboard</h3>

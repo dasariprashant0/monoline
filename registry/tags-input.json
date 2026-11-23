@@ -118,9 +118,7 @@
     "tags-input",
     "tags-input-field"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/tags-input/index.ts",

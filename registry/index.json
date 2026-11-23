@@ -1369,7 +1369,6 @@
       "category": "buttons",
       "description": "Triggers an action. Native button with solid, line, ghost and danger variants.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "css": [
         "02-buttons.css",
         "13-loading.css"
@@ -1497,7 +1496,6 @@
       "category": "data-display",
       "description": "A bordered group for one thing you can pick up or open.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "css": [
         "06-boxes.css",
         "card.css"
@@ -2355,7 +2353,7 @@
       "name": "direction-provider",
       "title": "Direction provider",
       "category": "layout",
-      "description": "Sets the reading direction (ltr or rtl) once for every Radix-based component below it.",
+      "description": "Sets the reading direction (ltr or rtl) once for every component below it that reads it: tabs, slider, menus, select and more.",
       "status": "stable",
       "primitive": "radix-ui/Direction",
       "css": [],
@@ -4658,7 +4656,6 @@
       "category": "effects",
       "description": "The Button with a light sweep across it. Still a native button.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "uses": [
         "button"
       ],
@@ -4699,6 +4696,7 @@
       "category": "navigation",
       "description": "A collapsible navigation sidebar with groups, icons and a mobile drawer.",
       "status": "beta",
+      "primitive": "radix-ui/Slot",
       "uses": [
         "drawer",
         "tooltip",

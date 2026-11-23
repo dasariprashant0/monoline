@@ -106,9 +106,7 @@
     "chart-point",
     "chart-guide"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/line-chart/index.ts",

@@ -4,7 +4,6 @@
   "category": "data-display",
   "description": "A bordered group for one thing you can pick up or open.",
   "status": "stable",
-  "primitive": "radix-ui/Slot",
   "css": [
     {
       "path": "packages/css/src/components/06-boxes.css",
@@ -75,9 +74,7 @@
     "card-content",
     "card-footer"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/card/card.tsx",
@@ -89,7 +86,7 @@
     },
     {
       "path": "packages/react/src/components/card/meta.json",
-      "content": "{\"name\":\"card\",\"title\":\"Card\",\"category\":\"data-display\",\"description\":\"A bordered group for one thing you can pick up or open.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Slot\",\"css\":[\"06-boxes.css\",\"card.css\"],\"a11y\":[\"Plain divs and a heading; no roles added.\",\"With asChild on a link or button the whole card is one keyboard-focusable control.\"],\"keywords\":[\"panel\",\"tile\",\"container\"]}\n"
+      "content": "{\"name\":\"card\",\"title\":\"Card\",\"category\":\"data-display\",\"description\":\"A bordered group for one thing you can pick up or open.\",\"status\":\"stable\",\"css\":[\"06-boxes.css\",\"card.css\"],\"a11y\":[\"Plain divs and a heading; no roles added.\",\"With asChild on a link or button the whole card is one keyboard-focusable control.\"],\"keywords\":[\"panel\",\"tile\",\"container\"]}\n"
     }
   ],
   "utils": [

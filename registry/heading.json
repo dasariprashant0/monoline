@@ -65,9 +65,7 @@
     "heading-md",
     "heading-sm"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/heading/heading.tsx",

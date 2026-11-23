@@ -64,9 +64,7 @@
   "usage": "import {useMediaQuery} from '@monoline/react';\n\nfunction WidthDemo() {\n  const wide = useMediaQuery('(min-width: 40rem)');\n  return <p>{wide ? 'Viewport is 40rem or wider.' : 'Viewport is narrower than 40rem.'}</p>;\n}\n\n<WidthDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-media-query/index.ts",

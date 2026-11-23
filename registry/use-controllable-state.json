@@ -61,9 +61,7 @@
   "usage": "import {Button, useControllableState} from '@monoline/react';\n\ninterface CounterProps {\n  value?: number;\n  defaultValue?: number;\n  onValueChange?: (value: number) => void;\n}\n\nfunction Counter({value, defaultValue = 0, onValueChange}: CounterProps) {\n  const [count, setCount] = useControllableState({value, defaultValue, onChange: onValueChange});\n  return (\n    <div>\n      <Button variant=\"line\" aria-label=\"Decrease\" onClick={() => setCount(count - 1)}>−</Button>{' '}\n      <output>{count}</output>{' '}\n      <Button variant=\"line\" aria-label=\"Increase\" onClick={() => setCount(count + 1)}>+</Button>\n    </div>\n  );\n}\n\n<Counter defaultValue={2} />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-controllable-state/index.ts",

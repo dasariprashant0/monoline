@@ -67,9 +67,7 @@
     "divider",
     "skip-link"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/link/index.ts",

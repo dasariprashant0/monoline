@@ -125,9 +125,7 @@
     "spinner",
     "btn-icon"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/copy-button/copy-button.tsx",

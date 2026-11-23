@@ -1,11 +1,11 @@
 // Writes src/page/demos.generated.json: for every component and hook, {importName, parts, dependencies, demos}.
 //  - demos: each demo of <name>.demo.tsx as {title, description?, code} where `code` is that demo's own standalone snippet.
-//  - dependencies: npm packages the source needs (radix-ui when meta.primitive says so; the kit has no other runtime dependency).
+//  - dependencies: npm packages the source needs (read from registry/<name>.json, which lists radix-ui only when the copied files import it).
 //  - parts: the value exports of the folder's index.ts (the compound parts), importName: the main export.
 // A new component needs no change here: discovery is by folder.
 import {readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync} from 'node:fs';
 import {join, dirname} from 'node:path';
-import {discover, docsRoot} from './lib/load.mjs';
+import {discover, docsRoot, repo} from './lib/load.mjs';
 import {extractDemos, exportedNames} from './lib/demos.mjs';
 
 const pascal = (n) => n.split('-').map((p) => p[0].toUpperCase() + p.slice(1)).join('');
@@ -23,7 +23,8 @@ for (const {meta, dir, kind} of discover()) {
     catch (e) { console.warn(`demos: ${meta.name}: ${e.message}`); }
   }
   demoCount += demos.length;
-  const dependencies = meta.primitive?.startsWith('radix-ui') ? ['radix-ui'] : [];
+  const regFile = join(repo, 'registry', `${meta.name}.json`);
+  const dependencies = existsSync(regFile) ? Object.keys(JSON.parse(readFileSync(regFile, 'utf8')).dependencies ?? {}) : [];
   result[meta.name] = {importName, parts: values, dependencies, demos};
 }
 const out = join(docsRoot, 'src/page/demos.generated.json');

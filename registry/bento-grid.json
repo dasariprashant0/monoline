@@ -67,9 +67,7 @@
     "bento-col-3",
     "bento-row-2"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/bento-grid/bento-grid.tsx",

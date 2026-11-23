@@ -78,9 +78,7 @@
     "empty-description",
     "empty-actions"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/empty-state/empty-state.tsx",

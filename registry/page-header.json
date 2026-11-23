@@ -88,9 +88,7 @@
     "page-header-description",
     "page-header-actions"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/page-header/index.ts",

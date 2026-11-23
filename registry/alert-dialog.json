@@ -67,9 +67,7 @@
     "btn-block",
     "spinner"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/alert-dialog/alert-dialog.tsx",

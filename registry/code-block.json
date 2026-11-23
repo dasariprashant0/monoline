@@ -121,9 +121,7 @@
     "btn-block",
     "spinner"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/code-block/code-block.tsx",

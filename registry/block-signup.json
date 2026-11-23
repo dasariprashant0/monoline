@@ -215,9 +215,7 @@
     "block-signup-head",
     "block-signup-footer"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-signup/block-signup.tsx",

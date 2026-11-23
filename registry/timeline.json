@@ -71,9 +71,7 @@
     "timeline-time",
     "timeline-body"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/timeline/index.ts",

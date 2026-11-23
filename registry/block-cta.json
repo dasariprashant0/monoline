@@ -132,9 +132,7 @@
     "block-cta-copy",
     "block-cta-actions"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-cta/block-cta.tsx",

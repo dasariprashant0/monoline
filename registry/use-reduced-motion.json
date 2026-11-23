@@ -44,9 +44,7 @@
   "usage": "import {useReducedMotion} from '@monoline/react';\n\nfunction MotionDemo() {\n  const reduce = useReducedMotion();\n  return <p>{reduce ? 'You asked for less motion: transitions are skipped.' : 'Motion is allowed.'}</p>;\n}\n\n<MotionDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-reduced-motion/index.ts",
