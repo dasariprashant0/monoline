@@ -72,7 +72,7 @@ packages/css/src/components/<name>.css   styles, tokens only
 - No default exports in component files. No barrel imports across components: import from `../other-component`.
 - Server-safe: no `window` access during render. Add `'use client'` only where hooks or handlers are used (a file-top directive is fine in every interactive component).
 - No runtime CSS-in-JS, no Tailwind, no icon libraries. Icons are inline SVG with `currentColor`, `aria-hidden`, passed as `children` or props. If a component needs a built-in glyph (chevron, check), write a 10-line inline SVG in that component's folder.
-- Dependencies: only `radix-ui` and React. A new dependency needs a reason in the PR and must be a peer or optional where possible.
+- Dependencies: React (peer) and `radix-ui`, nothing else. 22 files under `packages/react/src` still import `radix-ui` (accordion, tabs, toast, slider, switch, checkbox, radio-group, toolbar and others; list them with `grep -rl "from .radix-ui." packages/react/src`). Dialog, popovers, menus, tooltips and `Slot` are Monoline's own. A new dependency needs a reason in the PR and must be a peer or optional where possible.
 - Newer platform features (anchor positioning, `until-found`, scroll-driven animation) are allowed only behind capability detection with the current code as fallback ([ADR 0004](docs/decisions/0004-baseline-policy-with-js-fallback.md)). Detection returns false on the server.
 - Size is a budget: `npm run size` fails over it. Raise one only with a reason in the commit ([ADR 0002](docs/decisions/0002-per-module-build-and-size-budgets.md)).
 

@@ -4,7 +4,7 @@ import {CodeBlock, Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 import {ThemeBuilder} from './theme-builder';
 import {Section, P} from './guide-parts';
 import {forms} from './guides-forms';
-import {i18n, accessibility, contributing} from './guides-more';
+import {i18n, accessibility, accessibilityStatement, contributing} from './guides-more';
 import {viteSteps, recipes, choosing} from './guides-start';
 
 export interface Guide {slug: string; title: string; summary: string; body: () => ReactNode}
@@ -162,6 +162,7 @@ export const guides: Guide[] = [
   {slug: 'forms', title: 'Forms and validation', summary: 'Field, Form and react-hook-form, Zod, error summaries and submit states.', body: forms},
   {slug: 'i18n', title: 'i18n and RTL', summary: 'Direction, locale props, Intl formatting, long text and translated copy.', body: i18n},
   {slug: 'accessibility', title: 'Accessibility', summary: 'The commitments, how they are checked and what is not covered yet.', body: accessibility},
+  {slug: 'accessibility-statement', title: 'Accessibility statement', summary: 'What is tested and with which tools, the known gaps, and that no screen reader test has been run.', body: accessibilityStatement},
   {slug: 'contributing', title: 'Contributing a component', summary: 'The recipe, a worked example, the checklist and the generated files.', body: contributing},
   {slug: 'for-ai-tools', title: 'For AI tools', summary: 'llms.txt, the registry and meta.json.', body: forAi},
 ];

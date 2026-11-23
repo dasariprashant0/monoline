@@ -37,3 +37,7 @@
   .sidebar-toggle { display: inline-grid; }
   .sidebar-trigger { display: none; }
 }
+/* Forced colours: the current item is a box-shadow and a wash fill, both dropped. */
+@media (forced-colors: active) {
+  .sidebar-item[aria-current="page"] { border-inline-start-color: Highlight; outline: 1px solid Highlight; outline-offset: -1px; }
+}

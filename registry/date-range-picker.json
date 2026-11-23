@@ -28,7 +28,7 @@
     },
     {
       "path": "packages/css/src/components/range-calendar.css",
-      "content": "/* Range calendar: reuses .calendar markup; the cells paint the band between start and end. */\n.range-cell[data-in-range] { background: var(--wash-2); }\n.range-cell[data-in-range][data-range-start] { border-start-start-radius: var(--radius); border-end-start-radius: var(--radius); }\n.range-cell[data-in-range][data-preview] .calendar-day:not([aria-pressed=\"true\"]) { text-decoration: underline dotted; text-underline-offset: 3px; }\n.range-calendar .calendar-day[aria-pressed=\"true\"] { background: var(--foreground); color: var(--background); }\n.range-calendar .calendar-day:hover:not(:disabled):not([aria-pressed=\"true\"]) { background: var(--wash); }\n"
+      "content": "/* Range calendar: reuses .calendar markup; the cells paint the band between start and end. */\n.range-cell[data-in-range] { background: var(--wash-2); }\n.range-cell[data-in-range][data-range-start] { border-start-start-radius: var(--radius); border-end-start-radius: var(--radius); }\n.range-cell[data-in-range][data-preview] .calendar-day:not([aria-pressed=\"true\"]) { text-decoration: underline dotted; text-underline-offset: 3px; }\n.range-calendar .calendar-day[aria-pressed=\"true\"] { background: var(--foreground); color: var(--background); }\n.range-calendar .calendar-day:hover:not(:disabled):not([aria-pressed=\"true\"]) { background: var(--wash); }\n/* Forced colours: cells inside the range are a wash fill; mark them with an outline. */\n@media (forced-colors: active) {\n  .range-cell[data-in-range] { outline: 1px solid Highlight; outline-offset: -1px; }\n}\n"
     },
     {
       "path": "packages/css/src/components/date-range-picker.css",

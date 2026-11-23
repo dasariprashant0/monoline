@@ -1,5 +1,5 @@
 import {CodeBlock} from '@monoline/react';
-import {Section, P} from './guide-parts';
+import {Section, P, href, GITHUB} from './guide-parts';
 
 const dirHtml = '<html lang="ar" dir="rtl" data-theme="warm" data-accent="orange">';
 const dirProvider = `import {Direction} from 'radix-ui';
@@ -254,6 +254,36 @@ export const contributing = () => (
         <dt><code>apps/docs/src/props.generated.json</code></dt><dd>The props tables on component pages, written before dev and build.</dd>
       </dl>
       <P>CI runs <code>npm run registry</code> and fails if <code>registry/</code>, <code>llms.txt</code> or <code>llms-full.txt</code> differ from what is committed, so the maintainer regenerates them when a component lands.</P>
+    </Section>
+  </>
+);
+
+export const accessibilityStatement = () => (
+  <>
+    <Section title="Where we stand">
+      <P>Monoline aims for WCAG 2.2 level AA in every component. That is a target, not a claim of conformance: <strong>no one has audited Monoline against WCAG, and no screen reader test has been run on it, by anyone.</strong> What exists is automated checking, described below, and it finds only part of the problems. The findings file in the repository is generated and carries its own date.</P>
+    </Section>
+    <Section title="What is tested, and with what">
+      <dl className="kv">
+        <dt>axe in unit tests</dt><dd>Every component has a <code>vitest-axe</code> test in jsdom, and one shared test renders every demo on this site and runs axe on it. jsdom has no layout, so colour contrast and landmark rules are switched off there.</dd>
+        <dt>Keyboard and roles in unit tests</dt><dd>Testing Library with <code>user-event</code>: real key presses, found by role and name. Each item in a component's Accessibility list is covered by a test.</dd>
+        <dt>Token contrast</dt><dd><code>npm run check</code> computes WCAG contrast ratios from the token files for all three themes and every accent, and fails on a raw colour in a component stylesheet. It checks tokens, not your pages.</dd>
+        <dt>axe in a real browser</dt><dd><code>scripts/audit.mjs</code> runs axe, an overflow check and a console check on the docs pages in three themes, at desktop width and at 375 px.</dd>
+        <dt>Accessibility tree in Chrome</dt><dd><code>npm run ax</code> performs key presses and clicks in Chrome and reads the accessibility tree Chrome builds (the same tree screen readers read through the platform APIs). It asserts roles, names, states, focus and live regions for 41 components. It is not a screen reader test.</dd>
+        <dt>Browsers</dt><dd>The end-to-end suite runs in Chrome. Firefox and WebKit run a smoke test only.</dd>
+      </dl>
+    </Section>
+    <Section title="Known gaps">
+      <ul className="why">
+        <li><strong>No screen reader testing.</strong> NVDA, JAWS, VoiceOver and TalkBack have not been run against Monoline. How a screen reader words a name, role or state is unverified, and so is the order and amount of speech. A script for the owner to run is in <code>docs/screen-readers.md</code>.</li>
+        <li><strong>Open findings from the accessibility tree check.</strong> Three distinct findings were open when it last ran: the Toast viewport has two focus proxies that are out of the Tab order but still reported as focusable elements with no role, and the code block's scrollable area is focusable with no role. Both are in the repository's findings file with an owner.</li>
+        <li><strong>Not checked by any script:</strong> target size, zoom to 400 percent, text spacing overrides, and how forced-colors mode looks beyond the focus ring and the rules already added. The <code>.btn-solid</code> forced-colors state is a known open item.</li>
+        <li><strong>Browsers and devices.</strong> Safari and Firefox accessibility trees are not inspected. Touch screen readers are untested.</li>
+        <li><strong>Your use of the components.</strong> Missing labels, headings out of order and colour overrides in your own app are outside what these checks see.</li>
+      </ul>
+    </Section>
+    <Section title="Report a barrier">
+      <P>Open an issue at <a href={GITHUB}>the GitHub repository</a> with the component, the browser and assistive technology you used, and what you expected. Barriers are triaged like bugs. The full method and results are in <code>docs/a11y-report.md</code>; the general commitments are on the <a href={href('docs/guides/accessibility')}>Accessibility guide</a>.</P>
     </Section>
   </>
 );

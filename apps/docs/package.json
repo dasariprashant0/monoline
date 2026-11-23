@@ -1,7 +1,7 @@
 {
   "name": "docs",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.5.0",
   "type": "module",
   "scripts": {
     "gen": "node scripts/gen-props.mjs && node scripts/gen-demos.mjs && node scripts/gen-styling.mjs && node scripts/gen-markdown.mjs && node scripts/gen-size.mjs",

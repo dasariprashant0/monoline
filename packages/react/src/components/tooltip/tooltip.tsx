@@ -20,7 +20,7 @@ export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, c
   return <Shared.Provider value={{delayDuration, skipDelayDuration}}>{children}</Shared.Provider>;
 }
 
-interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; id: string; trigger: React.RefObject<HTMLElement | null> }
+interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; id: string; trigger: React.RefObject<HTMLElement | null>; kbd: React.RefObject<boolean> }
 const Context = createContext<Ctx>(null as never);
 
 export interface TooltipProps {
@@ -48,19 +48,19 @@ export function Tooltip({content, children, side = 'top', delayDuration, open, d
   const shared = useContext(Shared), hydrated = useHydrated();
   const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: (o) => { if (!o) lastClosed = Date.now(); onOpenChange?.(o); }});
   const show = useHoverIntent(setOpen);
-  const trigger = useRef<HTMLElement | null>(null), pressed = useRef(false), moved = useRef(false), id = useId();
+  const trigger = useRef<HTMLElement | null>(null), pressed = useRef(false), kbd = useRef(false), moved = useRef(false), id = useId();
   const delay = Date.now() - lastClosed < shared.skipDelayDuration ? 0 : delayDuration ?? shared.delayDuration;
   return (
-    <Context.Provider value={{open: isOpen, show, id, trigger}}>
+    <Context.Provider value={{open: isOpen, show, id, trigger, kbd}}>
       <Slot
         ref={trigger}
         aria-describedby={isOpen ? id : undefined}
         data-state={isOpen ? 'open' : 'closed'}
         onPointerMove={(e: React.PointerEvent) => { if (e.pointerType !== 'touch' && !moved.current) { moved.current = true; show(true, delay); } }} /* a real move, not a layout shift under a resting pointer */
         onPointerLeave={() => { moved.current = false; show(false, 100); }}
-        onPointerDown={() => { pressed.current = true; document.addEventListener('pointerup', () => { pressed.current = false; }, {once: true}); show(false); }}
-        onFocus={() => { if (!pressed.current) show(true); }}
-        onBlur={() => show(false)}
+        onPointerDown={() => { pressed.current = true; kbd.current = false; document.addEventListener('pointerup', () => { pressed.current = false; }, {once: true}); show(false); }}
+        onFocus={() => { if (!pressed.current) { kbd.current = true; show(true); } }}
+        onBlur={() => { kbd.current = false; show(false); }}
       >{children}</Slot>
       {isOpen && hydrated && <TooltipContent side={side}>{content}</TooltipContent>}
     </Context.Provider>
@@ -73,9 +73,9 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivE
   const el = useRef<HTMLDivElement | null>(null);
   useDismiss(c.open, [el, c.trigger], () => c.show(false));
   // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.
-  // Not while the trigger has keyboard focus: Tab scrolls it into view and the hint must stay (e2e-findings F7).
+  // Not while the trigger has keyboard focus: Tab scrolls it into view and the hint must stay (e2e-findings F7). A click-focused trigger does not count: hovering it still closes on scroll.
   useEffect(() => {
-    const close = (e: Event) => { const t = c.trigger.current; if (t && document.activeElement !== t && (e.target as Node).contains?.(t)) c.show(false); };
+    const close = (e: Event) => { const t = c.trigger.current; if (t && !(c.kbd.current && document.activeElement === t) && (e.target as Node).contains?.(t)) c.show(false); };
     addEventListener('scroll', close, true);
     return () => removeEventListener('scroll', close, true);
   }, []);

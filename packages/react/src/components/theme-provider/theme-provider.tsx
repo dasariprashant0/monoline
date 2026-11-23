@@ -65,7 +65,7 @@ const systemTheme = () => (typeof matchMedia === 'function' && matchMedia('(pref
  * to `<html>` as the `data-*` attributes the CSS reads. Render it once at the root.
  * On the server nothing touches `window`; the saved choice is read after mount. To avoid a flash of the wrong theme,
  * put `themeScript()` in the `<head>` of server-rendered pages.
- * @example <ThemeProvider defaultAccent="green"><App /></ThemeProvider>
+ * @example <ThemeProvider accent="green"><App /></ThemeProvider>
  */
 export function ThemeProvider({storageKey = 'monoline', children, ...initial}: ThemeProviderProps) {
   const [look, setLook] = useState<Look>({...DEFAULTS, ...initial});
@@ -136,15 +136,4 @@ export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>.');
   return ctx;
-}
-
-/**
- * A script (as a string) that sets the saved theme, accent, font, corners, density and direction on `<html>` before the
- * page paints, so server-rendered pages do not flash the wrong look. Inline it in `<head>`.
- * @example <script dangerouslySetInnerHTML={{__html: themeScript()}} />
- */
-export function themeScript(options: {storageKey?: string; defaultTheme?: Theme} = {}): string {
-  const key = JSON.stringify(options.storageKey ?? 'monoline');
-  const def = JSON.stringify(options.defaultTheme ?? 'system');
-  return `(function(){try{var d=document.documentElement,k=${key},g=function(n){return localStorage.getItem(k+'-'+n)},t=g('theme')||${def};if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'warm';d.setAttribute('data-theme',t);['accent','font','radius','density'].forEach(function(n){var v=g(n);if(v)d.setAttribute('data-'+n,v)});var r=g('dir');if(r)d.setAttribute('dir',r)}catch(e){}})()`;
 }

@@ -133,7 +133,11 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
   .docs[data-rail] { grid-template-columns: var(--side-w) minmax(0, 1fr); }
   .docs-rail { display: none; }
 }
-@media (max-width: 480px) { .docs-github { display: none; } }
+/* The wordmark never shrinks or wraps; at 375px the Customise button shows only its icon so the row fits. */
+.docs-bar .brand, .logo { flex: none; }
+.logo-word { white-space: nowrap; }
+.docs-custom-icon { display: none; }
+@media (max-width: 480px) { .docs-github { display: none; } .docs-bar-start { gap: var(--s2); } .docs-custom-text { display: none; } .docs-custom-icon { display: block; } }
 @media (max-width: 880px) {
   .docs, .docs[data-rail] { --bar: 96px; grid-template-columns: minmax(0, 1fr); }
   .docs[data-home] { --bar: 56px; }
