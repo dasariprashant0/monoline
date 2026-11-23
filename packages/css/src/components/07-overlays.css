@@ -4,7 +4,7 @@
 .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--surface) 35%, transparent); opacity: 0; transition: opacity var(--base); }
 .drawer.open { pointer-events: auto; }
 .drawer.open .scrim { opacity: 1; }
-.panel { position: absolute; top: 0; inset-inline-end: 0; bottom: 0; width: min(640px, 94vw); background: var(--background); border-inline-start: 1px solid var(--rule); padding: var(--s7) var(--s6); overflow-y: auto; animation: slide 0.25s var(--ease); }
+.panel { position: absolute; top: 0; inset-inline-end: 0; bottom: 0; width: min(640px, 94vw); background: var(--background); border-inline-start: 1px solid var(--rule); padding: var(--s7) var(--s6); overflow-y: auto; animation: slide var(--panel-duration, 0.25s) var(--ease); }
 .panel-wide { width: min(1100px, 96vw); }
 @keyframes slide { from { transform: translateX(calc(32px * var(--dir, 1))); opacity: 0; } to { transform: none; opacity: 1; } }
 .panel-title { margin: var(--s2) 0 var(--s6); word-break: break-word; }
