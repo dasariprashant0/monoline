@@ -1,10 +1,11 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type ReactNode, type RefObject} from 'react';
+import {createContext, forwardRef, useContext, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type ReactNode, type RefObject} from 'react';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
 import {invalidAttrs, useFieldControl} from '../field';
 import {Floating, useDismiss, useHydrated, type Placement} from '../popover/float';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 interface Ctx {
   open: boolean; setOpen: (o: boolean) => void; value: string; setValue: (v: string) => void;
@@ -138,7 +139,7 @@ export interface SelectItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'o
 export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem({className, children, value, disabled, onClick, onFocus, onBlur, onPointerMove, onKeyDown, ...rest}, ref) {
   const c = useContext(Context);
   const selected = c.value === value;
-  useLayoutEffect(() => c.label(value, children), [value, children]);
+  useIsoLayoutEffect(() => c.label(value, children), [value, children]);
   const pick = () => { c.setValue(value); c.setOpen(false); };
   return (
     <div

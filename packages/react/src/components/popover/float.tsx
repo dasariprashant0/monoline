@@ -1,7 +1,8 @@
 'use client';
 import {createPortal} from 'react-dom';
-import {forwardRef, useEffect, useId, useLayoutEffect, useRef, useSyncExternalStore, type HTMLAttributes, type RefObject} from 'react';
+import {forwardRef, useEffect, useId, useRef, useSyncExternalStore, type HTMLAttributes, type RefObject} from 'react';
 import {setRefs} from '../../utils/overlay';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 /* Shared floating layer for Popover, Tooltip, HoverCard, Select and the menus: one positioning function (side,
    align, offsets, flip, shift, available height) and one dismiss stack (Escape, outside press, focus leaving).
@@ -102,7 +103,6 @@ const noop = () => () => {};
 /** False while hydrating server HTML (portals have no server markup to match), true on the client from then on. */
 export const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
 
-const useLayout = typeof document === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface FloatingProps extends HTMLAttributes<HTMLDivElement>, Placement {
   /** Returns the element to position against, read when it opens and on every reposition. */
@@ -114,7 +114,7 @@ export interface FloatingProps extends HTMLAttributes<HTMLDivElement>, Placement
 export const Floating = forwardRef<HTMLDivElement, FloatingProps>(function Floating({anchor, side, align, sideOffset, alignOffset, collisionPadding, style, ...rest}, forwarded) {
   const el = useRef<HTMLDivElement | null>(null);
   const name = '--mono-' + useId().replace(/[^a-zA-Z0-9]/g, '');
-  useLayout(() => {
+  useIsoLayoutEffect(() => {
     const p = el.current!, a0 = anchor();
     if (a0 instanceof HTMLElement && nativeAnchor()) return placeNative(a0, p, name, {side, align, sideOffset, alignOffset, collisionPadding});
     const go = () => { const a = anchor(); if (a) place(a, p, {side, align, sideOffset, alignOffset, collisionPadding}); };

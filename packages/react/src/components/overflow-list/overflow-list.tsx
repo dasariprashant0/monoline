@@ -1,10 +1,10 @@
 'use client';
-import {forwardRef, useEffect, useLayoutEffect, useRef, useState, type HTMLAttributes, type ReactNode} from 'react';
+import {forwardRef, useEffect, useRef, useState, type HTMLAttributes, type ReactNode} from 'react';
 import {Button} from '../button';
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '../dropdown-menu';
 import {cx} from '../../utils/cx';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
-const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface OverflowItem {
   /** Unique key for the item. */

@@ -1,8 +1,9 @@
 'use client';
-import {useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode} from 'react';
+import {useCallback, useEffect, useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 /** One stop in a tour. */
 export interface TourStep {
@@ -78,7 +79,7 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
   const go = (n: number) => { if (n < 0 || n >= steps.length) return; if (step === undefined) setInnerStep(n); onStepChange?.(n); };
 
   // The card is portalled to <body>, so carry the surrounding text direction across.
-  useLayoutEffect(() => { if (isOpen && anchor.current) setDir(isRtl(anchor.current) ? 'rtl' : 'ltr'); }); // eslint-disable-line
+  useIsoLayoutEffect(() => { if (isOpen && anchor.current) setDir(isRtl(anchor.current) ? 'rtl' : 'ltr'); }); // eslint-disable-line
 
   // Remember where focus was; give it back when the tour closes.
   useEffect(() => {
@@ -95,7 +96,7 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
     setBox({top: r.top, left: r.left, width: r.width, height: r.height});
     return el;
   }, [s]);
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     if (!isOpen || !s) return;
     const el = measure();
     if (el) {
@@ -110,7 +111,7 @@ export function Tour({steps, open, defaultOpen = false, onOpenChange, step, defa
   }, [isOpen, s, measure]);
 
   // Place the card beside the spotlight, flipping when there is no room, and keep it on screen.
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     if (!isOpen || !card.current) return;
     const w = card.current.offsetWidth, h = card.current.offsetHeight;
     const vw = window.innerWidth, vh = window.innerHeight;

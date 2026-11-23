@@ -1,4 +1,5 @@
-import {useLayoutEffect, useRef, useSyncExternalStore} from 'react';
+import {useRef, useSyncExternalStore} from 'react';
+import {useIsoLayoutEffect} from './use-iso-layout-effect';
 
 const noop = () => () => {};
 /** `hidden="until-found"` is Chromium (and recent Safari) only, not Baseline: feature-detected, false on the server and while hydrating. */
@@ -14,7 +15,7 @@ const supported = () => typeof HTMLElement !== 'undefined' && 'onbeforematch' in
 export function useUntilFound() {
   const on = useSyncExternalStore(noop, supported, () => false);
   const ref = useRef<HTMLDivElement | null>(null);
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const el = ref.current;
     if (!on || !el) return;
     const sync = () => { if (el.dataset.state === 'open') el.hidden = false; else el.setAttribute('hidden', 'until-found'); };

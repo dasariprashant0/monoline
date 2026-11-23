@@ -1,5 +1,5 @@
 'use client';
-import {forwardRef, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent} from 'react';
+import {forwardRef, useCallback, useEffect, useId, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent} from 'react';
 import {cx} from '../../utils/cx';
 import {Button} from '../button';
 import {Input} from '../input';
@@ -7,6 +7,7 @@ import {Popover, PopoverAnchor, PopoverContent} from '../popover';
 import {Toolbar, ToolbarButton, ToolbarSeparator} from '../toolbar';
 import {execFormat, queryBlock, queryState} from './exec-command';
 import {isSafeUrl, sanitizeHtml} from './sanitize';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 export {sanitizeHtml, isSafeUrl} from './sanitize';
 
@@ -77,7 +78,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const refreshEmpty = () => { const el = editorRef.current; if (el) setEmpty(!el.textContent && !el.querySelector('li, br')); };
 
   // Write the HTML into the DOM: on mount, and when a controlled value differs from what the editor holds.
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const el = editorRef.current;
     if (!el) return;
     const next = sanitizeHtml(controlled ? value : (defaultValue ?? ''));

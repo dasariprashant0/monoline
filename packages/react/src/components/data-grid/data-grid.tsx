@@ -1,7 +1,8 @@
 'use client';
-import {forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type HTMLAttributes, type KeyboardEvent, type ReactElement, type ReactNode, type Ref} from 'react';
+import {forwardRef, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type HTMLAttributes, type KeyboardEvent, type ReactElement, type ReactNode, type Ref} from 'react';
 import {cx} from '../../utils/cx';
 import {EmptyState} from '../empty-state';
+import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 export interface DataGridColumn<T> {
   id: string;
@@ -107,7 +108,7 @@ function DataGridInner<T>(
     return idx.sort((a, b) => dir * cmp(keys[a], keys[b]) || a - b);
   }, [rows, columns, curSort, manualSort, n]);
 
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const el = gridRef.current;
     if (!el) return;
     const measure = () => setViewport(el.clientHeight || fallbackH);

@@ -1,5 +1,5 @@
 'use client';
-import {forwardRef, useRef, useState, type HTMLAttributes, type KeyboardEvent} from 'react';
+import {forwardRef, useEffect, useRef, useState, type HTMLAttributes, type KeyboardEvent} from 'react';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
 
@@ -44,7 +44,9 @@ export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(func
   const [hover, setHover] = useState<Date | null>(null);
   const grid = useRef<HTMLTableElement>(null);
   const isRtl = useIsRtl();
-  const today = day(new Date());
+  // "Today" is read after mount: on the server and while hydrating it would depend on the server's clock and timezone.
+  const [today, setToday] = useState<Date | null>(null);
+  useEffect(() => { setToday(day(new Date())); }, []);
   const first = new Date(focus.getFullYear(), focus.getMonth(), 1);
   const start = add(first, -((first.getDay() - weekStartsOn + 7) % 7));
   const weeks = Array.from({length: 6}, (_, w) => Array.from({length: 7}, (_, d) => add(start, w * 7 + d)));
@@ -106,10 +108,10 @@ export const RangeCalendar = forwardRef<HTMLDivElement, RangeCalendarProps>(func
                       tabIndex={same(d, focus) ? 0 : -1}
                       className="calendar-day"
                       data-outside={d.getMonth() !== focus.getMonth() || undefined}
-                      data-today={same(d, today) || undefined}
+                      data-today={(today !== null && same(d, today)) || undefined}
                       aria-label={full(d)}
                       aria-pressed={isStart || isEnd}
-                      aria-current={same(d, today) ? 'date' : undefined}
+                      aria-current={(today !== null && same(d, today)) ? 'date' : undefined}
                       disabled={off(d)}
                       onMouseEnter={() => picking && setHover(d)}
                       onClick={() => { choose(d); setFocus(d); }}
