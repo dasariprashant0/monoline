@@ -3,6 +3,7 @@ import {useState, type ReactNode} from 'react';
 import {useMemo, useState as useS} from 'react';
 import {CodeBlock, Field, Input, NativeSelect, RichTextEditor} from '@monoline/react';
 import changelog from '../../../../CHANGELOG.md?raw';
+import '../page/page.css';
 import {Markdown} from './markdown';
 import {CopyIcon, CheckIcon} from '../shell/Logo';
 import {categories, hooks, inCategory, nice, pathOf} from '../shell/registry';
