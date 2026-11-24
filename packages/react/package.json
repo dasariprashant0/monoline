@@ -63,8 +63,12 @@
     "radix-ui": "^1.4.2"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19",
+    "@types/react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {"optional": true}
   },
   "devDependencies": {
     "@monoline/css": "^0.5.0",

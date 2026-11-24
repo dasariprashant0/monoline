@@ -52,6 +52,8 @@ jobs:
         run: |
           npm run test:cli
           npm run test:release
+      - name: Clean-install smoke (packed tarballs into Vite, Next, Astro, React Router; React 18 and 19)
+        run: npm run install-smoke
       - name: Release check (packages, exports, tarball contents)
         run: node scripts/release.mjs check --expect "$VERSION"
       - name: Publish dry run
