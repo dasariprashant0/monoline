@@ -14,3 +14,4 @@ apps/docs/public/docs/
 apps/docs/public/llms.txt
 apps/docs/src/site/size.generated.json
 packages/react/src/styles.ts
+.claude/.sb-nudged

@@ -1,5 +1,7 @@
 # Benchmark: Monoline against 13 UI libraries
 
+> **Archived 2026-11-24.** A 2026-11-20 snapshot of 13 libraries; numbers are not kept current. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 > **Historical snapshot.** Numbers and the npm status were measured when it was written; for the current state read [ROADMAP.md](ROADMAP.md).
 
 

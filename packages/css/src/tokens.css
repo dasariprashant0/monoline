@@ -1,5 +1,5 @@
-/* @personal/ui tokens: the one source of every colour, size and timing.
-   Same names and values as the portfolio and loadout. Screens never use a
+/* Monoline tokens: the one source of every colour, size and timing.
+   Components never use a
    raw value; if a token is missing, add it here (DESIGN.md "Adding a token").
 
    An app may override only the accent group (--accent, --accent-text,

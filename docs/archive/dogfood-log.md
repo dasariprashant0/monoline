@@ -1,5 +1,7 @@
 # Dogfood log: building three real apps with Monoline
 
+> **Archived 2026-11-24.** The 2026-11-13 dogfood findings; ADR 0003 and the CSS checks came from it. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 Date: 2026-11-13. Method: act as a skeptical first-time user. Build three apps in `examples/` the way a consumer would (`import '@monoline/css'`, `import {…} from '@monoline/react'`, resolved to the built `dist/`), using `llms.txt`, the README and the generated `.d.ts` files only. Then look at every state in a real browser (Chrome, axe-core, screenshots at 1280px and 375px, three themes) with `node scripts/audit-examples.mjs --shots examples/.shots`.
 
 Apps: `examples/dashboard` (sidebar shell, stats, sortable table, charts, date picker, command palette, dialog, toasts, theme and accent menu), `examples/auth-settings` (sign-in and sign-up with validation, settings tabs, switches, selects, file upload, danger-zone alert dialog), `examples/landing` (hero, feature grid, pricing with billing toggle, testimonials, footer).

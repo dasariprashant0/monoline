@@ -1,5 +1,7 @@
 # Improvement plan (phase 0 recon)
 
+> **Archived 2026-11-24.** A 0.4.0-era recon; the M0 audit replaces it. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 Date 2026-11-20, branch `claude/ds-recon-plan-215911`, version 0.5.0 (released 2026-11-20 per `CHANGELOG.md`). Rebased onto `origin/master` `4bd0932` (was cut from `e4b3e46`). The findings were measured at 0.4.0 + unreleased tokens; the 0.5.0 delta (docs redesign, GitHub Pages removed, docs moved to monoline.prashantdasari.com, README badges, versions bumped to 0.5.0) is folded in below. The baseline command results were **not** re-run after the rebase. No component code changed. Rows are checked in this worktree unless marked otherwise.
 
 ## Baseline: commands actually run

@@ -1,5 +1,7 @@
 # Monoline strategy: how it becomes a kit people choose
 
+> **Archived 2026-11-24.** Its 1.0 criteria (§9) and platform features (§13) moved to ROADMAP; the task IDs below are no longer tracked. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 Written 2026-11-20 from [BENCHMARK.md](BENCHMARK.md) and the repo as it stands on branch `claude/ds-benchmark-5b768f`. It is for two readers: a human deciding what to fund, and an AI agent picking a task. Every task has an ID, an owner area, an effort, and a test for "done", so either reader can act without asking.
 
 > **Status on master (5a4ffa8), checked 2026-11-23.** Done since this was written: starters (`examples/starters/{vite,next,astro,react-router}`; React Router stands in for Remix), the React 18/19 matrix and install smoke in `ci.yml`, CSS cascade layers (ADR 0003), install tabs on component pages, route-level code splitting of the docs (`apps/docs/src/shell/lazy.ts`), and `--provenance` in `release.yml` (A7: set up, nothing published with it yet). Still open: `npm create monoline` (A4), npm publish of 0.5.0, a screen-reader pass, the `monoline add` bug, `themeScript`, forced-colors for `.btn-solid`, CJS types. Rows below carry their own status where it changed.

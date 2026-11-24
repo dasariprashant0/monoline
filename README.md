@@ -50,7 +50,7 @@ npm run dev
 
 `core.css` (tokens, themes, base) is always needed; each component has one small CSS file next to it. A component that looks unstyled is missing its CSS file. To load everything while exploring, use `import '@monoline/css'` (about 21 KB gzip).
 
-The [full guide](https://monoline.prashantdasari.com/docs/getting-started/) continues with theme, dark mode and a dialog. Using Next.js? Read the [Next.js guide](https://monoline.prashantdasari.com/docs/frameworks/nextjs/): `themeScript()` cannot be called from a Server Component, and the guide shows the fix.
+The [full guide](https://monoline.prashantdasari.com/docs/getting-started/) continues with theme, dark mode and a dialog. Using Next.js? Read the [Next.js guide](https://monoline.prashantdasari.com/docs/frameworks/nextjs/): `themeScript()` has no `'use client'`, so the root layout can call it to set the saved theme before first paint.
 
 ## Change the look
 
@@ -77,7 +77,7 @@ npx monoline init
 npx monoline add combobox date-picker data-table
 ```
 
-The CLI copies the source and CSS into your project and lists any dependencies. Shared helpers (`utils/cx`, `utils/slot`, `utils/overlay`) are copied with the component. Details: [packages/cli/README.md](packages/cli/README.md) and [docs/ADOPTION.md](docs/ADOPTION.md).
+The CLI copies the source and CSS into your project and lists any dependencies. Shared helpers (`utils/cx`, `utils/slot`, `utils/overlay`) are copied with the component. Details: [packages/cli/README.md](packages/cli/README.md).
 
 ## Repository
 
@@ -86,9 +86,12 @@ The CLI copies the source and CSS into your project and lists any dependencies. 
 | `packages/css` | `@monoline/css`: tokens, themes, accents, options, one stylesheet per component |
 | `packages/react` | `@monoline/react`: one folder per component or hook (source, test, demo, `meta.json`) |
 | `packages/cli` | the `monoline` CLI |
+| `packages/mcp` | `@monoline/mcp`: MCP server over the registry |
+| `packages/tokens` | `@monoline/tokens`: tokens as CSS, JSON, type declarations and Figma variables, generated from the CSS (not published yet) |
+| `packages/vscode` | VS Code snippets generated from the registry (not a workspace, not published) |
 | `apps/docs` | the documentation site; discovers components automatically |
 | `registry/`, `llms.txt`, `llms-full.txt` | generated machine-readable list and source |
-| `docs/research` | the library comparison this kit is based on, and the roadmap in `docs/ROADMAP.md` |
+| `docs/` | the [roadmap](docs/ROADMAP.md), [current-state audit](docs/audit/2026-current-state.md), [decisions](docs/decisions/) and the library comparison in `docs/research` |
 | `DESIGN.md` | the look, tokens and rules |
 
 ```bash
