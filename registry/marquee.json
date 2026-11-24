@@ -13,7 +13,7 @@
   "a11y": [
     "The duplicate copy is aria-hidden so screen readers read the items once.",
     "Pauses on hover and focus; animation is off under prefers-reduced-motion.",
-    "Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users."
+    "A Pause / Play toggle button (aria-pressed) is shown by default for keyboard and touch users (WCAG 2.2.2); pass pausable={false} only for purely decorative rows."
   ],
   "keywords": [
     "ticker",
@@ -66,8 +66,8 @@
           "name": "pausable",
           "type": "boolean",
           "optional": true,
-          "default": null,
-          "description": "Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default false."
+          "default": "true",
+          "description": "Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default true; set false only where the motion is purely decorative and you offer another way to stop it."
         }
       ]
     }
@@ -95,11 +95,11 @@
     },
     {
       "path": "packages/react/src/components/marquee/marquee.tsx",
-      "content": "'use client';\nimport {forwardRef, useState, type CSSProperties, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface MarqueeProps extends HTMLAttributes<HTMLDivElement> {\n  /** Seconds for one full loop. */\n  duration?: number;\n  /** Scroll to the right instead of the left. Default false. */\n  reverse?: boolean;\n  /** Stop when the pointer is over it or focus is inside. Default true. */\n  pauseOnHover?: boolean;\n  /** Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default false. */\n  pausable?: boolean;\n}\n\n/** Children scroll left (or right with `reverse`). Keep the items short. */\nexport const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee({duration = 30, reverse, pauseOnHover = true, pausable, className, style, children, ...rest}, ref) {\n  const [paused, setPaused] = useState(false);\n  return (\n    <div ref={ref} data-paused={paused || undefined} className={cx('marquee', reverse && 'marquee-reverse', pauseOnHover && 'marquee-pause', pausable && 'marquee-controlled', className)} style={{'--marquee-duration': `${duration}s`, ...style} as CSSProperties} {...rest}>\n      {pausable && <button type=\"button\" className=\"marquee-toggle\" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? 'Play' : 'Pause'}<span className=\"sr-only\"> scrolling</span></button>}\n      <div className=\"marquee-track\">{children}</div>\n      <div className=\"marquee-track\" aria-hidden=\"true\">{children}</div>\n    </div>\n  );\n});\n"
+      "content": "'use client';\nimport {forwardRef, useState, type CSSProperties, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface MarqueeProps extends HTMLAttributes<HTMLDivElement> {\n  /** Seconds for one full loop. */\n  duration?: number;\n  /** Scroll to the right instead of the left. Default false. */\n  reverse?: boolean;\n  /** Stop when the pointer is over it or focus is inside. Default true. */\n  pauseOnHover?: boolean;\n  /** Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default true; set false only where the motion is purely decorative and you offer another way to stop it. */\n  pausable?: boolean;\n}\n\n/** Children scroll left (or right with `reverse`). Keep the items short. */\nexport const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee({duration = 30, reverse, pauseOnHover = true, pausable = true, className, style, children, ...rest}, ref) {\n  const [paused, setPaused] = useState(false);\n  return (\n    <div ref={ref} data-paused={paused || undefined} className={cx('marquee', reverse && 'marquee-reverse', pauseOnHover && 'marquee-pause', pausable && 'marquee-controlled', className)} style={{'--marquee-duration': `${duration}s`, ...style} as CSSProperties} {...rest}>\n      {pausable && <button type=\"button\" className=\"marquee-toggle\" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? 'Play' : 'Pause'}<span className=\"sr-only\"> scrolling</span></button>}\n      <div className=\"marquee-track\">{children}</div>\n      <div className=\"marquee-track\" aria-hidden=\"true\">{children}</div>\n    </div>\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/marquee/meta.json",
-      "content": "{\"name\":\"marquee\",\"title\":\"Marquee\",\"category\":\"effects\",\"description\":\"Scroll a row of items endlessly; pauses on hover and stops for reduced motion.\",\"status\":\"stable\",\"css\":[\"marquee.css\"],\"a11y\":[\"The duplicate copy is aria-hidden so screen readers read the items once.\",\"Pauses on hover and focus; animation is off under prefers-reduced-motion.\",\"Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users.\"],\"keywords\":[\"ticker\",\"logos\",\"scroll\",\"carousel\",\"infinite\"]}\n"
+      "content": "{\"name\":\"marquee\",\"title\":\"Marquee\",\"category\":\"effects\",\"description\":\"Scroll a row of items endlessly; pauses on hover and stops for reduced motion.\",\"status\":\"stable\",\"css\":[\"marquee.css\"],\"a11y\":[\"The duplicate copy is aria-hidden so screen readers read the items once.\",\"Pauses on hover and focus; animation is off under prefers-reduced-motion.\",\"A Pause / Play toggle button (aria-pressed) is shown by default for keyboard and touch users (WCAG 2.2.2); pass pausable={false} only for purely decorative rows.\"],\"keywords\":[\"ticker\",\"logos\",\"scroll\",\"carousel\",\"infinite\"]}\n"
     }
   ],
   "utils": []

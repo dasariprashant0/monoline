@@ -7,12 +7,13 @@
   "css": [
     {
       "path": "packages/css/src/components/border-beam.css",
-      "content": "/* Border beam: a conic gradient rotates behind a mask that keeps only the 1px edge. */\n@property --border-beam-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }\n.border-beam { position: relative; border: 1px solid var(--rule); }\n.border-beam-light { position: absolute; inset: -1px; border: 1px solid transparent; pointer-events: none; background: conic-gradient(from var(--border-beam-angle), transparent 0 75%, var(--accent) 100%) border-box; -webkit-mask: linear-gradient(var(--foreground) 0 0) padding-box, linear-gradient(var(--foreground) 0 0); -webkit-mask-composite: xor; mask: linear-gradient(var(--foreground) 0 0) padding-box exclude, linear-gradient(var(--foreground) 0 0); animation: border-beam-spin var(--border-beam-duration, 6s) linear infinite; }\n@keyframes border-beam-spin { to { --border-beam-angle: 360deg; } }\n@media (prefers-reduced-motion: reduce) { .border-beam-light { display: none; } }\n"
+      "content": "/* Border beam: a conic gradient rotates behind a mask that keeps only the 1px edge. */\n@property --border-beam-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }\n.border-beam { position: relative; border: 1px solid var(--rule); }\n.border-beam-light { position: absolute; inset: -1px; border: 1px solid transparent; pointer-events: none; background: conic-gradient(from var(--border-beam-angle), transparent 0 75%, var(--accent) 100%) border-box; -webkit-mask: linear-gradient(var(--foreground) 0 0) padding-box, linear-gradient(var(--foreground) 0 0); -webkit-mask-composite: xor; mask: linear-gradient(var(--foreground) 0 0) padding-box exclude, linear-gradient(var(--foreground) 0 0); animation: border-beam-spin var(--border-beam-duration, 6s) linear infinite; }\n@keyframes border-beam-spin { to { --border-beam-angle: 360deg; } }\n@media (prefers-reduced-motion: reduce) { .border-beam-light { display: none; } }\n/* Pointer and keyboard users can stop it: hover or focus anywhere inside pauses the light. */\n.border-beam:hover .border-beam-light, .border-beam:focus-within .border-beam-light { animation-play-state: paused; }\n"
     }
   ],
   "a11y": [
     "The beam is aria-hidden and decorative; the content keeps its normal reading order.",
-    "The beam is hidden under prefers-reduced-motion, leaving a plain thin border."
+    "The beam is hidden under prefers-reduced-motion, leaving a plain thin border.",
+    "Pauses while hovered or focused inside; the light is hidden under prefers-reduced-motion."
   ],
   "keywords": [
     "glow",
@@ -68,7 +69,7 @@
     },
     {
       "path": "packages/react/src/components/border-beam/meta.json",
-      "content": "{\"name\":\"border-beam\",\"title\":\"Border beam\",\"category\":\"effects\",\"description\":\"A thin bordered box with a light that travels around its edge. CSS only.\",\"status\":\"stable\",\"css\":[\"border-beam.css\"],\"a11y\":[\"The beam is aria-hidden and decorative; the content keeps its normal reading order.\",\"The beam is hidden under prefers-reduced-motion, leaving a plain thin border.\"],\"keywords\":[\"glow\",\"animated border\",\"highlight\",\"light\",\"card\"]}\n"
+      "content": "{\"name\":\"border-beam\",\"title\":\"Border beam\",\"category\":\"effects\",\"description\":\"A thin bordered box with a light that travels around its edge. CSS only.\",\"status\":\"stable\",\"css\":[\"border-beam.css\"],\"a11y\":[\"The beam is aria-hidden and decorative; the content keeps its normal reading order.\",\"The beam is hidden under prefers-reduced-motion, leaving a plain thin border.\",\"Pauses while hovered or focused inside; the light is hidden under prefers-reduced-motion.\"],\"keywords\":[\"glow\",\"animated border\",\"highlight\",\"light\",\"card\"]}\n"
     }
   ],
   "utils": []
