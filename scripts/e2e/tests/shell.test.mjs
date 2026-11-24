@@ -7,17 +7,9 @@ const MOBILE = {width: 375, height: 812, mobile: true};
 const q = (sel, expr) => `(() => { const e = document.querySelector(${JSON.stringify(sel)}); return e ? (${expr})(e) : null; })()`;
 const inDialog = (p) => p.eval(`!!document.activeElement.closest('[role=dialog]')`);
 
-test('shell: banner, navigation, main and a skip link that lands on main', async (p) => {
+test('shell: banner and navigation landmarks; inside the docs page it adds no second main or skip link', async (p) => {
   await p.open(ROUTE); const ex = await p.example('App shell');
-  eq(await p.eval(q(SHELL, (e) => ({banner: e.querySelectorAll('header').length, nav: [...e.querySelectorAll('nav')].map((n) => n.getAttribute('aria-label')), main: e.querySelectorAll('main').length}))), {banner: 1, nav: ['Main', 'Breadcrumb'], main: 1}, 'landmarks inside the shell');
-  const skip = `${SHELL} > .skip-link`;
-  const off = await p.eval(q(skip, (e) => e.getBoundingClientRect().bottom));
-  assert(off <= 0, `the skip link should be off screen until focused, bottom is ${off}`);
-  await p.eval(q(skip, (e) => e.focus()));
-  const on = await p.eval(q(skip, (e) => { const r = e.getBoundingClientRect(); return {top: r.top, left: r.left}; }));
-  assert(on.top >= 0 && on.left >= 0, `a focused skip link must be visible: ${JSON.stringify(on)}`);
-  await p.key('Enter'); await p.settle();
-  assert(await p.eval(q(SHELL + ' main', (m) => document.activeElement === m)), `Enter on the skip link should focus main, focus is ${await p.active()}`);
+  eq(await p.eval(q(SHELL, (e) => ({banner: e.querySelectorAll('header').length, nav: [...e.querySelectorAll('nav')].map((n) => n.getAttribute('aria-label').replace(/^.*: /, '').replace(/ \d+$/, '')), main: e.querySelectorAll('main').length, skip: e.querySelectorAll('.skip-link').length, content: e.querySelectorAll('.app-shell-main').length}))), {banner: 1, nav: ['Main', 'Breadcrumb'], main: 0, skip: 0, content: 1}, 'landmarks inside the shell (the standalone main and skip link are covered by the unit tests)');
   await ex.need('h1|Reports');
 });
 
@@ -71,7 +63,7 @@ test('shell: choosing a link in the drawer closes it', async (p) => {
 
 test('shell: rtl mirrors the layout: sidebar on the right, drawer from the right, ArrowDown unchanged', async (p) => {
   await p.open(ROUTE, {dir: 'rtl'}); const ex = await p.example('App shell');
-  const side = await p.rect(SHELL + ' .sidebar'), main = await p.rect(SHELL + ' main');
+  const side = await p.rect(SHELL + ' .sidebar'), main = await p.rect(SHELL + ' .app-shell-main');
   assert(side.x > main.x, `the sidebar should be to the right of main in rtl: sidebar x=${Math.round(side.x)}, main x=${Math.round(main.x)}`);
   await ex.focus('.sidebar a|Overview'); await p.key('ArrowDown'); await p.expectActive('.sidebar a|Reports', 'ArrowDown in rtl');
   await p.open(ROUTE, {...MOBILE, dir: 'rtl'}); const m = await p.example('App shell');
@@ -83,10 +75,10 @@ test('shell: rtl mirrors the layout: sidebar on the right, drawer from the right
 test('shell: the aside sits beside the page from 1100px and under it below', async (p) => {
   await p.open(ROUTE); await p.example('With an aside');
   const A = '[data-e2e="e2e-with-an-aside"] .app-shell';
-  const wide = await p.eval(q(A, (e) => { const m = e.querySelector('main').getBoundingClientRect(), a = e.querySelector('aside').getBoundingClientRect(); return a.left >= m.right - 1 && Math.abs(a.top - m.top) < 2; }));
+  const wide = await p.eval(q(A, (e) => { const m = e.querySelector('.app-shell-main').getBoundingClientRect(), a = e.querySelector('aside').getBoundingClientRect(); return a.left >= m.right - 1 && Math.abs(a.top - m.top) < 2; }));
   assert(wide, 'at 1280px the aside should be beside main');
   await p.open(ROUTE, {width: 900, height: 800}); await p.example('With an aside');
-  const narrow = await p.eval(q(A, (e) => { const m = e.querySelector('main').getBoundingClientRect(), a = e.querySelector('aside').getBoundingClientRect(); return a.top >= m.bottom - 1; }));
+  const narrow = await p.eval(q(A, (e) => { const m = e.querySelector('.app-shell-main').getBoundingClientRect(), a = e.querySelector('aside').getBoundingClientRect(); return a.top >= m.bottom - 1; }));
   assert(narrow, 'at 900px the aside should be under main');
 });
 

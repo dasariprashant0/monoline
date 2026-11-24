@@ -5,6 +5,7 @@ import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
 import {invalidAttrs, useFieldControl} from '../field';
 import {Floating, useDismiss, useHydrated, type Placement} from '../popover/float';
+import {leavesPanel} from '../popover/tab-out';
 import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 interface Ctx {
@@ -108,7 +109,7 @@ const OPTION = '[role=option]:not([aria-disabled=true])';
 const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({className, children, position: _p, sideOffset = 4, align = 'start', onKeyDown, ...rest}, forwarded) {
   const c = useSelectCtx();
   const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
-  useDismiss(true, [el, c.trigger], (kind) => { outside.current = kind === 'outside'; c.setOpen(false); });
+  useDismiss(true, [el, c.trigger], (kind) => { outside.current = kind !== 'escape'; c.setOpen(false); }, leavesPanel);
   useEffect(() => {
     const first = el.current!.querySelector<HTMLElement>('[aria-selected=true]') ?? el.current!.querySelector<HTMLElement>(OPTION);
     first?.focus(); first?.scrollIntoView?.({block: 'nearest'});

@@ -2,3 +2,5 @@
 .typewriter-caret { display: inline-block; width: 1px; height: 1em; margin-inline-start: 2px; vertical-align: text-bottom; background: currentColor; animation: typewriter-blink var(--caret-duration, 1s) steps(1) infinite; }
 @keyframes typewriter-blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .typewriter-caret { animation: none; } }
+/* A blink that lasts more than five seconds needs a way to stop (WCAG 2.2.2): blink four times, then stay on. */
+.typewriter-caret { animation-iteration-count: 4; }

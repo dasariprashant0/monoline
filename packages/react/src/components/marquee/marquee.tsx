@@ -9,12 +9,12 @@ export interface MarqueeProps extends HTMLAttributes<HTMLDivElement> {
   reverse?: boolean;
   /** Stop when the pointer is over it or focus is inside. Default true. */
   pauseOnHover?: boolean;
-  /** Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default false. */
+  /** Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default true; set false only where the motion is purely decorative and you offer another way to stop it. */
   pausable?: boolean;
 }
 
 /** Children scroll left (or right with `reverse`). Keep the items short. */
-export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee({duration = 30, reverse, pauseOnHover = true, pausable, className, style, children, ...rest}, ref) {
+export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee({duration = 30, reverse, pauseOnHover = true, pausable = true, className, style, children, ...rest}, ref) {
   const [paused, setPaused] = useState(false);
   return (
     <div ref={ref} data-paused={paused || undefined} className={cx('marquee', reverse && 'marquee-reverse', pauseOnHover && 'marquee-pause', pausable && 'marquee-controlled', className)} style={{'--marquee-duration': `${duration}s`, ...style} as CSSProperties} {...rest}>

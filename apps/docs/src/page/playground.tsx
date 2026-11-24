@@ -2,7 +2,8 @@
 // strings, number for numbers) that drive the real component live and print the matching JSX.
 // Components that cannot be rendered from their props alone have a small config in ./playgrounds.ts.
 import {href} from '../shell/router';
-import {Component, createElement, useEffect, useId, useMemo, useState, type ReactNode} from 'react';
+import {Component, createElement, useEffect, useId, useMemo, useRef, useState, type ReactNode} from 'react';
+import {useDemoLandmarks} from './demo-landmarks';
 import * as M from '@monoline/react';
 import {Button, CodeBlock, Input, NativeSelect, Switch} from '@monoline/react';
 import {autoProps, playgrounds, type Control, type Node, type Values, type Val} from './playgrounds';
@@ -139,9 +140,11 @@ function Panel({importName, controls, build}: {importName: string; controls: Con
   const [values, setValues] = useState<Values>(start);
   const node = build(values);
   const changed = JSON.stringify(values) !== JSON.stringify(start);
+  const stage = useRef<HTMLDivElement>(null);
+  useDemoLandmarks(stage, 3, 'Playground');
   return (
     <div className="pg">
-      <div className="pg-stage cdoc-stage" data-no-toc role="group" aria-label="Playground preview">
+      <div ref={stage} className="pg-stage cdoc-stage" data-no-toc role="group" aria-label="Playground preview">
         <Boundary key={JSON.stringify(values)}>{toElement(node)}</Boundary>
       </div>
       <div className="pg-controls" role="group" aria-label={`${importName} props`}>

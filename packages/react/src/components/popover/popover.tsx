@@ -5,6 +5,7 @@ import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {TABBABLE, setRefs, vetoed} from '../../utils/overlay';
 import {Floating, useDismiss, useHydrated, type Placement} from './float';
+import {leavesPanel} from './tab-out';
 
 interface Ctx { open: boolean; setOpen: (o: boolean) => void; contentId: string; trigger: RefObject<HTMLElement | null>; anchor: RefObject<HTMLElement | null> }
 const Context = createContext<Ctx | null>(null);
@@ -74,10 +75,10 @@ const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({cl
   const hooks = useRef({onOpenAutoFocus, onCloseAutoFocus});
   hooks.current = {onOpenAutoFocus, onCloseAutoFocus};
   useDismiss(true, [el, c.trigger, c.anchor], (kind) => {
-    if (vetoed(kind === 'escape' ? onEscapeKeyDown : onInteractOutside, el.current!)) return;
-    outside.current = kind === 'outside';
+    if (kind !== 'tab' && vetoed(kind === 'escape' ? onEscapeKeyDown : onInteractOutside, el.current!)) return;
+    outside.current = kind !== 'escape';
     c.setOpen(false);
-  });
+  }, leavesPanel);
   useEffect(() => {
     const p = el.current!;
     if (!vetoed(hooks.current.onOpenAutoFocus, p)) (p.querySelector<HTMLElement>(TABBABLE) ?? p).focus();

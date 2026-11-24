@@ -107,6 +107,17 @@ test('popover: opens with Enter, Escape closes and focus returns to the trigger'
   await p.waitFor(`!document.querySelector('[role=dialog]')`, 'popover still open');
   await p.expectActive('button|Details', 'focus return');
 });
+test('popover, menu, select: Tab closes the panel and carries on from the trigger, not from the page start', async (p) => {
+  for (const [route, title, trigger, open, panel] of [['components/popover', 'Basic', 'button|Details', 'Enter', '[role=dialog]'], ['components/dropdown-menu', 'Actions', 'button|Actions', 'Enter', '[role=menu]'], ['components/select', 'In a field', '[role=combobox]', 'ArrowDown', '[role=listbox]']]) {
+    await p.open(route); const ex = await p.example(title);
+    await ex.focus(trigger); await p.key(open);
+    await p.waitFor(`document.querySelector('${panel}')`, `${route} did not open`);
+    await p.key('Tab');
+    await p.waitFor(`!document.querySelector('${panel}')`, `${route} still open after Tab`);
+    const skip = await p.eval(`!!document.activeElement.closest('.skip-link') || document.activeElement === document.body`);
+    if (skip) throw new Error(`${route}: Tab sent focus to the page start (${await p.active()})`);
+  }
+});
 test('popover: an outside click closes it', async (p) => {
   await p.open('components/popover'); const ex = await p.example('Basic');
   await ex.click('button|Details');

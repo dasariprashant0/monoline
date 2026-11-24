@@ -4,3 +4,5 @@
 .shimmer-button:disabled::after { animation: none; display: none; }
 @keyframes shimmer-sweep { 0% { transform: translateX(calc(-100% * var(--dir, 1))); } 45%, 100% { transform: translateX(calc(100% * var(--dir, 1))); } }
 @media (prefers-reduced-motion: reduce) { .shimmer-button::after { animation: none; display: none; } }
+/* Hover or focus pauses the sweep. */
+.shimmer-button:hover::after, .shimmer-button:focus-visible::after { animation-play-state: paused; }

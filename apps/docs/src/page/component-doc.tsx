@@ -1,7 +1,7 @@
 // What goes inside a component page: header, Import, Usage, Examples, Props, Data Attributes, Playground, Accessibility,
 // Related. Everything is data-driven from meta.json plus the build-time JSON written by
 // scripts/gen-props, gen-demos and gen-styling, so a new component needs no change here.
-import {useMemo, useState, useSyncExternalStore, type ReactNode} from 'react';
+import {useMemo, useRef, useState, useSyncExternalStore, type ReactNode} from 'react';
 import {
   Badge, Button, CodeBlock, Collapsible, CollapsibleTrigger,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger,
@@ -10,6 +10,7 @@ import {href} from '../shell/router';
 import {VERSION, entryAt, neighbours, pathOf} from '../shell/registry';
 import {CopyMarkdown, OpenMenu} from './doc-actions';
 import type {ComponentMeta, Demo} from '@monoline/react';
+import {useDemoLandmarks} from './demo-landmarks';
 import {keyboardRows} from '../../scripts/lib/a11y.mjs';
 import {demosFor} from '../shell/registry';
 import {Playground} from './playground';
@@ -60,8 +61,16 @@ function PmCode({packages, label}: {packages: string; label: string}) {
   );
 }
 
+/** The live demo box. */
+function Stage({label, children}: {label: string; children: ReactNode}) {
+  const el = useRef<HTMLDivElement>(null);
+  useDemoLandmarks(el, 4, label);
+  return <div ref={el} className="cdoc-stage" role="group" aria-label={label}>{children}</div>;
+}
+
 function Section({id, title, children}: {id: string; title: string; children: ReactNode}) {
-  return <section className="cdoc-section" aria-labelledby={id}><h2 id={id} className="cdoc-h2">{title}</h2>{children}</section>;
+  // aria-label, not aria-labelledby: the heading also holds the "#" anchor link, whose own label would be added to the region's name.
+  return <section className="cdoc-section" aria-label={title}><h2 id={id} className="cdoc-h2">{title}</h2>{children}</section>;
 }
 
 /** Doc URL for the Markdown page, relative to the site base so it works under a sub-path. */
@@ -105,7 +114,7 @@ function Example({id, demo, code, playground}: {id: string; demo: Demo; code?: D
           </TabsList>
           {code && <a className="cdoc-open-pg" href={playground} target="_blank" rel="noopener">Open playground <span aria-hidden="true">↗</span></a>}
         </div>
-        <TabsContent value="preview"><div className="cdoc-stage" role="group" aria-label={`${demo.title} preview`}>{hydrated && demo.render()}</div></TabsContent>
+        <TabsContent value="preview"><Stage label={`${demo.title} preview`}>{hydrated && demo.render()}</Stage></TabsContent>
         {code && (
           <TabsContent value="code">
             <Collapsible open={open || !long} onOpenChange={setOpen} className="cdoc-code" data-long={long || undefined}>

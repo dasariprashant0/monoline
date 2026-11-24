@@ -300,3 +300,5 @@ code { font-family: var(--font-body); background: var(--wash-2); color: var(--fo
 .theme-grid, .theme-meta { grid-template-columns: minmax(0, 1fr); }
 .theme-meta > *, .builder-controls > * { min-width: 0; }
 .doc-features, .doc-links { overflow-wrap: anywhere; }
+/* Short viewports (a phone on its side, 400% zoom): a sticky header would take over a third of the height, so it scrolls away with the page. */
+@media (max-height: 520px) { .docs, .docs[data-rail] { --bar: 0px; } .docs-bar { position: static; } }
