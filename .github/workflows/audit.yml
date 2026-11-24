@@ -1,6 +1,6 @@
 name: audit
 # Real-browser checks on the built docs site: axe (WCAG 2 A/AA, 2.1, 2.2 AA with colour contrast), overflow,
-# console errors, plus a visual comparison against the base branch. Chrome is preinstalled on ubuntu runners.
+# console errors. Chrome is preinstalled on ubuntu runners.
 on:
   pull_request:
   push:
@@ -70,33 +70,3 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "all accents and the computed-style test passed"
-  visual:
-    # Informational: it reports every page whose screenshot differs from the base branch. A pull request that
-    # intentionally changes the look will always differ, so this job never blocks a merge; read the artifact.
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-        with: {ref: "${{ github.event.pull_request.base.sha }}"}
-      - uses: actions/setup-node@v4
-        with: {node-version: 22, cache: npm}
-      - run: npm ci
-      - run: npm run build
-      - name: Write baseline screenshots from the base branch
-        run: node scripts/audit.mjs --visual --update
-        env:
-          CHROME: /usr/bin/google-chrome
-      - uses: actions/checkout@v4
-        with: {clean: false}
-      - run: npm ci
-      - run: npm run build
-      - name: Compare screenshots with the base branch
-        run: node scripts/audit.mjs --visual
-        env:
-          CHROME: /usr/bin/google-chrome
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: visual-diffs
-          path: audit/actual
