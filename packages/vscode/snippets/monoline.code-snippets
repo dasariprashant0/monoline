@@ -35,7 +35,7 @@
 		"body": [
 			"import {Alert} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s3)'}}><Alert title=\"Synced.\">42 entries up to date as of 14:20.</Alert><Alert tone=\"success\" title=\"Saved.\">Your changes are live.</Alert><Alert tone=\"warning\" title=\"Conflict.\">Two devices edited 12 March. Pick which copy to keep.</Alert><Alert tone=\"danger\" title=\"Can't save.\">The folder is read-only. Pick another folder.</Alert></div>"
+			"<Alert title=\"Synced.\">42 entries up to date as of 14:20.</Alert>"
 		]
 	},
 	"Monoline Animated list": {
@@ -52,6 +52,17 @@
 			"</AnimatedList>"
 		]
 	},
+	"Monoline App shell": {
+		"prefix": "ml-app-shell",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "App shell: The frame of an app: skip link, navbar, sidebar, main and aside in one responsive grid.",
+		"body": [
+			"import {type CSSProperties} from 'react';",
+			"import {AppShell, Breadcrumb, Button, Command, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, PageHeader, Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarItem, SidebarToggle, SidebarTrigger} from '@monoline/react';",
+			"",
+			"<AppShell scroll=\"contained\" style={height} navbar={navbar} sidebar={sidebar}>{header}<p>Your page goes here.</p></AppShell>"
+		]
+	},
 	"Monoline Area chart": {
 		"prefix": "ml-area-chart",
 		"scope": "typescriptreact,javascriptreact",
@@ -59,7 +70,13 @@
 		"body": [
 			"import {AreaChart} from '@monoline/react';",
 			"",
-			"<AreaChart title=\"Active users\" labels={months} series={[{name: 'Users', values: [120, 180, 150, 240, 310, 290]}]} />"
+			"const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];",
+			"",
+			"<AreaChart",
+			"  title=\"Active users\"",
+			"  labels={months}",
+			"  series={[{name: 'Users', values: [120, 180, 150, 240, 310, 290]}]}",
+			"/>"
 		]
 	},
 	"Monoline Aspect ratio": {
@@ -69,7 +86,9 @@
 		"body": [
 			"import {AspectRatio} from '@monoline/react';",
 			"",
-			"<div style={{width: '320px'}}><AspectRatio ratio={16 / 9}><div style={{width: '100%', height: '100%', border: '1px solid var(--rule)', display: 'grid', placeItems: 'center'}}>16:9</div></AspectRatio></div>"
+			"<AspectRatio ratio={16 / 9}>",
+			"  <div style={{width: '100%', height: '100%', border: '1px solid var(--rule)', display: 'grid', placeItems: 'center'}}>16:9</div>",
+			"</AspectRatio>"
 		]
 	},
 	"Monoline Autocomplete": {
@@ -79,7 +98,7 @@
 		"body": [
 			"import {Autocomplete, Field} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px', minHeight: '220px'}}><Field label=\"City\"><Autocomplete suggestions={cities} placeholder=\"Start typing\" /></Field></div>"
+			"<Autocomplete suggestions={cities} placeholder=\"Start typing\" />"
 		]
 	},
 	"Monoline Avatar group": {
@@ -89,7 +108,9 @@
 		"body": [
 			"import {Avatar, AvatarGroup} from '@monoline/react';",
 			"",
-			"<AvatarGroup aria-label=\"Project members\" max={3}>{['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => <Avatar key={n} name={n} />)}</AvatarGroup>"
+			"<AvatarGroup aria-label=\"Project members\" max={3}>",
+			"  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => <Avatar key={n} name={n} />)}",
+			"</AvatarGroup>"
 		]
 	},
 	"Monoline Avatar": {
@@ -99,7 +120,7 @@
 		"body": [
 			"import {Avatar} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Avatar name=\"Ada Lovelace\" /><Avatar name=\"Grace Hopper\" variant=\"line\" /><Avatar name=\"Alan Turing\" size=\"lg\" /></div>"
+			"<Avatar name=\"Ada Lovelace\" />"
 		]
 	},
 	"Monoline Badge": {
@@ -109,7 +130,7 @@
 		"body": [
 			"import {Badge} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s3)', flexWrap: 'wrap'}}><Badge>draft</Badge><Badge variant=\"solid\">12 days</Badge><Badge variant=\"accent\">new</Badge></div>"
+			"<Badge>draft</Badge>"
 		]
 	},
 	"Monoline Bar chart": {
@@ -144,7 +165,11 @@
 		"body": [
 			"import {BlockCta, Button} from '@monoline/react';",
 			"",
-			"<BlockCta title=\"Start building today\" description=\"Install the package and copy your first component.\" actions={<><Button variant=\"solid\">Get started</Button><Button>Read the docs</Button></>} />"
+			"<BlockCta",
+			"  title=\"Start building today\"",
+			"  description=\"Install the package and copy your first component.\"",
+			"  actions={<><Button variant=\"solid\">Get started</Button><Button variant=\"line\">Read the docs</Button></>}",
+			"/>"
 		]
 	},
 	"Monoline Dashboard shell block": {
@@ -171,7 +196,12 @@
 		"body": [
 			"import {BlockEmptyPage, Button} from '@monoline/react';",
 			"",
-			"<BlockEmptyPage code=\"404\" title=\"Page not found\" description=\"The address may be wrong, or the page moved.\" actions={<><Button variant=\"solid\">Go home</Button><Button>Contact support</Button></>} />"
+			"<BlockEmptyPage",
+			"  code=\"404\"",
+			"  title=\"Page not found\"",
+			"  description=\"The address may be wrong, or the page moved.\"",
+			"  actions={<><Button variant=\"solid\">Go home</Button><Button variant=\"line\">Contact support</Button></>}",
+			"/>"
 		]
 	},
 	"Monoline Feature grid block": {
@@ -181,7 +211,22 @@
 		"body": [
 			"import {BlockFeatureGrid} from '@monoline/react';",
 			"",
-			"<BlockFeatureGrid title=\"Why Monoline\" description=\"Fewer parts, clearer pages.\" features={features} />"
+			"const dot = <svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\"><rect x=\"3\" y=\"3\" width=\"14\" height=\"14\" /></svg>;",
+			"",
+			"const features = [",
+			"  {title: 'Plain CSS', description: 'Works with any framework, or none.', icon: dot},",
+			"  {title: 'Accessible', description: 'Keyboard and screen reader behaviour is tested.', icon: dot},",
+			"  {title: 'Three themes', description: 'Warm, dark and midnight, one accent.', icon: dot},",
+			"  {title: 'Copy and own', description: 'Every component is one small folder.', icon: dot},",
+			"  {title: 'Typed', description: 'Props are string unions with sane defaults.', icon: dot},",
+			"  {title: 'No runtime styling', description: 'Tokens and classes only.', icon: dot},",
+			"];",
+			"",
+			"<BlockFeatureGrid",
+			"  title=\"Why Monoline\"",
+			"  description=\"Fewer parts, clearer pages.\"",
+			"  features={features}",
+			"/>"
 		]
 	},
 	"Monoline Footer block": {
@@ -214,7 +259,7 @@
 			"  eyebrow=\"Version 1.0\"",
 			"  title=\"Interfaces with fewer parts\"",
 			"  description=\"A small kit of plain components. Copy the ones you need.\"",
-			"  actions={<><Button variant=\"solid\">Get started</Button><Button>Read the docs</Button></>}",
+			"  actions={<><Button variant=\"solid\">Get started</Button><Button variant=\"line\">Read the docs</Button></>}",
 			"  media={<div style={{border: '1px solid var(--rule)', aspectRatio: '4 / 3', display: 'grid', placeItems: 'center'}}>Preview</div>}",
 			"/>"
 		]
@@ -226,7 +271,10 @@
 		"body": [
 			"import {BlockLogin, Link} from '@monoline/react';",
 			"",
-			"<BlockLogin description=\"Use the email you signed up with.\" footer={<><Link href=\"#\">Forgot your password?</Link><Link href=\"#\">Create an account</Link></>} />"
+			"<BlockLogin",
+			"  description=\"Use the email you signed up with.\"",
+			"  footer={<><Link href=\"#\">Forgot your password?</Link><Link href=\"#\">Create an account</Link></>}",
+			"/>"
 		]
 	},
 	"Monoline Pricing block": {
@@ -277,7 +325,10 @@
 		"body": [
 			"import {BlockSignup, Link} from '@monoline/react';",
 			"",
-			"<BlockSignup description=\"It takes a minute.\" footer={<span>Already have an account? <Link href=\"#\">Sign in</Link></span>} />"
+			"<BlockSignup",
+			"  description=\"It takes a minute.\"",
+			"  footer={<span>Already have an account? <Link href=\"#\">Sign in</Link></span>}",
+			"/>"
 		]
 	},
 	"Monoline Testimonials block": {
@@ -304,7 +355,9 @@
 		"body": [
 			"import {BorderBeam} from '@monoline/react';",
 			"",
-			"<BorderBeam style={{padding: 'var(--s6)', maxWidth: '24rem'}}><p style={{margin: 0}}>A light travels the edge of this box.</p></BorderBeam>"
+			"<BorderBeam style={{padding: 'var(--s6)', maxWidth: '24rem'}}>",
+			"  <p style={{margin: 0}}>A light travels the edge of this box.</p>",
+			"</BorderBeam>"
 		]
 	},
 	"Monoline Box": {
@@ -324,7 +377,19 @@
 		"body": [
 			"import {Breadcrumb} from '@monoline/react';",
 			"",
-			"<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]} />"
+			"<Breadcrumb",
+			"  items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]}",
+			"/>"
+		]
+	},
+	"Monoline Breadcrumbs from path": {
+		"prefix": "ml-breadcrumbs-auto",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "Breadcrumbs from path: A breadcrumb built from the current URL path.",
+		"body": [
+			"import {BreadcrumbsAuto} from '@monoline/react';",
+			"",
+			"<BreadcrumbsAuto pathname=\"/projects/website-redesign/settings\" labels={{'website-redesign': 'Website redesign'}} />"
 		]
 	},
 	"Monoline Button group": {
@@ -334,7 +399,11 @@
 		"body": [
 			"import {Button, ButtonGroup} from '@monoline/react';",
 			"",
-			"<ButtonGroup aria-label=\"View\"><Button>Day</Button><Button>Week</Button><Button>Month</Button></ButtonGroup>"
+			"<ButtonGroup aria-label=\"View\">",
+			"  <Button variant=\"line\">Day</Button>",
+			"  <Button variant=\"line\">Week</Button>",
+			"  <Button variant=\"line\">Month</Button>",
+			"</ButtonGroup>"
 		]
 	},
 	"Monoline Button": {
@@ -365,7 +434,19 @@
 		"body": [
 			"import {Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: 360}}><Card><CardHeader><CardTitle>Ship the pricing page</CardTitle><CardDescription>Today, 14:20 · 3 files</CardDescription></CardHeader><CardContent><p>Rewrote the headline and the plan table.</p></CardContent><CardFooter><Button variant=\"solid\" size=\"sm\">Open</Button><Button size=\"sm\">Share</Button></CardFooter></Card></div>"
+			"<Card>",
+			"  <CardHeader>",
+			"    <CardTitle>Ship the pricing page</CardTitle>",
+			"    <CardDescription>Today, 14:20 · 3 files</CardDescription>",
+			"  </CardHeader>",
+			"  <CardContent>",
+			"    <p>Rewrote the headline and the plan table.</p>",
+			"  </CardContent>",
+			"  <CardFooter>",
+			"    <Button variant=\"solid\" size=\"sm\">Open</Button>",
+			"    <Button variant=\"line\" size=\"sm\">Share</Button>",
+			"  </CardFooter>",
+			"</Card>"
 		]
 	},
 	"Monoline Carousel": {
@@ -375,7 +456,9 @@
 		"body": [
 			"import {Carousel} from '@monoline/react';",
 			"",
-			"<Carousel aria-label=\"Featured\">{['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => <div key={n} style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}>{n}</div>)}</Carousel>"
+			"<Carousel aria-label=\"Featured\">",
+			"  {['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => <div key={n} style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}>{n}</div>)}",
+			"</Carousel>"
 		]
 	},
 	"Monoline Checkbox": {
@@ -385,7 +468,7 @@
 		"body": [
 			"import {Checkbox} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s3)'}}><Checkbox label=\"Replies\" defaultChecked /><Checkbox label=\"Mentions\" /><Checkbox label=\"Billing (locked)\" disabled /></div>"
+			"<Checkbox label=\"Replies\" defaultChecked />"
 		]
 	},
 	"Monoline Code block": {
@@ -405,7 +488,14 @@
 		"body": [
 			"import {Button, Collapsible, CollapsibleContent, CollapsibleTrigger} from '@monoline/react';",
 			"",
-			"<Collapsible><CollapsibleTrigger asChild><Button size=\"sm\">Show details</Button></CollapsibleTrigger><CollapsibleContent><p>Extra detail appears here when the trigger is pressed.</p></CollapsibleContent></Collapsible>"
+			"<Collapsible>",
+			"  <CollapsibleTrigger asChild>",
+			"    <Button variant=\"line\" size=\"sm\">Show details</Button>",
+			"  </CollapsibleTrigger>",
+			"  <CollapsibleContent>",
+			"    <p>Extra detail appears here when the trigger is pressed.</p>",
+			"  </CollapsibleContent>",
+			"</Collapsible>"
 		]
 	},
 	"Monoline Color picker": {
@@ -426,7 +516,7 @@
 		"body": [
 			"import {Combobox, Field} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px', minHeight: '260px'}}><Field label=\"Person\"><Combobox options={options} placeholder=\"Type a name\" /></Field></div>"
+			"<Combobox options={options} placeholder=\"Type a name\" />"
 		]
 	},
 	"Monoline Command": {
@@ -436,7 +526,20 @@
 		"body": [
 			"import {Command, type CommandItem} from '@monoline/react';",
 			"",
-			"<Command shortcut=\"mod+j\" items={items} trigger={<button type=\"button\" className=\"btn btn-outline\">Open palette</button>} />"
+			"const items: CommandItem[] = [",
+			"  {id: 'new', label: 'New file', group: 'File', hint: 'N'},",
+			"  {id: 'open', label: 'Open file', group: 'File', hint: 'O', keywords: ['browse']},",
+			"  {id: 'save', label: 'Save', group: 'File', hint: 'S'},",
+			"  {id: 'theme', label: 'Switch theme', group: 'View', keywords: ['dark', 'light']},",
+			"  {id: 'zoom', label: 'Zoom in', group: 'View'},",
+			"  {id: 'help', label: 'Open help'},",
+			"];",
+			"",
+			"<Command",
+			"  shortcut=\"mod+j\"",
+			"  items={items}",
+			"  trigger={<button type=\"button\" className=\"btn btn-outline\">Open palette</button>}",
+			"/>"
 		]
 	},
 	"Monoline Confetti": {
@@ -457,7 +560,9 @@
 		"body": [
 			"import {Container} from '@monoline/react';",
 			"",
-			"<Container size=\"text\"><p>A column about 64 characters wide, centred, with side padding.</p></Container>"
+			"<Container size=\"text\">",
+			"  <p>A column about 64 characters wide, centred, with side padding.</p>",
+			"</Container>"
 		]
 	},
 	"Monoline Context menu": {
@@ -468,8 +573,8 @@
 			"import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger} from '@monoline/react';",
 			"",
 			"<ContextMenu>",
-			"  <ContextMenuTrigger><div style={{display: 'grid', placeItems: 'center', height: '120px', border: '1px dashed var(--rule)'}}>Right click here</div></ContextMenuTrigger>",
-			"  <ContextMenuContent><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone=\"danger\">Delete</ContextMenuItem></ContextMenuContent>",
+			"  <ContextMenuTrigger asChild><button type=\"button\" style={{display: 'grid', placeItems: 'center', height: '120px', width: '100%', border: '1px dashed var(--rule)', background: 'none', font: 'inherit', color: 'inherit'}}>Right click here, or focus and press Shift+F10</button></ContextMenuTrigger>",
+			"  <ContextMenuContent aria-label=\"File actions\"><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone=\"danger\">Delete</ContextMenuItem></ContextMenuContent>",
 			"</ContextMenu>"
 		]
 	},
@@ -490,7 +595,31 @@
 		"body": [
 			"import {DataGrid, type DataGridColumn} from '@monoline/react';",
 			"",
-			"<DataGrid aria-label=\"Orders, 100,000 rows\" columns={columns} rows={big} height={320} getRowId={(r) => r.id} />"
+			"interface Order { id: string; customer: string; city: string; items: number; total: number }",
+			"",
+			"const cities = ['Pune', 'Berlin', 'Lagos', 'Lima', 'Oslo', 'Hanoi', 'Cairo', 'Quito'];",
+			"",
+			"const make = (count: number): Order[] => Array.from({length: count}, (_, i) => ({",
+			"  id: `ORD-\\${i + 1}`, customer: `Customer \\${(i * 7919) % 10007}`, city: cities[i % cities.length]!, items: (i * 13) % 9 + 1, total: ((i * 2654435761) % 100000) / 100,",
+			"}));",
+			"",
+			"const columns: DataGridColumn<Order>[] = [",
+			"  {id: 'id', header: 'Order', field: 'id', width: 120, sortable: true},",
+			"  {id: 'customer', header: 'Customer', field: 'customer', sortable: true},",
+			"  {id: 'city', header: 'City', field: 'city', sortable: true},",
+			"  {id: 'items', header: 'Items', field: 'items', width: 90, sortable: true, align: 'end'},",
+			"  {id: 'total', header: 'Total', cell: (r) => r.total.toFixed(2), sortValue: (r) => r.total, width: 110, sortable: true, align: 'end'},",
+			"];",
+			"",
+			"const big = make(100000);",
+			"",
+			"<DataGrid",
+			"  aria-label=\"Orders, 100,000 rows\"",
+			"  columns={columns}",
+			"  rows={big}",
+			"  height={320}",
+			"  getRowId={(r) => r.id}",
+			"/>"
 		]
 	},
 	"Monoline Data table": {
@@ -500,7 +629,25 @@
 		"body": [
 			"import {DataTable, type DataTableColumn} from '@monoline/react';",
 			"",
-			"<DataTable label=\"Team\" columns={columns} data={people} defaultSort={{id: 'name', direction: 'asc'}} />"
+			"interface Person {id: string; name: string; role: string; projects: number}",
+			"",
+			"const people: Person[] = [",
+			"  ['Ada Lovelace', 'Engineer', 4], ['Grace Hopper', 'Admiral', 9], ['Alan Turing', 'Researcher', 6], ['Katherine Johnson', 'Mathematician', 7],",
+			"  ['Linus Torvalds', 'Maintainer', 12], ['Margaret Hamilton', 'Director', 5], ['Dennis Ritchie', 'Engineer', 3], ['Barbara Liskov', 'Professor', 8],",
+			"].map(([name, role, projects], i) => ({id: String(i), name: name as string, role: role as string, projects: projects as number}));",
+			"",
+			"const columns: DataTableColumn<Person>[] = [",
+			"  {id: 'name', header: 'Name', sortable: true},",
+			"  {id: 'role', header: 'Role', sortable: true},",
+			"  {id: 'projects', header: 'Projects', sortable: true, align: 'end'},",
+			"];",
+			"",
+			"<DataTable",
+			"  label=\"Team\"",
+			"  columns={columns}",
+			"  data={people}",
+			"  defaultSort={{id: 'name', direction: 'asc'}}",
+			"/>"
 		]
 	},
 	"Monoline Date picker": {
@@ -510,7 +657,7 @@
 		"body": [
 			"import {DatePicker, Field} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '260px', minHeight: '360px'}}><Field label=\"Due date\"><DatePicker weekStartsOn={1} /></Field></div>"
+			"<DatePicker weekStartsOn={1} />"
 		]
 	},
 	"Monoline Date range picker": {
@@ -520,7 +667,7 @@
 		"body": [
 			"import {DateRangePicker, Field} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px', minHeight: '440px'}}><Field label=\"Stay\"><DateRangePicker weekStartsOn={1} /></Field></div>"
+			"<DateRangePicker weekStartsOn={1} />"
 		]
 	},
 	"Monoline Description list": {
@@ -530,7 +677,9 @@
 		"body": [
 			"import {DescriptionList} from '@monoline/react';",
 			"",
-			"<DescriptionList items={[{term: 'Plan', details: 'Pro'}, {term: 'Seats', details: '12'}, {term: 'Renews', details: '1 March 2027'}]} />"
+			"<DescriptionList",
+			"  items={[{term: 'Plan', details: 'Pro'}, {term: 'Seats', details: '12'}, {term: 'Renews', details: '1 March 2027'}]}",
+			"/>"
 		]
 	},
 	"Monoline Dialog": {
@@ -541,10 +690,10 @@
 			"import {Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from '@monoline/react';",
 			"",
 			"<Dialog>",
-			"  <DialogTrigger asChild><Button>Overwrite copy</Button></DialogTrigger>",
+			"  <DialogTrigger asChild><Button variant=\"line\">Overwrite copy</Button></DialogTrigger>",
 			"  <DialogContent>",
 			"    <DialogHeader><DialogTitle>Overwrite the remote copy?</DialogTitle><DialogDescription>The copy on this device is newer. Changes from 12 March on the other device will be lost.</DialogDescription></DialogHeader>",
-			"    <DialogFooter><DialogClose asChild><Button>Keep both</Button></DialogClose><DialogClose asChild><Button variant=\"solid\">Overwrite</Button></DialogClose></DialogFooter>",
+			"    <DialogFooter><DialogClose asChild><Button variant=\"line\">Keep both</Button></DialogClose><DialogClose asChild><Button variant=\"solid\">Overwrite</Button></DialogClose></DialogFooter>",
 			"  </DialogContent>",
 			"</Dialog>"
 		]
@@ -552,11 +701,20 @@
 	"Monoline Direction provider": {
 		"prefix": "ml-direction-provider",
 		"scope": "typescriptreact,javascriptreact",
-		"description": "Direction provider: Sets the reading direction (ltr or rtl) once for every Radix-based component below it.",
+		"description": "Direction provider: Sets the reading direction (ltr or rtl) once for every component below it that reads it: tabs, slider, menus, select and more.",
 		"body": [
 			"import {DirectionProvider, Tabs, TabsContent, TabsList, TabsTrigger} from '@monoline/react';",
 			"",
-			"<div dir=\"rtl\"><DirectionProvider dir=\"rtl\"><Tabs defaultValue=\"a\"><TabsList aria-label=\"Sections\"><TabsTrigger value=\"a\">الأول</TabsTrigger><TabsTrigger value=\"b\">الثاني</TabsTrigger></TabsList><TabsContent value=\"a\">محتوى</TabsContent><TabsContent value=\"b\">محتوى آخر</TabsContent></Tabs></DirectionProvider></div>"
+			"<DirectionProvider dir=\"rtl\">",
+			"  <Tabs defaultValue=\"a\">",
+			"    <TabsList aria-label=\"Sections\">",
+			"      <TabsTrigger value=\"a\">الأول</TabsTrigger>",
+			"      <TabsTrigger value=\"b\">الثاني</TabsTrigger>",
+			"    </TabsList>",
+			"    <TabsContent value=\"a\">محتوى</TabsContent>",
+			"    <TabsContent value=\"b\">محتوى آخر</TabsContent>",
+			"  </Tabs>",
+			"</DirectionProvider>"
 		]
 	},
 	"Monoline Dot pattern": {
@@ -577,7 +735,7 @@
 			"import {Button, Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger} from '@monoline/react';",
 			"",
 			"<Drawer key={side}>",
-			"  <DrawerTrigger asChild><Button>Open {side}</Button></DrawerTrigger>",
+			"  <DrawerTrigger asChild><Button variant=\"line\">Open {side}</Button></DrawerTrigger>",
 			"  <DrawerContent side={side}><DrawerHeader><DrawerTitle>Filters</DrawerTitle><DrawerDescription>Narrow the list by status or owner.</DrawerDescription></DrawerHeader></DrawerContent>",
 			"</Drawer>"
 		]
@@ -590,7 +748,7 @@
 			"import {Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from '@monoline/react';",
 			"",
 			"<DropdownMenu>",
-			"  <DropdownMenuTrigger asChild><Button>Actions</Button></DropdownMenuTrigger>",
+			"  <DropdownMenuTrigger asChild><Button variant=\"line\">Actions</Button></DropdownMenuTrigger>",
 			"  <DropdownMenuContent>",
 			"    <DropdownMenuLabel>Entry</DropdownMenuLabel>",
 			"    <DropdownMenuItem>Rename</DropdownMenuItem>",
@@ -608,7 +766,9 @@
 		"body": [
 			"import {Button, EmptyState} from '@monoline/react';",
 			"",
-			"<EmptyState title=\"No projects yet\" description=\"Projects you create show up here.\"><Button variant=\"solid\">New project</Button></EmptyState>"
+			"<EmptyState title=\"No projects yet\" description=\"Projects you create show up here.\">",
+			"  <Button variant=\"solid\">New project</Button>",
+			"</EmptyState>"
 		]
 	},
 	"Monoline Field": {
@@ -618,7 +778,9 @@
 		"body": [
 			"import {Field, Input} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: 360}}><Field label=\"Email\" hint=\"We never share it.\" required><Input type=\"email\" placeholder=\"you@example.com\" /></Field></div>"
+			"<Field label=\"Email\" hint=\"We never share it.\" required>",
+			"  <Input type=\"email\" placeholder=\"you@example.com\" />",
+			"</Field>"
 		]
 	},
 	"Monoline Fieldset": {
@@ -628,7 +790,14 @@
 		"body": [
 			"import {Field, Fieldset, Input} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '360px'}}><Fieldset legend=\"Contact\"><Field label=\"Name\"><Input /></Field><Field label=\"Email\"><Input type=\"email\" /></Field></Fieldset></div>"
+			"<Fieldset legend=\"Contact\">",
+			"  <Field label=\"Name\">",
+			"    <Input />",
+			"  </Field>",
+			"  <Field label=\"Email\">",
+			"    <Input type=\"email\" />",
+			"  </Field>",
+			"</Fieldset>"
 		]
 	},
 	"Monoline File upload": {
@@ -638,7 +807,7 @@
 		"body": [
 			"import {FileUpload} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '420px'}}><FileUpload multiple accept=\"image/*,.pdf\" label=\"Drop files here or choose\" /></div>"
+			"<FileUpload multiple accept=\"image/*,.pdf\" label=\"Drop files here or choose\" />"
 		]
 	},
 	"Monoline Flex": {
@@ -648,7 +817,10 @@
 		"body": [
 			"import {Badge, Flex} from '@monoline/react';",
 			"",
-			"<Flex justify=\"between\" align=\"center\" gap={3}><Badge>left</Badge><Badge>right</Badge></Flex>"
+			"<Flex justify=\"between\" align=\"center\" gap={3}>",
+			"  <Badge>left</Badge>",
+			"  <Badge>right</Badge>",
+			"</Flex>"
 		]
 	},
 	"Monoline Form": {
@@ -677,7 +849,7 @@
 			"    >",
 			"      <Field label=\"Name\" name=\"name\"><Input name=\"name\" /></Field>",
 			"      <Field label=\"Email\" name=\"email\"><Input name=\"email\" type=\"email\" /></Field>",
-			"      <FormActions><Button type=\"submit\" variant=\"solid\">Send</Button><Button type=\"reset\">Clear</Button></FormActions>",
+			"      <FormActions><Button type=\"submit\" variant=\"solid\">Send</Button><Button variant=\"line\" type=\"reset\">Clear</Button></FormActions>",
 			"    </Form>",
 			"  );",
 			"}",
@@ -702,7 +874,9 @@
 		"body": [
 			"import {Card, Grid} from '@monoline/react';",
 			"",
-			"<Grid columns={3}>{['One', 'Two', 'Three'].map((n) => <Card key={n}>{n}</Card>)}</Grid>"
+			"<Grid columns={3}>",
+			"  {['One', 'Two', 'Three'].map((n) => <Card key={n}>{n}</Card>)}",
+			"</Grid>"
 		]
 	},
 	"Monoline Heading": {
@@ -712,7 +886,7 @@
 		"body": [
 			"import {Heading} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s3)'}}><Heading level={1}>Display</Heading><Heading level={2}>Section</Heading><Heading level={3}>Subsection</Heading><Heading level={2} size=\"sm\">An h2 that looks small</Heading></div>"
+			"<Heading level={1}>Display</Heading>"
 		]
 	},
 	"Monoline Hover card": {
@@ -722,7 +896,15 @@
 		"body": [
 			"import {HoverCard, HoverCardContent, HoverCardTrigger} from '@monoline/react';",
 			"",
-			"<HoverCard><HoverCardTrigger asChild><a href=\"#ada\">@ada</a></HoverCardTrigger><HoverCardContent><strong>Ada Lovelace</strong><p className=\"muted small\">Wrote the first published program.</p></HoverCardContent></HoverCard>"
+			"<HoverCard>",
+			"  <HoverCardTrigger asChild>",
+			"    <a href=\"#ada\">@ada</a>",
+			"  </HoverCardTrigger>",
+			"  <HoverCardContent>",
+			"    <strong>Ada Lovelace</strong>",
+			"    <p className=\"muted small\">Wrote the first published program.</p>",
+			"  </HoverCardContent>",
+			"</HoverCard>"
 		]
 	},
 	"Monoline Icon button": {
@@ -732,7 +914,9 @@
 		"body": [
 			"import {IconButton} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s3)'}}><IconButton aria-label=\"Add\"><Plus /></IconButton><IconButton variant=\"solid\" aria-label=\"Add item\"><Plus /></IconButton><IconButton variant=\"ghost\" size=\"sm\" aria-label=\"Add row\"><Plus /></IconButton></div>"
+			"<IconButton aria-label=\"Add\">",
+			"  <Plus />",
+			"</IconButton>"
 		]
 	},
 	"Monoline Image gallery": {
@@ -742,7 +926,7 @@
 		"body": [
 			"import {ImageGallery, type GalleryImage} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '480px'}}><ImageGallery images={images} /></div>"
+			"<ImageGallery images={images} />"
 		]
 	},
 	"Monoline Image": {
@@ -752,7 +936,7 @@
 		"body": [
 			"import {Image} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px'}}><Image src={svg('#999')} alt=\"A grey placeholder\" ratio={16 / 9} /></div>"
+			"<Image src={svg('#999')} alt=\"A grey placeholder\" ratio={16 / 9} />"
 		]
 	},
 	"Monoline Input": {
@@ -762,7 +946,7 @@
 		"body": [
 			"import {Input} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: 320}}><Input aria-label=\"Name\" placeholder=\"Ada Lovelace\" /></div>"
+			"<Input aria-label=\"Name\" placeholder=\"Ada Lovelace\" />"
 		]
 	},
 	"Monoline Kbd": {
@@ -782,7 +966,7 @@
 		"body": [
 			"import {Label} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s2)', maxWidth: 320}}><Label htmlFor=\"demo-label\" required>Email</Label><input id=\"demo-label\" className=\"input\" placeholder=\"you@example.com\" /></div>"
+			"<Label htmlFor=\"demo-label\" required>Email</Label>"
 		]
 	},
 	"Monoline Line chart": {
@@ -792,7 +976,11 @@
 		"body": [
 			"import {LineChart} from '@monoline/react';",
 			"",
-			"<LineChart title=\"Response time\" showPoints data={[{label: 'Mon', value: 120}, {label: 'Tue', value: 98}, {label: 'Wed', value: 143}, {label: 'Thu', value: 110}, {label: 'Fri', value: 87}]} />"
+			"<LineChart",
+			"  title=\"Response time\"",
+			"  showPoints",
+			"  data={[{label: 'Mon', value: 120}, {label: 'Tue', value: 98}, {label: 'Wed', value: 143}, {label: 'Thu', value: 110}, {label: 'Fri', value: 87}]}",
+			"/>"
 		]
 	},
 	"Monoline Link": {
@@ -812,7 +1000,9 @@
 		"body": [
 			"import {Marquee} from '@monoline/react';",
 			"",
-			"<Marquee duration={20}>{['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>{n}</span>)}</Marquee>"
+			"<Marquee duration={20}>",
+			"  {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>{n}</span>)}",
+			"</Marquee>"
 		]
 	},
 	"Monoline Mentions": {
@@ -822,7 +1012,7 @@
 		"body": [
 			"import {Field, Mentions, type MentionOption} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '360px', minHeight: '220px'}}><Field label=\"Comment\"><Mentions options={people} rows={3} /></Field></div>"
+			"<Mentions options={people} rows={3} />"
 		]
 	},
 	"Monoline Menubar": {
@@ -845,7 +1035,17 @@
 		"body": [
 			"import {Field, MultiSelect} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '360px', minHeight: '280px'}}><Field label=\"People\"><MultiSelect options={options} placeholder=\"Type a name\" defaultValue={['ada-lovelace']} /></Field></div>"
+			"const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({value: n.toLowerCase().replace(/\\\\W+/g, '-'), label: n}));",
+			"",
+			"<div style={{maxWidth: '360px', minHeight: '280px'}}>",
+			"  <Field label=\"People\">",
+			"    <MultiSelect",
+			"      options={options}",
+			"      placeholder=\"Type a name\"",
+			"      defaultValue={['ada-lovelace']}",
+			"    />",
+			"  </Field>",
+			"</div>"
 		]
 	},
 	"Monoline Native select": {
@@ -855,7 +1055,21 @@
 		"body": [
 			"import {Field, NativeSelect} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '280px'}}><Field label=\"Plan\"><NativeSelect defaultValue=\"pro\"><option value=\"free\">Free</option><option value=\"pro\">Pro</option><option value=\"team\">Team</option></NativeSelect></Field></div>"
+			"<NativeSelect defaultValue=\"pro\">",
+			"  <option value=\"free\">Free</option>",
+			"  <option value=\"pro\">Pro</option>",
+			"  <option value=\"team\">Team</option>",
+			"</NativeSelect>"
+		]
+	},
+	"Monoline Navbar": {
+		"prefix": "ml-navbar",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "Navbar: A top bar with brand, links and an actions slot; links move into a drawer on small screens.",
+		"body": [
+			"import {Button, Navbar} from '@monoline/react';",
+			"",
+			"<Navbar brand=\"Acme\" links={links} actions={<Button variant=\"solid\" size=\"sm\">Sign in</Button>} />"
 		]
 	},
 	"Monoline Navigation menu": {
@@ -915,7 +1129,7 @@
 		"body": [
 			"import {Field, NumberInput} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '200px'}}><Field label=\"Quantity\"><NumberInput defaultValue={1} min={0} max={10} /></Field></div>"
+			"<NumberInput defaultValue={1} min={0} max={10} />"
 		]
 	},
 	"Monoline Number ticker": {
@@ -925,7 +1139,7 @@
 		"body": [
 			"import {NumberTicker} from '@monoline/react';",
 			"",
-			"<p style={{fontFamily: 'var(--font-display)', fontSize: 'var(--display-sm)'}}><NumberTicker value={12840} /></p>"
+			"<NumberTicker value={12840} />"
 		]
 	},
 	"Monoline Orbiting circles": {
@@ -959,6 +1173,21 @@
 			"<OverflowList items={names.map((n) => ({id: n, label: <Tag>{n}</Tag>}))} />"
 		]
 	},
+	"Monoline Page header": {
+		"prefix": "ml-page-header",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "Page header: The top of a page: breadcrumbs, title, description and actions.",
+		"body": [
+			"import {Breadcrumb, Button, PageHeader} from '@monoline/react';",
+			"",
+			"<PageHeader",
+			"  breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Ada Example'}]} />}",
+			"  title=\"Ada Example\"",
+			"  description=\"Joined in March. On the Team plan.\"",
+			"  actions={<><Button>Export</Button><Button variant=\"solid\">Edit customer</Button></>}",
+			"/>"
+		]
+	},
 	"Monoline Pagination": {
 		"prefix": "ml-pagination",
 		"scope": "typescriptreact,javascriptreact",
@@ -977,7 +1206,7 @@
 		"body": [
 			"import {Field, PasswordInput} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px'}}><Field label=\"Password\"><PasswordInput autoComplete=\"current-password\" /></Field></div>"
+			"<PasswordInput autoComplete=\"current-password\" />"
 		]
 	},
 	"Monoline Pie chart": {
@@ -997,7 +1226,14 @@
 		"body": [
 			"import {Button, Popover, PopoverContent, PopoverTrigger} from '@monoline/react';",
 			"",
-			"<Popover><PopoverTrigger asChild><Button>Details</Button></PopoverTrigger><PopoverContent aria-label=\"Entry details\"><p style={{margin: 0}}>Logged today at 14:20. 3 files changed.</p></PopoverContent></Popover>"
+			"<Popover>",
+			"  <PopoverTrigger asChild>",
+			"    <Button variant=\"line\">Details</Button>",
+			"  </PopoverTrigger>",
+			"  <PopoverContent aria-label=\"Entry details\">",
+			"    <p style={{margin: 0}}>Logged today at 14:20. 3 files changed.</p>",
+			"  </PopoverContent>",
+			"</Popover>"
 		]
 	},
 	"Monoline Progress": {
@@ -1007,7 +1243,7 @@
 		"body": [
 			"import {Progress} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s4)', maxWidth: 420}}><Progress aria-label=\"Upload\" value={62} /><Progress aria-label=\"Waiting\" /></div>"
+			"<Progress aria-label=\"Upload\" value={62} />"
 		]
 	},
 	"Monoline Radio group": {
@@ -1017,7 +1253,10 @@
 		"body": [
 			"import {RadioGroup, RadioGroupItem} from '@monoline/react';",
 			"",
-			"<RadioGroup aria-label=\"Plan\" defaultValue=\"monthly\"><RadioGroupItem value=\"monthly\" label=\"Monthly\" /><RadioGroupItem value=\"yearly\" label=\"Yearly\" /></RadioGroup>"
+			"<RadioGroup aria-label=\"Plan\" defaultValue=\"monthly\">",
+			"  <RadioGroupItem value=\"monthly\" label=\"Monthly\" />",
+			"  <RadioGroupItem value=\"yearly\" label=\"Yearly\" />",
+			"</RadioGroup>"
 		]
 	},
 	"Monoline Range calendar": {
@@ -1082,7 +1321,14 @@
 		"body": [
 			"import {ScrollArea} from '@monoline/react';",
 			"",
-			"<ScrollArea style={{height: '160px', width: '320px', border: '1px solid var(--rule)'}} viewportProps={{'aria-label': 'Release notes'}}><div style={{padding: 'var(--s3)'}}>{Array.from({length: 20}, (_, i) => <p key={i}>Release note {i + 1}</p>)}</div></ScrollArea>"
+			"<ScrollArea",
+			"  style={{height: '160px', width: '320px', border: '1px solid var(--rule)'}}",
+			"  viewportProps={{'aria-label': 'Release notes'}}",
+			">",
+			"  <div style={{padding: 'var(--s3)'}}>",
+			"    {Array.from({length: 20}, (_, i) => <p key={i}>Release note {i + 1}</p>)}",
+			"  </div>",
+			"</ScrollArea>"
 		]
 	},
 	"Monoline Scroll progress": {
@@ -1102,7 +1348,11 @@
 		"body": [
 			"import {SegmentedControl} from '@monoline/react';",
 			"",
-			"<SegmentedControl aria-label=\"Chart range\" options={[{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}]} defaultValue=\"week\" />"
+			"<SegmentedControl",
+			"  aria-label=\"Chart range\"",
+			"  options={[{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}]}",
+			"  defaultValue=\"week\"",
+			"/>"
 		]
 	},
 	"Monoline Select": {
@@ -1112,7 +1362,19 @@
 		"body": [
 			"import {Field, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: 320}}><Field label=\"Sync every\"><Select defaultValue=\"15\"><SelectTrigger><SelectValue placeholder=\"Choose\" /></SelectTrigger><SelectContent><SelectGroup><SelectLabel>Interval</SelectLabel><SelectItem value=\"5\">5 minutes</SelectItem><SelectItem value=\"15\">15 minutes</SelectItem><SelectItem value=\"60\">Hour</SelectItem></SelectGroup></SelectContent></Select></Field></div>"
+			"<Select defaultValue=\"15\">",
+			"  <SelectTrigger>",
+			"    <SelectValue placeholder=\"Choose\" />",
+			"  </SelectTrigger>",
+			"  <SelectContent>",
+			"    <SelectGroup>",
+			"      <SelectLabel>Interval</SelectLabel>",
+			"      <SelectItem value=\"5\">5 minutes</SelectItem>",
+			"      <SelectItem value=\"15\">15 minutes</SelectItem>",
+			"      <SelectItem value=\"60\">Hour</SelectItem>",
+			"    </SelectGroup>",
+			"  </SelectContent>",
+			"</Select>"
 		]
 	},
 	"Monoline Separator": {
@@ -1122,7 +1384,7 @@
 		"body": [
 			"import {Separator} from '@monoline/react';",
 			"",
-			"<div><p>Above</p><Separator /><p>Below</p><div style={{display: 'flex', alignItems: 'center', height: 24}}><span>One</span><Separator orientation=\"vertical\" /><span>Two</span></div></div>"
+			"<Separator />"
 		]
 	},
 	"Monoline Shimmer button": {
@@ -1135,6 +1397,17 @@
 			"<ShimmerButton>Start free trial</ShimmerButton>"
 		]
 	},
+	"Monoline Sidebar": {
+		"prefix": "ml-sidebar",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "Sidebar: A collapsible navigation sidebar with groups, icons and a mobile drawer.",
+		"body": [
+			"import {type CSSProperties, type ReactNode} from 'react';",
+			"import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarItem, SidebarProvider, SidebarToggle, SidebarTrigger, useSidebar} from '@monoline/react';",
+			"",
+			"<Sidebar drawerTitle=\"Acme\"><Nav><SidebarFooter><SidebarGroup><SidebarItem href=\"#help\" icon={<Icon d=\"M8 14A6 6 0 108 2a6 6 0 000 12zM8 11v.01M6.5 6.5a1.5 1.5 0 113 0c0 1-1.5 1-1.5 2\" />}>Help</SidebarItem></SidebarGroup></SidebarFooter></Nav></Sidebar>"
+		]
+	},
 	"Monoline Skeleton": {
 		"prefix": "ml-skeleton",
 		"scope": "typescriptreact,javascriptreact",
@@ -1142,7 +1415,7 @@
 		"body": [
 			"import {Skeleton} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s3)', maxWidth: 420}}><Skeleton style={{width: '60%'}} /><Skeleton style={{width: '90%'}} /><Skeleton variant=\"hatch\" /></div>"
+			"<Skeleton style={{width: '60%'}} />"
 		]
 	},
 	"Monoline Slider": {
@@ -1152,7 +1425,7 @@
 		"body": [
 			"import {Slider} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s5)', maxWidth: 420}}><Slider aria-label=\"Volume\" defaultValue={60} /><Slider aria-label=\"Price\" defaultValue={[20, 70]} /></div>"
+			"<Slider aria-label=\"Volume\" defaultValue={60} />"
 		]
 	},
 	"Monoline Sortable list": {
@@ -1162,7 +1435,7 @@
 		"body": [
 			"import {SortableList, type SortableItem} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '360px'}}><SortableList aria-label=\"Tasks\" defaultValue={items} /></div>"
+			"<SortableList aria-label=\"Tasks\" defaultValue={items} />"
 		]
 	},
 	"Monoline Sparkline": {
@@ -1182,7 +1455,7 @@
 		"body": [
 			"import {Spinner} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Spinner /><span className=\"muted small\">Syncing 42 entries</span></div>"
+			"<Spinner />"
 		]
 	},
 	"Monoline Spotlight": {
@@ -1205,7 +1478,11 @@
 		"body": [
 			"import {Badge, Stack} from '@monoline/react';",
 			"",
-			"<Stack gap={2}><Badge>one</Badge><Badge>two</Badge><Badge>three</Badge></Stack>"
+			"<Stack gap={2}>",
+			"  <Badge>one</Badge>",
+			"  <Badge>two</Badge>",
+			"  <Badge>three</Badge>",
+			"</Stack>"
 		]
 	},
 	"Monoline Stat": {
@@ -1215,7 +1492,7 @@
 		"body": [
 			"import {Stat} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s7)', flexWrap: 'wrap'}}><Stat label=\"Revenue\" value=\"\\$12k\" note=\"+4% this week\" /><Stat label=\"Users\" value=\"1,204\" note=\"all time\" /></div>"
+			"<Stat label=\"Revenue\" value=\"\\$12k\" note=\"+4% this week\" />"
 		]
 	},
 	"Monoline Stepper": {
@@ -1225,7 +1502,11 @@
 		"body": [
 			"import {Stepper} from '@monoline/react';",
 			"",
-			"<Stepper aria-label=\"Checkout\" current={1} steps={[{title: 'Account'}, {title: 'Plan', description: 'Pick one'}, {title: 'Payment'}]} />"
+			"<Stepper",
+			"  aria-label=\"Checkout\"",
+			"  current={1}",
+			"  steps={[{title: 'Account'}, {title: 'Plan', description: 'Pick one'}, {title: 'Payment'}]}",
+			"/>"
 		]
 	},
 	"Monoline Switch": {
@@ -1235,7 +1516,7 @@
 		"body": [
 			"import {Switch} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s3)'}}><Switch label=\"Launch at login\" defaultChecked /><Switch label=\"Weekly digest\" /><Switch label=\"Locked\" disabled /></div>"
+			"<Switch label=\"Launch at login\" defaultChecked />"
 		]
 	},
 	"Monoline Table": {
@@ -1262,7 +1543,16 @@
 		"body": [
 			"import {Tabs, TabsContent, TabsList, TabsTrigger} from '@monoline/react';",
 			"",
-			"<Tabs defaultValue=\"overview\"><TabsList aria-label=\"Project\"><TabsTrigger value=\"overview\">Overview</TabsTrigger><TabsTrigger value=\"activity\">Activity</TabsTrigger><TabsTrigger value=\"settings\">Settings</TabsTrigger></TabsList><TabsContent value=\"overview\">Overview content.</TabsContent><TabsContent value=\"activity\">Activity content.</TabsContent><TabsContent value=\"settings\">Settings content.</TabsContent></Tabs>"
+			"<Tabs defaultValue=\"overview\">",
+			"  <TabsList aria-label=\"Project\">",
+			"    <TabsTrigger value=\"overview\">Overview</TabsTrigger>",
+			"    <TabsTrigger value=\"activity\">Activity</TabsTrigger>",
+			"    <TabsTrigger value=\"settings\">Settings</TabsTrigger>",
+			"  </TabsList>",
+			"  <TabsContent value=\"overview\">Overview content.</TabsContent>",
+			"  <TabsContent value=\"activity\">Activity content.</TabsContent>",
+			"  <TabsContent value=\"settings\">Settings content.</TabsContent>",
+			"</Tabs>"
 		]
 	},
 	"Monoline Tag": {
@@ -1282,7 +1572,7 @@
 		"body": [
 			"import {Field, TagsInput} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '360px'}}><Field label=\"Keywords\"><TagsInput placeholder=\"Add a keyword\" defaultValue={['design', 'css']} /></Field></div>"
+			"<TagsInput placeholder=\"Add a keyword\" defaultValue={['design', 'css']} />"
 		]
 	},
 	"Monoline Text reveal": {
@@ -1292,7 +1582,10 @@
 		"body": [
 			"import {TextReveal} from '@monoline/react';",
 			"",
-			"<TextReveal text=\"Every word arrives in turn, so the eye can follow the sentence.\" style={{fontFamily: 'var(--font-display)', fontSize: 'var(--display-sm)'}} />"
+			"<TextReveal",
+			"  text=\"Every word arrives in turn, so the eye can follow the sentence.\"",
+			"  style={{fontFamily: 'var(--font-display)', fontSize: 'var(--display-sm)'}}",
+			"/>"
 		]
 	},
 	"Monoline Text": {
@@ -1302,7 +1595,7 @@
 		"body": [
 			"import {Text} from '@monoline/react';",
 			"",
-			"<div style={{display: 'grid', gap: 'var(--s2)'}}><Text size=\"lg\">Large</Text><Text>Medium</Text><Text size=\"sm\" tone=\"muted\">Small and muted</Text><Text size=\"xs\" tone=\"danger\">Extra small, danger</Text></div>"
+			"<Text size=\"lg\">Large</Text>"
 		]
 	},
 	"Monoline Textarea": {
@@ -1312,7 +1605,7 @@
 		"body": [
 			"import {Textarea} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: 420}}><Textarea aria-label=\"Notes\" placeholder=\"What happened today?\" /></div>"
+			"<Textarea aria-label=\"Notes\" placeholder=\"What happened today?\" />"
 		]
 	},
 	"Monoline Theme provider": {
@@ -1322,7 +1615,9 @@
 		"body": [
 			"import {Button, ThemeProvider, ThemeSwitcher, useTheme} from '@monoline/react';",
 			"",
-			"<ThemeProvider storageKey=\"monoline-demo\"><Controls /></ThemeProvider>"
+			"<ThemeProvider storageKey=\"monoline-demo\">",
+			"  <Controls />",
+			"</ThemeProvider>"
 		]
 	},
 	"Monoline Time field": {
@@ -1332,7 +1627,7 @@
 		"body": [
 			"import {Field, TimeField} from '@monoline/react';",
 			"",
-			"<Field label=\"Start time\"><TimeField defaultValue=\"09:30\" /></Field>"
+			"<TimeField defaultValue=\"09:30\" />"
 		]
 	},
 	"Monoline Time picker": {
@@ -1342,7 +1637,7 @@
 		"body": [
 			"import {Field, TimePicker} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '200px'}}><Field label=\"Start time\"><TimePicker defaultValue=\"09:30\" /></Field></div>"
+			"<TimePicker defaultValue=\"09:30\" />"
 		]
 	},
 	"Monoline Timeline": {
@@ -1352,7 +1647,11 @@
 		"body": [
 			"import {Timeline, TimelineItem} from '@monoline/react';",
 			"",
-			"<Timeline aria-label=\"Activity\"><TimelineItem title=\"Project created\" time=\"3 days ago\" dateTime=\"2026-11-09\">Ada started the project.</TimelineItem><TimelineItem title=\"First release\" time=\"Yesterday\" dateTime=\"2026-11-11\" /><TimelineItem title=\"Public\" time=\"Today\" dateTime=\"2026-11-12\" /></Timeline>"
+			"<Timeline aria-label=\"Activity\">",
+			"  <TimelineItem title=\"Project created\" time=\"3 days ago\" dateTime=\"2026-11-09\">Ada started the project.</TimelineItem>",
+			"  <TimelineItem title=\"First release\" time=\"Yesterday\" dateTime=\"2026-11-11\" />",
+			"  <TimelineItem title=\"Public\" time=\"Today\" dateTime=\"2026-11-12\" />",
+			"</Timeline>"
 		]
 	},
 	"Monoline Toast": {
@@ -1381,6 +1680,17 @@
 			"<Toaster />"
 		]
 	},
+	"Monoline Table of contents": {
+		"prefix": "ml-toc",
+		"scope": "typescriptreact,javascriptreact",
+		"description": "Table of contents: An on-this-page list of links to the headings of the current page, with the heading being read highlighted.",
+		"body": [
+			"import {useRef} from 'react';",
+			"import {Toc} from '@monoline/react';",
+			"",
+			"<Toc container={ref} />"
+		]
+	},
 	"Monoline Toggle group": {
 		"prefix": "ml-toggle-group",
 		"scope": "typescriptreact,javascriptreact",
@@ -1388,7 +1698,11 @@
 		"body": [
 			"import {ToggleGroup, ToggleGroupItem} from '@monoline/react';",
 			"",
-			"<ToggleGroup type=\"single\" defaultValue=\"30\" aria-label=\"Range\"><ToggleGroupItem value=\"7\">7 days</ToggleGroupItem><ToggleGroupItem value=\"30\">30 days</ToggleGroupItem><ToggleGroupItem value=\"365\">Year</ToggleGroupItem></ToggleGroup>"
+			"<ToggleGroup type=\"single\" defaultValue=\"30\" aria-label=\"Range\">",
+			"  <ToggleGroupItem value=\"7\">7 days</ToggleGroupItem>",
+			"  <ToggleGroupItem value=\"30\">30 days</ToggleGroupItem>",
+			"  <ToggleGroupItem value=\"365\">Year</ToggleGroupItem>",
+			"</ToggleGroup>"
 		]
 	},
 	"Monoline Toggle": {
@@ -1398,7 +1712,7 @@
 		"body": [
 			"import {Toggle} from '@monoline/react';",
 			"",
-			"<div style={{display: 'flex', gap: 'var(--s3)'}}><Toggle>Bold</Toggle><Toggle defaultPressed>Italic</Toggle><Toggle disabled>Locked</Toggle></div>"
+			"<Toggle>Bold</Toggle>"
 		]
 	},
 	"Monoline Toolbar": {
@@ -1408,7 +1722,13 @@
 		"body": [
 			"import {Toolbar, ToolbarButton, ToolbarSeparator} from '@monoline/react';",
 			"",
-			"<Toolbar aria-label=\"Text formatting\"><ToolbarButton>Bold</ToolbarButton><ToolbarButton>Italic</ToolbarButton><ToolbarButton>Underline</ToolbarButton><ToolbarSeparator /><ToolbarButton>Link</ToolbarButton></Toolbar>"
+			"<Toolbar aria-label=\"Text formatting\">",
+			"  <ToolbarButton>Bold</ToolbarButton>",
+			"  <ToolbarButton>Italic</ToolbarButton>",
+			"  <ToolbarButton>Underline</ToolbarButton>",
+			"  <ToolbarSeparator />",
+			"  <ToolbarButton>Link</ToolbarButton>",
+			"</Toolbar>"
 		]
 	},
 	"Monoline Tooltip": {
@@ -1418,7 +1738,9 @@
 		"body": [
 			"import {Button, Tooltip, TooltipProvider} from '@monoline/react';",
 			"",
-			"<TooltipProvider><div style={{display: 'flex', gap: 'var(--s3)'}}><Tooltip content=\"Saved to ~/Notes\"><Button>Save</Button></Tooltip><Tooltip content=\"Below\" side=\"bottom\"><Button>Bottom</Button></Tooltip></div></TooltipProvider>"
+			"<Tooltip content=\"Saved to ~/Notes\">",
+			"  <Button variant=\"line\">Save</Button>",
+			"</Tooltip>"
 		]
 	},
 	"Monoline Tour": {
@@ -1461,7 +1783,7 @@
 		"body": [
 			"import {Field, TreeSelect, type TreeNode} from '@monoline/react';",
 			"",
-			"<div style={{maxWidth: '320px', minHeight: '300px'}}><Field label=\"Team\"><TreeSelect items={items} placeholder=\"Choose a team\" /></Field></div>"
+			"<TreeSelect items={items} placeholder=\"Choose a team\" />"
 		]
 	},
 	"Monoline Tree": {
@@ -1481,7 +1803,7 @@
 		"body": [
 			"import {Typewriter} from '@monoline/react';",
 			"",
-			"<p style={{fontFamily: 'var(--font-display)', fontSize: 'var(--display-sm)'}}><Typewriter text=\"Small parts, drawn with thin lines.\" /></p>"
+			"<Typewriter text=\"Small parts, drawn with thin lines.\" />"
 		]
 	},
 	"Monoline useClickOutside": {
@@ -1786,7 +2108,13 @@
 		"body": [
 			"import {VirtualList} from '@monoline/react';",
 			"",
-			"<VirtualList aria-label=\"Ten thousand rows\" count={10000} itemHeight={32} height={192} renderItem={(i) => <span className=\"virtual-list-cell\">Row {i + 1}</span>} />"
+			"<VirtualList",
+			"  aria-label=\"Ten thousand rows\"",
+			"  count={10000}",
+			"  itemHeight={32}",
+			"  height={192}",
+			"  renderItem={(i) => <span className=\"virtual-list-cell\">Row {i + 1}</span>}",
+			"/>"
 		]
 	}
 }

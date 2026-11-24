@@ -246,9 +246,7 @@
     "block-settings-head",
     "block-settings-row"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-settings-form/block-settings-form.tsx",

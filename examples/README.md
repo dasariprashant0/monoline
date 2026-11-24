@@ -12,6 +12,8 @@ Three small apps that use Monoline the way a consumer would: `import '@monoline/
 
 Starters in `starters/`: `vite`, `next` (App Router), `astro` and `react-router` (the framework mode Remix became). Each is a standalone app with no aliases: it imports `@monoline/react` and `@monoline/css` like any consumer. `npm run install-smoke` (repo root, after `npm run build`) packs both packages, installs the tarballs into a fresh temp dir with React 18 and with React 19, builds every starter (Next.js only on React 19, which it needs) and server-renders from the ESM and CJS entry points.
 
+The starters depend on `@monoline/css` and `@monoline/react` `^0.5.0`. Until 0.5.0 is published, `npm install` in a copied starter fails; `npm run install-smoke` installs the packed local packages instead.
+
 ## Run them
 
 From the repo root:

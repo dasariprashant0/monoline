@@ -107,9 +107,7 @@
     "seg-opt",
     "time-picker"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/time-picker/index.ts",

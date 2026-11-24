@@ -159,9 +159,7 @@
     "multi-select-option",
     "multi-select-empty"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/multi-select/index.ts",

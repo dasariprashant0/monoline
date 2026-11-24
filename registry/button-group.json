@@ -66,9 +66,7 @@
     "spinner",
     "btn-group"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/button-group/button-group.tsx",

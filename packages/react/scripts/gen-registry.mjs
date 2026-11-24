@@ -100,7 +100,12 @@ for (const u of all) {
   const source = readdirSync(u.dir).filter((f) => /\.(tsx?|json)$/.test(f) && !/\.(test|demo)\./.test(f)).sort()
     .map((f) => ({path: `${path}/${f}`, content: readFileSync(join(u.dir, f), 'utf8')}));
   const css = meta.css.map((f, i) => ({path: `packages/css/src/components/${f}`, content: cssTexts[i]}));
-  perComponent.set(u.name, JSON.stringify({...entry, dependencies: {'radix-ui': '^1.4.2'}, source, utils: sharedUtils(source), css}, null, 2) + '\n');
+  const utils = sharedUtils(source);
+  // radix-ui is listed only when the copied files (the component and its shared helpers) import it.
+  const usesRadix = [...source, ...utils].some((f) => /from ['"]radix-ui['"]/.test(f.content));
+  const ownRadix = source.some((f) => /from ['"]radix-ui['"]/.test(f.content));
+  if (ownRadix !== /^radix-ui/.test(meta.primitive ?? '')) throw new Error(`${u.name}: meta.json "primitive" must start with "radix-ui" exactly when the component's own source imports radix-ui`);
+  perComponent.set(u.name, JSON.stringify({...entry, dependencies: usesRadix ? {'radix-ui': '^1.4.2'} : {}, source, utils, css}, null, 2) + '\n');
 }
 
 // index.json: the light list (no props, usage or classes; the per-component file has those). Prop names are here so search can match them.

@@ -87,9 +87,7 @@
     "danger",
     "menu-sep"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/context-menu/context-menu.tsx",

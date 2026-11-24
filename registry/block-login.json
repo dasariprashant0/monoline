@@ -209,9 +209,7 @@
     "block-login-head",
     "block-login-footer"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-login/block-login.tsx",

@@ -220,9 +220,7 @@
     "block-shell",
     "block-shell-brand"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-dashboard-shell/block-dashboard-shell.tsx",

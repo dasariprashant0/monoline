@@ -218,9 +218,7 @@
     "date-range-field",
     "date-range-error"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/date-range-picker/date-range-picker.tsx",

@@ -12,13 +12,18 @@ Versions follow [semver](https://semver.org). Before 1.0, a minor version may ch
 - **CSS anchor positioning** for the shared floating layer (`anchor-name`, `position-area`), opt-in with `data-anchor="native"` on `<html>` (and only where the browser supports it); `place()` stays the default, because in Chrome e2e the native path let a Select near the viewport edge shrink instead of flip. Collision padding is applied on viewport edges and the flipped side is reported in `data-side`.
 - **Install and cross-browser checks:** CI runs the unit tests on React 18 and 19, `npm run install-smoke` installs the packed packages into clean Vite, Next.js, Astro and React Router starters (`examples/starters/`), and the `cross-browser` job in `.github/workflows/e2e.yml` runs `scripts/e2e/cross-browser/smoke.mjs` on Firefox and WebKit (`ci.yml` does not run it; the Chrome e2e suite runs in the other `e2e.yml` job).
 
+- **Props and types from the audit fixes (all optional, nothing removed):** a `labels` object for the built-in strings of Pagination, NumberInput, Calendar, RangeCalendar and FileUpload; `open`, `defaultOpen` and `onOpenChange` on DatePicker and DateRangePicker, and `size` on DateRangePicker; `invalid` on Switch; `onSearchError` on Mentions; exported prop types for Popover, Select, Table, HoverCard, DropdownMenu and the Radix wrappers.
+- **CLI:** `monoline add` now copies the shared helpers a component imports (`utils/slot.tsx`, `utils/overlay.ts`, `utils/cx.ts`), so copied Button, Card and Dialog compile. The registry lists `radix-ui` as a dependency only for components whose copied files import it.
+
 ### Changed
 
+- Context-based parts (for example `DialogTitle` outside `Dialog`) throw a clear Monoline error when used outside their root. A Modal sets `aria-labelledby` only while a title is rendered.
 - Built CSS has a new layer, `monoline.options`, between components and utilities. `data-radius`, `data-font` and `data-density` rules moved out of `monoline.tokens` into it, so options restyle components in every bundle. The layer order is `base, tokens, components, options, utilities`.
-- The all-CSS size budget is 21 KB (was 20); the anchor-positioning path raised the budgets in `scripts/size.mjs`: Tooltip 2.5 to 2.9 KB, Popover 2.6 to 3.0 KB, DropdownMenu 3.7 to 4.0 KB, Select 5.4 to 5.6 KB.
+- The all-CSS size budget is 21 KB (was 20). The anchor-positioning path and the audit fixes raised the budgets in `scripts/size.mjs` (owner approved): Button 0.9, Dialog 2.2, AlertDialog 2.1, Drawer 2.2, Tooltip 3.4, Popover 3.4, DropdownMenu 4.5, Select 5.9 and Everything 102 KB.
 
 ### Fixed
 
+- Components that read Field context carry `'use client'`, so they work in Next.js Server Component trees; `useIntersection` no longer loops on inline thresholds; `useControllableState` returns a stable setter.
 - A tooltip no longer closes when keyboard focus scrolls its trigger into view.
 - A combobox no longer opens on focus alone, and the toast's focus proxies are out of the Tab order.
 - The context-menu demo trigger is a focusable button, so Shift+F10 works.

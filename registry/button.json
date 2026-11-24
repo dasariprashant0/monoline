@@ -4,7 +4,6 @@
   "category": "buttons",
   "description": "Triggers an action. Native button with solid, line, ghost and danger variants.",
   "status": "stable",
-  "primitive": "radix-ui/Slot",
   "css": [
     {
       "path": "packages/css/src/components/02-buttons.css",
@@ -90,9 +89,7 @@
     "skeleton-block",
     "skeleton-hatch"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/button/button.tsx",
@@ -104,7 +101,7 @@
     },
     {
       "path": "packages/react/src/components/button/meta.json",
-      "content": "{\"name\":\"button\",\"title\":\"Button\",\"category\":\"buttons\",\"description\":\"Triggers an action. Native button with solid, line, ghost and danger variants.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Slot\",\"css\":[\"02-buttons.css\",\"13-loading.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses.\",\"loading sets aria-busy and blocks clicks while keeping the label.\",\"asChild renders a link without losing link semantics.\"],\"keywords\":[\"action\",\"cta\",\"submit\"],\"related\":[\"shimmer-button\",\"toggle\"]}\n"
+      "content": "{\"name\":\"button\",\"title\":\"Button\",\"category\":\"buttons\",\"description\":\"Triggers an action. Native button with solid, line, ghost and danger variants.\",\"status\":\"stable\",\"css\":[\"02-buttons.css\",\"13-loading.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses.\",\"loading sets aria-busy and blocks clicks while keeping the label.\",\"asChild renders a link without losing link semantics.\"],\"keywords\":[\"action\",\"cta\",\"submit\"],\"related\":[\"shimmer-button\",\"toggle\"]}\n"
     }
   ],
   "utils": [

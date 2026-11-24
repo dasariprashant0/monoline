@@ -14,7 +14,7 @@ export function StatRow() {
     [String(components.length), 'Components'],
     [String(hooks.length), 'Hooks'],
     [String(THEMES * ACCENT_COUNT), 'Theme and accent sets'],
-    [String(a11yChecks), 'Accessibility checks'],
+    [String(a11yChecks), 'Accessibility notes'],
     ['MIT', 'Open source'],
   ];
   return (

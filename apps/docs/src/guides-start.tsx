@@ -10,7 +10,7 @@ const PKGS = '@monoline/react @monoline/css';
 export const viteSteps = () => (
   <>
     <Section title="Before you start">
-      <P>You need Node 20.19 or newer and a package manager. This path takes about ten minutes and ends with a themed page, a dark-mode toggle and a dialog. It was run from an empty folder against the published 0.4.0 packages; the other package managers use the same commands in their own syntax.</P>
+      <P>You need Node 20.19 or newer and a package manager. This path takes about ten minutes and ends with a themed page, a dark-mode toggle and a dialog. It was run from an empty folder against the published 0.4.0 packages (0.5.0 is not on npm yet, so <code>npm install</code> gives you 0.4.0); the other package managers use the same commands in their own syntax.</P>
     </Section>
     <Section title="1. Create a Vite app">
       <PmCode cmds={{
@@ -28,7 +28,7 @@ export const viteSteps = () => (
       <P>The Vite template ships its own colours and layout in <code>index.css</code> and <code>App.css</code>, which fight with Monoline. Delete both, then replace <code>src/main.tsx</code>.</P>
       <CodeBlock title="bash" code="rm src/App.tsx src/App.css src/index.css" />
       <CodeBlock title="src/main.tsx" code={viteMain1} />
-      <P>Run <code>npm run dev</code> and open the address it prints. You get a styled Save button; there is no provider to add. <code>core.css</code> holds the tokens, themes and base styles and is always needed. Each component has one small CSS file you import beside it. If a component looks unstyled, its CSS file is the one that is missing. While you are exploring you can replace all the CSS lines with <code>import '@monoline/css'</code>, which loads everything (about 18 KB gzip).</P>
+      <P>Run <code>npm run dev</code> and open the address it prints. You get a styled Save button; there is no provider to add. <code>core.css</code> holds the tokens, themes and base styles and is always needed. Each component has one small CSS file you import beside it. If a component looks unstyled, its CSS file is the one that is missing. While you are exploring you can replace all the CSS lines with <code>import '@monoline/css'</code>, which loads everything (about 21 KB gzip).</P>
     </Section>
     <Section title="4. Pick a look">
       <P>Theme, accent, font, corners and density are attributes on <code>&lt;html&gt;</code>. Edit <code>index.html</code> and the page re-themes, no code change:</P>

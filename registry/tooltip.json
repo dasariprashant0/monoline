@@ -98,9 +98,7 @@
   "classes": [
     "tooltip"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/tooltip/index.ts",

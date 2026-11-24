@@ -73,9 +73,7 @@
   "usage": "import {Button, useClipboard} from '@monoline/react';\n\nfunction ClipboardDemo() {\n  const {copied, error, copy} = useClipboard();\n  return (\n    <div>\n      <Button variant=\"line\" onClick={() => copy('npm install @monoline/react')}>\n        {copied ? 'Copied' : 'Copy install command'}\n      </Button>\n      {error && <p role=\"status\">Copy failed. Select the text and copy it yourself.</p>}\n    </div>\n  );\n}\n\n<ClipboardDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-clipboard/index.ts",

@@ -175,9 +175,7 @@
     "notification-center-time",
     "notification-center-empty"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/notification-center/index.ts",

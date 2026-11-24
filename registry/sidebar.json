@@ -4,6 +4,7 @@
   "category": "navigation",
   "description": "A collapsible navigation sidebar with groups, icons and a mobile drawer.",
   "status": "beta",
+  "primitive": "radix-ui/Slot",
   "uses": [
     "drawer",
     "tooltip",
@@ -285,7 +286,7 @@
     },
     {
       "path": "packages/react/src/components/sidebar/meta.json",
-      "content": "{\n  \"name\": \"sidebar\",\n  \"title\": \"Sidebar\",\n  \"category\": \"navigation\",\n  \"description\": \"A collapsible navigation sidebar with groups, icons and a mobile drawer.\",\n  \"status\": \"beta\",\n  \"uses\": [\n    \"drawer\",\n    \"tooltip\",\n    \"button\",\n    \"icon-button\"\n  ],\n  \"css\": [\n    \"02-buttons.css\",\n    \"icon-button.css\",\n    \"tooltip.css\",\n    \"dialog.css\",\n    \"drawer.css\",\n    \"sidebar.css\"\n  ],\n  \"a11y\": [\n    \"A navigation landmark named by the label prop, holding labelled lists of links; the current page has aria-current=\\\"page\\\".\",\n    \"ArrowUp, ArrowDown, Home and End move focus between items; Tab still moves through them in order.\",\n    \"Collapsing keeps every label in the accessibility tree; a tooltip shows it on hover and keyboard focus. The toggle reports aria-expanded.\",\n    \"Below 800px the sidebar is hidden and the Menu button opens it in a left drawer: focus is trapped, Escape closes it and focus returns to the button. Choosing a link closes it.\",\n    \"In right-to-left layouts the sidebar sits on the right and the drawer opens from the right.\"\n  ],\n  \"keywords\": [\n    \"sidebar\",\n    \"side nav\",\n    \"navigation\",\n    \"collapsible\",\n    \"app shell\",\n    \"off-canvas\",\n    \"router\",\n    \"renderLink\",\n    \"asChild\"\n  ]\n}\n"
+      "content": "{\n  \"name\": \"sidebar\",\n  \"title\": \"Sidebar\",\n  \"category\": \"navigation\",\n  \"description\": \"A collapsible navigation sidebar with groups, icons and a mobile drawer.\",\n  \"status\": \"beta\",\n  \"primitive\": \"radix-ui/Slot\",\n  \"uses\": [\n    \"drawer\",\n    \"tooltip\",\n    \"button\",\n    \"icon-button\"\n  ],\n  \"css\": [\n    \"02-buttons.css\",\n    \"icon-button.css\",\n    \"tooltip.css\",\n    \"dialog.css\",\n    \"drawer.css\",\n    \"sidebar.css\"\n  ],\n  \"a11y\": [\n    \"A navigation landmark named by the label prop, holding labelled lists of links; the current page has aria-current=\\\"page\\\".\",\n    \"ArrowUp, ArrowDown, Home and End move focus between items; Tab still moves through them in order.\",\n    \"Collapsing keeps every label in the accessibility tree; a tooltip shows it on hover and keyboard focus. The toggle reports aria-expanded.\",\n    \"Below 800px the sidebar is hidden and the Menu button opens it in a left drawer: focus is trapped, Escape closes it and focus returns to the button. Choosing a link closes it.\",\n    \"In right-to-left layouts the sidebar sits on the right and the drawer opens from the right.\"\n  ],\n  \"keywords\": [\n    \"sidebar\",\n    \"side nav\",\n    \"navigation\",\n    \"collapsible\",\n    \"app shell\",\n    \"off-canvas\",\n    \"router\",\n    \"renderLink\",\n    \"asChild\"\n  ]\n}\n"
     },
     {
       "path": "packages/react/src/components/sidebar/sidebar.tsx",

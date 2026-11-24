@@ -69,9 +69,7 @@
     "stat-value",
     "stat-note"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/avatar-group/avatar-group.tsx",

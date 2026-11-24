@@ -169,9 +169,7 @@
     "chart-marks",
     "chart-bar"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/bar-chart/bar-chart.tsx",

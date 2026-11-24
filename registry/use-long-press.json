@@ -51,9 +51,7 @@
   "usage": "import {useState} from 'react';\nimport {Button, useLongPress} from '@monoline/react';\n\nfunction Demo() {\n  const [n, setN] = useState(0);\n  const press = useLongPress(() => setN((v) => v + 1), {delay: 600});\n  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Button {...press} onClick={() => setN((v) => v + 1)}>Hold or click</Button><output aria-live=\"polite\">{n} presses</output></div>;\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-long-press/index.ts",

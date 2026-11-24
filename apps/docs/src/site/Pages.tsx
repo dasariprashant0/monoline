@@ -71,7 +71,7 @@ const Step = ({n, title, children}: {n: number; title: string; children: ReactNo
 export const Nextjs = () => (
   <>
     <section className="cdoc-section" aria-labelledby="nx-install"><H2 id="nx-install">Installation</H2>
-      <p className="cdoc-muted">Run from an empty folder with Next.js 16.4 (App Router) and React 19.3. See <a href={href('docs/getting-started')}>Get started</a> for the Vite walkthrough with theme, dark mode and a dialog.</p>
+      <p className="cdoc-muted">Run from an empty folder with Next.js 16.4 (App Router) and React 19.3; the starter in <code>examples/starters/next</code> uses Next.js 15.5. See <a href={href('docs/getting-started')}>Get started</a> for the Vite walkthrough with theme, dark mode and a dialog.</p>
       <ol className="doc-steps">
         <Step n={1} title="Create the app and install"><CodeBlock language="bash" code={'npx create-next-app@latest my-app --ts --app --no-tailwind\ncd my-app\nnpm install @monoline/react @monoline/css\nrm app/globals.css app/page.module.css'} /><p className="cdoc-muted">The generator's own CSS sets colours that fight with Monoline, so it is removed.</p></Step>
         <Step n={2} title="Load the CSS and the theme in the layout"><p className="cdoc-muted">Import <code>core.css</code> first, then one file per component you use. <code>suppressHydrationWarning</code> is needed because the theme is written to <code>&lt;html&gt;</code> before React loads.</p><CodeBlock title="app/layout.tsx" language="tsx" code={nextLayout} /></Step>

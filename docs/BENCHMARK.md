@@ -1,5 +1,8 @@
 # Benchmark: Monoline against 13 UI libraries
 
+> **Historical snapshot.** Numbers and the npm status were measured when it was written; for the current state read [ROADMAP.md](ROADMAP.md).
+
+
 Researched 2026-11-20. Public sources only. Stars, release dates and licences come from the GitHub API on that day; everything else is from the library's own docs, linked in the cells. **(u)** means not verified from a primary source. Builds on `docs/research/` (fetched 2026-11-12); where the two differ, this file says so.
 
 ## 1. Comparison matrix

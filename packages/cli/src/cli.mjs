@@ -263,7 +263,8 @@ export async function run(argv, {out = console.log, err = console.error, confirm
     }
     const css = unique.filter((f) => f.path.endsWith('.css'));
     if (css.length) out(`\nImport the styles once (paths from the project root; adjust to your entry file):\n${css.map((f) => `  import './${f.path}';`).join('\n')}`);
-    out(`\nInstall dependencies (and react >= 18):\n  npm i ${Object.entries(deps).map(([k, v]) => `${k}@"${v}"`).join(' ')}`);
+    const pkgs = Object.entries(deps).map(([k, v]) => `${k}@"${v}"`);
+    out(pkgs.length ? `\nInstall dependencies (and react >= 18):\n  npm i ${pkgs.join(' ')}` : '\nNo npm packages to install besides react >= 18.');
     return 0;
   } catch (e) {
     err(`monoline: ${e.message}`);

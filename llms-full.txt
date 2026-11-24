@@ -944,7 +944,7 @@ Source: https://monoline.prashantdasari.com/registry/breadcrumbs-auto.json
 
 ## Button (button)
 Triggers an action. Native button with solid, line, ghost and danger variants.
-Status: stable | Category: buttons | Primitive: radix-ui/Slot | Related: shimmer-button, toggle
+Status: stable | Category: buttons | Related: shimmer-button, toggle
 Import: import {Button} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -1039,7 +1039,7 @@ Source: https://monoline.prashantdasari.com/registry/calendar.json
 
 ## Card (card)
 A bordered group for one thing you can pick up or open.
-Status: stable | Category: data-display | Primitive: radix-ui/Slot | Related: accordion, area-chart, avatar
+Status: stable | Category: data-display | Related: accordion, area-chart, avatar
 Import: import {Card} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
@@ -1687,7 +1687,7 @@ CSS classes: dialog-content, drawer-content, command, dialog-overlay, dialog-hea
 Source: https://monoline.prashantdasari.com/registry/dialog.json
 
 ## Direction provider (direction-provider)
-Sets the reading direction (ltr or rtl) once for every Radix-based component below it.
+Sets the reading direction (ltr or rtl) once for every component below it that reads it: tabs, slider, menus, select and more.
 Status: stable | Category: layout | Primitive: radix-ui/Direction | Related: app-shell, aspect-ratio, box
 Import: import {DirectionProvider} from '@monoline/react'
 
@@ -3367,7 +3367,7 @@ Source: https://monoline.prashantdasari.com/registry/separator.json
 
 ## Shimmer button (shimmer-button)
 The Button with a light sweep across it. Still a native button.
-Status: stable | Category: effects | Primitive: radix-ui/Slot | Related: button
+Status: stable | Category: effects | Related: button
 Import: import {ShimmerButton} from '@monoline/react'
 
 Props: no exported *Props type in the source. Extra props go to the underlying element or primitive.
@@ -3388,7 +3388,7 @@ Source: https://monoline.prashantdasari.com/registry/shimmer-button.json
 
 ## Sidebar (sidebar)
 A collapsible navigation sidebar with groups, icons and a mobile drawer.
-Status: beta | Category: navigation | Related: drawer, tooltip, button, icon-button
+Status: beta | Category: navigation | Primitive: radix-ui/Slot | Related: drawer, tooltip, button, icon-button
 Import: import {Sidebar} from '@monoline/react'
 
 Props (name: type = default, ? means optional):

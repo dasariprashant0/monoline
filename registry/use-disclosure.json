@@ -95,9 +95,7 @@
   "usage": "import {Button, useDisclosure} from '@monoline/react';\n\nfunction DisclosureDemo() {\n  const {isOpen, toggle} = useDisclosure();\n  return (\n    <div>\n      <Button variant=\"line\" aria-expanded={isOpen} onClick={toggle}>{isOpen ? 'Hide details' : 'Show details'}</Button>\n      {isOpen && <p>Details appear here.</p>}\n    </div>\n  );\n}\n\n<DisclosureDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-disclosure/index.ts",

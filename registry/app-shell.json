@@ -238,9 +238,7 @@
     "app-shell-main",
     "app-shell-aside"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/app-shell/app-shell.tsx",

@@ -225,9 +225,7 @@
     "rte-link-error",
     "rte-link-actions"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/rich-text-editor/exec-command.ts",

@@ -54,9 +54,7 @@
   "usage": "import {useState} from 'react';\nimport {useDebounce} from '@monoline/react';\n\nfunction SearchDemo() {\n  const [query, setQuery] = useState('');\n  const settled = useDebounce(query, 400);\n  return (\n    <div>\n      <label>\n        Search\n        <input value={query} onChange={(e) => setQuery(e.target.value)} />\n      </label>\n      <p>Searching for: {settled || '…'}</p>\n    </div>\n  );\n}\n\n<SearchDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-debounce/index.ts",
