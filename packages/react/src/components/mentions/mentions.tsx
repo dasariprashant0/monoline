@@ -2,7 +2,7 @@
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {useFieldControl} from '../field';
-import {setRefs} from '../../utils/overlay';
+import {nextEnabled, setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
 export interface MentionOption {
@@ -53,7 +53,7 @@ function findActive(text: string, caret: number, triggers: string[]): Active | n
 
 /** A textarea that suggests people or items when the user types a trigger such as `@`. It follows the ARIA combobox pattern as far as a `<textarea>` allows (a textarea cannot take role combobox, so it stays a textbox with `aria-haspopup`, `aria-controls` and `aria-activedescendant`): ArrowUp/ArrowDown choose, Enter or Tab insert, Escape closes. Options are filtered locally or loaded with `onSearch`. The list opens under the field, not at the caret. */
 export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions({value, defaultValue = '', onValueChange, options = [], onSearch, onSearchError, triggers = ['@'], onMentionSelect, loadingText = 'Loading', emptyText = 'No matches', invalid, className, onKeyDown, onBlur, onSelect, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const text = value ?? inner;
@@ -113,18 +113,13 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     const caret = active.start + insert.length;
     requestAnimationFrame(() => { el.focus(); el.setSelectionRange(caret, caret); });
   };
-  const move = (dir: 1 | -1) => {
-    if (!shown.length) return;
-    let i = at;
-    for (let n = 0; n < shown.length; n++) { i = (i + dir + shown.length) % shown.length; if (!shown[i]!.disabled) break; }
-    setIndex(i);
-  };
+  const move = (dir: 1 | -1) => { if (shown.length) setIndex(nextEnabled(shown, at, dir)); };
   const keydown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented || !open) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-    else if ((e.key === 'Enter' || e.key === 'Tab') && shown[at] && !e.shiftKey) { e.preventDefault(); pick(shown[at]); }
+    else if ((e.key === 'Enter' || e.key === 'Tab') && !e.nativeEvent.isComposing && shown[at] && !e.shiftKey) { e.preventDefault(); pick(shown[at]); }
     else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setDismissed(active!.start); }
     else if (e.key === 'Home' && e.ctrlKey) { e.preventDefault(); setIndex(0); }
   };
@@ -139,14 +134,14 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         aria-autocomplete="list"
         aria-controls={open ? listId : undefined}
         aria-activedescendant={open && shown[at] ? optId(at) : undefined}
-        {...f}
+       
         {...(invalid ? {'aria-invalid': true as const} : {})}
         value={text}
         onChange={change}
         onKeyDown={keydown}
         onSelect={(e) => { onSelect?.(e); sync(e.currentTarget); }}
         onBlur={(e) => { onBlur?.(e); setActive(null); setDismissed(null); }}
-        {...rest}
+        {...rest} {...f}
       />
       {open && (
         <ul id={listId} role="listbox" className="mentions-list" aria-label={rest['aria-label'] ? `${rest['aria-label']} suggestions` : 'Suggestions'}>

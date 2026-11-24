@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {invalidAttrs, useFieldControl, hiddenInputs} from '../field';
 import {Tag} from '../tag';
 
 export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
@@ -11,6 +11,8 @@ export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   defaultValue?: string[];
   /** Called with the full list of tags after one is added or removed. */
   onValueChange?: (value: string[]) => void;
+  /** Form field name. A hidden input submits one entry per tag; the visible text box is not submitted. */
+  name?: string;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
   size?: 'sm' | 'md' | 'lg';
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
@@ -22,8 +24,8 @@ export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
  * Backspace in an empty field removes the last tag, and each tag has a remove button.
  * Unlike `MultiSelect` there is no list: any text is a valid tag.
  */
-export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function TagsInput({value, defaultValue = [], onValueChange, size = 'md', invalid, disabled, className, onKeyDown, onBlur, ...rest}, ref) {
-  const f = useFieldControl();
+export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function TagsInput({value, defaultValue = [], onValueChange, size = 'md', invalid, disabled, name, className, onKeyDown, onBlur, ...rest}, ref) {
+  const f = useFieldControl(rest);
   const [inner, setInner] = useState(defaultValue);
   const tags = value ?? inner;
   const [text, setText] = useState('');
@@ -39,13 +41,14 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
 
   return (
     <div className={cx('tags-input', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
+      {hiddenInputs(name, tags, disabled)}
       {tags.map((t) => <Tag key={t} onRemove={disabled ? undefined : () => commit(tags.filter((x) => x !== t))}>{t}</Tag>)}
       <input
         ref={ref}
         type="text"
         className="tags-input-field"
         disabled={disabled}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text}
         onChange={(e) => {
@@ -56,11 +59,11 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
         onKeyDown={(e) => {
           onKeyDown?.(e);
           if (e.defaultPrevented) return;
-          if (e.key === 'Enter') { e.preventDefault(); add(text); }
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); add(text); }
           else if (e.key === 'Backspace' && !text && tags.length) commit(tags.slice(0, -1));
         }}
         onBlur={(e) => { onBlur?.(e); add(text); }}
-        {...rest}
+        {...rest} {...f}
       />
     </div>
   );

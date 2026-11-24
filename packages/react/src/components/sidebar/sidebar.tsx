@@ -64,7 +64,7 @@ export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {
   drawerTitle?: ReactNode;
   /** Renders each `SidebarItem` link, so a client router can handle the click. Default a plain `<a href>`. The returned element must forward its ref and spread extra props (collapsed tooltips need that). @example renderLink={({href, ...p}) => <NavLink to={href} {...p} />} */
   renderLink?: RenderLink;
-  /** A `SidebarHeader`, `SidebarContent` and `SidebarFooter`. They render twice: in the sidebar (from 800px) and in the drawer (below 800px). */
+  /** A `SidebarHeader`, `SidebarContent` and `SidebarFooter`. They render twice: in the sidebar (from 800px) and in the drawer (below 800px), so keep them free of fixed `id`s and local state. */
   children: ReactNode;
 }
 
@@ -158,7 +158,7 @@ export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(funct
   const inner = <>{icon && <span className="sidebar-icon" aria-hidden="true">{icon}</span>}<span className="sidebar-label">{text}</span></>;
   let link: ReactElement;
   if (child) link = <Slot.Root ref={ref} className={cls} aria-current={ariaCurrent} {...rest}>{cloneElement(child, undefined, inner)}</Slot.Root>;
-  else if (renderLink && href !== undefined) link = renderLink({href, className: cls, 'aria-current': ariaCurrent, children: inner}) as ReactElement;
+  else if (renderLink && href !== undefined) link = renderLink({...rest, ...(ref ? {ref} : {}), href, className: cls, 'aria-current': ariaCurrent, children: inner}) as ReactElement;
   else link = <a ref={ref} href={href} className={cls} aria-current={ariaCurrent} {...rest}>{inner}</a>;
   return <li>{collapsed && !inDrawer ? <Tooltip content={text} side="right">{link}</Tooltip> : link}</li>;
 });

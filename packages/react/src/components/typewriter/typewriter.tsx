@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useEffect, useRef, useState, type HTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {usePrefersReducedMotion} from '../number-ticker/use-reduced-motion';
+import {useReducedMotion} from '../../hooks/use-reduced-motion';
 
 export interface TypewriterProps extends HTMLAttributes<HTMLSpanElement> {
   /** The string to type. Screen readers get all of it at once. */
@@ -23,7 +23,7 @@ export interface TypewriterProps extends HTMLAttributes<HTMLSpanElement> {
 export const Typewriter = forwardRef<HTMLSpanElement, TypewriterProps>(function Typewriter({text, speed = 40, delay = 0, cursor = true, onComplete, className, ...rest}, ref) {
   const chars = Array.from(text); // by code point, so an emoji is never cut in half
   const [count, setCount] = useState(chars.length);
-  const reduced = usePrefersReducedMotion();
+  const reduced = useReducedMotion();
   const done = useRef(onComplete);
   done.current = onComplete;
 

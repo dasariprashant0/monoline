@@ -32,3 +32,10 @@ export function nextItem(key: string, plain: boolean, items: HTMLElement[], type
   const from = typed.text.length === 1 ? at + 1 : at;
   return [...items.slice(from), ...items.slice(0, from)].find((o) => o.textContent!.trim().toLowerCase().startsWith(typed.text));
 }
+
+/** The index of the next enabled item after `from` in direction `dir`, wrapping round; `from` itself if none is enabled. */
+export function nextEnabled(list: ReadonlyArray<{disabled?: boolean}>, from: number, dir: 1 | -1): number {
+  let i = from;
+  for (let n = 0; n < list.length; n++) { i = (i + dir + list.length) % list.length; if (!list[i]!.disabled) break; }
+  return i;
+}

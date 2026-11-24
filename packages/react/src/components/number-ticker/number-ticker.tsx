@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useEffect, useRef, useState, type HTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {usePrefersReducedMotion} from './use-reduced-motion';
+import {useReducedMotion} from '../../hooks/use-reduced-motion';
 import {setRefs} from '../../utils/overlay';
 
 export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
@@ -24,7 +24,7 @@ export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
  */
 export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(function NumberTicker({value, from = 0, duration = 1500, decimals = 0, format, className, ...rest}, ref) {
   const [shown, setShown] = useState(value);
-  const reduced = usePrefersReducedMotion();
+  const reduced = useReducedMotion();
   const local = useRef<HTMLSpanElement | null>(null);
   const fmt = format ?? ((n: number) => n.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}));
 

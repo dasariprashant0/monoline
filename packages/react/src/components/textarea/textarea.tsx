@@ -10,6 +10,6 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 
 /** A native multi-line text field. Inside a Field it is labelled and described automatically. */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({invalid, disabled, className, ...rest}, ref) {
-  const f = useFieldControl();
-  return <textarea ref={ref} className={cx('textarea', className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...f} {...invalidAttrs(invalid)} {...rest} />;
+  const f = useFieldControl(rest);
+  return <textarea ref={ref} className={cx('textarea', className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...invalidAttrs(invalid)} {...rest} {...f} />;
 });

@@ -1,7 +1,8 @@
 'use client';
 import {useEffect, forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
+import {nextEnabled} from '../../utils/overlay';
+import {invalidAttrs, useFieldControl, useFieldLabelId, hiddenInputs} from '../field';
 
 export interface ComboboxOption {
   value: string;
@@ -18,6 +19,8 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   defaultValue?: string;
   /** Called with the chosen option's value, or '' when cleared. */
   onValueChange?: (value: string) => void;
+  /** Form field name. A hidden input submits the chosen option `value` (not its label); the visible text box is not submitted. */
+  name?: string;
   /** Shown when nothing matches. */
   emptyText?: string;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
@@ -27,8 +30,8 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 }
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
-  const f = useFieldControl();
+export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
+  const f = useFieldControl(rest);
   const labelId = useFieldLabelId();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
@@ -50,18 +53,13 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
     onValueChange?.(o.value);
     setText(null); setOpen(false);
   };
-  const move = (dir: 1 | -1) => {
-    if (!shown.length) return;
-    let i = active;
-    for (let n = 0; n < shown.length; n++) { i = (i + dir + shown.length) % shown.length; if (!shown[i]!.disabled) break; }
-    setActive(i);
-  };
+  const move = (dir: 1 | -1) => { if (shown.length) setActive(nextEnabled(shown, active, dir)); };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) { setOpen(true); } else move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else move(-1); }
-    else if (e.key === 'Enter' && open && shown[active]) { e.preventDefault(); pick(shown[active]!); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && shown[active]) { e.preventDefault(); pick(shown[active]!); }
     else if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } else if (text !== null) { setText(null); } }
     else if (e.key === 'Home' && open) { e.preventDefault(); setActive(0); }
     else if (e.key === 'End' && open) { e.preventDefault(); setActive(Math.max(0, shown.length - 1)); }
@@ -69,6 +67,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
 
   return (
     <div ref={root} className={cx('combobox', className)}>
+      {hiddenInputs(name, current, disabled)}
       <input
         ref={ref}
         type="text"
@@ -79,17 +78,17 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         data-disabled={disabled ? '' : undefined}
         aria-expanded={open}
         data-state={open ? 'open' : 'closed'}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && shown[active] ? optId(active) : undefined}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text ?? selected?.label ?? ''}
         onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && current !== '') { if (value === undefined) setInner(''); onValueChange?.(''); } }}
         onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
-        {...rest}
+        {...rest} {...f}
       />
       {open && (
         <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

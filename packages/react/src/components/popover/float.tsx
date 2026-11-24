@@ -122,10 +122,12 @@ export const Floating = forwardRef<HTMLDivElement, FloatingProps>(function Float
     // Scroll and resize come in bursts: place once per frame, not once per event.
     let raf = 0;
     const later = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; go(); }); };
-    addEventListener('resize', later); addEventListener('scroll', later, true);
+    // A list scrolling inside the panel itself (a long Select) must not re-place it.
+    const onScroll = (e: Event) => { if (!(e.target instanceof Node && p.contains(e.target))) later(); };
+    addEventListener('resize', later); addEventListener('scroll', onScroll, true);
     const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(go);
     ro?.observe(p);
-    return () => { removeEventListener('resize', later); removeEventListener('scroll', later, true); if (raf) cancelAnimationFrame(raf); ro?.disconnect(); };
+    return () => { removeEventListener('resize', later); removeEventListener('scroll', onScroll, true); if (raf) cancelAnimationFrame(raf); ro?.disconnect(); };
   }, [side, align, sideOffset, alignOffset, collisionPadding]);
   if (typeof document === 'undefined') return null;
   return createPortal(<div ref={(n) => setRefs(n, el, forwarded)} style={{position: 'fixed', ...style}} {...rest} />, anchor()?.closest('dialog[open]') ?? document.body);

@@ -1,4 +1,5 @@
-import {render, screen, within} from '@testing-library/react';
+import {fireEvent, render, screen, within} from '@testing-library/react';
+import {createRef} from 'react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarItem, SidebarProvider, SidebarToggle, SidebarTrigger, useSidebar} from './sidebar';
@@ -130,5 +131,24 @@ describe('Sidebar', () => {
     render(ui());
     await userEvent.click(screen.getByRole('button', {name: 'Menu'}));
     expect(await axe(screen.getByRole('dialog'))).toHaveNoViolations(); // the page behind is inert in a browser; jsdom does not model it
+  });
+});
+
+describe('SidebarItem with renderLink', () => {
+  it('passes the item props and ref through to the rendered link', () => {
+    const click = vi.fn(), ref = createRef<HTMLAnchorElement>();
+    render(
+      <SidebarProvider>
+        <Sidebar renderLink={({href, ...p}) => <a data-router href={href} {...p} />}>
+          <SidebarContent><SidebarGroup><SidebarItem ref={ref} href="/x" id="mine" data-x="1" onClick={(e) => { e.preventDefault(); click(); }}>X</SidebarItem></SidebarGroup></SidebarContent>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+    const a = screen.getAllByRole('link')[0]!;
+    expect(a).toHaveAttribute('id', 'mine');
+    expect(a).toHaveAttribute('data-x', '1');
+    expect(ref.current).toBe(a);
+    fireEvent.click(a);
+    expect(click).toHaveBeenCalledTimes(1);
   });
 });
