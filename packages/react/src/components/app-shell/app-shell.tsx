@@ -1,7 +1,6 @@
 'use client';
-import {forwardRef, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactNode} from 'react';
+import {forwardRef, useEffect, useId, useState, type HTMLAttributes, type ReactNode} from 'react';
 import {cx} from '../../utils/cx';
-import {setRefs} from '../../utils/overlay';
 import {SidebarProvider} from '../sidebar';
 
 export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -41,12 +40,12 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
   const generated = useId();
   const id = mainId ?? `main-${generated.replace(/:/g, '')}`;
   // Inside another page's <main> (a docs example, a preview frame) a second main landmark and skip link would be wrong: render a plain container instead.
-  const root = useRef<HTMLDivElement | null>(null), [nested, setNested] = useState(false);
-  useEffect(() => { setNested(!!root.current?.parentElement?.closest('main, [role="main"]')); }, []);
+  const [nested, setNested] = useState(false);
+  useEffect(() => setNested(!!document.getElementById(id)?.parentElement?.closest('main')), [id]);
   const Main = nested ? 'div' : 'main';
   return (
     <SidebarProvider collapsed={collapsed} defaultCollapsed={defaultCollapsed} onCollapsedChange={onCollapsedChange}>
-      <div ref={(n) => setRefs(n, root, ref)} className={cx('app-shell', className)} data-scroll={scroll} {...rest}>
+      <div ref={ref} className={cx('app-shell', className)} data-scroll={scroll} {...rest}>
         {!nested && <a className="skip-link" href={`#${id}`}>{skipLinkLabel}</a>}
         {navbar && <div className="app-shell-navbar">{navbar}</div>}
         {sidebar}

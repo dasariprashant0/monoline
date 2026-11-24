@@ -1,11 +1,10 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type MouseEvent, type ReactNode, type RefObject} from 'react';
+import {createContext, forwardRef, useContext, useEffect, useId, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactNode, type RefObject} from 'react';
 import {Slot} from '../../utils/slot';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {TABBABLE, setRefs, vetoed} from '../../utils/overlay';
 import {Floating, useDismiss, useHydrated, type Placement} from './float';
-import {leavesPanel} from './tab-out';
 
 interface Ctx { open: boolean; setOpen: (o: boolean) => void; contentId: string; trigger: RefObject<HTMLElement | null>; anchor: RefObject<HTMLElement | null> }
 const Context = createContext<Ctx | null>(null);
@@ -68,23 +67,29 @@ export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement>, Pla
   onCloseAutoFocus?: (event: Event) => void;
 }
 
-const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({className, sideOffset = 8, align = 'start', side, onEscapeKeyDown, onInteractOutside, onOpenAutoFocus, onCloseAutoFocus, ...rest}, forwarded) {
+const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({className, sideOffset = 8, align = 'start', side, onEscapeKeyDown, onInteractOutside, onOpenAutoFocus, onCloseAutoFocus, onKeyDown, ...rest}, forwarded) {
   const c = usePopoverCtx();
   const el = useRef<HTMLDivElement | null>(null);
   const outside = useRef(false);
   const hooks = useRef({onOpenAutoFocus, onCloseAutoFocus});
   hooks.current = {onOpenAutoFocus, onCloseAutoFocus};
   useDismiss(true, [el, c.trigger, c.anchor], (kind) => {
-    if (kind !== 'tab' && vetoed(kind === 'escape' ? onEscapeKeyDown : onInteractOutside, el.current!)) return;
-    outside.current = kind !== 'escape';
+    if (vetoed(kind === 'escape' ? onEscapeKeyDown : onInteractOutside, el.current!)) return;
+    outside.current = kind === 'outside';
     c.setOpen(false);
-  }, leavesPanel);
+  });
   useEffect(() => {
     const p = el.current!;
     if (!vetoed(hooks.current.onOpenAutoFocus, p)) (p.querySelector<HTMLElement>(TABBABLE) ?? p).focus();
     return () => { if (!vetoed(hooks.current.onCloseAutoFocus, p) && !outside.current) c.trigger.current?.focus(); };
   }, []);
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.anchor.current ?? c.trigger.current} side={side} align={align} sideOffset={sideOffset} role="dialog" id={c.contentId} tabIndex={-1} data-state="open" className={cx('popover', className)} {...rest} />;
+  // Tab from the last control (Shift+Tab from the first) closes the panel. It sits at the end of <body>, so the browser's own order would jump to the page start: focus goes to the trigger first and the default Tab carries on from there.
+  const tab = (e: KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(e);
+    const t = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)].filter((x) => x.tabIndex > -1), a = document.activeElement;
+    if (e.key === 'Tab' && (a === (e.shiftKey ? t[0] : t.at(-1)) || (a === e.currentTarget && (e.shiftKey || !t.length)))) { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); }
+  };
+  return <Floating ref={(n) => setRefs(n, el, forwarded)} onKeyDown={tab} anchor={() => c.anchor.current ?? c.trigger.current} side={side} align={align} sideOffset={sideOffset} role="dialog" id={c.contentId} tabIndex={-1} data-state="open" className={cx('popover', className)} {...rest} />;
 });
 
 /** A floating panel anchored to its trigger, placed on the side with room. Focus moves in, Escape closes and returns focus to the trigger, a press outside closes it. */

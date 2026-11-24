@@ -4,7 +4,6 @@ import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
 import {Floating, useDismiss, useHydrated, type Placement} from '../popover/float';
-import {leavesPanel} from '../popover/tab-out';
 
 /* The menu core behind DropdownMenu, ContextMenu and Menubar: state, the floating role="menu" panel with roving
    focus and type-ahead, and the item kinds. The three components only add their trigger and class names. */
@@ -64,9 +63,9 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
   const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
   useDismiss(true, [el, c.trigger], (kind) => {
     if (kind === 'escape' && onEscapeKeyDown) { const e = new Event('x', {cancelable: true}); onEscapeKeyDown(e); if (e.defaultPrevented) return; }
-    outside.current = kind !== 'escape';
+    outside.current = kind === 'outside';
     c.setOpen(false);
-  }, leavesPanel);
+  });
   // The unmount cleanup must call the latest `onCloseAutoFocus`, not the one from the first render.
   const closeFocus = useRef(onCloseAutoFocus);
   closeFocus.current = onCloseAutoFocus;
@@ -82,7 +81,7 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
   const keydown = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
-    if (e.key === 'Tab') { e.preventDefault(); return; }
+    if (e.key === 'Tab') { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); return; } // focus goes to the trigger before the default action, so Tab carries on from there
     if (c.step && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); c.step(e.key === 'ArrowRight' ? 1 : -1, c.trigger.current); return; }
     const next = nextItem(e.key, !e.ctrlKey && !e.metaKey && !e.altKey, [...el.current!.querySelectorAll<HTMLElement>(ITEM)], typed.current);
     if (next === null) return;

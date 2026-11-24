@@ -5,7 +5,6 @@ import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
 import {invalidAttrs, useFieldControl} from '../field';
 import {Floating, useDismiss, useHydrated, type Placement} from '../popover/float';
-import {leavesPanel} from '../popover/tab-out';
 import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 interface Ctx {
@@ -109,7 +108,7 @@ const OPTION = '[role=option]:not([aria-disabled=true])';
 const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({className, children, position: _p, sideOffset = 4, align = 'start', onKeyDown, ...rest}, forwarded) {
   const c = useSelectCtx();
   const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
-  useDismiss(true, [el, c.trigger], (kind) => { outside.current = kind !== 'escape'; c.setOpen(false); }, leavesPanel);
+  useDismiss(true, [el, c.trigger], (kind) => { outside.current = kind === 'outside'; c.setOpen(false); });
   useEffect(() => {
     const first = el.current!.querySelector<HTMLElement>('[aria-selected=true]') ?? el.current!.querySelector<HTMLElement>(OPTION);
     first?.focus(); first?.scrollIntoView?.({block: 'nearest'});
@@ -118,7 +117,7 @@ const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({class
   const keydown = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
-    if (e.key === 'Tab') { e.preventDefault(); return; }
+    if (e.key === 'Tab') { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); return; } // focus goes to the trigger before the default action, so Tab carries on from there
     const next = nextItem(e.key, !e.ctrlKey && !e.metaKey && !e.altKey, [...el.current!.querySelectorAll<HTMLElement>(OPTION)], typed.current);
     if (next === null) return;
     e.preventDefault(); next?.focus(); next?.scrollIntoView?.({block: 'nearest'});

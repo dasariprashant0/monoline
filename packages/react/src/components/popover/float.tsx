@@ -134,23 +134,16 @@ export const Floating = forwardRef<HTMLDivElement, FloatingProps>(function Float
 });
 
 const layers: object[] = [];
-type Leaves = (panel: Element | null | undefined, back: boolean) => boolean;
 
 /** While `open`, calls `dismiss` for Escape, a press outside every ref, or focus moving outside. Only the topmost
  *  layer reacts, so a menu inside a popover closes first. */
-/** Optional 4th argument: `leavesPanel` from `./tab-out`; with it, Tab out of the panel closes it and carries on from the trigger. */
-export function useDismiss(open: boolean, inside: Array<RefObject<Element | null>>, dismiss: (kind: 'escape' | 'outside' | 'tab', e: Event) => void, tabOut?: Leaves) {
+export function useDismiss(open: boolean, inside: Array<RefObject<Element | null>>, dismiss: (kind: 'escape' | 'outside', e: Event) => void) {
   const latest = useRef({inside, dismiss});
   latest.current = {inside, dismiss};
   useEffect(() => {
     if (!open) return;
     const me = {}; layers.push(me);
-    const key = (e: KeyboardEvent) => {
-      if (layers[layers.length - 1] !== me) return;
-      if (e.key === 'Escape') { e.preventDefault(); latest.current.dismiss('escape', e); }
-      // The panel sits at the end of <body>, so the browser's own Tab order would jump to the page start. Moving focus to the trigger before the default action makes Tab carry on from there.
-      else if (e.key === 'Tab' && tabOut?.(latest.current.inside[0]?.current, e.shiftKey)) { (latest.current.inside[1]?.current as HTMLElement | null)?.focus(); latest.current.dismiss('tab', e); }
-    };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape' && layers[layers.length - 1] === me) { e.preventDefault(); latest.current.dismiss('escape', e); } };
     const out = (e: Event) => { if (layers[layers.length - 1] === me && !latest.current.inside.some((r) => r.current?.contains(e.target as Node))) latest.current.dismiss('outside', e); };
     document.addEventListener('keydown', key, true); document.addEventListener('pointerdown', out, true); document.addEventListener('focusin', out, true);
     return () => { document.removeEventListener('keydown', key, true); document.removeEventListener('pointerdown', out, true); document.removeEventListener('focusin', out, true); layers.splice(layers.indexOf(me), 1); };
