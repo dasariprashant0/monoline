@@ -92,7 +92,7 @@ Newer browser features are used behind detection with the old code as fallback (
 
 - `npm run check`: CSS lint (contrast, raw colours, motion), doc comments on every prop, registry, typecheck, tests
 - `npm run size`: per-component and CSS budgets
-- `node scripts/audit.mjs`: real-browser axe, overflow, console errors; `--visual` compares screenshots on pull requests
+- `node scripts/audit.mjs`: real-browser axe, overflow, console errors; `--visual` writes and compares local screenshots (no CI job: it diffed byte-exact PNGs against its own base and was ignored)
 
 ## Measures of success
 
