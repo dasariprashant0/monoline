@@ -36,7 +36,7 @@ const cases = [
   ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 3.4],
   ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 4.5],
   ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.9],
-  ['Everything', "import * as m from '@monoline/react'; console.log(m)", 102],
+  ['Everything', "import * as m from '@monoline/react'; console.log(m)", 102.5], // was 102: the a11y fixes (Tab out of popovers and menus, nav-menu focus proxy, AppShell inside a main) add 0.26 KB
 ];
 const bundle = (code) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});
 /** Package name of a metafile input path ('' for Monoline's own source). */
