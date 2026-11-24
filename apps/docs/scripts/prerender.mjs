@@ -24,6 +24,7 @@ if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dis
 // first paint is already styled and nothing moves when the script arrives (layout shift on the home page was 0.2 to 0.4).
 const assets = readdirSync(join(dist, 'assets'));
 const homeCss = assets.find((f) => /^Home-.*\.css$/.test(f));
+const overviewCss = assets.find((f) => /^Overview-.*\.css$/.test(f)); // the Components overview is a lazy chunk too
 const fonts = ['dm-mono-400', 'dm-mono-500'].map((n) => assets.find((f) => f.startsWith(`${n}-`) && f.endsWith('.woff2'))).filter(Boolean);
 const fontTags = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" crossorigin href="${base}assets/${f}" />`);
 const url = (path) => `${origin}${base}${path ? `${path}/` : ''}`;
@@ -33,6 +34,7 @@ for (const r of routes) {
   const tags = [
     `<link rel="canonical" href="${url(path)}" />`,
     ...fontTags,
+    ...(path === 'docs/components' && overviewCss ? [`<link rel="stylesheet" crossorigin href="${base}assets/${overviewCss}" />`] : []),
     ...(path === '' && homeCss ? [`<link rel="stylesheet" crossorigin href="${base}assets/${homeCss}" />`] : []),
     `<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="Monoline" />`,
     `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(description)}" />`, `<meta property="og:url" content="${url(path)}" />`,

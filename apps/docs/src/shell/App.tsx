@@ -2,7 +2,7 @@
 // Routing, titles, scroll and focus are handled here; page bodies come from ../page and ../guides.
 import {use, useEffect, useRef, useState, type ReactNode} from 'react';
 import {Button, DirectionProvider} from '@monoline/react';
-import {Astro, Editor, Extensions, IconsLibrary, IconsPage, Nextjs, Overview, PlainCss, Remix, Upgrade, Vite} from '../site/Pages';
+import {Astro, Editor, Extensions, IconsLibrary, IconsPage, Nextjs, PlainCss, Remix, Upgrade, Vite} from '../site/Pages';
 import {PlaygroundPage} from '../page/live';
 import {Tokens} from '../site/Tokens';
 import {CopyMarkdown, OpenMenu, domToMarkdown} from '../page/doc-actions';
@@ -28,7 +28,7 @@ function setMeta(title: string, description: string) {
   m.content = description;
 }
 
-const SITE_BODIES: Record<string, () => ReactNode> = {components: Overview, tokens: Tokens, nextjs: Nextjs, vite: Vite, astro: Astro, remix: Remix, 'plain-css': PlainCss, icons: IconsPage, 'icons-library': IconsLibrary, editor: Editor, tools: Extensions, upgrade: Upgrade};
+const SITE_BODIES: Record<string, () => ReactNode> = {tokens: Tokens, nextjs: Nextjs, vite: Vite, astro: Astro, remix: Remix, 'plain-css': PlainCss, icons: IconsPage, 'icons-library': IconsLibrary, editor: Editor, tools: Extensions, upgrade: Upgrade};
 
 /** Title area of every page that is not a component: 30px heading and a grey description. */
 export function PageHead({title, description, actions = true}: {title: string; description: string; actions?: boolean}) {
@@ -51,13 +51,14 @@ export function PageHead({title, description, actions = true}: {title: string; d
 const loadComponentDoc = loader(() => import('../page/component-doc'));
 const loadHome = loader(() => import('./Home'));
 const siteLoaders: Record<string, () => Tracked<Record<string, unknown>>> = {
+  components: loader(() => import('../site/Overview')),
   blocks: loader(() => import('../site/Blocks')),
   themes: loader(() => import('../site/Themes')),
   compare: loader(() => import('../site/Compare')),
   changelog: loader(() => import('../site/Doc')),
   roadmap: loader(() => import('../site/Doc')),
 };
-const SITE_EXPORT: Record<string, string> = {blocks: 'Blocks', themes: 'Themes', compare: 'Compare', changelog: 'Changelog', roadmap: 'Roadmap'};
+const SITE_EXPORT: Record<string, string> = {components: 'Overview', blocks: 'Blocks', themes: 'Themes', compare: 'Compare', changelog: 'Changelog', roadmap: 'Roadmap'};
 
 /** Loads everything a route needs to render. main.tsx awaits it before hydrating (the server HTML is kept) and App awaits it before it shows a new route. */
 export function preloadRoute(route: Route): Promise<unknown> {
@@ -171,7 +172,7 @@ export function App() {
     <DirectionProvider dir={prefs.dir === 'rtl' ? 'rtl' : 'ltr'}>
     <PrefsContext.Provider value={[prefs, set] as const}>
     {route.kind === 'playground' ? <PlaygroundPage /> : (
-    <div className="docs" data-home={route.kind === 'home' || undefined} data-rail={(route.kind !== 'home' && (headings.length > 1 || (route.kind === 'page' && (route.entry.kind === 'component' || route.entry.kind === 'hook')))) || undefined}>
+    <div className="docs" data-home={route.kind === 'home' || undefined} data-rail={(route.kind !== 'home' && (headings.length > 1 || (route.kind === 'page' && (route.entry.kind === 'component' || route.entry.kind === 'hook' || route.entry.name === 'components')))) || undefined}>
       <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); const m = main.current; if (m) { m.tabIndex = -1; m.focus(); } }}>Skip to main content</a>
       <Topbar path={path} route={route} prefs={prefs} set={set} onSearch={() => setSearch(true)} />
       <aside className="docs-side" id="docs-side" aria-label="Documentation sidebar">
