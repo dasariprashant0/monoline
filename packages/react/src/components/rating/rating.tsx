@@ -33,7 +33,7 @@ export const Rating = forwardRef<HTMLDivElement, RatingProps>(function Rating({v
   if (readOnly) {
     return (
       <div ref={ref} role="img" className={cx('rating', className)} {...rest} aria-label={label ? `${label}: ${current} out of ${max}` : `${current} out of ${max}`}>
-        {Array.from({length: max}, (_, i) => <span key={i} className="rating-star" data-on={i < Math.round(current) || undefined}><Star /></span>)}
+        {Array.from({length: max}, (_, i) => <span key={i} className="rating-star" data-on={i < current || undefined}><Star /></span>)}
       </div>
     );
   }

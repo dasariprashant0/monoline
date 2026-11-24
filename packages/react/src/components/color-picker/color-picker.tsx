@@ -1,6 +1,7 @@
 'use client';
 import {forwardRef, useId, useState, type HTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
+import {hiddenInputs} from '../field';
 
 const PRESETS = ['#e5484d', '#f76b15', '#f5d90a', '#30a46c', '#12a594', '#0090ff', '#6e56cf', '#d6409f', '#8b8d98', '#000000', '#ffffff'];
 const HEX = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -47,7 +48,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(function
 
   return (
     <div ref={ref} role="group" aria-label={label} className={cx('color-picker', className)} data-disabled={disabled || undefined} {...rest}>
-      {name && <input type="hidden" name={name} value={current} disabled={disabled} />}
+      {hiddenInputs(name, current, disabled)}
       <div className="color-picker-swatches">
         {colors.map((c) => {
           const n = normalise(c) ?? c;

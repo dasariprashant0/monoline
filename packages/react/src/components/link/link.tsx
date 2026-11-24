@@ -1,4 +1,4 @@
-import {cloneElement, forwardRef, isValidElement, type AnchorHTMLAttributes, type ReactNode, type Ref} from 'react';
+import {forwardRef, type AnchorHTMLAttributes, type ReactNode, type Ref} from 'react';
 import {Slot} from '../../utils/slot';
 import {cx} from '../../utils/cx';
 
@@ -16,14 +16,13 @@ export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
  */
 export type RenderLink = (props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'className' | 'aria-current' | 'children'> & {href: string; className?: string; 'aria-current'?: 'page'; children: ReactNode; ref?: Ref<HTMLAnchorElement>}) => ReactNode;
 
-/** An anchor with the Monoline underline. */
+/** An anchor with the Monoline underline. With `asChild` and `external`, the target and rel are applied to your child, which should include its own visually hidden "(opens in a new tab)" text. */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({external, asChild, className, children, ...rest}, ref) {
   const Comp = asChild ? Slot : 'a';
-  const newTab = <span className="sr-only"> (opens in a new tab)</span>;
   const extra = external ? {target: '_blank', rel: 'noopener noreferrer'} : {};
   return (
     <Comp ref={ref} className={cx('link', className)} {...extra} {...rest}>
-      {asChild ? (external && isValidElement<{children?: ReactNode}>(children) ? cloneElement(children, undefined, <>{children.props.children}{newTab}</>) : children) : <>{children}{external && newTab}</>}
+      {asChild ? children : <>{children}{external && <span className="sr-only"> (opens in a new tab)</span>}</>}
     </Comp>
   );
 });

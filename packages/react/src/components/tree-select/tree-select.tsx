@@ -3,7 +3,7 @@ import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from '
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {useIsRtl} from '../../utils/direction';
-import {useFieldControl, useFieldLabelId, fieldOwn} from '../field';
+import {useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
 import type {TreeNode} from '../tree';
 
 export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'> {
@@ -100,7 +100,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
 
   return (
     <div className={cx('tree-select', className)}>
-      {name && selected.map((id) => <input key={id} type="hidden" name={name} value={id} disabled={rest.disabled} />)}
+      {hiddenInputs(name, selected, rest.disabled)}
       <input
         ref={ref}
         type="text"

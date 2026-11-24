@@ -2658,7 +2658,6 @@ Props (name: type = default, ? means optional):
 - labels?: { decrease?: string; increase?: string; } — Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase".
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`.
-- wrapperClassName?: string — Extra class name for the wrapper around the input and the step buttons. `className` goes to the input.
 
 Usage:
 ```tsx
@@ -2876,7 +2875,6 @@ Import: import {PasswordInput} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
 - labels?: { show?: string; hide?: string; password?: string; } — Button text, for other languages. Defaults "Show", "Hide" and "password" (the last is read by screen readers only).
-- wrapperClassName?: string — Extra class name for the wrapper around the input and the button. `className` goes to the input.
 
 Usage:
 ```tsx

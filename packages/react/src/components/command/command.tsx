@@ -2,6 +2,7 @@
 import {forwardRef, useEffect, useId, useState, type ReactNode} from 'react';
 import {Modal, ModalContent, ModalTitle, ModalTrigger} from '../dialog/modal';
 import {cx} from '../../utils/cx';
+import {nextEnabled} from '../../utils/overlay';
 
 export interface CommandItem {
   id: string;
@@ -66,11 +67,10 @@ export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Comm
 
   useEffect(() => {
     if (!shortcut) return;
-    const plain = !/(^|\+)(mod|alt)(\+|$)/.test(shortcut.toLowerCase());
     const h = (e: KeyboardEvent) => {
       // A plain-key shortcut such as "/" must not fire, or swallow the key, while someone types in a field.
-      const t = e.target as HTMLElement | null;
-      if (plain && t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      const t = e.target as HTMLElement;
+      if (!/mod|alt/i.test(shortcut) && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
     document.addEventListener('keydown', h);
     return () => document.removeEventListener('keydown', h);
@@ -89,12 +89,7 @@ export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Comm
   const activeItem = flat[cur];
 
   const run = (it: CommandItem) => { if (it.disabled) return; setOpen(false); it.onSelect?.(); };
-  const move = (dir: 1 | -1) => {
-    if (!flat.length) return;
-    let i = cur;
-    for (let n = 0; n < flat.length; n++) { i = (i + dir + flat.length) % flat.length; if (!flat[i]!.disabled) break; }
-    setActive(i);
-  };
+  const move = (dir: 1 | -1) => { if (flat.length) setActive(nextEnabled(flat, cur, dir)); };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }

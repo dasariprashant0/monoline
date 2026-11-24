@@ -1,7 +1,8 @@
 'use client';
 import {useEffect, forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
+import {nextEnabled} from '../../utils/overlay';
+import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
 
 export interface ComboboxOption {
   value: string;
@@ -52,12 +53,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
     onValueChange?.(o.value);
     setText(null); setOpen(false);
   };
-  const move = (dir: 1 | -1) => {
-    if (!shown.length) return;
-    let i = active;
-    for (let n = 0; n < shown.length; n++) { i = (i + dir + shown.length) % shown.length; if (!shown[i]!.disabled) break; }
-    setActive(i);
-  };
+  const move = (dir: 1 | -1) => { if (shown.length) setActive(nextEnabled(shown, active, dir)); };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
@@ -71,7 +67,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
 
   return (
     <div ref={root} className={cx('combobox', className)}>
-      {name && <input type="hidden" name={name} value={current} disabled={disabled} />}
+      {hiddenInputs(name, current, disabled)}
       <input
         ref={ref}
         type="text"

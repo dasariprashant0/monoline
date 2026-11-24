@@ -3704,8 +3704,7 @@
       "propNames": [
         "labels",
         "size",
-        "invalid",
-        "wrapperClassName"
+        "invalid"
       ]
     },
     {
@@ -4015,8 +4014,7 @@
         "packages/react/src/components/password-input/password-input.tsx"
       ],
       "propNames": [
-        "labels",
-        "wrapperClassName"
+        "labels"
       ]
     },
     {

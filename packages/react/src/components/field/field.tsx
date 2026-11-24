@@ -39,6 +39,11 @@ export function fieldOwn(f: {id?: string; 'aria-describedby'?: string}, own: {id
   return {id: f.id ?? own.id, 'aria-describedby': [f['aria-describedby'], own['aria-describedby']].filter(Boolean).join(' ') || undefined};
 }
 
+/** Hidden inputs that submit a custom control's value(s) with a native form: one per value, none without a `name`. */
+export function hiddenInputs(name: string | undefined, values: string | string[], disabled?: boolean): ReactNode {
+  return name && ([] as string[]).concat(values).map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />);
+}
+
 /** The id of the surrounding Field's label, or undefined outside a Field. For popups that need a name (`aria-labelledby`). */
 export function useFieldLabelId(): string | undefined {
   return useContext(FieldContext)?.labelId;

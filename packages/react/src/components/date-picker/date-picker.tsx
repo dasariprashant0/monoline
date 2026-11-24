@@ -3,7 +3,8 @@ import {forwardRef, useState} from 'react';
 import {Popover, PopoverContent, PopoverTrigger} from '../popover';
 import {Calendar, type CalendarProps} from '../calendar';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl} from '../field';
+import {isoDate} from '../../utils/iso-date';
+import {invalidAttrs, useFieldControl, hiddenInputs} from '../field';
 import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface DatePickerProps extends Omit<CalendarProps, 'className' | 'aria-label'> {
@@ -51,10 +52,9 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
   const [open, setOpen] = useControllableState({value: openProp, defaultValue: defaultOpen, onChange: onOpenChange});
   const current = value === undefined ? inner : value;
   const text = current ? new Intl.DateTimeFormat(locale, format).format(current) : '';
-  const iso = current ? `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}` : '';
   return (
     <>
-    {name && <input type="hidden" name={name} value={iso} disabled={disabled} />}
+    {hiddenInputs(name, isoDate(current), disabled)}
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} {...invalidAttrs(invalid)} data-disabled={disabled ? '' : undefined} data-empty={!current || undefined}>

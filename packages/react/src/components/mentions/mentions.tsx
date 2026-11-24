@@ -2,7 +2,7 @@
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {useFieldControl, fieldOwn} from '../field';
-import {setRefs} from '../../utils/overlay';
+import {nextEnabled, setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
 export interface MentionOption {
@@ -113,12 +113,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     const caret = active.start + insert.length;
     requestAnimationFrame(() => { el.focus(); el.setSelectionRange(caret, caret); });
   };
-  const move = (dir: 1 | -1) => {
-    if (!shown.length) return;
-    let i = at;
-    for (let n = 0; n < shown.length; n++) { i = (i + dir + shown.length) % shown.length; if (!shown[i]!.disabled) break; }
-    setIndex(i);
-  };
+  const move = (dir: 1 | -1) => { if (shown.length) setIndex(nextEnabled(shown, at, dir)); };
   const keydown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented || !open) return;

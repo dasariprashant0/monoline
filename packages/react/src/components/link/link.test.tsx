@@ -41,12 +41,12 @@ describe('Link', () => {
     expect(ref.current!.tagName).toBe('A');
     expect(ref.current).toHaveClass('link', 'mine');
   });
-  it('asChild applies external attributes to the child and adds the new-tab hint inside it', () => {
-    render(<Link asChild external><a href="/r">Router</a></Link>);
-    const a = screen.getByRole('link', {name: 'Router (opens in a new tab)'});
+  it('asChild applies external attributes to the child but adds no hint text', () => {
+    const {container} = render(<Link asChild external><a href="/r">Router</a></Link>);
+    const a = screen.getByRole('link', {name: 'Router'});
     expect(a).toHaveAttribute('target', '_blank');
     expect(a).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(a.querySelectorAll('.sr-only')).toHaveLength(1);
+    expect(container.querySelector('.sr-only')).toBeNull();
   });
   it('asChild works with a non-anchor child and keeps its handler', async () => {
     const onClick = vi.fn();

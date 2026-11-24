@@ -3,7 +3,8 @@ import {forwardRef, useEffect, useId, useState} from 'react';
 import {Popover, PopoverContent, PopoverTrigger} from '../popover';
 import {RangeCalendar, type RangeCalendarProps, type DateRange} from '../range-calendar';
 import {cx} from '../../utils/cx';
-import {useFieldControl} from '../field';
+import {isoDate} from '../../utils/iso-date';
+import {useFieldControl, hiddenInputs} from '../field';
 import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface DateRangePickerProps extends Omit<RangeCalendarProps, 'className' | 'aria-label'> {
@@ -31,8 +32,7 @@ export interface DateRangePickerProps extends Omit<RangeCalendarProps, 'classNam
   'aria-label'?: string;
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const toText = (d: Date | null) => (d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '');
+const toText = isoDate;
 /** Parses YYYY-MM-DD strictly; returns null for anything that is not a real date. */
 const parse = (s: string): Date | null => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.trim());
@@ -88,7 +88,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
 
   return (
     <>
-    {name && <><input type="hidden" name={`${name}-start`} value={toText(current.start)} disabled={disabled} /><input type="hidden" name={`${name}-end`} value={toText(current.end)} disabled={disabled} /></>}
+    {name && <>{hiddenInputs(`${name}-start`, toText(current.start), disabled)}{hiddenInputs(`${name}-end`, toText(current.end), disabled)}</>}
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>

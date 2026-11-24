@@ -1,7 +1,8 @@
 'use client';
 import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
+import {nextEnabled} from '../../utils/overlay';
+import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
 import {Tag} from '../tag';
 
 export interface MultiSelectOption {
@@ -54,12 +55,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
     commit(current.includes(o.value) ? current.filter((v) => v !== o.value) : [...current, o.value]);
     setText('');
   };
-  const move = (dir: 1 | -1) => {
-    if (!shown.length) return;
-    let i = active;
-    for (let n = 0; n < shown.length; n++) { i = (i + dir + shown.length) % shown.length; if (!shown[i]!.disabled) break; }
-    setActive(i);
-  };
+  const move = (dir: 1 | -1) => { if (shown.length) setActive(nextEnabled(shown, active, dir)); };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
@@ -72,7 +68,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
 
   return (
     <div className={cx('multi-select', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
-      {name && current.map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />)}
+      {hiddenInputs(name, current, disabled)}
       <div className="multi-select-box">
         {current.map((v) => {
           const label = options.find((o) => o.value === v)?.label ?? v;

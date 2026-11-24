@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
+import {invalidAttrs, useFieldControl, fieldOwn, hiddenInputs} from '../field';
 import {Tag} from '../tag';
 
 export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
@@ -41,7 +41,7 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
 
   return (
     <div className={cx('tags-input', className)} data-size={size !== 'md' ? size : undefined} data-invalid={invalid || undefined} data-disabled={disabled || undefined}>
-      {name && tags.map((t) => <input key={t} type="hidden" name={name} value={t} disabled={disabled} />)}
+      {hiddenInputs(name, tags, disabled)}
       {tags.map((t) => <Tag key={t} onRemove={disabled ? undefined : () => commit(tags.filter((x) => x !== t))}>{t}</Tag>)}
       <input
         ref={ref}

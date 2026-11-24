@@ -7,10 +7,8 @@ import {TagsInput} from './components/tags-input';
 import {Combobox} from './components/combobox';
 import {Command} from './components/command';
 import {Button} from './components/button';
-import {Link} from './components/link';
 import {Rating} from './components/rating';
 import {PasswordInput} from './components/password-input';
-import {NumberInput} from './components/number-input';
 
 describe('Field keeps its wiring when the control has its own id or aria-describedby', () => {
   it('Input: label still resolves and hint ids are joined with the caller\'s', () => {
@@ -74,10 +72,6 @@ describe('Button, Link, Rating, PasswordInput, NumberInput', () => {
     await user.click(a);
     expect(click).not.toHaveBeenCalled();
   });
-  it('external Link asChild still announces the new tab', () => {
-    render(<Link external asChild><a href="https://example.com">Docs</a></Link>);
-    expect(screen.getByRole('link')).toHaveAccessibleName('Docs (opens in a new tab)');
-  });
   it('Rating clearable resets to 0 on the chosen star', async () => {
     const user = userEvent.setup();
     const change = vi.fn();
@@ -88,11 +82,6 @@ describe('Button, Link, Rating, PasswordInput, NumberInput', () => {
   it('PasswordInput takes labels and disables its toggle with the input', () => {
     render(<PasswordInput aria-label="p" disabled labels={{show: 'Zeigen', hide: 'Verbergen', password: 'Passwort'}} />);
     expect(screen.getByRole('button', {name: 'Zeigen Passwort'})).toBeDisabled();
-  });
-  it('wrapperClassName reaches the wrapper, className the input', () => {
-    const {container} = render(<><NumberInput aria-label="n" wrapperClassName="w" className="i" /><PasswordInput aria-label="p" wrapperClassName="w2" className="i2" /></>);
-    expect(container.querySelector('.number-input.w input.i')).not.toBeNull();
-    expect(container.querySelector('.input-wrap.w2 input.i2')).not.toBeNull();
   });
 });
 
