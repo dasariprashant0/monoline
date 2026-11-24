@@ -56,9 +56,7 @@
     "border-beam",
     "border-beam-light"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/border-beam/border-beam.tsx",

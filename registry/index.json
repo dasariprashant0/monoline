@@ -1369,7 +1369,6 @@
       "category": "buttons",
       "description": "Triggers an action. Native button with solid, line, ghost and danger variants.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "css": [
         "02-buttons.css",
         "13-loading.css"
@@ -1497,7 +1496,6 @@
       "category": "data-display",
       "description": "A bordered group for one thing you can pick up or open.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "css": [
         "06-boxes.css",
         "card.css"
@@ -1744,6 +1742,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "colors",
         "disabled",
         "aria-label"
@@ -1792,6 +1791,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "emptyText",
         "size",
         "invalid"
@@ -2206,6 +2206,7 @@
         "defaultOpen",
         "onOpenChange",
         "disabled",
+        "name",
         "size",
         "invalid",
         "className",
@@ -2268,6 +2269,7 @@
         "disabled",
         "size",
         "invalid",
+        "name",
         "className",
         "aria-label"
       ]
@@ -2355,7 +2357,7 @@
       "name": "direction-provider",
       "title": "Direction provider",
       "category": "layout",
-      "description": "Sets the reading direction (ltr or rtl) once for every Radix-based component below it.",
+      "description": "Sets the reading direction (ltr or rtl) once for every component below it that reads it: tabs, slider, menus, select and more.",
       "status": "stable",
       "primitive": "radix-ui/Direction",
       "css": [],
@@ -3453,6 +3455,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "emptyText",
         "size",
         "invalid"
@@ -3730,8 +3733,7 @@
         "packages/react/src/components/number-ticker/meta.json",
         "packages/react/src/components/number-ticker/number-ticker.demo.tsx",
         "packages/react/src/components/number-ticker/number-ticker.test.tsx",
-        "packages/react/src/components/number-ticker/number-ticker.tsx",
-        "packages/react/src/components/number-ticker/use-reduced-motion.ts"
+        "packages/react/src/components/number-ticker/number-ticker.tsx"
       ],
       "related": [
         "animated-list",
@@ -3835,6 +3837,7 @@
         "onComplete",
         "alphanumeric",
         "disabled",
+        "name",
         "invalid"
       ]
     },
@@ -4008,7 +4011,9 @@
         "packages/react/src/components/password-input/password-input.test.tsx",
         "packages/react/src/components/password-input/password-input.tsx"
       ],
-      "propNames": []
+      "propNames": [
+        "labels"
+      ]
     },
     {
       "name": "pie-chart",
@@ -4277,7 +4282,8 @@
         "onValueChange",
         "max",
         "readOnly",
-        "name"
+        "name",
+        "clearable"
       ]
     },
     {
@@ -4658,7 +4664,6 @@
       "category": "effects",
       "description": "The Button with a light sweep across it. Still a native button.",
       "status": "stable",
-      "primitive": "radix-ui/Slot",
       "uses": [
         "button"
       ],
@@ -4699,6 +4704,7 @@
       "category": "navigation",
       "description": "A collapsible navigation sidebar with groups, icons and a mobile drawer.",
       "status": "beta",
+      "primitive": "radix-ui/Slot",
       "uses": [
         "drawer",
         "tooltip",
@@ -5347,6 +5353,7 @@
         "value",
         "defaultValue",
         "onValueChange",
+        "name",
         "size",
         "invalid"
       ]
@@ -6135,6 +6142,7 @@
       "propNames": [
         "items",
         "value",
+        "name",
         "defaultValue",
         "onValueChange",
         "multiple",

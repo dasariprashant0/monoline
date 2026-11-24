@@ -94,9 +94,7 @@
     "field-required",
     "form-row"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/input/index.ts",
@@ -104,7 +102,7 @@
     },
     {
       "path": "packages/react/src/components/input/input.tsx",
-      "content": "'use client';\nimport {forwardRef, type InputHTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {\n  /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button and the other form controls at each size. */\n  size?: 'sm' | 'md' | 'lg';\n  /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */\n  invalid?: boolean;\n}\n\n/** A native text input. Inside a Field it picks up the id, description and invalid state automatically. */\nexport const Input = forwardRef<HTMLInputElement, InputProps>(function Input({size = 'md', invalid, disabled, className, ...rest}, ref) {\n  const f = useFieldControl();\n  return (\n    <input\n      ref={ref}\n      className={cx('input', size !== 'md' && `input-${size}`, className)}\n      disabled={disabled}\n      data-disabled={disabled ? '' : undefined}\n      {...f}\n      {...invalidAttrs(invalid)}\n      {...rest}\n    />\n  );\n});\n"
+      "content": "'use client';\nimport {forwardRef, type InputHTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {\n  /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button and the other form controls at each size. */\n  size?: 'sm' | 'md' | 'lg';\n  /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */\n  invalid?: boolean;\n}\n\n/** A native text input. Inside a Field it picks up the id, description and invalid state automatically. */\nexport const Input = forwardRef<HTMLInputElement, InputProps>(function Input({size = 'md', invalid, disabled, className, ...rest}, ref) {\n  const f = useFieldControl(rest);\n  return (\n    <input\n      ref={ref}\n      className={cx('input', size !== 'md' && `input-${size}`, className)}\n      disabled={disabled}\n      data-disabled={disabled ? '' : undefined}\n     \n      {...invalidAttrs(invalid)}\n      {...rest} {...f}\n    />\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/input/meta.json",

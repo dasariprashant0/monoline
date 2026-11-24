@@ -1,7 +1,8 @@
 'use client';
-import {useEffect, useId, useState, type ReactNode} from 'react';
+import {forwardRef, useEffect, useId, useState, type ReactNode} from 'react';
 import {Modal, ModalContent, ModalTitle, ModalTrigger} from '../dialog/modal';
 import {cx} from '../../utils/cx';
+import {nextEnabled} from '../../utils/overlay';
 
 export interface CommandItem {
   id: string;
@@ -54,7 +55,7 @@ export function matchesShortcut(e: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrl
  * Models the listbox on Combobox: focus stays in the input, ArrowUp/Down moves the active option, Enter runs it.
  * @example <Command shortcut="mod+k" items={[{id: 'new', label: 'New file', onSelect: create}]} />
  */
-export function Command({items, open, defaultOpen = false, onOpenChange, shortcut, title = 'Command palette', placeholder = 'Type a command', emptyText = 'No results', trigger, className}: CommandProps) {
+export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Command({items, open, defaultOpen = false, onOpenChange, shortcut, title = 'Command palette', placeholder = 'Type a command', emptyText = 'No results', trigger, className}, ref) {
   const [inner, setInner] = useState(defaultOpen);
   const isOpen = open ?? inner;
   const [query, setQuery] = useState('');
@@ -66,7 +67,11 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
 
   useEffect(() => {
     if (!shortcut) return;
-    const h = (e: KeyboardEvent) => { if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
+    const h = (e: KeyboardEvent) => {
+      // A plain-key shortcut such as "/" must not fire, or swallow the key, while someone types in a field.
+      const t = e.target as HTMLElement;
+      if (!/mod|alt/i.test(shortcut) && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
     document.addEventListener('keydown', h);
     return () => document.removeEventListener('keydown', h);
   });
@@ -84,24 +89,19 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
   const activeItem = flat[cur];
 
   const run = (it: CommandItem) => { if (it.disabled) return; setOpen(false); it.onSelect?.(); };
-  const move = (dir: 1 | -1) => {
-    if (!flat.length) return;
-    let i = cur;
-    for (let n = 0; n < flat.length; n++) { i = (i + dir + flat.length) % flat.length; if (!flat[i]!.disabled) break; }
-    setActive(i);
-  };
+  const move = (dir: 1 | -1) => { if (flat.length) setActive(nextEnabled(flat, cur, dir)); };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
     else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
     else if (e.key === 'End') { e.preventDefault(); setActive(Math.max(0, flat.length - 1)); }
-    else if (e.key === 'Enter' && activeItem) { e.preventDefault(); run(activeItem); }
+    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && activeItem) { e.preventDefault(); run(activeItem); }
   };
 
   return (
     <Modal open={isOpen} onOpenChange={setOpen}>
       {trigger && <ModalTrigger asChild>{trigger}</ModalTrigger>}
-        <ModalContent className={cx('command', className)} aria-describedby={undefined}>
+        <ModalContent ref={ref} className={cx('command', className)} aria-describedby={undefined}>
           <ModalTitle className="sr-only">{title}</ModalTitle>
           <input
             type="text"
@@ -150,4 +150,4 @@ export function Command({items, open, defaultOpen = false, onOpenChange, shortcu
         </ModalContent>
     </Modal>
   );
-}
+});

@@ -1,19 +1,19 @@
 # Roadmap: from a working kit to a library people choose
 
-Last updated 2026-11-20. Status is checked against this tree (measured 2026-11-20). Detail on gaps and owners: `docs/IMPROVEMENT-PLAN.md`. Why we made big choices: `docs/decisions/`.
+Last updated 2026-11-24. Status is checked against this tree (measured 2026-11-24; npm status as of 2026-11-20). Detail on gaps and owners: `docs/IMPROVEMENT-PLAN.md`. Why we made big choices: `docs/decisions/`.
 
 ## Where we are
 
 | Area | State | Evidence |
 |---|---|---|
 | Components | 136 components and 23 hooks | `registry/index.json` (159 entries: 136 components plus 23 hooks; the folder holds 160 files with `index.json`) |
-| Tests | 1,467 unit tests with axe and keyboard checks; every demo renders in a test | `npm test` |
+| Tests | 1,550 unit tests with axe and keyboard checks; every demo renders in a test | `npm test` |
 | Real-browser checks | axe, overflow and console errors on every docs page in 3 themes at desktop and 375 px; e2e suite in Chrome (`scripts/e2e/tests`); Firefox and WebKit smoke (`scripts/e2e/cross-browser`) | `scripts/audit.mjs`, `scripts/e2e` |
 | Look options | 8 accents, 3 fonts, 3 corner styles, 3 densities, RTL | `packages/css/src/options.css`, `docs/rtl.md` |
 | Accessibility proof | axe and an accessibility-tree check for 41 components (0 fail, 3 distinct open findings in 10 occurrences). No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
 | Docs | page per component, search, playground, themes, blocks, compare | `apps/docs` |
 | AI-readable | `meta.json`, `registry/`, `llms.txt`, `llms-full.txt`, Markdown per page, MCP server, `AGENTS.md` | generated |
-| Size | Button 0.7 KB gzip, Dialog 1.8, Select 5.4, everything 98.5 of 100; all CSS 20.6 of 21. `npm run size` passes | `npm run size`, `docs/bundle-report.md`, ADR 0002 |
+| Size | Button 0.8 KB gzip, Dialog 2.0, Select 5.7, everything 101.3 of 102; all CSS 20.8 of 21. `npm run size` passes | `npm run size`, `docs/bundle-report.md`, ADR 0002 |
 | Published | npm has `@monoline/css`, `@monoline/react`, `@monoline/mcp` and `monoline` at 0.4.0; `@monoline/tokens` returns 404 (never published). This tree is 0.5.0, not published | `npm view <pkg> version` on 2026-11-20 |
 | Used by anyone | no evidence | n/a |
 
@@ -92,13 +92,13 @@ Newer browser features are used behind detection with the old code as fallback (
 
 - `npm run check`: CSS lint (contrast, raw colours, motion), doc comments on every prop, registry, typecheck, tests
 - `npm run size`: per-component and CSS budgets
-- `node scripts/audit.mjs`: real-browser axe, overflow, console errors; `--visual` compares screenshots on pull requests
+- `node scripts/audit.mjs`: real-browser axe, overflow, console errors; `--visual` writes and compares local screenshots (no CI job: it diffed byte-exact PNGs against its own base and was ignored)
 
 ## Measures of success
 
 | Measure | Target |
 |---|---|
-| One Button, gzip | at most 2.5 KB (now 0.7) |
+| One Button, gzip | at most 2.5 KB (now 0.8) |
 | Typical 10-component app, gzip | JS under 25 KB, CSS under 10 KB |
 | Axe violations across all pages, themes and accents | 0, in CI |
 | Clean install works in Vite, Next.js, Astro, React Router (stands in for Remix) | all four, in CI (`install-smoke`) |

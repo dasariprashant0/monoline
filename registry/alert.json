@@ -79,9 +79,7 @@
     "alert-title",
     "alert-description"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/alert/alert.tsx",

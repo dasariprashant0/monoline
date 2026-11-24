@@ -115,9 +115,7 @@
     "block-empty-page-description",
     "block-empty-page-actions"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/block-empty-page/block-empty-page.tsx",

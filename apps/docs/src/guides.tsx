@@ -7,6 +7,11 @@ import {forms} from './guides-forms';
 import {i18n, accessibility, accessibilityStatement, contributing} from './guides-more';
 import {viteSteps, recipes, choosing} from './guides-start';
 
+type CssSize = {name: string; kb: number};
+const sizes: {css: CssSize | null; cssPaths: CssSize[]} = Object.values(import.meta.glob<{css: CssSize | null; cssPaths: CssSize[]}>('./site/size.generated.json', {eager: true, import: 'default'}))[0] ?? {css: null, cssPaths: []};
+// Captured by `npm run size` when the site is built, so the numbers cannot drift.
+const cssRows: CssSize[] = [...(sizes.css ? [{name: 'everything: @monoline/css', kb: sizes.css.kb}] : []), ...sizes.cssPaths];
+
 export interface Guide {slug: string; title: string; summary: string; body: () => ReactNode}
 
 
@@ -15,13 +20,9 @@ const moreStart = () => (
     <Section title="Load only the CSS you use">
       <P><code>import '@monoline/css'</code> is the easy start: one file with every component (about 21 KB gzip). Most apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.</P>
       <CodeBlock title="main.tsx" code={"import '@monoline/css/core.css';              // tokens, themes, accents, base: always\nimport '@monoline/css/components/button.css';\nimport '@monoline/css/components/dialog.css';\nimport '@monoline/css/components/card.css';"} />
-      <P>Each component page shows its import line under Details. In code, <code>import {'{styles}'} from '@monoline/react'</code> is a map from component name to its file, for tooling and for checking what you load (<code>styles.core</code>, <code>styles.button</code>). Measured, minified and gzipped (<code>npm run size</code>):</P>
+      <P>Each component page shows its import lines in the Import section. In code, <code>import {'{styles}'} from '@monoline/react'</code> is a map from component name to its file, for tooling and for checking what you load (<code>styles.core</code>, <code>styles.button</code>). Measured, minified and gzipped (<code>npm run size</code>):</P>
       <Table><TableHeader><TableRow><TableHead>You load</TableHead><TableHead>CSS gzip</TableHead></TableRow></TableHeader><TableBody>
-        <TableRow><TableCell>everything: <code>@monoline/css</code></TableCell><TableCell>20.6 KB</TableCell></TableRow>
-        <TableRow><TableCell>core only</TableCell><TableCell>3.7 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + Button</TableCell><TableCell>4.1 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + the 11 components of the landing example</TableCell><TableCell>6.6 KB</TableCell></TableRow>
-        <TableRow><TableCell>core + the 21 components of the dashboard example</TableCell><TableCell>11.7 KB</TableCell></TableRow>
+        {cssRows.map((r) => <TableRow key={r.name}><TableCell>{r.name}</TableCell><TableCell>{r.kb.toFixed(1)} KB</TableCell></TableRow>)}
       </TableBody></Table>
       <P>The three example apps in <code>examples/</code> use this path. Without a bundler, link <code>core.css</code> and the component files from <code>node_modules/@monoline/css/dist/</code> in the same way, or copy the source files with the CLI.</P>
       <P>If you write your own CSS, it wins over Monoline without specificity tricks, because Monoline lives in <code>@layer monoline.*</code> and unlayered CSS beats any layer. Your <code>.card</code> or <code>.badge</code> rules apply as written.</P>
@@ -56,9 +57,12 @@ const cli = () => (
     </Section>
     <Section title="Commands">
       <dl className="kv">
-        <dt><code>add &lt;name...&gt;</code></dt><dd>Copies each component and any component it imports (for example <code>password-input</code> brings <code>input</code>) into <code>src/components/monoline/&lt;name&gt;/</code>, and its stylesheets into <code>src/styles/monoline/</code>. Writes <code>utils/cx.ts</code> when needed. Prints the CSS imports to add and the npm packages to install.</dd>
+        <dt><code>add &lt;name...&gt;</code></dt><dd>Copies each component and any component it imports (for example <code>password-input</code> brings <code>input</code>) into <code>src/components/monoline/&lt;name&gt;/</code>, and its stylesheets into <code>src/styles/monoline/</code>. Also writes the shared helpers it needs (<code>utils/cx.ts</code>, <code>utils/slot.tsx</code>, <code>utils/overlay.ts</code>). Prints the CSS imports to add and the npm packages to install.</dd>
         <dt><code>list</code></dt><dd>Lists components with category, status and description. <code>--category &lt;x&gt;</code> filters.</dd>
         <dt><code>info &lt;name&gt;</code></dt><dd>Shows title, category, status, import line, primitive, stylesheets and accessibility notes.</dd>
+        <dt><code>search &lt;words...&gt;</code></dt><dd>Finds components by name, title, keyword or description. Exits <code>1</code> when nothing matches.</dd>
+        <dt><code>diff &lt;name...&gt;</code></dt><dd>Prints a unified diff between your copy and the registry. Exit <code>0</code> when all match, <code>1</code> when something differs or the component is not in the project.</dd>
+        <dt><code>update &lt;name...&gt;</code></dt><dd>Shows the diff, then replaces the differing files after a <code>[y/N]</code> question. Without a terminal it needs <code>--yes</code>.</dd>
         <dt><code>init</code></dt><dd>Writes <code>monoline.json</code> (component and style folders) and prints the token imports. Refuses if the file exists unless <code>--overwrite</code>.</dd>
       </dl>
     </Section>
@@ -68,17 +72,16 @@ const cli = () => (
         <dt><code>--dir &lt;path&gt;</code></dt><dd>Component folder. Default <code>src/components/monoline</code>.</dd>
         <dt><code>--styles &lt;path&gt;</code></dt><dd>CSS folder. Default <code>src/styles/monoline</code>.</dd>
         <dt><code>--overwrite</code></dt><dd>Replace files that already exist. Without it, <code>add</code> refuses and lists the clashes.</dd>
-        <dt><code>--dry-run</code></dt><dd>Print what would be written; write nothing.</dd>
+        <dt><code>--all</code>, <code>--category &lt;name&gt;</code></dt><dd>(<code>add</code>) every component, or every component in one category such as <code>forms</code>.</dd>
+        <dt><code>--yes</code>, <code>--backup</code></dt><dd>(<code>update</code>) replace without asking; keep the old file as <code>&lt;file&gt;.orig</code>.</dd>
+        <dt><code>--dry-run</code></dt><dd>Print what would be written or changed; write nothing.</dd>
         <dt><code>--cwd &lt;path&gt;</code></dt><dd>Project root. Default: the current folder.</dd>
       </dl>
       <P><code>monoline.json</code> stores <code>components</code>, <code>styles</code> and optionally <code>registry</code>; flags win over it.</P>
     </Section>
-    <Section title="Known issue">
-      <P>Checked on 2026-11-20 against the registry on <code>master</code>: <code>add button</code>, <code>add card</code> and <code>add dialog</code> copy files that import <code>utils/slot</code> or <code>utils/overlay</code>, and the CLI does not copy those helpers. A TypeScript build then fails with <code>TS2307: Cannot find module '../../utils/slot'</code>. Until this is fixed, install the packages (Getting started) for those components, or copy the missing helper files from <code>packages/react/src/utils/</code> by hand.</P>
-    </Section>
     <Section title="Example">
-      <CodeBlock title="bash" code={'npx monoline add dialog --dry-run\nnpx monoline add dialog\nnpm i radix-ui   # the command prints the exact packages'} />
-      <P>The CSS files assume the tokens are loaded: <code>npm i @monoline/css</code> and import <code>tokens.css</code>, <code>base.css</code> and <code>accents.css</code> once (<code>init</code> prints the lines). Only use registries you trust: the CLI writes whatever source the registry serves.</P>
+      <CodeBlock title="bash" code={'npx monoline add dialog --dry-run\nnpx monoline add dialog\n# the command prints any npm packages the component needs'} />
+      <P>The CSS files assume the tokens are loaded: <code>npm i @monoline/css</code> and import <code>@monoline/css/core.css</code> once, before the component files (<code>init</code> prints the line). Only use registries you trust: the CLI writes whatever source the registry serves.</P>
     </Section>
   </>
 );
@@ -129,7 +132,7 @@ const forAi = () => (
       <P><code>llms.txt</code>, <code>llms-full.txt</code> and <code>registry/</code> are generated by <code>npm run registry</code>. Do not edit them by hand.</P>
     </Section>
     <Section title="registry/*.json">
-      <P><code>registry/index.json</code> lists every entry with <code>name</code>, <code>title</code>, <code>category</code>, <code>description</code>, <code>status</code>, <code>primitive</code>, <code>css</code>, <code>a11y</code>, <code>keywords</code>, <code>kind</code>, <code>import</code>, <code>path</code> and <code>files</code>. Each <code>registry/&lt;name&gt;.json</code> adds <code>dependencies</code> and <code>source</code>, an array of <code>{'{path, content}'}</code> with the full file text. This is what the CLI reads.</P>
+      <P><code>registry/index.json</code> lists every entry with <code>name</code>, <code>title</code>, <code>category</code>, <code>description</code>, <code>status</code>, <code>primitive</code>, <code>css</code>, <code>a11y</code>, <code>keywords</code>, <code>related</code>, <code>kind</code>, <code>import</code>, <code>path</code>, <code>files</code> and <code>propNames</code>. Each <code>registry/&lt;name&gt;.json</code> adds <code>dependencies</code> and <code>source</code>, an array of <code>{'{path, content}'}</code> with the full file text. This is what the CLI reads.</P>
       <CodeBlock title="bash" code="curl -s https://raw.githubusercontent.com/dasariprashant0/monoline/master/registry/button.json" />
     </Section>
     <Section title="meta.json fields">

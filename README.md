@@ -77,7 +77,7 @@ npx monoline init
 npx monoline add combobox date-picker data-table
 ```
 
-The CLI copies the source and CSS into your project and lists any dependencies. **Known issue (checked 2026-11-20):** components that import shared helpers (`button`, `card`, `dialog`) are copied without `utils/slot` or `utils/overlay`, so the TypeScript build fails with `TS2307`. Install the packages for those until it is fixed. Details: [packages/cli/README.md](packages/cli/README.md) and [docs/ADOPTION.md](docs/ADOPTION.md).
+The CLI copies the source and CSS into your project and lists any dependencies. Shared helpers (`utils/cx`, `utils/slot`, `utils/overlay`) are copied with the component. Details: [packages/cli/README.md](packages/cli/README.md) and [docs/ADOPTION.md](docs/ADOPTION.md).
 
 ## Repository
 

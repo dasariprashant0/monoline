@@ -52,7 +52,7 @@ export function Board() {
         <div className="bd-bars" role="img" aria-label="Contributions per month, rising from December to May">
           {[['Dec', 52], ['Jan', 58], ['Feb', 50], ['Mar', 60], ['Apr', 48], ['May', 62]].map(([m, h]) => <div key={m as string}><span style={{height: `${h}px`}} /><small>{m}</small></div>)}
         </div>
-        <div className="bd-row bd-between bd-top"><div><Eyebrow>Releases</Eyebrow><p className="bd-title">v{VERSION} live</p></div><Button size="sm" variant="line" asChild><a href={href('docs/tools/changelog')}>Changelog <ArrowIcon /></a></Button></div>
+        <div className="bd-row bd-between bd-top"><div><Eyebrow>Releases</Eyebrow><p className="bd-title">v{VERSION} in this tree</p></div><Button size="sm" variant="line" asChild><a href={href('docs/tools/changelog')}>Changelog <ArrowIcon /></a></Button></div>
       </section>
 
       <section className="bd-card" aria-label="Account balance">

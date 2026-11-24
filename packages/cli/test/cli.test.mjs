@@ -22,6 +22,13 @@ test('add copies source and css, skips meta.json, lists deps', async () => {
   assert.ok(!existsSync(join(cwd, 'src/components/monoline/button/meta.json')));
   assert.ok(existsSync(join(cwd, 'src/styles/monoline/button.css')));
   assert.equal(readdirCss(cwd).length, 0, 'legacy numbered files are not copied');
+  assert.doesNotMatch(r.out, /radix-ui/, 'button does not need radix-ui');
+  assert.match(r.out, /No npm packages to install/);
+});
+
+test('a component that imports radix-ui lists it as a dependency', async () => {
+  const r = await exec(['add', 'tabs'], tmp());
+  assert.equal(r.code, 0, r.err);
   assert.match(r.out, /npm i radix-ui/);
 });
 

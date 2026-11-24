@@ -26,7 +26,7 @@ export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputEle
  */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(function Autocomplete({suggestions, value, defaultValue = '', onValueChange, size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const text = value ?? inner;
@@ -52,10 +52,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
         disabled={disabled}
         data-disabled={disabled ? '' : undefined}
         aria-expanded={isOpen}
-        aria-controls={listId}
+        aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={isOpen && active >= 0 ? optId(active) : undefined}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text}
         onChange={(e) => { set(e.target.value); setActive(-1); setOpen(true); }}
@@ -65,10 +65,10 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
           if (e.defaultPrevented) return;
           if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active + 1) % shown.length); }
           else if (e.key === 'ArrowUp') { e.preventDefault(); setOpen(true); if (shown.length) setActive((active <= 0 ? shown.length : active) - 1); }
-          else if (e.key === 'Enter' && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
+          else if (e.key === 'Enter' && !e.nativeEvent.isComposing && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
           else if (e.key === 'Escape' && isOpen) { e.preventDefault(); setOpen(false); setActive(-1); }
         }}
-        {...rest}
+        {...rest} {...f}
       />
       {isOpen && (
         <ul id={listId} role="listbox" className="autocomplete-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

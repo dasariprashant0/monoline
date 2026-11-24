@@ -222,9 +222,7 @@
     "data-table-check",
     "data-table-footer"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/data-table/data-table.tsx",

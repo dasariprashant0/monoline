@@ -85,9 +85,7 @@
     "field-required",
     "form-row"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/textarea/index.ts",
@@ -99,7 +97,7 @@
     },
     {
       "path": "packages/react/src/components/textarea/textarea.tsx",
-      "content": "'use client';\nimport {forwardRef, type TextareaHTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {\n  /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */\n  invalid?: boolean;\n}\n\n/** A native multi-line text field. Inside a Field it is labelled and described automatically. */\nexport const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({invalid, disabled, className, ...rest}, ref) {\n  const f = useFieldControl();\n  return <textarea ref={ref} className={cx('textarea', className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...f} {...invalidAttrs(invalid)} {...rest} />;\n});\n"
+      "content": "'use client';\nimport {forwardRef, type TextareaHTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\nimport {invalidAttrs, useFieldControl} from '../field';\n\nexport interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {\n  /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */\n  invalid?: boolean;\n}\n\n/** A native multi-line text field. Inside a Field it is labelled and described automatically. */\nexport const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({invalid, disabled, className, ...rest}, ref) {\n  const f = useFieldControl(rest);\n  return <textarea ref={ref} className={cx('textarea', className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...invalidAttrs(invalid)} {...rest} {...f} />;\n});\n"
     }
   ],
   "utils": []

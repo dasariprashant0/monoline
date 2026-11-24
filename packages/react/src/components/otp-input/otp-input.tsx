@@ -1,6 +1,7 @@
 'use client';
-import {forwardRef, useRef, useState, type ClipboardEvent, type HTMLAttributes, type KeyboardEvent} from 'react';
+import {forwardRef, useRef, useState, type ChangeEvent, type ClipboardEvent, type HTMLAttributes, type KeyboardEvent} from 'react';
 import {cx} from '../../utils/cx';
+import {hiddenInputs} from '../field';
 import {useIsRtl} from '../../utils/direction';
 
 export interface OtpInputProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
@@ -20,12 +21,14 @@ export interface OtpInputProps extends Omit<HTMLAttributes<HTMLDivElement>, 'def
   alphanumeric?: boolean;
   /** Disables every box. */
   disabled?: boolean;
+  /** Form field name. A hidden input submits the whole code. */
+  name?: string;
   /** Marks the boxes as having an error: sets `aria-invalid` and shows the error border. */
   invalid?: boolean;
 }
 
 /** A row of single-character boxes. Controlled with `value` + `onValueChange`, or uncontrolled. */
-export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpInput({length = 6, value, defaultValue = '', onValueChange, onComplete, alphanumeric, disabled, invalid, className, ...rest}, ref) {
+export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpInput({length = 6, value, defaultValue = '', onValueChange, onComplete, alphanumeric, disabled, invalid, name, className, ...rest}, ref) {
   const [inner, setInner] = useState(defaultValue.slice(0, length));
   const isRtl = useIsRtl();
   const current = (value ?? inner).slice(0, length);
@@ -44,13 +47,20 @@ export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpIn
       else if (i > 0) { commit(current.slice(0, i - 1) + current.slice(i)); focus(i - 1); }
     } else if (e.key === 'ArrowLeft') { e.preventDefault(); focus(isRtl(e.currentTarget) ? i + 1 : i - 1); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); focus(isRtl(e.currentTarget) ? i - 1 : i + 1); }
-    else if (e.key?.length === 1 && !e.ctrlKey && !e.metaKey) {
-      e.preventDefault();
-      if (!ok(e.key)) return;
-      const padded = current.padEnd(i, ' ');
-      commit((padded.slice(0, i) + e.key + current.slice(i + 1)).replace(/ +$/, ''));
-      focus(i + 1);
-    }
+  };
+  // Characters always land at the first empty box at most, so the value never has gaps.
+  const put = (i: number, text: string) => {
+    const at = Math.min(i, current.length);
+    commit((current.slice(0, at) + text + (text.length === 1 ? current.slice(at + 1) : '')).slice(0, length));
+    focus(at + text.length);
+  };
+  // Typing, soft keyboards and one-time-code autofill all arrive here (keydown only handles Backspace and arrows).
+  const onInput = (i: number) => (e: ChangeEvent<HTMLInputElement>) => {
+    let v = e.target.value;
+    if (current[i] && v.startsWith(current[i]!)) v = v.slice(1);
+    if (v === '' ) { if (current[i]) commit(current.slice(0, i) + current.slice(i + 1)); return; }
+    const text = [...v].filter(ok).join('');
+    if (text) put(i, text);
   };
   const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -61,6 +71,7 @@ export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpIn
   };
   return (
     <div ref={ref} role="group" className={cx('otp', className)} {...rest}>
+      {hiddenInputs(name, current, disabled)}
       {Array.from({length}, (_, i) => (
         <input
           key={i}
@@ -68,12 +79,11 @@ export const OtpInput = forwardRef<HTMLDivElement, OtpInputProps>(function OtpIn
           className="input otp-box"
           inputMode={alphanumeric ? 'text' : 'numeric'}
           autoComplete={i === 0 ? 'one-time-code' : 'off'}
-          maxLength={1}
           value={current[i] ?? ''}
           disabled={disabled}
           {...(invalid ? {'aria-invalid': true as const, 'data-invalid': ''} : {})}
           aria-label={`Digit ${i + 1} of ${length}`}
-          onChange={() => {}}
+          onChange={onInput(i)}
           onKeyDown={onKey(i)}
           onPaste={onPaste}
           onFocus={(e) => e.currentTarget.select()}

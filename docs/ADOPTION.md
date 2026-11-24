@@ -1,5 +1,8 @@
 # Adoption: the first ten minutes
 
+> **Historical (2026-11-20), against npm 0.4.0.** The CLI `TS2307` failure in rows 5-7 and the bug table was fixed by PR #23 (`add` now copies `utils/cx`, `utils/slot` and `utils/overlay`). For the current state read [ROADMAP.md](ROADMAP.md).
+
+
 Written 2026-11-20 (WP6). Scope: README, the getting-started guides and the docs home page. Evidence comes from commands run from empty folders against `@monoline/react` and `@monoline/css` 0.4.0 from npm (Node 26.10, npm 11.19, Vite 8.3, Next.js 16.4.6, React 19.3). Only npm was run; the pnpm, yarn and bun tabs use each tool's standard syntax and were not executed.
 
 ## Checklist from BENCHMARK.md section 4

@@ -72,9 +72,7 @@
     "image-contain",
     "image-fallback"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/image/image.tsx",

@@ -61,9 +61,7 @@
   "usage": "import {useState} from 'react';\nimport {useHotkeys} from '@monoline/react';\n\nfunction HotkeysDemo() {\n  const [last, setLast] = useState('none yet');\n  useHotkeys({\n    'mod+k': () => setLast('mod+k'),\n    'shift+h': () => setLast('shift+h'),\n    escape: () => setLast('escape'),\n  });\n  return (\n    <div>\n      <p>Press Mod+K (Cmd on macOS, Ctrl elsewhere), Shift+H or Escape.</p>\n      <p>Last shortcut: {last}</p>\n    </div>\n  );\n}\n\n<HotkeysDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-hotkeys/index.ts",

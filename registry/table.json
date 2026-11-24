@@ -68,9 +68,7 @@
     "table",
     "num"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/table/index.ts",

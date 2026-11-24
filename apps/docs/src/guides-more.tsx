@@ -2,14 +2,14 @@ import {CodeBlock} from '@monoline/react';
 import {Section, P, href, GITHUB} from './guide-parts';
 
 const dirHtml = '<html lang="ar" dir="rtl" data-theme="warm" data-accent="orange">';
-const dirProvider = `import {Direction} from 'radix-ui';
+const dirProvider = `import {DirectionProvider} from '@monoline/react';
 
-// Radix primitives (Tabs, Select, menus, Slider, Accordion...) read their direction from this provider,
+// Tabs, Slider, Accordion, menus and other widgets read their direction from this provider,
 // not from the dir attribute. Without it, arrow keys and popover placement stay left-to-right.
 export function App({dir, children}: {dir: 'ltr' | 'rtl'; children: React.ReactNode}) {
-  return <Direction.Provider dir={dir}>{children}</Direction.Provider>;
+  return <DirectionProvider dir={dir}>{children}</DirectionProvider>;
 }`;
-const switchDir = `// Keep the document and the Radix provider in step.
+const switchDir = `// Keep the document and the provider in step.
 useEffect(() => { document.documentElement.dir = dir; }, [dir]);`;
 const locale = `import {Calendar, DatePicker, Field} from '@monoline/react';
 
@@ -36,10 +36,10 @@ export const i18n = () => (
     <Section title="Direction">
       <P>Set <code>lang</code> and <code>dir</code> on <code>&lt;html&gt;</code>. Layout that follows the document direction flips on its own. The Customise panel in these docs has a Direction switch that sets <code>dir</code> on <code>&lt;html&gt;</code> and remembers it, so you can try any component in right-to-left.</P>
       <CodeBlock title="index.html" code={dirHtml} />
-      <P>An RTL pass over the component stylesheets is in progress on a separate branch (logical properties instead of left and right). Until it is merged, some components may still look left-biased in right-to-left; check the ones you use.</P>
+      <P>The component stylesheets use logical properties (inline-start and inline-end instead of left and right), so borders, slides and glyphs flip with <code>dir</code>. Check the components you use in right-to-left; the details are in <code>docs/rtl.md</code>.</P>
     </Section>
     <Section title="DirectionProvider">
-      <P>Radix primitives decide arrow-key behaviour and popover placement from a direction provider, not from the <code>dir</code> attribute. A <code>DirectionProvider</code> re-export from <code>@monoline/react</code> is coming with the RTL work and is not in this version. Until then use Radix's own, which Monoline already depends on (<code>radix-ui</code>; install it in your app if it is not hoisted). Once the Monoline one is merged the import will change and the props will be the same.</P>
+      <P>Tabs, slider, accordion, menus and the other direction-aware widgets decide arrow-key behaviour and popover placement from a direction provider, not from the <code>dir</code> attribute. Wrap the app once in <code>DirectionProvider</code> from <code>@monoline/react</code> with the same value as <code>dir</code>.</P>
       <CodeBlock title="app.tsx" code={dirProvider} />
       <CodeBlock title="app.tsx" code={switchDir} />
       <P><code>SegmentedControl</code> does not accept a <code>dir</code> prop; it takes the direction from the provider.</P>
@@ -71,7 +71,7 @@ export const i18n = () => (
         <dt>Names</dt><dd><code>aria-label</code> on Breadcrumb, ColorPicker, OtpInput, Rating, Slider, SegmentedControl, Pagination.</dd>
       </dl>
       <CodeBlock title="copy.tsx" code={copy} />
-      <P>Known English strings with no prop yet (checked in the source at the time of writing): the Calendar buttons &ldquo;Previous month&rdquo; and &ldquo;Next month&rdquo;, the DatePicker popover name &ldquo;Choose a date&rdquo;, the NumberInput buttons &ldquo;Decrease&rdquo; and &ldquo;Increase&rdquo;, PasswordInput &ldquo;Show&rdquo; and &ldquo;Hide&rdquo;, the DataTable &ldquo;Select all rows&rdquo; checkbox and the FileUpload list name &ldquo;Selected files&rdquo;. Adding a prop for each is a compatible change; open an issue if you need one.</P>
+      <P>Pagination, Calendar, RangeCalendar, NumberInput and FileUpload take a <code>labels</code> object for their built-in strings. Known English strings with no prop yet (checked in the source at the time of writing): the DatePicker and DateRangePicker popover names &ldquo;Choose a date&rdquo; and &ldquo;Choose a date range&rdquo;, PasswordInput &ldquo;Show&rdquo; and &ldquo;Hide&rdquo;, and the DataTable &ldquo;Select all rows&rdquo; checkbox. Adding a prop for each is a compatible change; open an issue if you need one.</P>
     </Section>
   </>
 );
@@ -81,7 +81,7 @@ export const accessibility = () => (
     <Section title="What we commit to">
       <P>The target is WCAG 2.2 level AA for every component. This is a goal for the components, not a certificate: an app built from them can still fail if it is used badly (missing labels, headings out of order, colour overrides).</P>
       <ul className="why">
-        <li><strong>Native first.</strong> A native element, then a Radix primitive, then hand-written ARIA. Never a <code>div</code> with <code>onClick</code>.</li>
+        <li><strong>Native first.</strong> A native element, then Monoline's own small layer or a Radix primitive, then hand-written ARIA. Never a <code>div</code> with <code>onClick</code>.</li>
         <li><strong>Keyboard.</strong> Every interactive part is reachable and operable from the keyboard. Escape closes overlays and focus returns to the trigger. Nothing traps focus except modal dialogs, which are meant to.</li>
         <li><strong>Names.</strong> Every control has an accessible name. Icon-only buttons and controls without a visible label (OtpInput, Rating, Slider, SegmentedControl) require an <code>aria-label</code> in their types.</li>
         <li><strong>Errors.</strong> <code>Field</code> sets <code>aria-invalid</code> and <code>aria-describedby</code> and announces the message; <code>Form</code> adds a summary that links to each field.</li>
@@ -93,12 +93,12 @@ export const accessibility = () => (
       <dl className="kv">
         <dt>Buttons, links</dt><dd>Enter, and Space for buttons.</dd>
         <dt>Dialogs, popovers, menus</dt><dd>Escape closes. Focus moves in on open and back to the trigger on close.</dd>
-        <dt>Menus, tabs, radio groups, toolbars</dt><dd>Arrow keys move between items, Home and End jump. Only one item is a Tab stop. This comes from Radix.</dd>
+        <dt>Menus, tabs, radio groups, toolbars</dt><dd>Arrow keys move between items, Home and End jump. Only one item is a Tab stop. Menus, selects and popovers use Monoline's own layer; tabs, radio groups, toolbars and a few more use Radix.</dd>
         <dt>Combobox, Select</dt><dd>Arrow keys move through options, Enter picks, Escape closes.</dd>
         <dt>Slider</dt><dd>Arrows step, Home and End jump, PageUp and PageDown take larger steps.</dd>
         <dt>Calendar</dt><dd>Arrows move by day and week, Home and End go to the ends of the week, PageUp and PageDown change month.</dd>
       </dl>
-      <P>If you run axe against an open <strong>menu</strong> or <strong>select</strong>, it reports <code>aria-hidden-focus</code> on the app root. Radix hides the page behind the menu with <code>aria-hidden</code> and keeps focus trapped in the menu, so no user can reach the hidden content; axe only forgives this for <code>aria-modal</code> dialogs. It is a known false alarm of the Radix pattern, not a Monoline bug. <code>scripts/audit-examples.mjs</code> lists it as KNOWN.</P>
+      <P>If you run axe against an open <strong>menu</strong> or <strong>select</strong>, it reports <code>aria-hidden-focus</code> on the app root. When the page behind an open overlay is hidden with <code>aria-hidden</code> and focus is held inside it, no user can reach the hidden content; axe only forgives this for <code>aria-modal</code> dialogs. The audit script treats it as known, not as a Monoline bug. <code>scripts/audit-examples.mjs</code> lists it as KNOWN.</P>
       <P>The exact behaviour of each component is listed in the Accessibility section of its page, from <code>meta.json</code>, and each item is covered by a test.</P>
     </Section>
     <Section title="Focus ring and motion">

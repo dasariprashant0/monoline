@@ -70,9 +70,7 @@
     "dot-pattern",
     "dot-pattern-fade"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/dot-pattern/dot-pattern.tsx",

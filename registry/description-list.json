@@ -63,9 +63,7 @@
     "dlist-row",
     "dlist-stacked"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/description-list/description-list.tsx",

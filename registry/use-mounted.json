@@ -45,9 +45,7 @@
   "usage": "import {useMounted} from '@monoline/react';\n\nfunction Demo() {\n  const mounted = useMounted();\n  return <p>{mounted ? 'Rendered in the browser.' : 'Server render.'}</p>;\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-mounted/index.ts",

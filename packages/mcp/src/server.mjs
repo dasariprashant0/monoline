@@ -5,7 +5,7 @@ import {compose, installInfo, propGroupsOf, rank} from './tools.mjs';
 
 const THEMING = readFileSync(new URL('./theming.md', import.meta.url), 'utf8');
 const SUPPORTED = ['2025-06-18', '2025-03-26', '2024-11-05'];
-export const SERVER_INFO = {name: 'monoline', version: '0.3.0'};
+export const SERVER_INFO = {name: 'monoline', version: JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version};
 
 export class RpcError extends Error {
   constructor(code, message, data) { super(message); this.code = code; this.data = data; }

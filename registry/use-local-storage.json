@@ -65,9 +65,7 @@
   "usage": "import {Button, useLocalStorage} from '@monoline/react';\n\nfunction CountDemo() {\n  const [count, setCount] = useLocalStorage('monoline-demo-count', 0);\n  return (\n    <div>\n      <Button variant=\"line\" onClick={() => setCount((n) => n + 1)}>Count is {count}</Button>\n      <p>Saved in this browser. Open this page in another tab and click there to see it sync.</p>\n    </div>\n  );\n}\n\n<CountDemo />",
   "dataAttributes": [],
   "classes": [],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/hooks/use-local-storage/index.ts",

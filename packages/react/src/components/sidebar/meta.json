@@ -4,6 +4,7 @@
   "category": "navigation",
   "description": "A collapsible navigation sidebar with groups, icons and a mobile drawer.",
   "status": "beta",
+  "primitive": "radix-ui/Slot",
   "uses": [
     "drawer",
     "tooltip",

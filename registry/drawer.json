@@ -88,9 +88,7 @@
     "dialog-close",
     "dialog-title"
   ],
-  "dependencies": {
-    "radix-ui": "^1.4.2"
-  },
+  "dependencies": {},
   "source": [
     {
       "path": "packages/react/src/components/drawer/drawer.tsx",

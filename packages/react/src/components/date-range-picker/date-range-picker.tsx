@@ -3,7 +3,8 @@ import {forwardRef, useEffect, useId, useState} from 'react';
 import {Popover, PopoverContent, PopoverTrigger} from '../popover';
 import {RangeCalendar, type RangeCalendarProps, type DateRange} from '../range-calendar';
 import {cx} from '../../utils/cx';
-import {useFieldControl} from '../field';
+import {isoDate} from '../../utils/iso-date';
+import {useFieldControl, hiddenInputs} from '../field';
 import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface DateRangePickerProps extends Omit<RangeCalendarProps, 'className' | 'aria-label'> {
@@ -23,14 +24,15 @@ export interface DateRangePickerProps extends Omit<RangeCalendarProps, 'classNam
   size?: 'sm' | 'md' | 'lg';
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
   invalid?: boolean;
+  /** Form field name. Two hidden inputs submit `YYYY-MM-DD` dates as `<name>-start` and `<name>-end` (empty when not chosen). */
+  name?: string;
   /** Extra class name for the trigger button. */
   className?: string;
   /** Names the control when it is not inside a Field. */
   'aria-label'?: string;
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const toText = (d: Date | null) => (d ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` : '');
+const toText = isoDate;
 /** Parses YYYY-MM-DD strictly; returns null for anything that is not a real date. */
 const parse = (s: string): Date | null => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.trim());
@@ -42,7 +44,7 @@ const parse = (s: string): Date | null => {
 };
 
 /** Pick a date range from a popover. It holds two typed fields (YYYY-MM-DD) and a range calendar that stay in sync. Value is `{start, end}`. Same `value` / `defaultValue` / `onValueChange` as RangeCalendar. */
-export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker({value, defaultValue, onValueChange, placeholder = 'Pick dates', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, invalid, className, 'aria-label': label, min, max, isDateDisabled, ...cal}, ref) {
+export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker({value, defaultValue, onValueChange, placeholder = 'Pick dates', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, name, invalid, className, 'aria-label': label, min, max, isDateDisabled, ...cal}, ref) {
   const f = useFieldControl();
   const errId = useId();
   const [inner, setInner] = useState<DateRange>(defaultValue ?? {start: null, end: null});
@@ -79,12 +81,14 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
         aria-describedby={bad === which ? errId : undefined}
         onChange={(e) => setTyped({...typed, [which]: e.target.value})}
         onBlur={() => apply(which)}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); apply(which); } }}
+        onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); apply(which); } }}
       />
     </label>
   );
 
   return (
+    <>
+    {name && <>{hiddenInputs(`${name}-start`, toText(current.start), disabled)}{hiddenInputs(`${name}-end`, toText(current.end), disabled)}</>}
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>
@@ -100,5 +104,6 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
           <RangeCalendar value={current} locale={locale} min={min} max={max} isDateDisabled={isDateDisabled} {...cal} onValueChange={(r) => { commit(r); setBad(null); if (r.start && r.end) setOpen(false); }} />
         </PopoverContent>
           </Popover>
+    </>
   );
 });

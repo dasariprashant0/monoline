@@ -1,6 +1,6 @@
 # Monoline VS Code snippets
 
-One snippet per registry entry (153 components and hooks). Type the prefix, press Tab, and you get the import and a usage example from the registry.
+One snippet per registry entry (one for every component and hook). Type the prefix, press Tab, and you get the import and a usage example from the registry.
 
 | Prefix | Inserts |
 |---|---|
