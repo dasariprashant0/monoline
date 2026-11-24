@@ -9,3 +9,8 @@
 .toggle[data-state="on"] { background: var(--foreground); color: var(--background); border-color: var(--foreground); }
 .toggle:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
 .toggle-group { display: inline-flex; gap: var(--s2); }
+/* Forced colours: the filled range and the unfilled track would both become the text colour. Fill with Highlight, draw the track as a dashed rule. */
+@media (forced-colors: active) {
+  .slider-track { background: transparent; border-block-start: 2px dashed GrayText; height: 0; }
+  .slider-range { background: Highlight; height: 4px; top: -3px; }
+}

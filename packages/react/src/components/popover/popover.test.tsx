@@ -18,6 +18,20 @@ describe('Popover', () => {
     expect(await screen.findByRole('dialog', {name: 'Details'})).toBeInTheDocument();
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
+  it('Tab from the last control closes it and continues after the trigger, Shift+Tab goes before it', async () => {
+    const user = userEvent.setup();
+    render(<><button>Before</button><Popover><PopoverTrigger>Open</PopoverTrigger><PopoverContent aria-label="Details"><button>Inside</button></PopoverContent></Popover><button>After</button></>);
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    await screen.findByRole('dialog');
+    expect(screen.getByRole('button', {name: 'Inside'})).toHaveFocus();
+    await user.tab();
+    await vi.waitFor(() => expect(screen.getByRole('button', {name: 'After'})).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', {name: 'Open'}));
+    await screen.findByRole('dialog');
+    await user.tab({shift: true});
+    await vi.waitFor(() => expect(screen.getByRole('button', {name: 'Before'})).toHaveFocus());
+  });
   it('closes on Escape and returns focus', async () => {
     const user = userEvent.setup();
     render(ui());

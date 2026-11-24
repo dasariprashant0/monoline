@@ -1,11 +1,12 @@
 // Blocks gallery: every block-* component full width, one viewport switcher for the whole page, with Copy code and
 // the install command per block. The frame is a plain resizable container (no iframe), so a block's own @media
 // rules still follow the browser window; the frame width shows how the content wraps at that width.
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Button, CodeBlock, SegmentedControl} from '@monoline/react';
 import type {Demo} from '@monoline/react';
 import {demosFor, inCategory, pathOf} from '../shell/registry';
 import {href} from '../shell/router';
+import {useDemoLandmarks} from '../page/demo-landmarks';
 
 type DemoCode = {title: string; code: string};
 type Extra = {importName: string; demos: DemoCode[]};
@@ -29,8 +30,10 @@ function CopyCode({code}: {code: string}) {
 }
 
 function Preview({demo, width, label}: {demo: Demo; width: number; label: string}) {
+  const el = useRef<HTMLDivElement>(null);
+  useDemoLandmarks(el, 3, label);
   return (
-    <div className="blocks-frame" data-no-toc role="region" aria-label={`${label} preview`} tabIndex={0} style={width ? {width: `min(100%, ${width}px)`} : undefined}>
+    <div ref={el} className="blocks-frame" data-no-toc role="region" aria-label={`${label} preview`} tabIndex={0} style={width ? {width: `min(100%, ${width}px)`} : undefined}>
       {demo.render()}
     </div>
   );

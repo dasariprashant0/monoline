@@ -59,4 +59,9 @@ describe('AppShell', () => {
     const {container} = render(ui());
     expect(await axe(container)).toHaveNoViolations();
   });
+  it('inside another main it renders a plain container and no second skip link', () => {
+    render(<main><AppShell navbar={<span>Bar</span>}><p>Body</p></AppShell></main>);
+    expect(screen.getAllByRole('main')).toHaveLength(1);
+    expect(screen.queryByRole('link', {name: /skip to main/i})).not.toBeInTheDocument();
+  });
 });

@@ -4,3 +4,5 @@
 .border-beam-light { position: absolute; inset: -1px; border: 1px solid transparent; pointer-events: none; background: conic-gradient(from var(--border-beam-angle), transparent 0 75%, var(--accent) 100%) border-box; -webkit-mask: linear-gradient(var(--foreground) 0 0) padding-box, linear-gradient(var(--foreground) 0 0); -webkit-mask-composite: xor; mask: linear-gradient(var(--foreground) 0 0) padding-box exclude, linear-gradient(var(--foreground) 0 0); animation: border-beam-spin var(--border-beam-duration, 6s) linear infinite; }
 @keyframes border-beam-spin { to { --border-beam-angle: 360deg; } }
 @media (prefers-reduced-motion: reduce) { .border-beam-light { display: none; } }
+/* Pointer and keyboard users can stop it: hover or focus anywhere inside pauses the light. */
+.border-beam:hover .border-beam-light, .border-beam:focus-within .border-beam-light { animation-play-state: paused; }

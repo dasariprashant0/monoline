@@ -117,7 +117,7 @@ const List = forwardRef<HTMLDivElement, SelectContentProps>(function List({class
   const keydown = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
-    if (e.key === 'Tab') { e.preventDefault(); return; }
+    if (e.key === 'Tab') { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); return; } // focus goes to the trigger before the default action, so Tab carries on from there
     const next = nextItem(e.key, !e.ctrlKey && !e.metaKey && !e.altKey, [...el.current!.querySelectorAll<HTMLElement>(OPTION)], typed.current);
     if (next === null) return;
     e.preventDefault(); next?.focus(); next?.scrollIntoView?.({block: 'nearest'});

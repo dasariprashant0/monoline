@@ -90,13 +90,15 @@ export function parse(md: string): Block[] {
 /** Render Markdown. The first `#` heading is dropped (the page has its own h1); other headings keep their level. */
 export function Markdown({source, label}: {source: string; label: string}) {
   const blocks = parse(source);
-  let dropped = false;
+  let dropped = false, last = '';
+  const seen = new Map<string, number>(); // table region names must be unique on the page: heading, then columns, then a count
   return (
     <div className="md">
       {blocks.map((b, n) => {
         switch (b.t) {
           case 'h': {
             if (b.level === 1 && !dropped) { dropped = true; return null; }
+            last = b.text.replace(/[`*_]/g, '');
             const H = `h${Math.min(4, Math.max(2, b.level))}` as 'h2' | 'h3' | 'h4';
             return <H key={n}>{inline(b.text)}</H>;
           }
@@ -106,12 +108,16 @@ export function Markdown({source, label}: {source: string; label: string}) {
           case 'code': return <CodeBlock key={n} language={LANGS.includes(b.lang) ? (b.lang as never) : 'text'} code={b.code} />;
           case 'quote': return <blockquote key={n} className="md-quote">{inline(b.text)}</blockquote>;
           case 'hr': return <hr key={n} />;
-          case 'table': return (
-            <Table key={n} wrapperLabel={`${label}: ${b.head.slice(0, 2).join(', ')}`}>
+          case 'table': {
+            const base = `${last || label}: ${b.head.slice(0, 2).join(', ')}`, k2 = (seen.get(base) ?? 0) + 1;
+            seen.set(base, k2);
+            return (
+            <Table key={n} wrapperLabel={k2 > 1 ? `${base} (${k2})` : base}>
               <TableHeader><TableRow>{b.head.map((c, k) => <TableHead key={k} scope="col">{inline(c)}</TableHead>)}</TableRow></TableHeader>
               <TableBody>{b.rows.map((r, k) => <TableRow key={k}>{b.head.map((_, j) => <TableCell key={j}>{inline(r[j] ?? '')}</TableCell>)}</TableRow>)}</TableBody>
             </Table>
           );
+          }
         }
       })}
     </div>

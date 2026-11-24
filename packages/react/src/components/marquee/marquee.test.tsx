@@ -59,8 +59,8 @@ describe('Marquee', () => {
     expect(btn).toHaveAttribute('aria-pressed', 'true');
     expect(container.firstElementChild).toHaveAttribute('data-paused');
   });
-  it('has no pause button unless pausable', () => {
-    render(<Marquee><span>Acme</span></Marquee>);
+  it('has no pause button when pausable is false', () => {
+    render(<Marquee pausable={false}><span>Acme</span></Marquee>);
     expect(screen.queryByRole('button')).toBeNull();
   });
   it('has no axe violations', async () => {

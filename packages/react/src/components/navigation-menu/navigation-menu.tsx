@@ -1,14 +1,24 @@
-import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';
+'use client';
+import {forwardRef, useEffect, useRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';
 import {NavigationMenu as Radix} from 'radix-ui';
 import {cx} from '../../utils/cx';
+import {setRefs} from '../../utils/overlay';
 
 /** Props of NavigationMenu: `value`, `defaultValue`, `onValueChange`, `orientation`, delays. */
 export type NavigationMenuProps = ComponentPropsWithoutRef<typeof Radix.Root>;
 
 /** A site navigation bar whose items can open rich panels of links. Put a `NavigationMenuList` inside; the panels share one viewport. */
 export const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function NavigationMenu({className, children, ...rest}, ref) {
+  const root = useRef<HTMLElement | null>(null);
+  // Radix adds an aria-hidden <span tabindex="0"> focus proxy next to a trigger when it opens (so it is fixed by the observer below); it passes focus into the panel at once. A focusable element
+  // must not be aria-hidden (WCAG 4.1.2), so drop the attribute (the proxy is empty and never holds focus).
+  useEffect(() => {
+    const el = root.current!, fix = () => el.querySelectorAll('span[aria-hidden][tabindex="0"]').forEach((n) => n.removeAttribute('aria-hidden'));
+    const mo = new MutationObserver(fix); mo.observe(el, {subtree: true, childList: true});
+    return () => mo.disconnect();
+  }, []);
   return (
-    <Radix.Root ref={ref} className={cx('navmenu', className)} {...rest}>
+    <Radix.Root ref={(n) => setRefs(n, root, ref)} className={cx('navmenu', className)} {...rest}>
       {children}
       <div className="navmenu-viewport-wrap"><Radix.Viewport className="navmenu-viewport" /></div>
     </Radix.Root>

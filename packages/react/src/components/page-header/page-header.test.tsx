@@ -11,6 +11,10 @@ describe('PageHeader', () => {
     expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: 'Add'})).toBeInTheDocument();
   });
+  it('renders no heading for an empty title', () => {
+    render(<PageHeader title="" description="Only a description." />);
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+  });
   it('uses another heading level and omits empty parts', () => {
     const {container} = render(<PageHeader title="Billing" level={2} />);
     expect(screen.getByRole('heading', {level: 2, name: 'Billing'})).toBeInTheDocument();

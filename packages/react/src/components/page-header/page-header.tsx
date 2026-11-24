@@ -24,7 +24,7 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function P
       {breadcrumbs}
       <div className="page-header-row">
         <div className="page-header-text">
-          {createElement(`h${level}`, {className: 'page-header-title'}, title)}
+          {title && createElement(`h${level}`, {className: 'page-header-title'}, title)}
           {description && <p className="page-header-description">{description}</p>}
         </div>
         {actions && <div className="page-header-actions">{actions}</div>}
