@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync, existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
-import {run} from '../src/cli.mjs';
+import {run} from '../dist/cli.js';
 
 const registry = resolve(import.meta.dirname, '../../../registry');
 const tmp = () => mkdtempSync(join(tmpdir(), 'monoline-'));
@@ -49,9 +49,11 @@ test('adds components that a component imports', async () => {
   assert.ok(existsSync(join(cwd, 'src/components/monoline/input/input.tsx')));
 });
 
-test('refuses to overwrite, allows --overwrite, --dry-run writes nothing', async () => {
+test('refuses to overwrite an edited file, allows --overwrite, --dry-run writes nothing', async () => {
   const cwd = tmp();
   await exec(['add', 'badge'], cwd);
+  assert.equal((await exec(['add', 'badge'], cwd)).code, 0, 'identical files are not a clash');
+  writeFileSync(join(cwd, 'src/styles/monoline/badge.css'), '/* edited */\n');
   const again = await exec(['add', 'badge'], cwd);
   assert.equal(again.code, 1);
   assert.match(again.err, /refusing to overwrite/);

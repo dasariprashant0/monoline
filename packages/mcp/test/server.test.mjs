@@ -1,10 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {existsSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {FIXTURE, makeRegistry, start} from '../fixtures/helpers.mjs';
-import {createRegistry, resolveRegistry} from '../src/registry.mjs';
-import {createServer} from '../src/server.mjs';
+import {createRegistry, resolveRegistry} from '../dist/registry.js';
+import {createServer} from '../dist/server.js';
+
+const PKG = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
 const REPO_REGISTRY = new URL('../../../registry', import.meta.url).pathname;
 
@@ -408,17 +410,42 @@ test('a failing fetch gives an error result, and the next call retries', async (
   assert.equal((await run()).result.isError, undefined);
 });
 
-test('resolveRegistry order: flag, env, ./registry, repo registry, GitHub', () => {
+test('resolveRegistry order: flag, env, ./registry, repo registry, the GitHub tag of this version', () => {
   const dir = makeRegistry();
   const root = join(dir, '..');
-  assert.equal(resolveRegistry({flag: 'a', env: {MONOLINE_REGISTRY: 'b'}, cwd: root}), 'a');
-  assert.equal(resolveRegistry({env: {MONOLINE_REGISTRY: 'b'}, cwd: root}), 'b');
-  assert.equal(resolveRegistry({env: {}, cwd: root}), dir);
-  assert.equal(resolveRegistry({env: {}, cwd: '/nonexistent', pkgDir: '/nonexistent/a/b/c'}),
-    'https://raw.githubusercontent.com/dasariprashant0/monoline/master/registry');
+  assert.deepEqual(resolveRegistry({flag: 'a', env: {MONOLINE_REGISTRY: 'b'}, cwd: root}), {location: 'a', from: 'flag'});
+  assert.deepEqual(resolveRegistry({env: {MONOLINE_REGISTRY: 'b'}, cwd: root}), {location: 'b', from: 'env'});
+  assert.deepEqual(resolveRegistry({env: {}, cwd: root}), {location: dir, from: 'cwd'});
+  assert.deepEqual(resolveRegistry({env: {}, cwd: '/nonexistent', pkgDir: '/nonexistent/a/b/c'}),
+    {location: `https://raw.githubusercontent.com/dasariprashant0/monoline/v${PKG.version}/registry`, from: 'default'});
   if (existsSync(join(REPO_REGISTRY, 'index.json'))) {
-    assert.equal(resolveRegistry({env: {}, cwd: '/nonexistent', pkgDir: new URL('../src', import.meta.url).pathname}), REPO_REGISTRY);
+    assert.deepEqual(resolveRegistry({env: {}, cwd: '/nonexistent', pkgDir: new URL('../dist', import.meta.url).pathname}), {location: REPO_REGISTRY, from: 'repo'});
   }
+});
+
+test('stderr says when the registry comes from ./registry in the working directory', async () => {
+  const root = join(makeRegistry(), '..');
+  const s = start([], {MONOLINE_REGISTRY: ''}, root);
+  try {
+    await init(s);
+    assert.match(s.stderr, /using \.\/registry\/index\.json from the working directory/);
+    assert.equal((await s.data('list_components', {})).count, FIXTURE.length);
+  } finally { await s.close(); }
+  const flagged = start(['--registry', join(root, 'registry')], {}, root);
+  try {
+    await init(flagged);
+    assert.doesNotMatch(flagged.stderr, /working directory/);
+  } finally { await flagged.close(); }
+});
+
+test('a registry file that is not a registry entry is an error result naming it', () => withServer(async (s) => {
+  const r = await s.tool('get_component', {name: 'heading'});
+  assert.equal(r.result.isError, true);
+  assert.match(r.result.content[0].text, /heading.*not a Monoline registry entry/);
+}, FIXTURE.map((c) => c.name === 'heading' ? {name: 'heading', title: 3} : c)));
+
+test('the registry types in cli and mcp are the same file', {skip: !existsSync(new URL('../../cli/src/schema.ts', import.meta.url))}, () => {
+  assert.equal(readFileSync(new URL('../src/schema.ts', import.meta.url), 'utf8'), readFileSync(new URL('../../cli/src/schema.ts', import.meta.url), 'utf8'));
 });
 
 // ---- against the real generated registry ----------------------------------------------------

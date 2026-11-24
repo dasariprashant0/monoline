@@ -29,12 +29,25 @@
   },
   "files": [
     "bin",
-    "src"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/cli.d.ts",
+      "default": "./dist/cli.js"
+    },
+    "./package.json": "./package.json"
+  },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
-    "test": "node --test"
+    "build": "tsc -p .",
+    "prepack": "npm run build",
+    "test": "tsc -p . && node --test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3"
   }
 }

@@ -64,8 +64,8 @@ export function makeRegistry(components = FIXTURE) {
 }
 
 /** Spawn the server; `send` writes raw text, `next` resolves the next stdout line as JSON. */
-export function start(args = [], env = {}) {
-  const child = spawn(process.execPath, [BIN, ...args], {env: {...process.env, ...env}, stdio: ['pipe', 'pipe', 'pipe']});
+export function start(args = [], env = {}, cwd = undefined) {
+  const child = spawn(process.execPath, [BIN, ...args], {cwd, env: {...process.env, ...env}, stdio: ['pipe', 'pipe', 'pipe']});
   let buf = '', stderr = '';
   const lines = [], waiters = [];
   child.stdout.setEncoding('utf8').on('data', (d) => {
