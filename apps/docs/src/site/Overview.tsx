@@ -3,12 +3,12 @@
 // shows it scaled down inside an SVG (foreignObject), so it follows the theme, accent and text direction with no
 // JavaScript. Hooks draw nothing, so each has a small purpose-made illustration below.
 import type {ReactNode} from 'react';
-import thumbs from '../page/thumbs.generated.json';
 import {categories, hooks, inCategory, nice, pathOf} from '../shell/registry';
 import {href} from '../shell/router';
 import './overview.css';
 
-const html = thumbs as Record<string, string>;
+// A glob, like the other generated files, so a type check before `npm run gen` still passes.
+const html: Record<string, string> = Object.values(import.meta.glob<Record<string, string>>('../page/thumbs.generated.json', {eager: true, import: 'default'}))[0] ?? {};
 const W = 320, H = 200;
 
 /** Illustrations on a 320 by 200 board. Lines are the kit's rule weight; the accent marks the thing the hook gives you. */
