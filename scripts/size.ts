@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+// Bundle-size budget. Bundles tiny "apps" that import a few components from the built @monoline/react with
+// esbuild (minified, tree-shaken, react external) and fails if gzip size exceeds its budget.
+//   npm run build && npm run size
+// A single Button must stay tiny: the library is built one file per module so unused components and
+// Radix primitives drop out. If a case jumps, a new top-level side effect or a barrel import crept in.
+// Budgets are the measured size plus about 10 percent (all under the targets: Dialog 6, Tooltip 6, Popover 6,
+// Select 12 KB); Everything keeps the round 100 KB target.
+import {build} from 'esbuild';
+import {gzipSync} from 'node:zlib';
+import {readFileSync, writeFileSync, existsSync, readdirSync} from 'node:fs';
+import {join} from 'node:path';
+
+const root = new URL('..', import.meta.url).pathname;
+const dist = join(root, 'packages/react/dist/index.js');
+if (!existsSync(dist)) { console.error('Build first: npm run build -w @monoline/react'); process.exit(2); }
+
+const KB = 1024;
+// SIZE_BUDGET_SCALE=0.5 halves every budget; used to prove this script fails when a budget is exceeded.
+const scale = Number(process.env.SIZE_BUDGET_SCALE ?? 1);
+const asJson = process.argv.includes('--json'); // machine-readable output for the docs Compare page
+const detail = process.argv.includes('--detail'); // per-component sizes and top contributing packages -> docs/bundle-report.md
+const report = {js: [], css: null};
+const say = (...a) => { if (!asJson) console.log(...a); };
+const cases = [
+  ['Button', "import {Button} from '@monoline/react'; console.log(Button)", 0.9],
+  ['Button + Badge + Card + Input', "import {Button, Badge, Card, Input} from '@monoline/react'; console.log(Button, Badge, Card, Input)", 3.3],
+  ['Combobox', "import {Combobox} from '@monoline/react'; console.log(Combobox)", 3.4],
+  ['Calendar', "import {Calendar} from '@monoline/react'; console.log(Calendar)", 1.8],
+  ['BarChart', "import {BarChart} from '@monoline/react'; console.log(BarChart)", 4.3],
+  ['DataTable', "import {DataTable} from '@monoline/react'; console.log(DataTable)", 9.3],
+  ['Dialog', "import {Dialog, DialogTrigger, DialogContent, DialogTitle} from '@monoline/react'; console.log(Dialog, DialogTrigger, DialogContent, DialogTitle)", 2.2],
+  ['AlertDialog', "import {AlertDialog, AlertDialogContent} from '@monoline/react'; console.log(AlertDialog, AlertDialogContent)", 2.1],
+  ['Drawer', "import {Drawer, DrawerContent} from '@monoline/react'; console.log(Drawer, DrawerContent)", 2.2],
+  ['Tooltip', "import {Tooltip} from '@monoline/react'; console.log(Tooltip)", 3.4],
+  ['Popover', "import {Popover, PopoverContent} from '@monoline/react'; console.log(Popover, PopoverContent)", 3.4],
+  ['DropdownMenu', "import {DropdownMenu, DropdownMenuContent} from '@monoline/react'; console.log(DropdownMenu, DropdownMenuContent)", 4.5],
+  ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.9],
+  ['Everything', "import * as m from '@monoline/react'; console.log(m)", 102.5], // was 102: the a11y fixes (Tab out of popovers and menus, nav-menu focus proxy, AppShell inside a main) add 0.26 KB
+];
+const bundle = (code) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});
+/** Package name of a metafile input path ('' for Monoline's own source). */
+const pkgOf = (f) => { const m = f.match(/node_modules\/((?:@[^/]+\/)?[^/]+)\/(?!.*node_modules)/); return m ? m[1] : 'monoline (own code)'; };
+/** Minified bytes each package contributes to the bundle, biggest first, with its share of the whole. */
+const contributors = (r) => {
+  const by = {}; let total = 0;
+  for (const out of Object.values(r.metafile.outputs)) for (const [f, v] of Object.entries(out.inputs)) { by[pkgOf(f)] = (by[pkgOf(f)] || 0) + v.bytesInOutput; total += v.bytesInOutput; }
+  return Object.entries(by).filter(([, b]) => b).sort((a, b) => b[1] - a[1]).map(([name, b]) => ({name, share: b / total}));
+};
+if (detail) await writeDetail();
+let failed = 0;
+say('JS (gzip, minified, react external)');
+for (const [name, code, base] of cases) {
+  const budget = base * scale;
+  const r = await bundle(code);
+  const kb = gzipSync(r.outputFiles[0].contents).length / KB;
+  const ok = kb <= budget;
+  if (!ok) failed++;
+  report.js.push({name, kb: +kb.toFixed(2), budget});
+  say(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(32)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);
+}
+const css = join(root, 'packages/css/dist/monoline.min.css');
+if (existsSync(css)) {
+  const kb = gzipSync(readFileSync(css)).length / KB;
+  const budget = 21 * scale; const ok = kb <= budget; if (!ok) failed++;
+  report.css = {name: 'All components, 3 themes, 8 accents', kb: +kb.toFixed(2), budget};
+  say('CSS');
+  say(`${ok ? 'ok  ' : 'FAIL'} ${'All components, 3 themes, 8 accents'.padEnd(32)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);
+}
+// "Core plus the components you use": the @monoline/css/core.css + components/<name>.css path.
+const {bundles, minify} = await import(join(root, 'packages/css/scripts/bundle.ts'));
+const b = bundles();
+const gz = (css) => gzipSync(minify(css)).length / KB;
+const pick = (names) => b.core + names.map((n) => b.components[n]).join('\n');
+const cssCases = [
+  ['core only (tokens, themes, accents, base)', b.core, 5],
+  ['core + button', pick(['button']), 5],
+  ['core + dashboard example (21 components)', pick(['avatar', 'badge', 'bar-chart', 'block-dashboard-shell', 'button', 'card', 'command', 'data-table', 'date-picker', 'dialog', 'dropdown-menu', 'field', 'form', 'grid', 'heading', 'input', 'line-chart', 'segmented-control', 'stat', 'text', 'toast']), 12.5],
+  ['core + landing example (11 components)', pick(['avatar', 'block-cta', 'block-feature-grid', 'block-footer', 'block-hero', 'block-pricing', 'block-testimonials', 'button', 'code-block', 'container', 'link']), 8],
+];
+report.cssPaths = [];
+for (const [name, css, base] of cssCases) {
+  const budget = base * scale;
+  const kb = gz(css); const ok = kb <= budget; if (!ok) failed++;
+  report.cssPaths.push({name, kb: +kb.toFixed(2), budget});
+  say(`${ok ? 'ok  ' : 'FAIL'} ${name.padEnd(42)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);
+}
+if (asJson) console.log(JSON.stringify(report));
+process.exit(failed ? 1 : 0);
+
+/** --detail: gzip size of every component alone and of everything, with the packages that make it up. */
+async function writeDetail() {
+  const dirs = join(root, 'packages/react/src/components');
+  const rows = [];
+  for (const d of readdirSync(dirs).sort()) {
+    const idx = join(dirs, d, 'index.ts'); if (!existsSync(idx)) continue;
+    const names = [...readFileSync(idx, 'utf8').matchAll(/^export \{([^}]+)\}/gm)].flatMap((m) => m[1].split(',').map((n) => n.trim()).filter(Boolean));
+    if (!names.length) continue;
+    const r = await bundle(`import {${names.join(',')}} from '@monoline/react'; console.log(${names.join(',')})`);
+    rows.push({name: d, kb: gzipSync(r.outputFiles[0].contents).length / KB, top: contributors(r)});
+  }
+  const all = await bundle("import * as m from '@monoline/react'; console.log(m)");
+  const total = {name: 'everything', kb: gzipSync(all.outputFiles[0].contents).length / KB, top: contributors(all)};
+  const fmt = (top, n) => top.slice(0, n).map((t) => `${t.name} ${Math.round(t.share * 100)}%`).join(', ');
+  const lines = [
+    '# Bundle report', '',
+    'Generated by `node scripts/size.ts --detail` (run `npm run build` first). Every component is bundled alone from the built `@monoline/react` with esbuild (minified, tree-shaken, `react` external) and gzipped. "Top contributors" are the packages behind the minified bytes, as a share of the raw output; `monoline` is the library\'s own code.', '',
+    `Everything: **${total.kb.toFixed(1)} KB** gzip. ${fmt(total.top, 6)}.`, '',
+    '## What changed (Radix and floating-ui replaced where parity is proven)', '',
+    '| Import | Before KB | After KB | Now built on |', '|---|---:|---:|---|',
+    '| Button | 1.8 | 0.7 | own `Slot` |', '| Dialog / AlertDialog / Drawer | 14.1 / 14.4 / 14.1 | 1.8 | native `<dialog>` + `showModal()` |',
+    '| Select | 32.4 | 5.0 | own listbox on the floating layer |', '| Popover | 24.3 | 2.3 | floating layer |', '| Tooltip | 20.0 | 2.2 | floating layer |', '| HoverCard | 18.4 | 2.0 | floating layer |',
+    '| DropdownMenu / ContextMenu / Menubar | 31.7 / 31.8 / 32.2 | 3.3 / 3.5 / 3.8 | one shared menu core |', '| Everything | 123.6 | 93.1 | |', '',
+    'Still on Radix, by design: tabs, accordion, toggle-group, segmented-control, toolbar, radio-group, slider, switch, checkbox, collapsible, scroll-area, toast, navigation-menu, avatar, progress, separator, label, aspect-ratio. Their roving focus, collection and presence logic is the part worth keeping; none is an overlay that pulls in floating-ui or react-remove-scroll, and each is 5 to 14 KB. Individual `@radix-ui/*` imports instead of the `radix-ui` umbrella were measured and save nothing (the umbrella is `sideEffects: false`), so the dependency stays `radix-ui`.', '',
+    '## Every component', '',
+    '| Component | gzip KB | Top contributors |', '|---|---:|---|',
+    ...rows.sort((a, b) => b.kb - a.kb).map((r) => `| ${r.name} | ${r.kb.toFixed(1)} | ${fmt(r.top, 4)} |`), '',
+  ];
+  writeFileSync(join(root, 'docs/bundle-report.md'), lines.join('\n'));
+  say('wrote docs/bundle-report.md');
+}

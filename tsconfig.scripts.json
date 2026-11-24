@@ -1,0 +1,27 @@
+{
+  // Type-checks the repo's Node scripts. Node runs them as .ts directly (type stripping, Node >= 22.18); see ADR 0010.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "scripts/**/*.ts",
+    "packages/css/scripts/**/*.ts",
+    "packages/react/scripts/**/*.ts",
+    "packages/tokens/scripts/**/*.ts",
+    "packages/tokens/test/**/*.ts",
+    "packages/vscode/**/*.ts",
+    "apps/docs/scripts/**/*.ts"
+  ],
+  "exclude": ["**/node_modules", "scripts/e2e/cross-browser"]
+}
