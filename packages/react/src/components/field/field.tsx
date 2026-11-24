@@ -17,26 +17,18 @@ export const FormErrorsContext = createContext<Record<string, ReactNode> | null>
 
 /**
  * Props a form control should spread to join its surrounding Field: id, aria-describedby, aria-invalid, required.
- * Outside a Field it returns an empty object, so controls work alone too.
+ * Spread them **after** the caller's own props and pass those props in: inside a Field the Field's `id` wins (the label points at it)
+ * and the caller's `aria-describedby` is joined to the Field's hint and error ids. Outside a Field it returns an empty object, so controls work alone too.
  */
-export function useFieldControl(): {id?: string; 'aria-describedby'?: string; 'aria-invalid'?: true; 'data-invalid'?: ''; required?: true} {
+export function useFieldControl(own: {'aria-describedby'?: string} = {}): {id?: string; 'aria-describedby'?: string; 'aria-invalid'?: true; 'data-invalid'?: ''; required?: true} {
   const ctx = useContext(FieldContext);
   if (!ctx) return {};
-  return {
-    id: ctx.id,
-    'aria-describedby': ctx.describedBy,
-    'aria-invalid': ctx.invalid ? true : undefined,
-    'data-invalid': ctx.invalid ? '' : undefined,
-    required: ctx.required ? true : undefined,
-  };
-}
-
-/**
- * Spread after the caller's own props: inside a Field the Field's `id` wins (the label points at it), and the caller's
- * `aria-describedby` is joined to the Field's hint and error ids instead of replacing them.
- */
-export function fieldOwn(f: {id?: string; 'aria-describedby'?: string}, own: {id?: string; 'aria-describedby'?: string}): {id?: string; 'aria-describedby'?: string} {
-  return {id: f.id ?? own.id, 'aria-describedby': [f['aria-describedby'], own['aria-describedby']].filter(Boolean).join(' ') || undefined};
+  const f: {id?: string; 'aria-describedby'?: string; 'aria-invalid'?: true; 'data-invalid'?: ''; required?: true} = {id: ctx.id};
+  const d = [ctx.describedBy, own['aria-describedby']].filter(Boolean).join(' ');
+  if (d) f['aria-describedby'] = d;
+  if (ctx.invalid) { f['aria-invalid'] = true; f['data-invalid'] = ''; }
+  if (ctx.required) f.required = true;
+  return f;
 }
 
 /** Hidden inputs that submit a custom control's value(s) with a native form: one per value, none without a `name`. */

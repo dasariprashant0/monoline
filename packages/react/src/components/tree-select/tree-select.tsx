@@ -3,7 +3,7 @@ import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from '
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {useIsRtl} from '../../utils/direction';
-import {useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
+import {useFieldControl, useFieldLabelId, hiddenInputs} from '../field';
 import type {TreeNode} from '../tree';
 
 export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'> {
@@ -37,7 +37,7 @@ const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label
  */
 export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, name, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const isRtl = useIsRtl();
   const [selected, setSelected] = useControllableState<string[]>({value, defaultValue, onChange: onValueChange});
@@ -112,7 +112,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && cur >= 0 ? rowId(cur) : undefined}
-        {...f}
+       
         {...(invalid ? {'aria-invalid': true as const} : {})}
         value={text ?? summary}
         onChange={(e) => { setText(e.target.value); setOpen(true); setActiveId(undefined); }}
@@ -120,7 +120,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
-        {...rest} {...fieldOwn(f, rest)}
+        {...rest} {...f}
       />
       {open && (
         <ul id={listId} role="tree" className="tree-select-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId} aria-multiselectable={multiple || undefined}>

@@ -2,7 +2,7 @@
 import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {nextEnabled} from '../../utils/overlay';
-import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId, hiddenInputs} from '../field';
 import {Tag} from '../tag';
 
 export interface MultiSelectOption {
@@ -37,7 +37,7 @@ export interface MultiSelectProps extends Omit<InputHTMLAttributes<HTMLInputElem
  */
 export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(function MultiSelect({options, value, defaultValue = [], onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const current = value ?? inner;
@@ -86,7 +86,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
           aria-controls={open ? listId : undefined}
           aria-autocomplete="list"
           aria-activedescendant={open && shown[active] ? optId(active) : undefined}
-          {...f}
+         
           {...invalidAttrs(invalid)}
           value={text}
           onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); }}
@@ -94,7 +94,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
           onClick={(e) => { onClick?.(e); setOpen(true); }}
           onBlur={(e) => { onBlur?.(e); setOpen(false); setText(''); }}
           onKeyDown={keydown}
-          {...rest} {...fieldOwn(f, rest)}
+          {...rest} {...f}
         />
       </div>
       {open && (

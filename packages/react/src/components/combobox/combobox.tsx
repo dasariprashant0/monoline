@@ -2,7 +2,7 @@
 import {useEffect, forwardRef, useId, useRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
 import {nextEnabled} from '../../utils/overlay';
-import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn, hiddenInputs} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId, hiddenInputs} from '../field';
 
 export interface ComboboxOption {
   value: string;
@@ -31,7 +31,7 @@ export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
 export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const labelId = useFieldLabelId();
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
@@ -81,14 +81,14 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && shown[active] ? optId(active) : undefined}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text ?? selected?.label ?? ''}
         onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && current !== '') { if (value === undefined) setInner(''); onValueChange?.(''); } }}
         onClick={(e) => { onClick?.(e); setOpen(true); }}
         onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
         onKeyDown={keydown}
-        {...rest} {...fieldOwn(f, rest)}
+        {...rest} {...f}
       />
       {open && (
         <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

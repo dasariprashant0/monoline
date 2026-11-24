@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
+import {invalidAttrs, useFieldControl} from '../field';
 
 export interface TimePickerProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'defaultValue' | 'onChange' | 'size'> {
   /** 24-hour "HH:mm" (or "HH:mm:ss" when `step` is under 60), or '' for no time. */
@@ -22,7 +22,7 @@ export interface TimePickerProps extends Omit<InputHTMLAttributes<HTMLInputEleme
  * AM/PM is shown follows the user's locale, as the platform decides. The value is always 24-hour.
  */
 export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function TimePicker({value, defaultValue = '', onValueChange, size = 'md', invalid, disabled, className, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const [inner, setInner] = useState(defaultValue);
   return (
     <input
@@ -31,11 +31,11 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
       className={cx('input time-picker', size !== 'md' && `input-${size}`, className)}
       disabled={disabled}
       data-disabled={disabled ? '' : undefined}
-      {...f}
+     
       {...invalidAttrs(invalid)}
       value={value ?? inner}
       onChange={(e) => { if (value === undefined) setInner(e.target.value); onValueChange?.(e.target.value); }}
-      {...rest} {...fieldOwn(f, rest)}
+      {...rest} {...f}
     />
   );
 });

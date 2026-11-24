@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, type SelectHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
+import {invalidAttrs, useFieldControl} from '../field';
 
 export interface NativeSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button and the other form controls at each size. */
@@ -12,6 +12,6 @@ export interface NativeSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectE
 
 /** A styled <select>. Pass <option> children. Prefer it to the custom Select for plain lists. */
 export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(function NativeSelect({size = 'md', invalid, disabled, className, ...rest}, ref) {
-  const f = useFieldControl();
-  return <select ref={ref} className={cx('select', size !== 'md' && `input-${size}`, className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...f} {...invalidAttrs(invalid)} {...rest} {...fieldOwn(f, rest)} />;
+  const f = useFieldControl(rest);
+  return <select ref={ref} className={cx('select', size !== 'md' && `input-${size}`, className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...invalidAttrs(invalid)} {...rest} {...f} />;
 });

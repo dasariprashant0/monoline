@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, forwardRef, useId, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, useFieldLabelId, fieldOwn} from '../field';
+import {invalidAttrs, useFieldControl, useFieldLabelId} from '../field';
 
 export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** Suggestions shown while typing; matched by substring, case-insensitive. */
@@ -26,7 +26,7 @@ export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputEle
  */
 export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(function Autocomplete({suggestions, value, defaultValue = '', onValueChange, size = 'md', invalid, disabled, className, onBlur, onKeyDown, ...rest}, ref) {
   const labelId = useFieldLabelId();
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const text = value ?? inner;
@@ -55,7 +55,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
         aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={isOpen && active >= 0 ? optId(active) : undefined}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text}
         onChange={(e) => { set(e.target.value); setActive(-1); setOpen(true); }}
@@ -68,7 +68,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
           else if (e.key === 'Enter' && !e.nativeEvent.isComposing && isOpen && shown[active]) { e.preventDefault(); pick(shown[active]!); }
           else if (e.key === 'Escape' && isOpen) { e.preventDefault(); setOpen(false); setActive(-1); }
         }}
-        {...rest} {...fieldOwn(f, rest)}
+        {...rest} {...f}
       />
       {isOpen && (
         <ul id={listId} role="listbox" className="autocomplete-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>

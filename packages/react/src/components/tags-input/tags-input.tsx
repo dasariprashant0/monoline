@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useState, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, fieldOwn, hiddenInputs} from '../field';
+import {invalidAttrs, useFieldControl, hiddenInputs} from '../field';
 import {Tag} from '../tag';
 
 export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
@@ -25,7 +25,7 @@ export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
  * Unlike `MultiSelect` there is no list: any text is a valid tag.
  */
 export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function TagsInput({value, defaultValue = [], onValueChange, size = 'md', invalid, disabled, name, className, onKeyDown, onBlur, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const [inner, setInner] = useState(defaultValue);
   const tags = value ?? inner;
   const [text, setText] = useState('');
@@ -48,7 +48,7 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
         type="text"
         className="tags-input-field"
         disabled={disabled}
-        {...f}
+       
         {...invalidAttrs(invalid)}
         value={text}
         onChange={(e) => {
@@ -63,7 +63,7 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(function T
           else if (e.key === 'Backspace' && !text && tags.length) commit(tags.slice(0, -1));
         }}
         onBlur={(e) => { onBlur?.(e); add(text); }}
-        {...rest} {...fieldOwn(f, rest)}
+        {...rest} {...f}
       />
     </div>
   );

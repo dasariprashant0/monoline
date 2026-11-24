@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type TextareaHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {useFieldControl, fieldOwn} from '../field';
+import {useFieldControl} from '../field';
 import {nextEnabled, setRefs} from '../../utils/overlay';
 
 /** One person or thing the user can mention. */
@@ -53,7 +53,7 @@ function findActive(text: string, caret: number, triggers: string[]): Active | n
 
 /** A textarea that suggests people or items when the user types a trigger such as `@`. It follows the ARIA combobox pattern as far as a `<textarea>` allows (a textarea cannot take role combobox, so it stays a textbox with `aria-haspopup`, `aria-controls` and `aria-activedescendant`): ArrowUp/ArrowDown choose, Enter or Tab insert, Escape closes. Options are filtered locally or loaded with `onSearch`. The list opens under the field, not at the caret. */
 export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions({value, defaultValue = '', onValueChange, options = [], onSearch, onSearchError, triggers = ['@'], onMentionSelect, loadingText = 'Loading', emptyText = 'No matches', invalid, className, onKeyDown, onBlur, onSelect, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const listId = useId();
   const [inner, setInner] = useState(defaultValue);
   const text = value ?? inner;
@@ -134,14 +134,14 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         aria-autocomplete="list"
         aria-controls={open ? listId : undefined}
         aria-activedescendant={open && shown[at] ? optId(at) : undefined}
-        {...f}
+       
         {...(invalid ? {'aria-invalid': true as const} : {})}
         value={text}
         onChange={change}
         onKeyDown={keydown}
         onSelect={(e) => { onSelect?.(e); sync(e.currentTarget); }}
         onBlur={(e) => { onBlur?.(e); setActive(null); setDismissed(null); }}
-        {...rest} {...fieldOwn(f, rest)}
+        {...rest} {...f}
       />
       {open && (
         <ul id={listId} role="listbox" className="mentions-list" aria-label={rest['aria-label'] ? `${rest['aria-label']} suggestions` : 'Suggestions'}>

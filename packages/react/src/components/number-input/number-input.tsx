@@ -1,7 +1,7 @@
 'use client';
 import {forwardRef, useImperativeHandle, useRef, type InputHTMLAttributes} from 'react';
 import {cx} from '../../utils/cx';
-import {invalidAttrs, useFieldControl, fieldOwn} from '../field';
+import {invalidAttrs, useFieldControl} from '../field';
 
 export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /** Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase". */
@@ -14,7 +14,7 @@ export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
 
 /** Native number input with step buttons. Use `min`, `max`, `step` like on any input. Works controlled or not. */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput({size = 'md', labels, invalid, className, disabled, readOnly, ...rest}, ref) {
-  const f = useFieldControl();
+  const f = useFieldControl(rest);
   const inner = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inner.current!);
   const bump = (dir: 1 | -1) => {
@@ -37,7 +37,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
   return (
     <div className="number-input">
       <button type="button" className="number-step" aria-label={labels?.decrease ?? 'Decrease'} tabIndex={-1} disabled={off} onClick={() => bump(-1)}>−</button>
-      <input ref={inner} type="number" className={cx('input number-field', size !== 'md' && `input-${size}`, className)} disabled={disabled} readOnly={readOnly} data-disabled={disabled ? '' : undefined} {...f} {...invalidAttrs(invalid)} {...rest} {...fieldOwn(f, rest)} />
+      <input ref={inner} type="number" className={cx('input number-field', size !== 'md' && `input-${size}`, className)} disabled={disabled} readOnly={readOnly} data-disabled={disabled ? '' : undefined} {...invalidAttrs(invalid)} {...rest} {...f} />
       <button type="button" className="number-step" aria-label={labels?.increase ?? 'Increase'} tabIndex={-1} disabled={off} onClick={() => bump(1)}>+</button>
     </div>
   );
