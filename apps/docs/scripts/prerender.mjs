@@ -20,6 +20,17 @@ const {render, routes} = await import(pathToFileURL(join(ssrOut, 'entry-server.j
 
 const template = readFileSync(join(dist, 'index.html'), 'utf8');
 if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no empty #root');
+// A lazy route chunk (Home, the Components overview) brings its own stylesheet, which the browser only fetches once the
+// script runs. Link it in the page's <head> too, or the server-rendered HTML shows unstyled until then.
+const manifest = JSON.parse(readFileSync(join(dist, '.vite/manifest.json'), 'utf8'));
+const linked = new Set([...template.matchAll(/href="[^"]*?\/(assets\/[^"]+\.css)"/g)].map((m) => m[1]));
+const lazyCss = (src) => {
+  const seen = new Set(), css = [];
+  const walk = (k) => { const c = manifest[k]; if (!c || seen.has(k)) return; seen.add(k); css.push(...(c.css ?? [])); (c.imports ?? []).forEach(walk); };
+  walk(src);
+  return css.filter((f) => !linked.has(f)).map((f) => `<link rel="stylesheet" crossorigin href="${base}${f}" />`);
+};
+const LAZY_CHUNK = {'': 'src/shell/Home.tsx', 'docs/components': 'src/site/Overview.tsx'};
 const url = (path) => `${origin}${base}${path ? `${path}/` : ''}`;
 
 for (const r of routes) {
@@ -33,7 +44,7 @@ for (const r of routes) {
   const html = template
     .replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`)
     .replace(/(<meta name="description" content=")[^"]*(")/, `$1${esc(description)}$2`)
-    .replace('</head>', `  ${tags}\n</head>`)
+    .replace('</head>', `  ${tags}\n  ${lazyCss(LAZY_CHUNK[path]).join('\n  ')}\n</head>`)
     .replace('<div id="root"></div>', () => `<div id="root" data-path="${path}">${render(path)}</div>`);
   const dir = join(dist, path);
   mkdirSync(dir, {recursive: true});
@@ -43,4 +54,5 @@ for (const r of routes) {
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${url(r.path)}</loc></url>`).join('\n')}\n</urlset>\n`);
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${origin}${base}sitemap.xml\n# Machine-readable docs for AI tools: ${origin}${base}llms.txt\n`);
 rmSync(ssrOut, {recursive: true, force: true});
+rmSync(join(dist, '.vite'), {recursive: true, force: true});
 console.log(`prerender: ${routes.length} pages, sitemap.xml, robots.txt (${origin}${base})`);

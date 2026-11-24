@@ -5,62 +5,12 @@ import {CodeBlock, Field, Input, NativeSelect, RichTextEditor} from '@monoline/r
 import changelog from '../../../../CHANGELOG.md?raw';
 import {Markdown} from './markdown';
 import {CopyIcon, CheckIcon} from '../shell/Logo';
-import {categories, hooks, inCategory, nice, pathOf} from '../shell/registry';
 import {href} from '../shell/router';
+import '../page/page.css';
 import {GITHUB} from '../shell/Topbar';
 import {viteMain1, nextLayout, nextThemeInit, nextDemo, nextPage} from './start-snippets';
 
 const H2 = ({id, children}: {id: string; children: ReactNode}) => <h2 id={id} className="cdoc-h2">{children}</h2>;
-
-// ---- Components overview ---------------------------------------------------------------------------------------------
-
-const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-
-/** A small wireframe of the component's category, varied by name. Pure SVG from the kit's rules and one accent block. */
-function Thumb({name, category}: {name: string; category: string}) {
-  const h = hash(name);
-  const a = 14 + (h % 5) * 6, b = 10 + ((h >>> 3) % 5) * 8, c = 8 + ((h >>> 6) % 4) * 8;
-  const frame = <rect x="0.75" y="0.75" width="94.5" height="58.5" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />;
-  const accent = 'var(--accent)';
-  let body: ReactNode;
-  switch (category) {
-    case 'forms': body = <><rect x="10" y="12" width={a + 20} height="3" fill="currentColor" opacity="0.5" /><rect x="10" y="20" width="75" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" /><rect x="10" y="40" width="26" height="10" fill={accent} /></>; break;
-    case 'data-display': body = <>{[0, 1, 2, 3].map((i) => <g key={i}><rect x="10" y={10 + i * 12} width={b + 20 + (i % 2) * 14} height="3" fill="currentColor" opacity="0.55" /><rect x="70" y={10 + i * 12} width="15" height="3" fill={i === h % 4 ? accent : 'currentColor'} opacity={i === h % 4 ? 1 : 0.3} /></g>)}</>; break;
-    case 'overlays': body = <><rect x="10" y="10" width="75" height="40" fill="currentColor" opacity="0.08" /><rect x={20 + (h % 3) * 4} y="16" width="55" height="28" fill="var(--background)" stroke="currentColor" strokeWidth="1.5" /><rect x="26" y="22" width={c + 14} height="3" fill="currentColor" opacity="0.55" /><rect x="26" y="34" width="14" height="5" fill={accent} /></>; break;
-    case 'feedback': body = <><rect x="10" y="20" width="75" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" /><rect x="10" y="20" width="4" height="20" fill={accent} /><rect x="20" y="27" width={a + 24} height="3" fill="currentColor" opacity="0.55" /></>; break;
-    case 'navigation': body = <><rect x="10" y="12" width="75" height="1.5" fill="currentColor" opacity="0.4" />{[0, 1, 2].map((i) => <rect key={i} x={10 + i * 26} y="8" width="20" height="3" fill={i === h % 3 ? accent : 'currentColor'} opacity={i === h % 3 ? 1 : 0.45} />)}<rect x="10" y="26" width="60" height="3" fill="currentColor" opacity="0.3" /><rect x="10" y="34" width="44" height="3" fill="currentColor" opacity="0.3" /></>; break;
-    case 'layout': { const w = 18 + (h % 4) * 6, r = 26 + ((h >>> 4) % 3) * 8; body = <><rect x="10" y="10" width={w} height="40" fill="none" stroke="currentColor" strokeWidth="1.5" /><rect x={16 + w} y="10" width={69 - w} height={r - 8} fill="none" stroke="currentColor" strokeWidth="1.5" /><rect x={16 + w} y={r + 4} width={(69 - w) / 2 - 3} height={46 - r} fill={accent} /><rect x={16 + w + (69 - w) / 2 + 3} y={r + 4} width={(69 - w) / 2 - 3} height={46 - r} fill="none" stroke="currentColor" strokeWidth="1.5" /></>; break; }
-    case 'buttons': body = <><rect x="10" y="22" width={a + 24} height="16" fill={accent} /><rect x={a + 40} y="22" width="22" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" /></>; break;
-    case 'typography': body = <><rect x="10" y="10" width={a + 30} height="7" fill="currentColor" opacity="0.8" />{[0, 1, 2].map((i) => <rect key={i} x="10" y={25 + i * 8} width={75 - i * (8 + (h % 3) * 4)} height="3" fill="currentColor" opacity="0.35" />)}</>; break;
-    case 'effects': body = <>{Array.from({length: 18}, (_, i) => <circle key={i} cx={14 + (i % 6) * 13} cy={14 + Math.floor(i / 6) * 16} r={i === h % 18 ? 3.5 : 1.5} fill={i === h % 18 ? accent : 'currentColor'} opacity={i === h % 18 ? 1 : 0.4} />)}</>; break;
-    case 'blocks': body = <><rect x="10" y="9" width="75" height="4" fill="currentColor" opacity="0.4" /><rect x="22" y="20" width="51" height="6" fill="currentColor" opacity="0.8" /><rect x="32" y="31" width="31" height="3" fill="currentColor" opacity="0.35" /><rect x="34" y="40" width="27" height="9" fill={accent} /></>; break;
-    default: body = <><rect x="10" y="12" width="40" height="3" fill="currentColor" opacity="0.6" /><rect x="10" y="22" width="75" height="3" fill="currentColor" opacity="0.3" /><rect x="10" y="32" width="60" height="3" fill="currentColor" opacity="0.3" /><rect x="10" y="42" width="22" height="8" fill={accent} /></>;
-  }
-  return <svg className="ov-thumb" viewBox="0 0 96 60" aria-hidden="true" focusable="false">{frame}{body}</svg>;
-}
-
-export function Overview() {
-  const groups = [...categories.filter((c) => true).map((c) => ({title: nice(c), items: inCategory(c).filter((m) => !['rich-text-editor', 'mentions'].includes(m.name))})), {title: 'hooks', items: hooks}];
-  return (
-    <>
-      {groups.map((g) => (
-        <section key={g.title} className="ov-group" aria-labelledby={`ov-${g.title}`}>
-          <h2 id={`ov-${g.title}`} className="ov-h2">{g.title}</h2>
-          <ul className="ov-grid">
-            {g.items.map((m) => (
-              <li key={m.name}>
-                <a className="ov-card" href={href(pathOf(m))}>
-                  <Thumb name={m.name} category={m.category} />
-                  <span className="ov-body"><span className="ov-name">{m.title}</span><span className="ov-desc">{m.description}</span></span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </>
-  );
-}
 
 // ---- Frameworks -----------------------------------------------------------------------------------------------------
 

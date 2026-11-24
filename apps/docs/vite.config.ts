@@ -66,6 +66,7 @@ export default defineConfig({
   server: {port: 5180, fs: {allow: ['../..']}},
   build: {
     outDir: 'dist',
+    manifest: true, // scripts/prerender.mjs links the stylesheets of a route's lazy chunk in its HTML
     rollupOptions: {
       // Without this, every component shared by two lazy demo chunks becomes its own tiny chunk and the entry page lists ~200 modulepreloads.
       output: {manualChunks: (id) => (id.includes('/packages/react/src/') ? 'monoline' : /node_modules\/(@radix-ui|radix-ui|@floating-ui)\//.test(id) ? 'radix' : undefined)},
