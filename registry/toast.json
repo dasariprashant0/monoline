@@ -14,7 +14,8 @@
   "a11y": [
     "Announced politely by assistive tech without moving focus.",
     "Pauses its timer on hover and focus; F8 jumps focus to the toast region.",
-    "Never the only place a critical result appears; keep an inline message too."
+    "Never the only place a critical result appears; keep an inline message too.",
+    "A toast with an action (Undo) dismisses itself after `duration` (default about 5 s) and pauses while hovered or focused; give it a longer duration, or Infinity, when the action matters."
   ],
   "keywords": [
     "snackbar",
@@ -170,7 +171,7 @@
     },
     {
       "path": "packages/react/src/components/toast/meta.json",
-      "content": "{\"name\":\"toast\",\"title\":\"Toast\",\"category\":\"feedback\",\"description\":\"A short message that appears briefly and does not block the page.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Toast\",\"css\":[\"toast.css\"],\"a11y\":[\"Announced politely by assistive tech without moving focus.\",\"Pauses its timer on hover and focus; F8 jumps focus to the toast region.\",\"Never the only place a critical result appears; keep an inline message too.\"],\"keywords\":[\"snackbar\",\"notification\",\"message\",\"sonner\"]}\n"
+      "content": "{\"name\":\"toast\",\"title\":\"Toast\",\"category\":\"feedback\",\"description\":\"A short message that appears briefly and does not block the page.\",\"status\":\"stable\",\"primitive\":\"radix-ui/Toast\",\"css\":[\"toast.css\"],\"a11y\":[\"Announced politely by assistive tech without moving focus.\",\"Pauses its timer on hover and focus; F8 jumps focus to the toast region.\",\"Never the only place a critical result appears; keep an inline message too.\",\"A toast with an action (Undo) dismisses itself after `duration` (default about 5 s) and pauses while hovered or focused; give it a longer duration, or Infinity, when the action matters.\"],\"keywords\":[\"snackbar\",\"notification\",\"message\",\"sonner\"]}\n"
     },
     {
       "path": "packages/react/src/components/toast/toast.tsx",

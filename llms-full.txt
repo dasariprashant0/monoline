@@ -862,6 +862,7 @@ import {BorderBeam} from '@monoline/react';
 A11y:
 - The beam is aria-hidden and decorative; the content keeps its normal reading order.
 - The beam is hidden under prefers-reduced-motion, leaving a plain thin border.
+- Pauses while hovered or focused inside; the light is hidden under prefers-reduced-motion.
 
 CSS classes: border-beam, border-beam-light
 Source: https://monoline.prashantdasari.com/registry/border-beam.json
@@ -2358,7 +2359,7 @@ Props (name: type = default, ? means optional):
 - duration?: number = 30 — Seconds for one full loop.
 - reverse?: boolean — Scroll to the right instead of the left. Default false.
 - pauseOnHover?: boolean = true — Stop when the pointer is over it or focus is inside. Default true.
-- pausable?: boolean — Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default false.
+- pausable?: boolean = true — Show a Pause / Play button so keyboard and touch users can stop the motion (WCAG 2.2.2). Default true; set false only where the motion is purely decorative and you offer another way to stop it.
 
 Usage:
 ```tsx
@@ -2372,7 +2373,7 @@ import {Marquee} from '@monoline/react';
 A11y:
 - The duplicate copy is aria-hidden so screen readers read the items once.
 - Pauses on hover and focus; animation is off under prefers-reduced-motion.
-- Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users.
+- A Pause / Play toggle button (aria-pressed) is shown by default for keyboard and touch users (WCAG 2.2.2); pass pausable={false} only for purely decorative rows.
 
 CSS classes: marquee, marquee-track, marquee-reverse, marquee-pause, marquee-controlled, marquee-toggle
 Data attributes: data-paused
@@ -2731,6 +2732,7 @@ const dot = (t: string) => <span style={{display: 'grid', placeItems: 'center', 
 A11y:
 - Decorative: the whole element is aria-hidden, so nothing inside it is read or reachable by assistive tech.
 - Under prefers-reduced-motion the items stop, evenly spaced around the ring.
+- Decorative and aria-hidden. Pauses on hover; stopped under prefers-reduced-motion.
 
 CSS classes: orbit, orbit-ring, orbit-center, orbit-item, orbit-reverse
 Source: https://monoline.prashantdasari.com/registry/orbiting-circles.json
@@ -3390,6 +3392,7 @@ import {ShimmerButton} from '@monoline/react';
 A11y:
 - Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.
 - The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.
+- The sweep pauses on hover and focus and is removed under prefers-reduced-motion; the label is unaffected.
 
 CSS classes: btn, btn-solid, btn-line, btn-danger, btn-ghost, btn-sm, btn-lg, btn-block, spinner, skeleton, skeleton-block, skeleton-hatch, shimmer-button
 Source: https://monoline.prashantdasari.com/registry/shimmer-button.json
@@ -4151,6 +4154,7 @@ A11y:
 - Announced politely by assistive tech without moving focus.
 - Pauses its timer on hover and focus; F8 jumps focus to the toast region.
 - Never the only place a critical result appears; keep an inline message too.
+- A toast with an action (Undo) dismisses itself after `duration` (default about 5 s) and pauses while hovered or focused; give it a longer duration, or Infinity, when the action matters.
 
 CSS classes: toast-viewport, toast-item, toast-title, toast-description, toast-action, toast-close
 Data attributes: data-state: open | closed
@@ -4550,6 +4554,7 @@ import {Typewriter} from '@monoline/react';
 A11y:
 - Screen readers get the full text at once from an sr-only copy; the typed characters are aria-hidden.
 - With prefers-reduced-motion the full text shows immediately and the caret does not blink.
+- The caret blinks four times and then stays on (no endless blink); it does not blink at all under prefers-reduced-motion.
 
 CSS classes: typewriter-caret
 Source: https://monoline.prashantdasari.com/registry/typewriter.json

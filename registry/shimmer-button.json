@@ -18,12 +18,13 @@
     },
     {
       "path": "packages/css/src/components/shimmer-button.css",
-      "content": "/* Shimmer button: a light band sweeps across, then rests. Pseudo-element only, so the label is untouched. */\n.shimmer-button { position: relative; overflow: hidden; }\n.shimmer-button::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--accent) 45%, transparent) 50%, transparent 70%); transform: translateX(calc(-100% * var(--dir, 1))); animation: shimmer-sweep var(--shimmer-duration, 3.5s) var(--ease) infinite; }\n.shimmer-button:disabled::after { animation: none; display: none; }\n@keyframes shimmer-sweep { 0% { transform: translateX(calc(-100% * var(--dir, 1))); } 45%, 100% { transform: translateX(calc(100% * var(--dir, 1))); } }\n@media (prefers-reduced-motion: reduce) { .shimmer-button::after { animation: none; display: none; } }\n"
+      "content": "/* Shimmer button: a light band sweeps across, then rests. Pseudo-element only, so the label is untouched. */\n.shimmer-button { position: relative; overflow: hidden; }\n.shimmer-button::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--accent) 45%, transparent) 50%, transparent 70%); transform: translateX(calc(-100% * var(--dir, 1))); animation: shimmer-sweep var(--shimmer-duration, 3.5s) var(--ease) infinite; }\n.shimmer-button:disabled::after { animation: none; display: none; }\n@keyframes shimmer-sweep { 0% { transform: translateX(calc(-100% * var(--dir, 1))); } 45%, 100% { transform: translateX(calc(100% * var(--dir, 1))); } }\n@media (prefers-reduced-motion: reduce) { .shimmer-button::after { animation: none; display: none; } }\n/* Hover or focus pauses the sweep. */\n.shimmer-button:hover::after, .shimmer-button:focus-visible::after { animation-play-state: paused; }\n"
     }
   ],
   "a11y": [
     "Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.",
-    "The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion."
+    "The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.",
+    "The sweep pauses on hover and focus and is removed under prefers-reduced-motion; the label is unaffected."
   ],
   "keywords": [
     "cta",
@@ -71,7 +72,7 @@
     },
     {
       "path": "packages/react/src/components/shimmer-button/meta.json",
-      "content": "{\"name\":\"shimmer-button\",\"title\":\"Shimmer button\",\"category\":\"effects\",\"description\":\"The Button with a light sweep across it. Still a native button.\",\"status\":\"stable\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"13-loading.css\",\"shimmer-button.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.\",\"The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.\"],\"keywords\":[\"cta\",\"animated button\",\"shine\",\"glow\",\"button\"],\"related\":[\"button\"]}\n"
+      "content": "{\"name\":\"shimmer-button\",\"title\":\"Shimmer button\",\"category\":\"effects\",\"description\":\"The Button with a light sweep across it. Still a native button.\",\"status\":\"stable\",\"uses\":[\"button\"],\"css\":[\"02-buttons.css\",\"13-loading.css\",\"shimmer-button.css\"],\"a11y\":[\"Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.\",\"The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.\",\"The sweep pauses on hover and focus and is removed under prefers-reduced-motion; the label is unaffected.\"],\"keywords\":[\"cta\",\"animated button\",\"shine\",\"glow\",\"button\"],\"related\":[\"button\"]}\n"
     },
     {
       "path": "packages/react/src/components/shimmer-button/shimmer-button.tsx",

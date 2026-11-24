@@ -1213,7 +1213,8 @@
       ],
       "a11y": [
         "The beam is aria-hidden and decorative; the content keeps its normal reading order.",
-        "The beam is hidden under prefers-reduced-motion, leaving a plain thin border."
+        "The beam is hidden under prefers-reduced-motion, leaving a plain thin border.",
+        "Pauses while hovered or focused inside; the light is hidden under prefers-reduced-motion."
       ],
       "keywords": [
         "glow",
@@ -3282,7 +3283,7 @@
       "a11y": [
         "The duplicate copy is aria-hidden so screen readers read the items once.",
         "Pauses on hover and focus; animation is off under prefers-reduced-motion.",
-        "Set pausable to add a Pause / Play toggle button (aria-pressed) for keyboard and touch users."
+        "A Pause / Play toggle button (aria-pressed) is shown by default for keyboard and touch users (WCAG 2.2.2); pass pausable={false} only for purely decorative rows."
       ],
       "keywords": [
         "ticker",
@@ -3759,7 +3760,8 @@
       ],
       "a11y": [
         "Decorative: the whole element is aria-hidden, so nothing inside it is read or reachable by assistive tech.",
-        "Under prefers-reduced-motion the items stop, evenly spaced around the ring."
+        "Under prefers-reduced-motion the items stop, evenly spaced around the ring.",
+        "Decorative and aria-hidden. Pauses on hover; stopped under prefers-reduced-motion."
       ],
       "keywords": [
         "orbit",
@@ -4674,7 +4676,8 @@
       ],
       "a11y": [
         "Native <button>: Enter and Space activate, Tab focuses; behaviour comes from Button.",
-        "The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion."
+        "The sweep is a pseudo-element, never read aloud, and is off under prefers-reduced-motion.",
+        "The sweep pauses on hover and focus and is removed under prefers-reduced-motion; the label is unaffected."
       ],
       "keywords": [
         "cta",
@@ -5683,7 +5686,8 @@
       "a11y": [
         "Announced politely by assistive tech without moving focus.",
         "Pauses its timer on hover and focus; F8 jumps focus to the toast region.",
-        "Never the only place a critical result appears; keep an inline message too."
+        "Never the only place a critical result appears; keep an inline message too.",
+        "A toast with an action (Undo) dismisses itself after `duration` (default about 5 s) and pauses while hovered or focused; give it a longer duration, or Infinity, when the action matters."
       ],
       "keywords": [
         "snackbar",
@@ -6161,7 +6165,8 @@
       ],
       "a11y": [
         "Screen readers get the full text at once from an sr-only copy; the typed characters are aria-hidden.",
-        "With prefers-reduced-motion the full text shows immediately and the caret does not blink."
+        "With prefers-reduced-motion the full text shows immediately and the caret does not blink.",
+        "The caret blinks four times and then stays on (no endless blink); it does not blink at all under prefers-reduced-motion."
       ],
       "keywords": [
         "typing",
