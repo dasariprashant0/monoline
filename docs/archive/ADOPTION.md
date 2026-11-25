@@ -73,7 +73,7 @@ Home page: master's redesign (Plain CSS and accessible React, install box, live 
 | 4 | Keyboard table and anatomy as fixed sections | Component page code, not WP6's files; the keyboard section already exists on the Button page |
 | 5 | Playground controls on every component | `page/playground.tsx`, not WP6's files |
 | 6 | Styling reference per page | Generated (`styling.generated.json` exists); component page code |
-| 7 (rest) | MCP server docs and a Skills file | `packages/mcp`, `docs/mcp.md`: WP5 |
+| 7 (rest) | MCP server docs and a Skills file | `packages/mcp`, `packages/mcp/README.md`: WP5 |
 | 8 | Theme presets gallery with export | WP4 (`theme-builder.tsx`); a Themes page already exists on master |
 | 9 (rest) | Migration guides, deprecation policy | Writing one before a breaking change exists would be guesswork; `docs/releasing.md` is WP5's |
 | 10 | Blocks gallery | Already on master (Blocks page) |

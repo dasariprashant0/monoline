@@ -9,9 +9,9 @@ Monoline is an open-source UI kit with two layers:
 | Layer | Package | What |
 |---|---|---|
 | Core | `packages/css` → `@monoline/css` | Plain CSS: tokens, 3 themes, 8 accents, look options (font, corners, density), base, one stylesheet per component. Built files are wrapped in cascade layers ([ADR 0003](docs/decisions/0003-css-cascade-layers.md)). Works with any framework or none. |
-| CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. |
+| CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. TypeScript, built to `dist/` with tsc. |
 | React | `packages/react` → `@monoline/react` | Accessible, typed React components that render the core's classes. Modals use native `<dialog>`, popovers and menus use one own floating layer ([ADR 0001](docs/decisions/0001-native-dialog-and-own-floating-layer.md)); roving focus and collections (tabs, accordion, slider and others) still come from Radix (`radix-ui`). |
-| MCP | `packages/mcp` → `@monoline/mcp` | MCP server over stdio that answers questions from the registry. No dependencies. |
+| MCP | `packages/mcp` → `@monoline/mcp` | MCP server over stdio that answers questions from the registry. No dependencies. TypeScript, built to `dist/` with tsc. |
 | Tokens | `packages/tokens` → `@monoline/tokens` | Generates `dist/` (JSON, CSS, `.d.ts`, Figma variables) from the core's token CSS. Private, not published yet. |
 | VS Code | `packages/vscode` | Snippets generated from `registry/`. Not a workspace (no `package.json`), not published. |
 | Docs | `apps/docs` | The documentation site. Discovers components automatically. |

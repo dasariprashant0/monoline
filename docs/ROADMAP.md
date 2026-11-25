@@ -65,7 +65,7 @@ Open: tests against react-hook-form and TanStack Form (no test workspace).
 |---|---|---|
 | 3.1 Templates | done, no blog starter | `examples/{dashboard,auth-settings,landing}` |
 | 3.2 Blocks gallery | done | `apps/docs/src/site/Blocks.tsx` |
-| 3.3 MCP server | done | `packages/mcp`, `docs/mcp.md` |
+| 3.3 MCP server | done | `packages/mcp`, `packages/mcp/README.md` |
 | 3.4 Theme presets and builder | partial | `apps/docs/src/theme-builder.tsx`, `site/Themes.tsx` |
 | 3.5 Figma kit | partial | variables only: `packages/tokens/dist/figma-variables.json`. No component kit |
 | 3.6 Editor support | partial | `packages/vscode/snippets`; no props autocomplete |
