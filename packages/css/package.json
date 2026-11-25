@@ -25,9 +25,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "check": "node scripts/check.mjs",
-    "size:css": "node scripts/size.mjs"
+    "build": "node scripts/build.ts",
+    "check": "node scripts/check.ts",
+    "size:css": "node scripts/size.ts"
   },
   "exports": {
     ".": "./dist/monoline.css",
@@ -44,5 +44,8 @@
     "dist",
     "src",
     "js"
-  ]
+  ],
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
 }
