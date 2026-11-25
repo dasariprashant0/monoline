@@ -157,6 +157,18 @@ describe('themeScript', () => {
     expect(root.getAttribute('data-accent')).not.toBe('"><x>');
     expect(root.getAttribute('data-theme')).not.toBe('neon');
   });
+  it("sets the app's own choices when nothing is saved, and a saved choice still wins", () => {
+    new Function(
+      themeScript({defaultTheme: 'warm', accent: 'teal', density: 'compact', dir: 'rtl', font: '"><x>' as never}),
+    )();
+    expect(root).toHaveAttribute('data-accent', 'teal');
+    expect(root).toHaveAttribute('data-density', 'compact');
+    expect(root).toHaveAttribute('dir', 'rtl');
+    expect(root.getAttribute('data-font')).not.toBe('"><x>');
+    localStorage.setItem('monoline-accent', 'blue');
+    new Function(themeScript({defaultTheme: 'warm', accent: 'teal'}))();
+    expect(root).toHaveAttribute('data-accent', 'blue');
+  });
   it('uses a custom key and never throws', () => {
     localStorage.setItem('app-theme', 'dark');
     new Function(themeScript({storageKey: 'app'}))();
