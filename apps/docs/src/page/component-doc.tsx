@@ -101,7 +101,7 @@ const noop = () => () => {};
 const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
 
 /** One example: the live preview, then its code in a card below. The code collapses when long. */
-function Example({id, demo, code, playground}: {id: string; demo: Demo; code?: DemoCode; playground: string}) {
+function Example({id, demo, code, playground}: {id: string; demo: Demo; code?: DemoCode | undefined; playground: string}) {
   const [open, setOpen] = useState(false);
   const hydrated = useHydrated();
   const long = !!code && code.code.split('\n').length > 14;

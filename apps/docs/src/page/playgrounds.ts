@@ -12,13 +12,13 @@ export type Values = Record<string, Val>;
  * A component by its `@monoline/react` export name (or a lowercase HTML tag), its props, and its children.
  * A prop value written as `'{() => {}}'` renders as a no-op function and prints as that source.
  */
-export type Node = string | {c: string; p?: Values; k?: Node[]};
+export type Node = string | {c: string; p?: Values | undefined; k?: Node[] | undefined};
 
 export type Control =
-  | {name: string; kind: 'select'; options: string[]; initial?: string; description?: string}
-  | {name: string; kind: 'switch'; initial?: boolean; description?: string}
-  | {name: string; kind: 'text'; initial?: string; description?: string}
-  | {name: string; kind: 'number'; initial?: number; min?: number; max?: number; step?: number; description?: string};
+  | {name: string; kind: 'select'; options: string[]; initial?: string | undefined; description?: string}
+  | {name: string; kind: 'switch'; initial?: boolean | undefined; description?: string}
+  | {name: string; kind: 'text'; initial?: string | undefined; description?: string}
+  | {name: string; kind: 'number'; initial?: number | undefined; min?: number; max?: number; step?: number; description?: string};
 
 export interface PlaygroundConfig {
   /** Name of the Props type to derive controls from. Defaults to `<ImportName>Props`. */
