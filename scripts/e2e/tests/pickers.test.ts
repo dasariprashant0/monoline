@@ -1,11 +1,12 @@
 // select, combobox, command palette.
 import {test, assert, eq} from '../test.ts';
+import type {Scope} from '../page.ts';
 
-const opts = (p, root = '[role=listbox]') => p.eval(`[...document.querySelectorAll('${root} [role=option]')].filter(__e2e.visible).map(e => e.textContent.replace(/✓$/, '').trim())`);
+const opts = (p: Scope, root = '[role=listbox]'): Promise<string[]> => p.eval(`[...document.querySelectorAll('${root} [role=option]')].filter(__e2e.visible).map(e => e.textContent.replace(/✓$/, '').trim())`);
 
 // ---- select (Radix)
-const selOpen = (p) => p.waitFor(`document.querySelector('[role=listbox]') && document.querySelector('[role=combobox][aria-expanded=true]')`, 'select did not open');
-const selFocused = (p) => p.eval(`document.activeElement.getAttribute('role') === 'option' ? document.activeElement.textContent.replace(/✓$/, '').trim() : 'focus is on ' + __e2e.describe(document.activeElement)`);
+const selOpen = (p: Scope) => p.waitFor(`document.querySelector('[role=listbox]') && document.querySelector('[role=combobox][aria-expanded=true]')`, 'select did not open');
+const selFocused = (p: Scope) => p.eval(`document.activeElement.getAttribute('role') === 'option' ? document.activeElement.textContent.replace(/✓$/, '').trim() : 'focus is on ' + __e2e.describe(document.activeElement)`);
 for (const key of ['Enter', ' ', 'ArrowDown']) {
   test(`select: ${JSON.stringify(key)} opens the list with the current value focused`, async (p) => {
     await p.open('components/select'); const ex = await p.example('In a field');
@@ -26,7 +27,7 @@ test('select: arrows move, Enter selects, the trigger shows the value and keeps 
   await p.key('Home'); eq(await selFocused(p), list[0], 'Home');
   await p.key('Enter');
   await p.waitFor(`!document.querySelector('[role=listbox]')`, 'list did not close on Enter');
-  eq((await p.text('[role=combobox]')).trim(), list[0], 'trigger text after choosing');
+  eq((await p.text('[role=combobox]'))!.trim(), list[0], 'trigger text after choosing');
   await p.expectActive('[role=combobox]', 'focus return after choosing');
 });
 test('select: typeahead moves to the matching option; Escape closes, value unchanged, focus returns', async (p) => {
@@ -38,7 +39,7 @@ test('select: typeahead moves to the matching option; Escape closes, value uncha
   await p.key(target[0].toLowerCase()); eq(await selFocused(p), target, `typeahead "${target[0]}"`);
   await p.key('Escape');
   await p.waitFor(`!document.querySelector('[role=listbox]')`, 'list did not close on Escape');
-  eq((await p.text('[role=combobox]')).trim(), '15 minutes', 'value after Escape');
+  eq((await p.text('[role=combobox]'))!.trim(), '15 minutes', 'value after Escape');
   await p.expectActive('[role=combobox]', 'focus return after Escape');
 });
 test('select: click opens, click on an option selects it', async (p) => {
@@ -47,11 +48,11 @@ test('select: click opens, click on an option selects it', async (p) => {
   const list = await opts(p);
   await p.click(`[role=option]|${list[0]}`);
   await p.waitFor(`!document.querySelector('[role=listbox]')`, 'list did not close after a click on an option');
-  eq((await p.text('[role=combobox]')).trim(), list[0], 'trigger text');
+  eq((await p.text('[role=combobox]'))!.trim(), list[0], 'trigger text');
 });
 
 // ---- combobox (autocomplete input)
-const active = (p) => p.eval(`(() => { const i = document.querySelector('input[role=combobox]'); const id = i.getAttribute('aria-activedescendant'); const o = id && document.getElementById(id); return o ? o.textContent.trim() : null; })()`);
+const active = (p: Scope) => p.eval(`(() => { const i = document.querySelector('input[role=combobox]'); const id = i.getAttribute('aria-activedescendant'); const o = id && document.getElementById(id); return o ? o.textContent.trim() : null; })()`);
 test('combobox: typing opens and filters the list, ArrowDown moves aria-activedescendant, Enter picks', async (p) => {
   await p.open('components/combobox'); const ex = await p.example('Search and pick');
   await ex.focus('input[role=combobox]');
@@ -94,8 +95,8 @@ test('combobox: no match shows a status/empty message, not an empty box', async 
 });
 
 // ---- command palette
-const paletteOpen = (p) => p.waitFor(`document.querySelector('[role=dialog][data-state=open] input[role=combobox]')`, 'palette did not open');
-const cmdActive = (p) => p.eval(`(() => { const i = document.querySelector('[role=dialog] input[role=combobox]'); const o = document.getElementById(i.getAttribute('aria-activedescendant')); return o ? o.textContent.replace(/\\s+/g, ' ').trim() : null; })()`);
+const paletteOpen = (p: Scope) => p.waitFor(`document.querySelector('[role=dialog][data-state=open] input[role=combobox]')`, 'palette did not open');
+const cmdActive = (p: Scope) => p.eval(`(() => { const i = document.querySelector('[role=dialog] input[role=combobox]'); const o = document.getElementById(i.getAttribute('aria-activedescendant')); return o ? o.textContent.replace(/\\s+/g, ' ').trim() : null; })()`);
 test('command: the button opens the palette with focus in the search field', async (p) => {
   await p.open('components/command'); const ex = await p.example('Palette');
   await ex.click('button|Open palette'); await paletteOpen(p);
@@ -116,7 +117,7 @@ test('command: typing filters, the result count is announced, ArrowDown moves th
   await p.key('ArrowUp'); eq(await cmdActive(p), total[0], 'ArrowUp returns');
   await p.type('save');
   await p.waitFor(`document.querySelectorAll('[role=dialog] [role=option]').length === 1`, `"save" should leave one result, got ${JSON.stringify(await opts(p, '[role=dialog] [role=listbox]'))}`);
-  assert(/^1 result/.test(await p.text('[role=dialog] [role=status]')), 'result count is not announced in the status region');
+  assert(/^1 result/.test((await p.text('[role=dialog] [role=status]'))!), 'result count is not announced in the status region');
   assert((await cmdActive(p))?.startsWith('Save'), `active item should be Save, is ${await cmdActive(p)}`);
   await p.key('Enter');
   await p.waitFor(`!document.querySelector('[role=dialog]')`, 'Enter did not run the command and close the palette');
@@ -127,7 +128,7 @@ test('command: Escape closes and returns focus to the trigger; no match shows an
   await ex.click('button|Open palette'); await paletteOpen(p);
   await p.type('zzzz');
   await p.waitFor(`document.querySelectorAll('[role=dialog] [role=option]').length === 0`, 'results did not empty');
-  assert((await p.text('[role=dialog] [role=status]')).trim().length > 0, 'empty state has no message');
+  assert((await p.text('[role=dialog] [role=status]'))!.trim().length > 0, 'empty state has no message');
   await p.key('Escape'); await p.waitFor(`!document.querySelector('[role=dialog]')`, 'did not close');
   await p.expectActive('button|Open palette', 'focus return');
 });

@@ -4,15 +4,24 @@ import {spawn} from 'node:child_process';
 import {createServer} from 'node:http';
 import {existsSync, mkdtempSync, readFileSync, rmSync, statSync} from 'node:fs';
 import {tmpdir} from 'node:os';
+import type {AddressInfo} from 'node:net';
 import {extname, join, normalize} from 'node:path';
 
-const mime = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.txt': 'text/plain', '.xml': 'application/xml', '.md': 'text/markdown'};
+// Protocol payloads (command results and events) are whatever Chrome sends: untyped on purpose.
+export type CdpMessage = any;
+export type Cdp = (method: string, params?: object) => Promise<CdpMessage>;
+/** Runs an expression in the page; the value comes back untyped (returnByValue). */
+export type Evaluate = (expression: string) => Promise<CdpMessage>;
+/** What launchChrome resolves to. */
+export type Browser = Awaited<ReturnType<typeof launchOnce>>;
+
+const mime: Record<string, string> = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.txt': 'text/plain', '.xml': 'application/xml', '.md': 'text/markdown'};
 
 /**
  * Serves `dist` on a random local port the way a static host does: a file as is, a folder through its index.html,
  * and anything else with status 404 and the body of 404.html (which redirects into the app).
  */
-export async function serveDist(dist) {
+export async function serveDist(dist: string) {
   const server = createServer((req, res) => {
     const path = normalize(decodeURIComponent((req.url ?? '/').split('?')[0])).replace(/^(\.\.[/\\])+/, '');
     const file = join(dist, path);
@@ -21,8 +30,8 @@ export async function serveDist(dist) {
     res.writeHead(found ? 200 : 404, {'content-type': mime[extname(target)] ?? 'application/octet-stream'});
     res.end(existsSync(target) ? readFileSync(target) : 'not found');
   });
-  await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  return {server, base: `http://127.0.0.1:${server.address().port}/`};
+  await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
+  return {server, base: `http://127.0.0.1:${(server.address() as AddressInfo).port}/`};
 }
 
 /**
@@ -30,8 +39,8 @@ export async function serveDist(dist) {
  * `listeners` is an array of functions called with every protocol event of this page (msg.sessionId matches).
  * Chrome path: CHROME=/path/to/chrome, otherwise common macOS/Linux locations are tried.
  */
-async function launchOnce({extraArgs = [], label = 'monoline'} = {}) {
-  const candidates = [process.env.CHROME, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
+async function launchOnce({extraArgs = [], label = 'monoline'}: {extraArgs?: string[], label?: string} = {}) {
+  const candidates = [process.env.CHROME, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean) as string[];
   const chromePath = candidates.find((p) => existsSync(p));
   if (!chromePath) throw new Error('Chrome not found. Set CHROME=/path/to/chrome.');
   const profile = mkdtempSync(join(tmpdir(), `${label}-`));
@@ -49,18 +58,18 @@ async function launchOnce({extraArgs = [], label = 'monoline'} = {}) {
 
   const ws = new WebSocket(`ws://127.0.0.1:${port}${wsPath}`);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });
-  let id = 0; const waiting = new Map(); const listeners = [];
+  let id = 0; const waiting = new Map<number, {res: (v: CdpMessage) => void, rej: (e: Error) => void}>(); const listeners: ((msg: CdpMessage) => void)[] = [];
   ws.onmessage = (m) => {
     const msg = JSON.parse(m.data);
-    if (msg.id && waiting.has(msg.id)) { const {res, rej} = waiting.get(msg.id); waiting.delete(msg.id); msg.error ? rej(new Error(msg.error.message)) : res(msg.result); }
+    if (msg.id && waiting.has(msg.id)) { const {res, rej} = waiting.get(msg.id)!; waiting.delete(msg.id); msg.error ? rej(new Error(msg.error.message)) : res(msg.result); }
     else listeners.forEach((l) => l(msg));
   };
-  const send = (method, params = {}, sessionId) => new Promise((res, rej) => { const i = ++id; waiting.set(i, {res, rej}); ws.send(JSON.stringify({id: i, method, params, sessionId})); });
+  const send = (method: string, params: object = {}, sessionId?: string) => new Promise<CdpMessage>((res, rej) => { const i = ++id; waiting.set(i, {res, rej}); ws.send(JSON.stringify({id: i, method, params, sessionId})); });
   const {targetId} = await send('Target.createTarget', {url: 'about:blank'});
   const {sessionId} = await send('Target.attachToTarget', {targetId, flatten: true});
-  const cdp = (m, p) => send(m, p, sessionId);
+  const cdp: Cdp = (m, p) => send(m, p, sessionId);
   await cdp('Page.bringToFront').catch(() => {});
-  const evaluate = async (expression) => {
+  const evaluate: Evaluate = async (expression) => {
     const r = await cdp('Runtime.evaluate', {expression, awaitPromise: true, returnByValue: true});
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
     return r.result.value;
@@ -69,14 +78,14 @@ async function launchOnce({extraArgs = [], label = 'monoline'} = {}) {
 }
 
 /** Starts Chrome and connects. Chrome on a busy CI runner sometimes never writes its debugging port: retry up to three times before giving up. */
-export async function launchChrome(opts = {}) {
-  let lastError;
+export async function launchChrome(opts: Parameters<typeof launchOnce>[0] = {}): Promise<Browser> {
+  let lastError: unknown;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try { return await launchOnce(opts); }
     catch (e) {
       lastError = e;
-      if (!/Chrome did not start|ECONNREFUSED|WebSocket/i.test(String(e && e.message))) throw e;
-      console.error(`Chrome start attempt ${attempt} failed: ${String(e.message).split('\n')[0]}`);
+      if (!/Chrome did not start|ECONNREFUSED|WebSocket/i.test(String(e && (e as Error).message))) throw e;
+      console.error(`Chrome start attempt ${attempt} failed: ${String((e as Error).message).split('\n')[0]}`);
     }
   }
   throw lastError;

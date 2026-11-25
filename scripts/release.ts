@@ -25,21 +25,39 @@ import {dirname, join, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const DEP_KEYS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
+const DEP_KEYS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'] as const;
 const NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+
+type Deps = Record<string, string>;
+/** The parts of a package.json this script reads; anything else passes through untouched. */
+type Pkg = {
+  [key: string]: unknown;
+  name?: string;
+  version?: string;
+  private?: boolean;
+  license?: string;
+  bin?: string | Deps;
+  dependencies?: Deps;
+  devDependencies?: Deps;
+  peerDependencies?: Deps;
+  optionalDependencies?: Deps;
+};
+/** A package.json under packages/: loadPackages trusts name and version, runCheck validates them. */
+type Manifest = Pkg & {name: string; version: string};
+type Commit = {subject: string; body?: string};
 
 // ---------- pure functions (unit tested in release.test.ts) ----------
 
 /** "1.2.3" -> [1, 2, 3]. Throws on anything else (no pre-release tags: they are not used here). */
-export function parseVersion(version) {
+export function parseVersion(version: string) {
   const m = SEMVER.exec(version);
   if (!m) throw new Error(`not a plain x.y.z version: ${version}`);
   return m.slice(1).map(Number);
 }
 
 /** Negative, zero or positive, like a sort comparator. */
-export function compareVersions(a, b) {
+export function compareVersions(a: string, b: string) {
   const x = parseVersion(a);
   const y = parseVersion(b);
   for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i];
@@ -47,7 +65,7 @@ export function compareVersions(a, b) {
 }
 
 /** `spec` is patch | minor | major, or an explicit x.y.z that must be newer than `current`. */
-export function nextVersion(current, spec) {
+export function nextVersion(current: string, spec: string) {
   const [major, minor, patch] = parseVersion(current);
   if (spec === 'major') return `${major + 1}.0.0`;
   if (spec === 'minor') return `${major}.${minor + 1}.0`;
@@ -58,7 +76,7 @@ export function nextVersion(current, spec) {
 }
 
 /** Returns a copy of `pkg` where every dependency on one of `internalNames` points at `^version`. */
-export function bumpInternalRanges(pkg, internalNames, version) {
+export function bumpInternalRanges(pkg: Pkg, internalNames: string[], version: string) {
   const out = {...pkg};
   for (const key of DEP_KEYS) {
     if (!pkg[key]) continue;
@@ -70,7 +88,7 @@ export function bumpInternalRanges(pkg, internalNames, version) {
 }
 
 /** Names in publish order: a package comes after every internal package it depends on. Throws on a cycle. */
-export function publishOrder(packages) {
+export function publishOrder(packages: {name: string; json: Pkg}[]) {
   const names = new Set(packages.map((p) => p.name));
   const deps = new Map(
     packages.map((p) => [
@@ -78,13 +96,13 @@ export function publishOrder(packages) {
       DEP_KEYS.flatMap((k) => Object.keys(p.json[k] ?? {})).filter((n) => names.has(n) && n !== p.name),
     ]),
   );
-  const order = [];
-  const state = new Map();
-  const visit = (name, path) => {
+  const order: string[] = [];
+  const state = new Map<string, 'busy' | 'done'>();
+  const visit = (name: string, path: string[]) => {
     if (state.get(name) === 'done') return;
     if (state.get(name) === 'busy') throw new Error(`dependency cycle: ${[...path, name].join(' -> ')}`);
     state.set(name, 'busy');
-    for (const dep of deps.get(name)) visit(dep, [...path, name]);
+    for (const dep of deps.get(name)!) visit(dep, [...path, name]);
     state.set(name, 'done');
     order.push(name);
   };
@@ -93,30 +111,30 @@ export function publishOrder(packages) {
 }
 
 /** Every string target under exports / main / module / types / typings / bin that starts with "./". */
-export function collectTargets(json) {
-  const walk = (value, out) => {
+export function collectTargets(json: Pkg) {
+  const walk = (value: unknown, out: string[]): string[] => {
     if (typeof value === 'string') out.push(value);
     else if (value && typeof value === 'object') Object.values(value).forEach((v) => walk(v, out));
     return out;
   };
   // exports targets must start with "./"; main, types and bin may be written either way.
-  const relative = (p) => `./${p.replace(/^\.?\//, '')}`;
+  const relative = (p: string) => `./${p.replace(/^\.?\//, '')}`;
   const exported = walk(json.exports, []).filter((p) => p.startsWith('./'));
   const other = [...['main', 'module', 'types', 'typings'].map((k) => json[k]), ...walk(json.bin, [])]
-    .filter((p) => typeof p === 'string' && p.length > 0 && !/^[a-z]+:/i.test(p))
+    .filter((p): p is string => typeof p === 'string' && p.length > 0 && !/^[a-z]+:/i.test(p))
     .map(relative);
   return [...new Set([...exported, ...other])];
 }
 
 /** npm's publish step silently drops a bin path written with a leading "./", so the release must refuse it. */
-export function binProblems(json) {
+export function binProblems(json: Pkg) {
   const bins = typeof json.bin === 'string' ? [json.bin] : Object.values(json.bin ?? {});
   return bins.filter((p) => typeof p === 'string' && p.startsWith('./')).map(
     (p) => `bin path "${p}" starts with "./"; npm publish drops it. Write "${p.slice(2)}" instead`,
   );
 }
 
-const TYPE_SECTION = {
+const TYPE_SECTION: Record<string, string> = {
   feat: 'Added',
   fix: 'Fixed',
   perf: 'Changed',
@@ -136,7 +154,7 @@ const CONVENTIONAL = /^([a-z]+)(\(([^)]+)\))?(!)?:\s*(.+)$/i;
  * One commit -> {section, scope, text, breaking}. Accepts conventional commits (`feat(css): ...`, `fix!: ...`)
  * and this repo's plain style (`button: add loading state`, where the prefix is the scope).
  */
-export function parseCommit({subject, body = ''}) {
+export function parseCommit({subject, body = ''}: Commit) {
   const line = subject.trim();
   const m = CONVENTIONAL.exec(line);
   const breaking = /BREAKING[ -]CHANGE:/.test(body) || Boolean(m?.[4]);
@@ -152,8 +170,8 @@ export function parseCommit({subject, body = ''}) {
 }
 
 /** Commits -> {section name: ["**scope:** text", ...]}. Merge and release commits are dropped. */
-export function groupCommits(commits) {
-  const groups = Object.fromEntries(SECTIONS.map((s) => [s, []]));
+export function groupCommits(commits: Commit[]) {
+  const groups: Record<string, string[]> = Object.fromEntries(SECTIONS.map((s) => [s, []]));
   for (const commit of commits) {
     if (/^(Merge\b|chore\(release\)|release\b)/i.test(commit.subject.trim())) continue;
     const p = parseCommit(commit);
@@ -164,7 +182,7 @@ export function groupCommits(commits) {
 }
 
 /** One `## x.y.z - date` section in the house style of CHANGELOG.md. */
-export function renderSection(version, date, groups) {
+export function renderSection(version: string, date: string, groups: Record<string, string[]>) {
   const lines = [`## ${version} - ${date}`, ''];
   for (const heading of SECTIONS) {
     if (!groups[heading]?.length) continue;
@@ -175,14 +193,14 @@ export function renderSection(version, date, groups) {
 }
 
 /** Inserts `section` above the first existing `## ` heading, or at the end when there is none. */
-export function prependChangelog(text, section) {
+export function prependChangelog(text: string, section: string) {
   const i = text.search(/^## /m);
   if (i === -1) return `${text.trimEnd()}\n\n${section}`;
   return `${text.slice(0, i)}${section}\n${text.slice(i)}`;
 }
 
 /** The body (without its heading) of the `## version` section, or null. */
-export function extractSection(text, version) {
+export function extractSection(text: string, version: string) {
   const lines = text.split('\n');
   const start = lines.findIndex((l) => l === `## ${version}` || l.startsWith(`## ${version} `));
   if (start === -1) return null;
@@ -190,7 +208,7 @@ export function extractSection(text, version) {
   return lines.slice(start + 1, next === -1 ? undefined : next).join('\n').trim() + '\n';
 }
 
-const FORBIDDEN_IN_TARBALL = [
+const FORBIDDEN_IN_TARBALL: [RegExp, string][] = [
   [/\.(test|spec)\.[cm]?[jt]sx?$/, 'test file'],
   [/\.demo\.[cm]?[jt]sx?$/, 'demo file'],
   [/(^|\/)(test|tests|__tests__|demo|demos)\//, 'test or demo folder'],
@@ -204,8 +222,8 @@ const FORBIDDEN_IN_TARBALL = [
 ];
 
 /** Problems with the paths npm would ship: forbidden files, and required files that are missing. */
-export function tarballProblems(paths) {
-  const problems = [];
+export function tarballProblems(paths: string[]) {
+  const problems: string[] = [];
   for (const path of paths) {
     const hit = FORBIDDEN_IN_TARBALL.find(([re]) => re.test(path));
     if (hit) problems.push(`${path}: ${hit[1]} must not be published`);
@@ -219,18 +237,19 @@ export function tarballProblems(paths) {
 
 // ---------- side effects ----------
 
-const fail = (message) => {
+// Annotated on the const so calls narrow like `return`: TS only does that for an explicitly typed never-function.
+const fail: (message: string) => never = (message) => {
   console.error(`release: ${message}`);
   process.exit(1);
 };
 
-function run(cmd, args, cwd = ROOT) {
+function run(cmd: string, args: string[], cwd = ROOT) {
   const r = spawnSync(cmd, args, {cwd, encoding: 'utf8'});
   return {status: r.status, stdout: r.stdout ?? '', stderr: r.stderr ?? ''};
 }
 
-const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'));
-const writeJson = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+const readJson = <T = Pkg>(file: string): T => JSON.parse(readFileSync(file, 'utf8'));
+const writeJson = (file: string, data: Pkg) => writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
 
 function loadPackages() {
   const dir = join(ROOT, 'packages');
@@ -239,7 +258,7 @@ function loadPackages() {
     .map((d) => {
       const pkgDir = join(dir, d.name);
       const file = join(pkgDir, 'package.json');
-      const json = readJson(file);
+      const json = readJson<Manifest>(file);
       return {name: json.name, dir: pkgDir, file, rel: relative(ROOT, pkgDir), json};
     })
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -254,7 +273,7 @@ function lastTag() {
   return r.status === 0 ? r.stdout.trim() : null;
 }
 
-function commitsSince(tag) {
+function commitsSince(tag: string | null) {
   const range = tag ? [`${tag}..HEAD`] : [];
   const out = run('git', ['log', '--format=%s%x1f%b%x1e', ...range]).stdout;
   return out
@@ -267,14 +286,16 @@ function commitsSince(tag) {
     });
 }
 
-function packInfo(pkg) {
+type PackFile = {path: string; size: number};
+
+function packInfo(pkg: {dir: string}) {
   const r = run('npm', ['pack', '--dry-run', '--json'], pkg.dir);
   if (r.status !== 0) {
     const first = r.stderr.split('\n').find((l) => l.trim() && !/^npm (warn|notice)/.test(l)) ?? 'npm pack --dry-run failed';
     return {error: `npm pack --dry-run failed: ${first.replace(/^npm error\s*/, '').trim()}`};
   }
   try {
-    const [info] = JSON.parse(r.stdout);
+    const [info]: {files: PackFile[]; size: number; unpackedSize: number}[] = JSON.parse(r.stdout);
     return {
       files: info.files.map((f) => ({path: f.path, size: f.size})).sort((a, b) => a.path.localeCompare(b.path)),
       size: info.size,
@@ -285,12 +306,12 @@ function packInfo(pkg) {
   }
 }
 
-const kb = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
+const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} kB`;
 
 /** Runs every check, prints the report and returns true when nothing is wrong. */
-function runCheck({expect, list = true} = {}) {
+function runCheck({expect, list = true}: {expect?: string; list?: boolean} = {}) {
   const pkgs = loadPackages().filter((p) => !p.json.private); // private packages (not ready to publish) are skipped
-  const problems = [];
+  const problems: string[] = [];
   if (pkgs.length === 0) problems.push('no packages found under packages/');
 
   const versions = [...new Set(pkgs.map((p) => p.json.version))];
@@ -305,7 +326,7 @@ function runCheck({expect, list = true} = {}) {
     try {
       parseVersion(j.version);
     } catch (e) {
-      problems.push(`${label}: ${e.message}`);
+      problems.push(`${label}: ${(e as Error).message}`);
     }
     if (j.private) problems.push(`${label}: "private": true; remove it to publish`);
     if (j.license !== 'MIT') problems.push(`${label}: license is "${j.license}", expected "MIT"`);
@@ -334,16 +355,16 @@ function runCheck({expect, list = true} = {}) {
       problems.push(`${label}: ${pack.error}`);
       console.log(`FAIL ${label}`);
     } else {
-      const paths = pack.files.map((f) => f.path);
+      const paths = pack.files!.map((f) => f.path);
       for (const t of targets.filter((t) => !t.includes('*') && existsSync(join(p.dir, t)))) {
         if (!paths.includes(t.slice(2))) problems.push(`${label}: ${t} exists but is not in the tarball (check "files")`);
       }
       problems.push(...tarballProblems(paths).map((m) => `${label}: ${m}`));
       console.log(
-        `${problems.length === before ? 'ok  ' : 'FAIL'} ${label}  ${j.license}  ${pack.files.length} files  ` +
-          `packed ${kb(pack.size)}  unpacked ${kb(pack.unpackedSize)}`,
+        `${problems.length === before ? 'ok  ' : 'FAIL'} ${label}  ${j.license}  ${pack.files!.length} files  ` +
+          `packed ${kb(pack.size!)}  unpacked ${kb(pack.unpackedSize!)}`,
       );
-      if (list) for (const f of pack.files) console.log(`       ${kb(f.size).padStart(10)}  ${f.path}`);
+      if (list) for (const f of pack.files!) console.log(`       ${kb(f.size).padStart(10)}  ${f.path}`);
     }
   }
 
@@ -356,7 +377,7 @@ function runCheck({expect, list = true} = {}) {
   return true;
 }
 
-function bump(spec, {tag, allowDirty, date}) {
+function bump(spec: string, {tag, allowDirty, date}: {tag: boolean; allowDirty: boolean; date: string}) {
   const pkgs = loadPackages();
   const versions = [...new Set(pkgs.map((p) => p.json.version))];
   if (versions.length !== 1) fail(`packages are at different versions (${versions.join(', ')}); fix that first`);
@@ -385,7 +406,7 @@ function bump(spec, {tag, allowDirty, date}) {
   console.log('Next: review the diff, edit the CHANGELOG wording if needed, then commit.');
 }
 
-function publish({dryRun, yes, provenance}) {
+function publish({dryRun, yes, provenance}: {dryRun: boolean; yes: boolean; provenance: boolean}) {
   if (dryRun === yes) fail('choose one: --dry-run (rehearsal) or --yes (publish for real)');
   if (!runCheck()) fail('check failed; nothing was published');
   const pkgs = loadPackages().filter((p) => !p.json.private);
@@ -401,7 +422,7 @@ function publish({dryRun, yes, provenance}) {
 
   console.log(`publish order: ${order.join(' -> ')}`);
   for (const name of order) {
-    const p = byName.get(name);
+    const p = byName.get(name)!;
     const {version} = p.json;
     // npm view prints an error JSON on stdout for a 404, so only a successful exit means the version exists
     // the dry run checks too: npm refuses `publish --dry-run` over a version that already exists
@@ -422,15 +443,15 @@ function publish({dryRun, yes, provenance}) {
   console.log(dryRun ? '\npublish dry run passed (nothing was uploaded)' : '\nall packages published');
 }
 
-function notes(version) {
+function notes(version: string) {
   const body = extractSection(readFileSync(join(ROOT, 'CHANGELOG.md'), 'utf8'), version);
   if (body === null) fail(`CHANGELOG.md has no ${version} section`);
   process.stdout.write(body);
 }
 
-function parseArgs(argv) {
-  const positional = [];
-  const flags = {};
+function parseArgs(argv: string[]) {
+  const positional: string[] = [];
+  const flags: Record<string, string | boolean> = {};
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith('--')) {
@@ -455,11 +476,11 @@ function main() {
   const {positional, flags} = parseArgs(rest);
   switch (cmd) {
     case 'check':
-      process.exit(runCheck({expect: flags.expect, list: flags.list !== false}) ? 0 : 1);
+      process.exit(runCheck({expect: flags.expect as string | undefined, list: flags.list !== false}) ? 0 : 1);
       break;
     case 'version':
       if (!positional[0]) fail(`missing bump: patch, minor, major or x.y.z\n${USAGE}`);
-      bump(positional[0], {tag: Boolean(flags.tag), allowDirty: Boolean(flags['allow-dirty']), date: flags.date ?? new Date().toISOString().slice(0, 10)});
+      bump(positional[0], {tag: Boolean(flags.tag), allowDirty: Boolean(flags['allow-dirty']), date: (flags.date as string | undefined) ?? new Date().toISOString().slice(0, 10)});
       break;
     case 'publish':
       publish({dryRun: Boolean(flags['dry-run']), yes: Boolean(flags.yes), provenance: Boolean(flags.provenance)});

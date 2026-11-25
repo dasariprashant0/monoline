@@ -1,17 +1,20 @@
 // calendar, date-picker, tree, data-grid, toast, carousel.
 import {test, assert, eq} from '../test.ts';
+import type {Scope} from '../page.ts';
+
+type Ymd = [number, number, number];
 
 const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 /** The date of the focused calendar day, read from its aria-label ("Friday, 13 November 2026"), as [y, m (1-12), d]. */
-const focusedDay = (p) => p.eval(`(() => { const a = document.activeElement; const l = a && a.getAttribute('aria-label') || ''; const dmy = l.match(/(\\d+) (\\w+) (\\d{4})/), mdy = l.match(/(\\w+) (\\d+), (\\d{4})/); const M = ${JSON.stringify(MONTHS)}; /* day-month-year (en-GB) or month-day-year (en-US), whichever the browser locale gives */ if (dmy) return [Number(dmy[3]), M.indexOf(dmy[2].toLowerCase()) + 1, Number(dmy[1])]; if (mdy) return [Number(mdy[3]), M.indexOf(mdy[1].toLowerCase()) + 1, Number(mdy[2])]; return 'focus is on ' + __e2e.describe(a); })()`);
-const ymd = (d) => [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()];
-const shift = ([y, m, d], days) => ymd(new Date(Date.UTC(y, m - 1, d + days)));
-const monthShift = ([y, m, d], n) => { const t = new Date(Date.UTC(y, m - 1 + n, 1)); const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate(); return [t.getUTCFullYear(), t.getUTCMonth() + 1, Math.min(d, last)]; };
-const dow = ([y, m, d]) => new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+const focusedDay = (p: Scope) => p.eval(`(() => { const a = document.activeElement; const l = a && a.getAttribute('aria-label') || ''; const dmy = l.match(/(\\d+) (\\w+) (\\d{4})/), mdy = l.match(/(\\w+) (\\d+), (\\d{4})/); const M = ${JSON.stringify(MONTHS)}; /* day-month-year (en-GB) or month-day-year (en-US), whichever the browser locale gives */ if (dmy) return [Number(dmy[3]), M.indexOf(dmy[2].toLowerCase()) + 1, Number(dmy[1])]; if (mdy) return [Number(mdy[3]), M.indexOf(mdy[1].toLowerCase()) + 1, Number(mdy[2])]; return 'focus is on ' + __e2e.describe(a); })()`);
+const ymd = (d: Date): Ymd => [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()];
+const shift = ([y, m, d]: Ymd, days: number) => ymd(new Date(Date.UTC(y, m - 1, d + days)));
+const monthShift = ([y, m, d]: Ymd, n: number): Ymd => { const t = new Date(Date.UTC(y, m - 1 + n, 1)); const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate(); return [t.getUTCFullYear(), t.getUTCMonth() + 1, Math.min(d, last)]; };
+const dow = ([y, m, d]: Ymd) => new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 
 // A calendar page can hold several examples (and the playground): page-wide queries must stay inside the one under test.
 let CAL = '';
-async function startCalendar(p, route, example, open) {
+async function startCalendar(p: Scope, route: string, example: string, open?: (ex: Scope) => Promise<void>) {
   await p.open(route); const ex = await p.example(example);
   CAL = open ? '' : '[data-cal] ';
   if (!open) await p.eval(`document.querySelector('[data-e2e]').setAttribute('data-cal', '1')`);
@@ -21,12 +24,12 @@ async function startCalendar(p, route, example, open) {
   await p.focus('[role=grid] button[tabindex="0"]');
   return ex;
 }
-const openPicker = async (ex) => { await ex.click('button|Pick a date'); };
+const openPicker = async (ex: Scope) => { await ex.click('button|Pick a date'); };
 
-for (const [name, boot] of [['calendar', (p) => startCalendar(p, 'components/calendar', 'Pick a date')], ['date-picker', (p) => startCalendar(p, 'components/date-picker', 'In a field', openPicker)]]) {
+for (const [name, boot] of [['calendar', (p) => startCalendar(p, 'components/calendar', 'Pick a date')], ['date-picker', (p) => startCalendar(p, 'components/date-picker', 'In a field', openPicker)]] as [string, (p: Scope) => Promise<Scope>][]) {
   test(`${name}: arrow keys move by day and week, focus stays on a day`, async (p) => {
     await boot(p);
-    const start = await focusedDay(p); assert(Array.isArray(start), `no focused day: ${start}`);
+    const start: Ymd = await focusedDay(p); assert(Array.isArray(start), `no focused day: ${start}`);
     await p.key('ArrowRight'); eq(await focusedDay(p), shift(start, 1), 'ArrowRight');
     await p.key('ArrowLeft'); eq(await focusedDay(p), start, 'ArrowLeft');
     await p.key('ArrowDown'); eq(await focusedDay(p), shift(start, 7), 'ArrowDown');
@@ -41,7 +44,7 @@ for (const [name, boot] of [['calendar', (p) => startCalendar(p, 'components/cal
     await p.key('PageUp'); eq(await focusedDay(p), start, 'PageUp');
     await p.key('PageUp'); eq(await focusedDay(p), monthShift(start, -1), 'PageUp again');
     await p.key('PageDown');
-    const title = await p.text('[aria-live=polite]'); assert(title.length > 4, 'month heading is empty');
+    const title = (await p.text('[aria-live=polite]'))!; assert(title.length > 4, 'month heading is empty');
     await p.key('Home'); const h = await focusedDay(p); eq(shift(h, 0).length, 3, 'Home date'); assert(Math.abs(dow(start) - dow(h)) <= 6 && ((dow(start) - dow(h) + 7) % 7) === ((dow(start) - 1 + 7) % 7), `Home should reach Monday (this calendar starts weeks on Monday), reached ${JSON.stringify(h)}`);
     await p.key('End'); eq(dow(await focusedDay(p)), 0, 'End reaches Sunday');
   });
@@ -50,7 +53,7 @@ for (const [name, boot] of [['calendar', (p) => startCalendar(p, 'components/cal
     const before = await p.text('[aria-live=polite]');
     await p.key('PageDown');
     await p.waitFor(`document.querySelector('${CAL}[aria-live=polite]').textContent !== ${JSON.stringify(before)}`, 'heading did not change after PageDown');
-    eq(await p.attr('[role=grid]', 'aria-label'), (await p.text('[aria-live=polite]')).trim(), 'grid aria-label matches the heading');
+    eq(await p.attr('[role=grid]', 'aria-label'), (await p.text('[aria-live=polite]'))!.trim(), 'grid aria-label matches the heading');
   });
 }
 test('calendar: Enter and Space select the focused day (aria-pressed), clicking a day too', async (p) => {
@@ -80,7 +83,7 @@ test('date-picker: Enter opens the calendar with focus on a day; Enter picks; th
   await p.key('ArrowRight'); const picked = await focusedDay(p); await p.key('Enter');
   await p.waitFor(`!document.querySelector('[role=dialog]')`, 'calendar stayed open after choosing a date');
   await ex.expectActive('[aria-haspopup=dialog]', 'focus return after choosing a date');
-  const label = await ex.text('[aria-haspopup=dialog]'); assert(!/Pick a date/.test(label) && label.trim().length > 4, `field should show the date, shows "${label}"`);
+  const label = (await ex.text('[aria-haspopup=dialog]'))!; assert(!/Pick a date/.test(label) && label.trim().length > 4, `field should show the date, shows "${label}"`);
   assert(label.includes(String(picked[2])), `field "${label}" should contain day ${picked[2]}`);
 });
 test('date-picker: Escape closes and focus returns to the field; the page behind is not tabbable', async (p) => {
@@ -91,7 +94,7 @@ test('date-picker: Escape closes and focus returns to the field; the page behind
 });
 
 // ---- tree
-const treeFocus = (p) => p.eval(`document.activeElement.getAttribute('data-tree-id') || 'focus is on ' + __e2e.describe(document.activeElement)`);
+const treeFocus = (p: Scope) => p.eval(`document.activeElement.getAttribute('data-tree-id') || 'focus is on ' + __e2e.describe(document.activeElement)`);
 test('tree: Up/Down move through visible items, Right expands then enters, Left collapses then goes to the parent', async (p) => {
   await p.open('components/tree'); const ex = await p.example('File tree');
   await ex.focus('[role=treeitem][data-tree-id=src]');
@@ -117,7 +120,7 @@ test('tree: one tab stop; Enter and Space select; typeahead jumps; click expands
 });
 
 // ---- data-grid
-const cell = (p) => p.eval(`(() => { const a = document.activeElement; return a && a.dataset && a.dataset.row !== undefined ? [Number(a.dataset.row), Number(a.dataset.col)] : 'focus is on ' + __e2e.describe(a); })()`);
+const cell = (p: Scope) => p.eval(`(() => { const a = document.activeElement; return a && a.dataset && a.dataset.row !== undefined ? [Number(a.dataset.row), Number(a.dataset.col)] : 'focus is on ' + __e2e.describe(a); })()`);
 const GRID = '[data-e2e] [role=grid]';
 test('data-grid: arrow keys move cell focus, Home/End go to the row ends, PageDown jumps a page', async (p) => {
   await p.open('components/data-grid'); const ex = await p.example('100,000 rows');
@@ -164,7 +167,7 @@ test('data-grid: Space toggles the focused row in the selection example', async 
 });
 test('data-grid: the empty grid says so', async (p) => {
   await p.open('components/data-grid'); const ex = await p.example('Empty');
-  assert((await p.text('[data-e2e] [role=grid]')).trim().length > 0 || (await p.text('[data-e2e] .cdoc-stage')).trim().length > 0, 'empty grid renders nothing');
+  assert((await p.text('[data-e2e] [role=grid]'))!.trim().length > 0 || (await p.text('[data-e2e] .cdoc-stage'))!.trim().length > 0, 'empty grid renders nothing');
 });
 
 // ---- toast

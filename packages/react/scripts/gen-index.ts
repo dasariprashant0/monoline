@@ -11,7 +11,7 @@ console.log(`src/index.ts: ${lines.length} exports`);
 
 // styles.ts: component folder name -> the one @monoline/css bundle it needs (already includes the CSS of every part it uses).
 // Import 'core' once, then the bundle of each component you use.
-const styles = {core: '@monoline/css/core.css'};
+const styles: Record<string, string> = {core: '@monoline/css/core.css'};
 for (const u of units().filter((x) => x.kind === 'components')) {
   const meta = readMeta(u); // names the folder when meta.json is missing, instead of a raw ENOENT
   if (meta.css?.length) styles[u.name] = `@monoline/css/components/${u.name}.css`;

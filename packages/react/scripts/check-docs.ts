@@ -7,7 +7,7 @@ import {readdirSync, readFileSync, statSync} from 'node:fs';
 import {join, relative} from 'node:path';
 import {pkgRoot, repoRoot} from './lib.ts';
 
-function walk(dir, out = []) {
+function walk(dir: string, out: string[] = []) {
   for (const e of readdirSync(dir)) {
     const p = join(dir, e);
     if (statSync(p).isDirectory()) walk(p, out);
@@ -16,22 +16,22 @@ function walk(dir, out = []) {
   return out;
 }
 
-const hasDoc = (node) => (ts.getJSDocCommentsAndTags(node) ?? []).some((d) => ts.isJSDoc(d) && (typeof d.comment === 'string' ? d.comment.trim() : d.comment?.length));
-const isExported = (n) => (ts.canHaveModifiers(n) ? ts.getModifiers(n) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
-const isUnit = (name) => /^[A-Z]/.test(name) || /^use[A-Z]/.test(name);
+const hasDoc = (node: ts.Node) => (ts.getJSDocCommentsAndTags(node) ?? []).some((d) => ts.isJSDoc(d) && (typeof d.comment === 'string' ? d.comment.trim() : d.comment?.length));
+const isExported = (n: ts.Node) => (ts.canHaveModifiers(n) ? ts.getModifiers(n) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+const isUnit = (name: string) => /^[A-Z]/.test(name) || /^use[A-Z]/.test(name);
 
-const problems = [];
+const problems: string[] = [];
 for (const kind of ['components', 'hooks']) {
   for (const file of walk(join(pkgRoot, 'src', kind))) {
     const sf = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.ES2022, true, file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
     const rel = relative(repoRoot, file);
-    const at = (n) => `${rel}:${sf.getLineAndCharacterOfPosition(n.getStart()).line + 1}`;
-    const checkMembers = (members, owner) => {
+    const at = (n: ts.Node) => `${rel}:${sf.getLineAndCharacterOfPosition(n.getStart()).line + 1}`;
+    const checkMembers = (members: ts.NodeArray<ts.TypeElement>, owner: string) => {
       for (const m of members) {
         if ((ts.isPropertySignature(m) || ts.isMethodSignature(m)) && !hasDoc(m)) problems.push(`${at(m)}  prop "${m.name.getText(sf)}" of ${owner} has no doc comment. Add \`/** One sentence: what it does and when to use it. */\` above it.`);
       }
     };
-    const checkType = (t, owner) => {
+    const checkType = (t: ts.TypeNode, owner: string): void => {
       if (ts.isTypeLiteralNode(t)) checkMembers(t.members, owner);
       else if (ts.isIntersectionTypeNode(t) || ts.isUnionTypeNode(t)) t.types.forEach((x) => checkType(x, owner));
       else if (ts.isParenthesizedTypeNode(t)) checkType(t.type, owner);

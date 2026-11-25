@@ -7,31 +7,32 @@
 // same extraction the docs site uses.
 import {mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync, statSync} from 'node:fs';
 import {join, relative} from 'node:path';
-import {pkgRoot, repoRoot, units, readMeta, CATEGORIES} from './lib.ts';
-import {COMPONENT_PROPS, HOOK_PROPS, createProgram, mainSourceFile, propGroups} from './props-extract.ts';
-import {cssFacts, usageFor, relatedFor} from './registry-fields.ts';
+import {pkgRoot, repoRoot, units, readMeta, CATEGORIES, type Meta} from './lib.ts';
+import {COMPONENT_PROPS, HOOK_PROPS, createProgram, mainSourceFile, propGroups, type PropGroup} from './props-extract.ts';
+import {cssFacts, usageFor, relatedFor, type DataAttribute} from './registry-fields.ts';
 import {extractDemos, exportedNames} from '../../../apps/docs/scripts/lib/demos.ts';
 
 export const LLMS_FULL_LIMIT = 400 * 1024; // bytes; the generator fails above this
 
 const cssDir = join(repoRoot, 'packages', 'css', 'src', 'components');
 const regDir = join(repoRoot, 'registry');
-const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
-const pascal = (name) => name.split('-').map((p) => p[0].toUpperCase() + p.slice(1)).join('');
-const camel = (name) => { const p = pascal(name); return p[0].toLowerCase() + p.slice(1); };
-const oneLine = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
+const kb = (n: number) => `${(n / 1024).toFixed(1)} KB`;
+const pascal = (name: string) => name.split('-').map((p) => p[0].toUpperCase() + p.slice(1)).join('');
+const camel = (name: string) => { const p = pascal(name); return p[0].toLowerCase() + p.slice(1); };
+const oneLine = (s: unknown) => String(s ?? '').replace(/\s+/g, ' ').trim();
 
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'));
 const all = units();
 const known = new Set(all.map((u) => u.name));
-const program = createProgram(all.map((u) => mainSourceFile(u.dir, u.name)).filter(Boolean));
+const program = createProgram(all.map((u) => mainSourceFile(u.dir, u.name)).filter(Boolean) as string[]);
 
 // Shared helpers a component imports from src/utils (slot, overlay, chart...), with the ones those import in turn.
 // cx is left out: the CLI writes it itself. The CLI copies these next to the component so the import resolves.
 const utilsDir = join(pkgRoot, 'src', 'utils');
-function sharedUtils(source) {
-  const found = new Map();
-  const visit = (code, re) => {
+type SourceFile = {path: string; content: string};
+function sharedUtils(source: SourceFile[]) {
+  const found = new Map<string, SourceFile>();
+  const visit = (code: string, re: RegExp) => {
     for (const m of code.matchAll(re)) {
       const name = m[1];
       if (name === 'cx' || found.has(name)) continue;
@@ -57,11 +58,12 @@ const publicNames = new Set(all.flatMap((u) => { const {values, types} = exporte
 const categoryOf = new Map(all.map((u) => [u.name, readMeta(u).category]));
 
 // Pass 2: every field of every component, computed in memory first so a failed size check writes nothing.
-const records = []; // full entries, one per component
-const perComponent = new Map();
+type Entry = Meta & {kind: string; import: string; path: string; files: string[]; related: string[]; props: PropGroup[]; usage: string; dataAttributes: DataAttribute[]; classes: string[]};
+const records: Entry[] = []; // full entries, one per component
+const perComponent = new Map<string, string>();
 for (const u of all) {
   const meta = readMeta(u);
-  const symbol = exportOf.get(u.name);
+  const symbol = exportOf.get(u.name)!;
   const importLine = `import {${symbol}} from '@monoline/react'`;
   const isHook = u.kind === 'hooks';
 
@@ -114,13 +116,13 @@ const index = records.map(({props, usage, classes, dataAttributes, ...rest}) => 
 // llms.txt: short map. llms-full.txt: everything an agent needs in one file.
 const REPO = 'https://github.com/dasariprashant0/monoline/blob/master';
 const SITE = 'https://monoline.prashantdasari.com';
-const byCat = (c) => index.filter((e) => e.category === c);
-const section = (c) => byCat(c).length ? `\n### ${c}\n${byCat(c).map((e) => `- ${e.title} (${e.name}, ${e.status}): ${e.description} Source: ${REPO}/${e.path}/`).join('\n')}\n` : '';
+const byCat = (c: string) => index.filter((e) => e.category === c);
+const section = (c: string) => byCat(c).length ? `\n### ${c}\n${byCat(c).map((e) => `- ${e.title} (${e.name}, ${e.status}): ${e.description} Source: ${REPO}/${e.path}/`).join('\n')}\n` : '';
 const head = `# Monoline\n\n> Open-source UI kit: a plain CSS core (@monoline/css) with accessible React components (@monoline/react). Three themes, eight accents, font, corner and density options, no Tailwind, no runtime CSS-in-JS.\n\nStart with AGENTS.md (https://github.com/dasariprashant0/monoline/blob/master/AGENTS.md: how to work in this repo) and DESIGN.md (https://github.com/dasariprashant0/monoline/blob/master/DESIGN.md: the look and rules). Every component is a folder with source, test, demo and meta.json. Install the packages, or copy one component with npx monoline add <name> (source in https://monoline.prashantdasari.com/registry/<name>.json).\n`;
 const shortText = `${head}\n## Docs\n- [AGENTS.md](${REPO}/AGENTS.md): rules for AI agents and contributors\n- [DESIGN.md](${REPO}/DESIGN.md): design rules, tokens, copy\n- [registry/index.json](${SITE}/registry/index.json): machine-readable component list, with props names and related components\n\n## Components${CATEGORIES.map(section).join('')}`;
 
 /** One component as compact text: description, import, props, usage, a11y, classes. */
-function fullSection(e) {
+function fullSection(e: Entry) {
   const out = [`## ${e.title} (${e.name})`, oneLine(e.description)];
   out.push(`Status: ${e.status} | Category: ${e.category}${e.primitive ? ` | Primitive: ${e.primitive}` : ''}${e.related.length ? ` | Related: ${e.related.join(', ')}` : ''}`);
   out.push(`Import: ${e.import}`, '');

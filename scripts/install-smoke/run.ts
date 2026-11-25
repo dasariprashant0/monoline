@@ -13,7 +13,7 @@ const root = resolve(new URL('../..', import.meta.url).pathname);
 const arg = process.argv.indexOf('--react');
 const majors = arg > 0 ? [process.argv[arg + 1]] : ['18', '19'];
 const sArg = process.argv.indexOf('--starter');
-const STARTERS = {vite: ['18', '19'], next: ['19'], astro: ['18', '19'], 'react-router': ['18', '19']};
+const STARTERS: Record<string, string[]> = {vite: ['18', '19'], next: ['19'], astro: ['18', '19'], 'react-router': ['18', '19']};
 const starters = sArg > 0 ? [process.argv[sArg + 1]] : Object.keys(STARTERS);
 for (const st of starters) if (!STARTERS[st]) { console.error(`unknown starter ${st}`); process.exit(2); }
 for (const m of majors) if (!['18', '19'].includes(m)) { console.error('--react takes 18 or 19'); process.exit(2); }
@@ -21,7 +21,7 @@ if (!existsSync(join(root, 'packages/react/dist/index.js'))) { console.error('Bu
 
 const work = mkdtempSync(join(tmpdir(), 'monoline-smoke-'));
 const cache = join(work, 'npm-cache');
-const sh = (cmd, args, cwd) => {
+const sh = (cmd: string, args: string[], cwd: string) => {
   console.log(`$ ${cmd} ${args.join(' ')}`);
   const r = spawnSync(cmd, args, {cwd, encoding: 'utf8', env: {...process.env, npm_config_cache: cache, npm_config_update_notifier: 'false'}});
   if (r.status !== 0) { process.stderr.write(`${r.stdout}${r.stderr}`); throw new Error(`failed: ${cmd} ${args.join(' ')}`); }
@@ -68,7 +68,7 @@ for (const [starter, major] of starters.flatMap((st) => majors.filter((m) => STA
     // Node16/NodeNext resolution of the installed tarball: CommonJS (.cts) and ESM (.mts) must both get real types.
     console.log(sh('node', [join(root, 'scripts/check-package-types.ts'), '--project', dir], root).trim());
     console.log(`PASS ${starter} react ${installed}\n`);
-  } catch (e) { failed = true; console.error(`FAIL ${starter} react ${major}: ${e.message}\n`); }
+  } catch (e) { failed = true; console.error(`FAIL ${starter} react ${major}: ${(e as Error).message}\n`); }
 }
 if (process.env.KEEP_SMOKE_DIR) console.log(`kept ${work}`); else rmSync(work, {recursive: true, force: true});
 process.exit(failed ? 1 : 0);

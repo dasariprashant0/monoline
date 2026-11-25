@@ -12,6 +12,7 @@
 //   4. focuses every distinct control from the keyboard and checks that the focus changes something visible and that
 //      contrast still holds.
 // Distinct = same tag, role, classes and text, so a table with 40 identical "Edit" buttons costs one hover.
+import type {Cdp, Evaluate} from './cdp.ts';
 
 const PAGE = String.raw`(() => {
   if (window.__mlcheck) return;
@@ -136,14 +137,16 @@ const PAGE = String.raw`(() => {
   window.__mlcheck = {scope, contrast, collisions, controls, prepare, hover, focus, page: () => { const s = scope(); return [...contrast(s), ...collisions(s)]; }, scopeName: () => sig(scope())};
 })()`;
 
-export async function installSweep(cdp) {
+type Issue = {kind: string, detail: string};
+
+export async function installSweep(cdp: Cdp) {
   await cdp('Page.addScriptToEvaluateOnNewDocument', {source: PAGE});
 }
 
 /** Run the checks for the page's current state. `controls: false` skips the hover and focus passes. */
-export async function sweepState({cdp, evaluate, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), controls = true, max = 40}) {
+export async function sweepState({cdp, evaluate, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), controls = true, max = 40}: {cdp: Cdp, evaluate: Evaluate, sleep?: (ms: number) => Promise<unknown>, controls?: boolean, max?: number}) {
   await evaluate(PAGE); // idempotent; covers a document that was already open when installSweep ran
-  const issues = [...await evaluate('__mlcheck.page()')];
+  const issues: Issue[] = [...await evaluate('__mlcheck.page()')];
   if (!controls) return issues;
   const list = await evaluate(`__mlcheck.controls(${max})`);
   for (const {i} of list) {

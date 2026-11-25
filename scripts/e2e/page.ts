@@ -3,7 +3,7 @@
 // Selector specs: a CSS selector, optionally followed by `|text` to keep the first visible match whose text or
 // aria-label (or enclosing <label>) contains `text`; `|=text` needs an exact match:  'button|Open'  '[role=option]|Banana'. Plain specs match the first visible element.
 // p.example('Title') returns the same API scoped to one live example on a component page (the demo's title).
-const KEYS = {
+const KEYS: Record<string, [number, string, string?]> = {
   Enter: [13, 'Enter', '\r'], Escape: [27, 'Escape'], Tab: [9, 'Tab'], ' ': [32, 'Space', ' '], Space: [32, 'Space', ' '],
   ArrowLeft: [37, 'ArrowLeft'], ArrowUp: [38, 'ArrowUp'], ArrowRight: [39, 'ArrowRight'], ArrowDown: [40, 'ArrowDown'],
   Shift: [16, 'ShiftLeft'], Control: [17, 'ControlLeft'], Alt: [18, 'AltLeft'], F8: [119, 'F8'], F10: [121, 'F10'], Home: [36, 'Home'], End: [35, 'End'], PageUp: [33, 'PageUp'], PageDown: [34, 'PageDown'], Backspace: [8, 'Backspace'], Delete: [46, 'Delete'],
@@ -35,10 +35,56 @@ const PRELOAD = `(() => {
 })()`;
 
 import {eq} from './test.ts';
+import type {Browser, CdpMessage, Evaluate} from '../lib/cdp.ts';
 
-export async function createPage(browser, base) {
+type Modifier = keyof typeof MOD;
+export type Rect = {x: number, y: number, w: number, h: number, right: number, bottom: number};
+/** The page API, or the same API scoped to one live example (p.example()). Values read from the page are as the page returns them. */
+export interface Scope {
+  base: string;
+  errors: string[];
+  eval: Evaluate;
+  sleep(ms: number): Promise<void>;
+  open(path: string, opts?: {width?: number, height?: number, dir?: string, mobile?: boolean, motion?: boolean}): Promise<Scope>;
+  example(title: string): Promise<Scope>;
+  settle(): Promise<unknown>;
+  waitFor(expr: string, msg: string, ms?: number): Promise<void>;
+  has(spec: string): Promise<boolean>;
+  count(spec: string): Promise<number>;
+  need(spec: string): Promise<void>;
+  text(spec?: string): Promise<string | null>;
+  attr(spec: string, name: string): Promise<string | null | undefined>;
+  prop(spec: string, expr: string): Promise<CdpMessage>;
+  rect(spec: string): Promise<Rect | null>;
+  active(): Promise<string>;
+  activeAttr(name: string): Promise<string | null>;
+  activeIs(spec: string): Promise<boolean>;
+  focus(spec: string): Promise<true>;
+  expectActive(spec: string, msg?: string): Promise<void>;
+  expectAttr(spec: string, name: string, value: string | null | undefined, msg?: string): Promise<void>;
+  scrollTo(spec: string): Promise<void>;
+  key(name: string, ...modifiers: Modifier[]): Promise<void>;
+  keys(...names: string[]): Promise<void>;
+  type(str: string): Promise<void>;
+  tab(n?: number, back?: boolean): Promise<void>;
+  mouse(type: string, x: number, y: number, button?: string, held?: boolean): Promise<void>;
+  drag(x: number, y: number, to: [number, number][]): Promise<void>;
+  point(spec: string): Promise<{x: number, y: number}>;
+  click(spec: string, button?: string): Promise<void>;
+  clickAt(x: number, y: number): Promise<void>;
+  hover(spec: string): Promise<void>;
+  wheel(spec: string, deltaY: number, deltaX?: number): Promise<void>;
+}
+/** What createPage resolves to: the page-wide Scope plus the runner's hooks. */
+export interface Page extends Scope {
+  begin(): void;
+  abort(): void;
+  lastCall(): string;
+}
+
+export async function createPage(browser: Browser, base: string): Promise<Page> {
   const {cdp, evaluate, listeners, sessionId} = browser;
-  const errors = [];
+  const errors: string[] = [];
   listeners.push((m) => {
     if (m.sessionId !== sessionId) return;
     if (m.method === 'Runtime.exceptionThrown') errors.push((m.params.exceptionDetails.exception?.description ?? m.params.exceptionDetails.text).slice(0, 300));
@@ -48,12 +94,12 @@ export async function createPage(browser, base) {
   await cdp('Page.addScriptToEvaluateOnNewDocument', {source: PRELOAD});
   let mods = 0; let aborted = false; let lastCall = '';
   // sleep throws once a test has timed out, so an orphaned test cannot keep driving the page during the next one
-  const sleep = (ms) => new Promise((r, j) => setTimeout(() => (aborted ? j(new Error('test aborted')) : r()), ms));
+  const sleep = (ms: number) => new Promise<void>((r, j) => setTimeout(() => (aborted ? j(new Error('test aborted')) : r()), ms));
   const J = JSON.stringify;
 
-  const make = (scope) => {
+  const make = (scope: string | null) => {
     const S = scope ? J(scope) : 'null';
-    const api = {
+    const api: Scope = {
       base, errors,
       eval: evaluate,
       sleep,
@@ -82,7 +128,7 @@ export async function createPage(browser, base) {
       settle: () => evaluate(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 10))))`),
       async waitFor(expr, msg, ms = 2500) {
         const end = Date.now() + ms; let last;
-        while (Date.now() < end) { try { last = await evaluate(`Boolean(${expr})`); if (last) return; } catch (e) { last = e.message; } await sleep(40); }
+        while (Date.now() < end) { try { last = await evaluate(`Boolean(${expr})`); if (last) return; } catch (e) { last = (e as Error).message; } await sleep(40); }
         throw new Error(`timed out: ${msg}${typeof last === 'string' ? ` (${last})` : ''}`);
       },
       /** True if a visible element matches. */
@@ -131,7 +177,7 @@ export async function createPage(browser, base) {
       async tab(n = 1, back = false) { for (let i = 0; i < n; i++) await (back ? api.key('Tab', 'shift') : api.key('Tab')); },
       async mouse(type, x, y, button = 'left', held = false) { await cdp('Input.dispatchMouseEvent', {type, x, y, button: type === 'mouseMoved' && !held ? 'none' : button, buttons: type === 'mousePressed' || held ? (button === 'right' ? 2 : 1) : 0, clickCount: type === 'mouseMoved' ? 0 : 1}); },
       /** Press at (x, y), move through `to` points with the button held, release at the last one. */
-      async drag(x, y, to) { await api.mouse('mouseMoved', x, y); await api.mouse('mousePressed', x, y); for (const [tx, ty] of to) { await api.mouse('mouseMoved', tx, ty, 'left', true); await sleep(20); } const [lx, ly] = to.at(-1); await api.mouse('mouseReleased', lx, ly); await sleep(80); },
+      async drag(x, y, to) { await api.mouse('mouseMoved', x, y); await api.mouse('mousePressed', x, y); for (const [tx, ty] of to) { await api.mouse('mouseMoved', tx, ty, 'left', true); await sleep(20); } const [lx, ly] = to.at(-1)!; await api.mouse('mouseReleased', lx, ly); await sleep(80); },
       async point(spec) {
         await api.scrollTo(spec);
         const r = await api.rect(spec);
@@ -148,10 +194,11 @@ export async function createPage(browser, base) {
       async wheel(spec, deltaY, deltaX = 0) { const {x, y} = await api.point(spec); await cdp('Input.dispatchMouseEvent', {type: 'mouseWheel', x, y, deltaX, deltaY}); await sleep(120); },
     };
     // remember the last call so a timeout can say where it was stuck
-    for (const k of Object.keys(api)) if (typeof api[k] === 'function' && k !== 'sleep') { const f = api[k]; api[k] = (...a) => { lastCall = `${k}(${a.map((x) => JSON.stringify(x)).join(', ').slice(0, 120)})`; return f(...a); }; }
+    const fns = api as unknown as Record<string, unknown>;
+    for (const k of Object.keys(api)) if (typeof fns[k] === 'function' && k !== 'sleep') { const f = fns[k] as (...a: unknown[]) => unknown; fns[k] = (...a: unknown[]) => { lastCall = `${k}(${a.map((x) => JSON.stringify(x)).join(', ').slice(0, 120)})`; return f(...a); }; }
     return api;
   };
-  const root = make(null);
+  const root = make(null) as Page;
   root.begin = () => { aborted = false; lastCall = ''; };
   root.abort = () => { aborted = true; };
   root.lastCall = () => lastCall;

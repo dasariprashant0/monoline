@@ -11,7 +11,10 @@ import {join} from 'node:path';
 export const COMPONENT_PROPS = /Props$/;
 export const HOOK_PROPS = /(Props|Options|Return)$/;
 
-const COMPILER_OPTIONS = {
+export type Prop = {name: string; type: string; optional: boolean; default: string | null; description: string};
+export type PropGroup = {name: string; props: Prop[]};
+
+const COMPILER_OPTIONS: ts.CompilerOptions = {
   jsx: ts.JsxEmit.ReactJSX,
   target: ts.ScriptTarget.ES2022,
   module: ts.ModuleKind.ESNext,
@@ -22,7 +25,7 @@ const COMPILER_OPTIONS = {
 };
 
 /** The unit's main source: `<dir>/<name>.tsx`, else `<dir>/<name>.ts`, else null. */
-export function mainSourceFile(dir, name) {
+export function mainSourceFile(dir: string, name: string) {
   for (const ext of ['tsx', 'ts']) {
     const file = join(dir, `${name}.${ext}`);
     if (existsSync(file)) return file;
@@ -31,14 +34,14 @@ export function mainSourceFile(dir, name) {
 }
 
 /** One type-checked program over all files, so the checker can resolve every unit at once. */
-export function createProgram(files) {
+export function createProgram(files: string[]) {
   return ts.createProgram(files, COMPILER_OPTIONS);
 }
 
 /** name -> default text from destructuring patterns like `{size = 'md', gap = 3}` anywhere in the file. */
-export function destructuringDefaults(sf) {
-  const map = {};
-  const visit = (n) => {
+export function destructuringDefaults(sf: ts.SourceFile) {
+  const map: Record<string, string> = {};
+  const visit = (n: ts.Node) => {
     if (ts.isBindingElement(n) && n.initializer && ts.isIdentifier(n.name) && n.parent && ts.isObjectBindingPattern(n.parent)) {
       map[n.propertyName && ts.isIdentifier(n.propertyName) ? n.propertyName.text : n.name.text] = n.initializer.getText(sf);
     }
@@ -52,23 +55,23 @@ export function destructuringDefaults(sf) {
  * Exported props groups declared in `file`. `pattern` picks the interface/type names (default: *Props).
  * Returns [] when the file is not part of `program` or declares no matching export with props.
  */
-export function propGroups(program, file, {pattern = COMPONENT_PROPS} = {}) {
+export function propGroups(program: ts.Program, file: string, {pattern = COMPONENT_PROPS}: {pattern?: RegExp} = {}) {
   const sf = program.getSourceFile(file);
   if (!sf) return [];
   const checker = program.getTypeChecker();
   const defs = destructuringDefaults(sf);
-  const groups = [];
+  const groups: PropGroup[] = [];
   ts.forEachChild(sf, (node) => {
     const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
     if (!exported || !(ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) || !pattern.test(node.name.text)) return;
     const type = checker.getTypeAtLocation(node.name);
     const all = checker.getPropertiesOfType(type);
-    const declaredIn = (test) => all.filter((s) => (s.declarations ?? []).some((d) => test(d.getSourceFile())));
+    const declaredIn = (test: (f: ts.SourceFile) => boolean) => all.filter((s) => (s.declarations ?? []).some((d) => test(d.getSourceFile())));
     // A thin wrapper over a Radix part declares nothing itself: fall back to the props Radix documents.
     const own = declaredIn((f) => f === sf);
     const props = (own.length ? own : declaredIn((f) => f.fileName.includes('/@radix-ui/')))
       .map((s) => {
-        const decl = s.declarations[0];
+        const decl = s.declarations![0]; // declaredIn kept only symbols with a declaration
         const text = checker.typeToString(checker.getTypeOfSymbolAtLocation(s, decl), decl, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
         return {
           name: s.name,
@@ -85,8 +88,8 @@ export function propGroups(program, file, {pattern = COMPONENT_PROPS} = {}) {
 }
 
 /** A hook with no *Options type: its exported `use*` function as a Parameters group (JSDoc @param text) and a Returns group. */
-function hookSignature(checker, sf) {
-  const out = [];
+function hookSignature(checker: ts.TypeChecker, sf: ts.SourceFile) {
+  const out: PropGroup[] = [];
   ts.forEachChild(sf, (node) => {
     const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
     if (!exported || !ts.isFunctionDeclaration(node) || !node.name || !/^use[A-Z]/.test(node.name.text) || out.length) return;
@@ -105,13 +108,13 @@ function hookSignature(checker, sf) {
     if (params.length) out.push({name: 'Parameters', props: params});
     const sig = checker.getSignatureFromDeclaration(node);
     const ret = sig && checker.typeToString(checker.getReturnTypeOfSignature(sig), node, flags);
-    const retTag = ts.getAllJSDocTags(node, (t) => t.tagName.text === 'returns' || t.tagName.text === 'return')[0];
+    const retTag = ts.getAllJSDocTags(node, (t): t is ts.JSDocTag => t.tagName.text === 'returns' || t.tagName.text === 'return')[0];
     if (ret && ret !== 'void') out.push({name: 'Returns', props: [{name: 'return', type: ret, optional: false, default: null, description: retTag?.comment ? ts.getTextOfJSDocComment(retTag.comment)?.trim() ?? '' : ''}]});
   });
   return out;
 }
 
 /** Convenience for one file: builds its own program. Used by tests and one-off callers. */
-export function extractProps(file, options) {
+export function extractProps(file: string, options?: {pattern?: RegExp}) {
   return propGroups(createProgram([file]), file, options);
 }

@@ -3,11 +3,11 @@
 import {readFileSync, writeFileSync, existsSync, mkdirSync} from 'node:fs';
 import {join, dirname} from 'node:path';
 import {discover, cssDir, docsRoot} from './lib/load.ts';
-import {extractSelectors} from './lib/styling.ts';
+import {extractSelectors, type Styling} from './lib/styling.ts';
 
-const result = {};
+const result: Record<string, Styling[]> = {};
 for (const {meta} of discover()) {
-  const files = [];
+  const files: Styling[] = [];
   for (const file of meta.css ?? []) {
     const path = join(cssDir, file);
     if (!existsSync(path)) { console.warn(`styling: ${meta.name}: ${file} not found`); continue; }

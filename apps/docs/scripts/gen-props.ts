@@ -4,7 +4,7 @@
 import {readdirSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {join} from 'node:path';
-import {COMPONENT_PROPS, HOOK_PROPS, createProgram, mainSourceFile, propGroups} from '../../../packages/react/scripts/props-extract.ts';
+import {COMPONENT_PROPS, HOOK_PROPS, createProgram, mainSourceFile, propGroups, type PropGroup} from '../../../packages/react/scripts/props-extract.ts';
 
 const roots = ['components', 'hooks'].map((k) => fileURLToPath(new URL(`../../../packages/react/src/${k}/`, import.meta.url)));
 const out = fileURLToPath(new URL('../src/props.generated.json', import.meta.url));
@@ -14,7 +14,7 @@ const names = found.map((f) => f.name);
 const files = found.map((f) => f.file);
 
 const program = createProgram(files);
-const result = {};
+const result: Record<string, PropGroup[]> = {};
 for (const [i, file] of files.entries()) {
   try {
     const groups = propGroups(program, file, {pattern: found[i].hook ? HOOK_PROPS : COMPONENT_PROPS});

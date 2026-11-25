@@ -18,7 +18,7 @@ import {openBrowser} from './lib/browser.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
-const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
+const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
 const THEMES = opt('themes', 'warm,dark,midnight').split(',');
 const dist = join(root, 'apps/docs/dist');
 if (!existsSync(join(dist, 'index.html'))) { console.error('Build the docs first: npm run build -w apps/docs'); process.exit(2); }
@@ -122,9 +122,9 @@ try {
     const m = await b.evaluate(MEASURE);
     if (dump) { if (theme === THEMES[0] && font === 'default') console.log(JSON.stringify(m, null, 1)); continue; }
     const where = `[${theme}${font === 'default' ? '' : ', font=' + font}]`;
-    const ok = (name, cond, detail) => { n++; if (!cond) fails.push(`${where} ${name}: ${detail}`); };
-    const eq = (name, a, e) => ok(name, a === e, `got ${a}, expected ${e}`);
-    const near = (name, a, e) => ok(name, Math.abs(a - e) < 0.6, `got ${a}, expected ${e}`);
+    const ok = (name: string, cond: boolean, detail: string) => { n++; if (!cond) fails.push(`${where} ${name}: ${detail}`); };
+    const eq = (name: string, a: unknown, e: unknown) => ok(name, a === e, `got ${a}, expected ${e}`);
+    const near = (name: string, a: number, e: number) => ok(name, Math.abs(a - e) < 0.6, `got ${a}, expected ${e}`);
     // Form controls line up in a row.
     near('Button md height = Input md height', m['height:btn'], m['height:input']);
     near('Select md height = Input md height', m['height:select'], m['height:input']);

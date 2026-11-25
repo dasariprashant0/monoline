@@ -1,25 +1,33 @@
 // Turns Monoline's CSS token sources into design-tool files. No dependencies.
 // Input: packages/css/src/{tokens,accents,options}.css. Output: see build.ts.
 
+type Decls = Record<string, string>;
+type Sources = {base: Decls; themes: Record<string, Decls>; accents: Record<string, Record<string, Decls>>; options: Record<string, Record<string, Decls>>};
+type Tree = Record<string, Record<string, {$value: string; $type?: string}>>;
+export type TokensJson = ReturnType<typeof buildTokens>;
+type Rgba = {r: number; g: number; b: number; a: number};
+type Collection<V> = {name: string; modes: string[]; variables: {name: string; resolvedType: string; valuesByMode: Record<string, V>}[]};
+type Scalar = number | string | null;
+
 export const THEMES = ['warm', 'dark', 'midnight'];
 const ACCENT_VARS = ['--accent', '--accent-text', '--accent-2', '--on-accent'];
 
 // Every `selector { --custom: value; }` block, in source order. Only custom properties are kept.
-export function cssBlocks(css) {
-  const out = [];
+export function cssBlocks(css: string) {
+  const out: {selector: string; decls: [string, string][]}[] = [];
   for (const [, selector, body] of css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const decls = [...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [name, value.trim()]);
+    const decls = [...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(([, name, value]): [string, string] => [name, value.trim()]);
     if (decls.length) out.push({selector: selector.trim().replace(/\s+/g, ' '), decls});
   }
   return out;
 }
 
-const attrs = (selector) => Object.fromEntries([...selector.matchAll(/\[data-(\w+)="([\w-]+)"\]/g)].map(([, k, v]) => [k, v]));
+const attrs = (selector: string) => Object.fromEntries([...selector.matchAll(/\[data-(\w+)="([\w-]+)"\]/g)].map(([, k, v]) => [k, v]));
 
 // Sorts the CSS into {base, themes, accents, options}. accents[name] has `generic` (the bare
 // [data-accent] rule, which is the warm look) plus one object per theme that overrides it.
-export function parseSources({tokens, accents, options}) {
-  const src = {base: {}, themes: {}, accents: {}, options: {}};
+export function parseSources({tokens, accents, options}: {tokens: string; accents: string; options: string}) {
+  const src: Sources = {base: {}, themes: {}, accents: {}, options: {}};
   for (const {selector, decls} of cssBlocks(tokens)) {
     const theme = attrs(selector).theme;
     if (theme) Object.assign((src.themes[theme] ??= {}), Object.fromEntries(decls));
@@ -39,23 +47,23 @@ export function parseSources({tokens, accents, options}) {
 }
 
 // Custom properties in effect for a theme and accent, the way the cascade applies them.
-export function themeEnv(src, theme, accent) {
+export function themeEnv(src: Sources, theme: string, accent: string) {
   const a = src.accents[accent] ?? {};
   return {...src.base, ...src.themes[theme], ...(a.generic ?? {}), ...(a[theme] ?? {})};
 }
 
 // Expands var(--x) against env. Everything else is left as written.
-export function resolve(value, env, depth = 0) {
+export function resolve(value: string, env: Decls, depth = 0): string {
   if (depth > 10) throw new Error(`reference cycle at ${value}`);
-  return value.replace(/var\((--[\w-]+)\)/g, (_, name) => {
+  return value.replace(/var\((--[\w-]+)\)/g, (_, name: string) => {
     if (!(name in env)) throw new Error(`undefined token ${name}`);
     return resolve(env[name], env, depth + 1);
   });
 }
 
-const hex = (s) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
+const hex = (s: string) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
 // Resolved colour -> [r, g, b, a] in 0-255 and 0-1, or null when it is not a plain colour (gradients).
-export function toRgba(value) {
+export function toRgba(value: string) {
   let m;
   if ((m = value.match(/^color-mix\(in srgb, (#[0-9a-f]{6}) ([\d.]+)%, transparent\)$/i))) return [...hex(m[1]), Number(m[2]) / 100];
   if ((m = value.match(/^#[0-9a-f]{6}$/i))) return [...hex(value), 1];
@@ -64,7 +72,7 @@ export function toRgba(value) {
 }
 
 // Resolved length -> px number, for px literals and calc(a + b) of them. Null for anything else (clamp, ch).
-export function toPx(value) {
+export function toPx(value: string) {
   const mul = value.match(/^calc\(([\d.]+)(?:px)? \* ([\d.]+)\)$/); // calc(6px * 0.5)
   if (mul) return Number(mul[1]) * Number(mul[2]);
   const calc = value.match(/^calc\((.+)\)$/);
@@ -73,7 +81,7 @@ export function toPx(value) {
 }
 
 // Group and leaf name for a custom property, e.g. --control-sm -> control / sm.
-const GROUPS = [
+const GROUPS: [string, RegExp][] = [
   ['code', /^--code-/],
   ['zIndex', /^--z-/],
   ['control', /^--control-/],
@@ -85,22 +93,22 @@ const GROUPS = [
   ['effect', /^--(shadow-[\w]+|focus-ring|border-width|opacity-disabled)$/],
   ['color', /^--/],
 ];
-const PREFIX = {code: '--code-', zIndex: '--z-', control: '--control-'};
-export function classify(name) {
-  const group = GROUPS.find(([, re]) => re.test(name))[0];
+const PREFIX: Decls = {code: '--code-', zIndex: '--z-', control: '--control-'};
+export function classify(name: string) {
+  const group = GROUPS.find(([, re]) => re.test(name))![0];
   return {group, leaf: name.slice((PREFIX[group] ?? '--').length)};
 }
-export const cssName = (group, leaf) => (PREFIX[group] ?? '--') + leaf;
+export const cssName = (group: string, leaf: string) => (PREFIX[group] ?? '--') + leaf;
 
-const typeOf = (group, value) => {
+const typeOf = (group: string, value: string) => {
   if (group === 'color' || group === 'code') return /gradient/.test(value) ? {} : {$type: 'color'};
   return /^-?[\d.]+px$/.test(value) ? {$type: 'dimension'} : {};
 };
 
 // The W3C design-token tree: base (the :root block), theme.<name>, accent.<name>.<theme>, option.<kind>.<value>.
-export function buildTokens(src) {
-  const tree = (decls) => {
-    const t = {};
+export function buildTokens(src: Sources) {
+  const tree = (decls: Decls) => {
+    const t: Tree = {};
     for (const [name, value] of Object.entries(decls)) {
       const {group, leaf} = classify(name);
       (t[group] ??= {})[leaf] = {$value: value, ...typeOf(group, value)};
@@ -121,13 +129,13 @@ export function buildTokens(src) {
 }
 
 // Flat [cssName, value] pairs of a tree from buildTokens (group -> leaf -> {$value}).
-export function flatten(tree) {
+export function flatten(tree: Tree) {
   return Object.entries(tree).flatMap(([group, leaves]) => Object.entries(leaves).map(([leaf, node]) => [cssName(group, leaf), node.$value]));
 }
 
 // Re-export as CSS. Same cascade as the source: base, then themes, then accents, then options.
-export function tokensCss(json) {
-  const block = (selector, tree) => `${selector} {\n${flatten(tree).map(([n, v]) => `  ${n}: ${v};`).join('\n')}\n}\n`;
+export function tokensCss(json: TokensJson) {
+  const block = (selector: string, tree: Tree) => `${selector} {\n${flatten(tree).map(([n, v]) => `  ${n}: ${v};`).join('\n')}\n}\n`;
   const parts = [
     '/* Generated by packages/tokens/scripts/build.mjs from packages/css/src. Do not edit. */',
     block(':root', json.base),
@@ -147,15 +155,15 @@ export function tokensCss(json) {
 // Figma variables: four collections. Colours have a mode per theme and accent; the others have
 // a mode per option. Shape: {collections:[{name, modes, variables:[{name, resolvedType, valuesByMode}]}]}.
 // Colours are {r,g,b,a} in 0-1. Not exported (Figma has no type for them): motion, z-index, gradients, ch lengths.
-export function figmaVariables(src) {
-  const skipped = new Set();
+export function figmaVariables(src: Sources) {
+  const skipped = new Set<string>();
   const accents = Object.keys(src.accents);
   const colourModes = THEMES.flatMap((t) => accents.map((a) => ({name: `${t} / ${a}`, t, a})));
   const colourNames = [...new Set([...Object.keys(src.base), ...Object.keys(src.themes.warm)])].filter((n) => ['color', 'code'].includes(classify(n).group));
   const colourVars = [];
   for (const name of colourNames) {
     const {group, leaf} = classify(name);
-    const valuesByMode = {};
+    const valuesByMode: Record<string, Rgba> = {};
     let ok = true;
     for (const m of colourModes) {
       const env = themeEnv(src, m.t, m.a);
@@ -168,7 +176,7 @@ export function figmaVariables(src) {
   }
 
   // Lengths and strings for a set of modes: env is the base with that option applied.
-  const scalarCollection = (name, modes, envFor, groups) => {
+  const scalarCollection = (name: string, modes: string[], envFor: (mode: string) => Decls, groups: string[]) => {
     const names = Object.keys(src.base).filter((n) => groups.includes(classify(n).group));
     const variables = names.map((n) => {
       const {group, leaf} = classify(n);
@@ -182,12 +190,12 @@ export function figmaVariables(src) {
   const density = ['comfortable', 'compact', 'spacious'];
   const radii = ['square', 'soft', 'round'];
   const fonts = ['mono', 'sans', 'serif'];
-  const dens = (d) => src.options.density?.[d] ?? {};
-  const fontDecls = (f) => (f === 'mono' ? {} : src.options.font[f]);
+  const dens = (d: string) => src.options.density?.[d] ?? {};
+  const fontDecls = (f: string) => (f === 'mono' ? {} : src.options.font[f]);
   const typeModes = fonts.flatMap((f) => density.map((d) => `${f} / ${d}`));
-  const typeEnv = (m) => { const [f, d] = m.split(' / '); return {...src.base, ...fontDecls(f), ...dens(d)}; };
+  const typeEnv = (m: string) => { const [f, d] = m.split(' / '); return {...src.base, ...fontDecls(f), ...dens(d)}; };
 
-  const collections = [
+  const collections: [Collection<Rgba>, Collection<Scalar>, Collection<Scalar>, Collection<Scalar>] = [
     {name: 'Colors', modes: colourModes.map((m) => m.name), variables: colourVars},
     scalarCollection('Spacing', density, (d) => ({...src.base, ...dens(d)}), ['space', 'control', 'layout']),
     scalarCollection('Radius', radii, (r) => ({...src.base, ...(src.options.radius?.[r] ?? {})}), ['radius']),
@@ -198,9 +206,9 @@ export function figmaVariables(src) {
 }
 
 // TypeScript types for the token names and themes.
-export function typesDts(json) {
-  const leaves = (tree, group) => Object.keys(tree[group] ?? {});
-  const union = (names) => names.map((n) => JSON.stringify(n)).join(' | ');
+export function typesDts(json: TokensJson) {
+  const leaves = (tree: Tree, group: string) => Object.keys(tree[group] ?? {});
+  const union = (names: string[]) => names.map((n) => JSON.stringify(n)).join(' | ');
   const color = [...new Set([...leaves(json.base, 'color'), ...leaves(json.theme.warm, 'color'), ...leaves(json.base, 'code').map((c) => `code-${c}`)])];
   const accents = Object.keys(json.accent);
   const fonts = ['mono', ...Object.keys(json.option.font)];

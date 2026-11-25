@@ -5,16 +5,16 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync, readFileSync, readdirSync} from 'node:fs';
 import {join} from 'node:path';
-import {extractProps, COMPONENT_PROPS, HOOK_PROPS} from './props-extract.ts';
+import {extractProps, COMPONENT_PROPS, HOOK_PROPS, type PropGroup} from './props-extract.ts';
 import {cssFacts, pruneImports, relatedFor} from './registry-fields.ts';
 import {exportedNames} from '../../../apps/docs/scripts/lib/demos.ts';
 import {repoRoot} from './lib.ts';
 
 const SRC = join(repoRoot, 'packages', 'react', 'src', 'components');
 const REGISTRY = join(repoRoot, 'registry');
-const propsOf = (name) => extractProps(join(SRC, name, `${name}.tsx`), {pattern: COMPONENT_PROPS});
-const byName = (groups) => Object.fromEntries(groups.flatMap((g) => g.props).map((p) => [p.name, p]));
-const load = (file) => JSON.parse(readFileSync(join(REGISTRY, file), 'utf8'));
+const propsOf = (name: string) => extractProps(join(SRC, name, `${name}.tsx`), {pattern: COMPONENT_PROPS});
+const byName = (groups: PropGroup[]) => Object.fromEntries(groups.flatMap((g) => g.props).map((p) => [p.name, p]));
+const load = (file: string) => JSON.parse(readFileSync(join(REGISTRY, file), 'utf8'));
 const components = () => readdirSync(REGISTRY).filter((f) => f.endsWith('.json') && f !== 'index.json').sort();
 
 test('props-extract: button declares ButtonProps with its variants and flags, not the HTML attributes it inherits', () => {
@@ -64,7 +64,7 @@ test('registry index: one entry per component file, prop names listed, no props 
     assert.equal('usage' in e, false, `${e.name} must not inline usage in index.json`);
     assert.ok(existsSync(join(REGISTRY, `${e.name}.json`)), `${e.name}.json missing`);
   }
-  const button = index.components.find((e) => e.name === 'button');
+  const button = index.components.find((e: {name: string}) => e.name === 'button');
   assert.ok(button.propNames.includes('variant') && button.propNames.includes('asChild'));
 });
 
@@ -108,7 +108,7 @@ test('registry files: usage imports only names the package exports', () => {
   }
   for (const file of components()) {
     for (const m of load(file).usage.matchAll(/^import (.*) from '@monoline\/react';$/gm)) {
-      for (const raw of m[1].replace(/[{}]/g, '').split(',').map((s) => s.trim()).filter(Boolean)) {
+      for (const raw of m[1].replace(/[{}]/g, '').split(',').map((s: string) => s.trim()).filter(Boolean)) {
         const name = raw.replace(/^type /, '').split(' as ')[0];
         assert.ok(exported.has(name), `${file}: usage imports ${name}, which the package does not export`);
       }
@@ -119,13 +119,13 @@ test('registry files: usage imports only names the package exports', () => {
 test('registry files: no dotfiles in the file list or the source', () => {
   for (const file of components()) {
     const c = load(file);
-    const paths = [...c.files, ...c.source.map((s) => s.path)];
-    for (const p of paths) assert.ok(!p.split('/').some((seg) => seg.startsWith('.')), `${file}: dotfile in ${p}`);
+    const paths = [...c.files, ...c.source.map((s: {path: string}) => s.path)];
+    for (const p of paths) assert.ok(!p.split('/').some((seg: string) => seg.startsWith('.')), `${file}: dotfile in ${p}`);
   }
 });
 
 test('registry files: classes, data attributes and related names are well-formed', () => {
-  const known = new Set(load('index.json').components.map((e) => e.name));
+  const known = new Set(load('index.json').components.map((e: {name: string}) => e.name));
   for (const file of components()) {
     const c = load(file);
     assert.ok(Array.isArray(c.classes), `${file}: classes`);

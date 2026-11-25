@@ -29,8 +29,8 @@ cpSync(new URL('../src/fonts/', import.meta.url), new URL('fonts/', out), {recur
 cpSync(new URL('../js/monoline.js', import.meta.url), new URL('monoline.js', out));
 
 const {base, themes, accents} = parseTokens();
-const tok = (v) => ({$value: v, ...(isColor(v) ? {$type: 'color'} : {})});
-const map = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.slice(2), tok(v)]));
+const tok = (v: string) => ({$value: v, ...(isColor(v) ? {$type: 'color'} : {})});
+const map = (o: Record<string, string>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.slice(2), tok(v)]));
 const tokens = {
   $description: `Monoline ${pkg.version} design tokens, generated from src/tokens.css and src/accents.css.`,
   base: map(base),

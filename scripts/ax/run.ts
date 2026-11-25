@@ -16,30 +16,36 @@ import {createPage} from '../e2e/page.ts';
 import {announce, domSubtree, focusedNode, fullTree, inScope, isInteractive, NAMED} from './ax.ts';
 import {components, pageChecks} from './expectations.ts';
 import {renderReport} from './report.ts';
+import type {Browser} from '../lib/cdp.ts';
+import type {AXNode, Scope} from './ax.ts';
+import type {Page} from '../e2e/page.ts';
+import type {Finding, Phase, Row} from './expectations.ts';
+import type {Result} from './report.ts';
 
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '../..');
 const args = process.argv.slice(2);
-const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
+const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
 const grep = opt('grep', ''); const dump = opt('dump', '');
 const dist = join(root, 'apps/docs/dist');
 if (!existsSync(join(dist, 'index.html'))) { console.error('Build the docs first: npm run build'); process.exit(2); }
 
 const {server, base} = await serveDist(dist);
-let browser;
-try { browser = await launchChrome({label: 'monoline-ax'}); } catch (e) { console.error(e.message); server.close(); process.exit(2); }
+let browser: Browser;
+try { browser = await launchChrome({label: 'monoline-ax'}); } catch (e) { console.error((e as Error).message); server.close(); process.exit(2); }
 process.on('exit', () => { browser.close(); try { server.close(); } catch {} });
 const page = await createPage(browser, base);
 const {cdp} = browser;
 page.begin();
 
-const slug = (t) => `e2e-${t.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+const slug = (t: string) => `e2e-${t.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 const J = JSON.stringify;
 
 // ---- step runner: ['click', spec] ['rclick', spec] ['key', 'Enter'] ['keys', 'ArrowDown', 'Enter'] ['focus', spec] ['type', 'abc'] ['tab', n] ['hover', spec] ['wait', ms] ['eval', js] ['waitFor', js]
 // A spec starting with ^ is looked up on the whole page (portalled overlays); others stay inside the example.
-async function step(ex, [op, ...a]) {
+// Step in expectations.ts types the data; a rest element does not narrow by op, so the arguments are loose here.
+async function step(ex: {scope: string}, [op, ...a]: [string, ...any[]]) {
   // Example-scoped specs are prefixed with the example's preview panel (its tab buttons would otherwise match 'button'); ^ looks on the whole page.
-  const target = (s) => { if (s.startsWith('^')) return [page, s.slice(1)]; const [sel, ...rest] = s.split('|'); const pre = `${ex.scope} [role=tabpanel] `; return [page, [sel.split(',').map((x) => pre + x.trim()).join(', '), ...rest].join('|')]; };
+  const target = (s: string): [Page, string] => { if (s.startsWith('^')) return [page, s.slice(1)]; const [sel, ...rest] = s.split('|'); const pre = `${ex.scope} [role=tabpanel] `; return [page, [sel.split(',').map((x) => pre + x.trim()).join(', '), ...rest].join('|')]; };
   switch (op) {
     case 'click': { const [t, s] = target(a[0]); return t.click(s); }
     case 'rclick': { const [t, s] = target(a[0]); return t.click(s, 'right'); }
@@ -57,21 +63,21 @@ async function step(ex, [op, ...a]) {
 }
 
 // ---- matching
-const matches = (pat, s) => (pat === undefined ? true : pat instanceof RegExp ? pat.test(s) : String(s).toLowerCase() === String(pat).toLowerCase());
-const stateOk = (n, k, want) => {
+const matches = (pat: string | RegExp | undefined, s: string) => (pat === undefined ? true : pat instanceof RegExp ? pat.test(s) : String(s).toLowerCase() === String(pat).toLowerCase());
+const stateOk = (n: AXNode, k: string, want: string | RegExp | boolean | number) => {
   const have = k === 'name' ? n.name : k === 'description' ? n.description : k === 'value' ? n.value : n.props[k];
   if (want instanceof RegExp) return want.test(String(have ?? ''));
   if (want === false) return have === undefined || have === false || have === 'false';
   if (want === true) return have === true || have === 1 || have === 'true';
   return have === want || String(have) === String(want);
 };
-const show = (n) => `${n.role} "${n.name}"`;
+const show = (n: AXNode) => `${n.role} "${n.name}"`;
 
-function evaluate(phase, nodes, scoped, focused, scope) {
-  const findings = []; const rows = [];
+function evaluate(phase: Phase, nodes: AXNode[], scoped: AXNode[], focused: AXNode | null, scope: Scope | null) {
+  const findings: Finding[] = []; const rows: Row[] = [];
   const live = scoped.filter((n) => !n.ignored);
   const known = phase.known ?? {};
-  const add = (kind, msg) => findings.push({kind, msg, known: known[kind]});
+  const add = (kind: string, msg: string) => findings.push({kind, msg, known: known[kind]});
 
   // 1. expectations from data
   for (const e of phase.expect ?? []) {
@@ -126,16 +132,16 @@ function evaluate(phase, nodes, scoped, focused, scope) {
 }
 
 // ---- run
-const results = [];
+const results: Result[] = [];
 const list = [...components, ...pageChecks].filter((c) => c.id.includes(grep) && (!dump || c.id === dump));
 for (const comp of list) {
-  const res = {comp, phases: [], error: null};
+  const res: Result = {comp, phases: [], error: null};
   results.push(res);
   try {
-    let ex = null; let open = false;
+    let ex: {scope: string} | null = null; let open = false;
     for (const phase of comp.phases) {
       if (!open || phase.reset) { await page.open(comp.route, comp.open ?? {}); if (comp.example) { await page.example(comp.example); ex = {scope: `[data-e2e="${slug(comp.example)}"]`}; } else ex = {scope: '.docs-main'}; open = true; }
-      for (const s of phase.steps ?? []) await step(ex, s);
+      for (const s of phase.steps ?? []) await step(ex!, s);
       await page.settle();
       if (typeof phase.scope === 'string' && phase.scope !== 'page') await page.waitFor(`document.querySelector(${J(phase.scope)})`, `${phase.scope} did not appear`, 4000);
       await page.sleep(150);
@@ -165,7 +171,7 @@ for (const comp of list) {
         console.log('findings:', findings.map((f) => `${f.kind}: ${f.msg}`));
       }
     }
-  } catch (e) { res.error = e.message; }
+  } catch (e) { res.error = (e as Error).message; }
 }
 
 // ---- summary

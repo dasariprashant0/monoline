@@ -13,11 +13,12 @@ const root = join(fileURLToPath(new URL('.', import.meta.url)), '../..');
 const {server, base} = await serveDist(join(root, 'apps/docs/dist'));
 const browser = await launchChrome({label: 'monoline-probe'});
 const p = await createPage(browser, base);
-const results = [];
-const probe = async (id, what, fn) => {
+type Result = {barrier: boolean, detail: string};
+const results: ({id: string, what: string} & Result)[] = [];
+const probe = async (id: string, what: string, fn: () => Promise<Result>) => {
   p.begin();
   try { const r = await fn(); results.push({id, what, ...r}); }
-  catch (e) { results.push({id, what, barrier: true, detail: `probe crashed: ${e.message}`}); }
+  catch (e) { results.push({id, what, barrier: true, detail: `probe crashed: ${(e as Error).message}`}); }
 };
 
 await probe('F7a', 'context-menu: the demo trigger can take keyboard focus', async () => {
@@ -31,7 +32,7 @@ await probe('F7b', 'drawer: a visible close control exists inside the open drawe
   await ex.click('button|Open right');
   await p.waitFor(`document.querySelector('[role=dialog][data-state=open]')`, 'drawer did not open');
   const info = await p.eval(`(() => { const d = document.querySelector('[role=dialog][data-state=open]'); const bs = [...d.querySelectorAll('button')].filter(__e2e.visible).map((b) => (b.getAttribute('aria-label') || b.textContent).trim()); return bs; })()`);
-  const hasClose = info.some((t) => /close|dismiss|cancel|done/i.test(t));
+  const hasClose = info.some((t: string) => /close|dismiss|cancel|done/i.test(t));
   return {barrier: !hasClose, detail: `buttons inside the drawer: ${JSON.stringify(info)}`};
 });
 
@@ -67,8 +68,8 @@ await probe('F5b', 'forced-colors: focus ring on button, checkbox and input is a
   await p.eval(`(() => {})()`);
   await browser.cdp('Emulation.setEmulatedMedia', {features: [{name: 'forced-colors', value: 'active'}, {name: 'prefers-reduced-motion', value: 'reduce'}]});
   await p.sleep(200);
-  const out = [];
-  for (const [route, ex, sel] of [['components/button', null, 'button'], ['components/checkbox', null, 'input[type=checkbox], [role=checkbox]'], ['components/input', null, 'input']]) {
+  const out: {route: string, outlineStyle: string, outlineWidth: string}[] = [];
+  for (const [route, ex, sel] of [['components/button', null, 'button'], ['components/checkbox', null, 'input[type=checkbox], [role=checkbox]'], ['components/input', null, 'input']] as [string, null, string][]) {
     await p.open(route); await browser.cdp('Emulation.setEmulatedMedia', {features: [{name: 'forced-colors', value: 'active'}]});
     await p.eval(`(() => { const e = document.querySelector('.cdoc-stage ${sel}'); e.focus({preventScroll: true}); })()`);
     await p.key('Shift'); await p.sleep(100);

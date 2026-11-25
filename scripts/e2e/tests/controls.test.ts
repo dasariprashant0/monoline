@@ -1,8 +1,9 @@
 // tabs, accordion, toggle-group, segmented-control, slider, checkbox, switch, radio-group, otp-input.
 import {test, assert, eq} from '../test.ts';
+import type {Scope} from '../page.ts';
 
-const sel = (p, spec) => p.attr(spec, 'aria-selected');
-const panelText = (p) => p.eval(`[...document.querySelectorAll('[data-e2e] .cdoc-stage [role=tabpanel]')].filter(__e2e.visible).map(e => e.textContent.trim()).join('|')`);
+const sel = (p: Scope, spec: string) => p.attr(spec, 'aria-selected');
+const panelText = (p: Scope) => p.eval(`[...document.querySelectorAll('[data-e2e] .cdoc-stage [role=tabpanel]')].filter(__e2e.visible).map(e => e.textContent.trim()).join('|')`);
 
 // ---- tabs
 test('tabs: ArrowRight/Left move focus and select, wrap around; Home and End jump; the panel switches', async (p) => {
@@ -37,7 +38,7 @@ test('tabs: clicking a tab selects it; vertical tabs use ArrowUp/Down', async (p
 test('accordion: Enter and Space toggle, aria-expanded follows, one open at a time, content shows and hides', async (p) => {
   await p.open('components/accordion'); const ex = await p.example('Single, collapsible');
   eq(await p.attr('button|What is Monoline?', 'aria-expanded'), 'true', 'first item starts open');
-  assert((await ex.text('.cdoc-stage [role=region]')).includes('plain CSS'), 'open item shows its content');
+  assert((await ex.text('.cdoc-stage [role=region]'))!.includes('plain CSS'), 'open item shows its content');
   await ex.focus('button|Do I need React?'); await p.key('Enter');
   await p.waitFor(`__e2e.find('button|Do I need React?').getAttribute('aria-expanded') === 'true'`, 'Enter did not open the item');
   eq(await p.attr('button|What is Monoline?', 'aria-expanded'), 'false', 'single mode closes the other item');
@@ -71,7 +72,7 @@ for (const [name, ex, first, second, third] of [['toggle-group', 'Single', '7 da
 }
 
 // ---- slider
-const val = (p, label) => p.attr(`[role=slider][aria-label="${label}"]`, 'aria-valuenow').then(Number);
+const val = (p: Scope, label: string) => p.attr(`[role=slider][aria-label="${label}"]`, 'aria-valuenow').then(Number);
 test('slider: arrows change by 1, PageUp/PageDown by 10, Home/End jump to min and max', async (p) => {
   await p.open('components/slider'); const ex = await p.example('Single and range');
   await ex.focus('[role=slider][aria-label="Volume"]');
@@ -86,19 +87,19 @@ test('slider: arrows change by 1, PageUp/PageDown by 10, Home/End jump to min an
 test('slider: the thumb moves with the value (position follows aria-valuenow)', async (p) => {
   await p.open('components/slider'); const ex = await p.example('Single and range');
   await ex.focus('[role=slider][aria-label="Volume"]'); await p.key('Home');
-  const a = await p.rect('[role=slider][aria-label="Volume"]'); await p.key('End');
-  const b = await p.rect('[role=slider][aria-label="Volume"]');
+  const a = (await p.rect('[role=slider][aria-label="Volume"]'))!; await p.key('End');
+  const b = (await p.rect('[role=slider][aria-label="Volume"]'))!;
   assert(b.x - a.x > 150, `thumb moved ${b.x - a.x}px from min to max; expected most of the track`);
 });
 test('slider: a click on the track sets the value; dragging the thumb moves it', async (p) => {
   await p.open('components/slider'); await p.example('Single and range');
   const T = '[role=slider][aria-label="Volume"]';
   await p.scrollTo(T);
-  const thumb = await p.rect(T);
+  const thumb = (await p.rect(T))!;
   await p.clickAt(thumb.x - 96, thumb.y + thumb.h / 2);
   const clicked = await val(p, 'Volume');
   assert(clicked >= 25 && clicked <= 45, `a click 100px left of the thumb on a 420px track should give about 35, got ${clicked}`);
-  const t = await p.rect(T); const x = t.x + t.w / 2, y = t.y + t.h / 2;
+  const t = (await p.rect(T))!; const x = t.x + t.w / 2, y = t.y + t.h / 2;
   await p.drag(x, y, [[x + 40, y], [x + 80, y], [x + 120, y]]);
   const dragged = await val(p, 'Volume');
   assert(dragged >= clicked + 20, `dragging 120px right should raise the value by about 29 from ${clicked}, got ${dragged}`);
@@ -148,8 +149,8 @@ test('radio-group: arrows move focus and selection, wrap; one tab stop; horizont
 });
 
 // ---- otp-input
-const digits = (p) => p.eval(`[...document.querySelectorAll('[role=group][aria-label="Verification code"] input')].map(i => i.value).join('')`);
-const idx = (p) => p.eval(`[...document.querySelectorAll('[role=group][aria-label="Verification code"] input')].indexOf(document.activeElement)`);
+const digits = (p: Scope) => p.eval(`[...document.querySelectorAll('[role=group][aria-label="Verification code"] input')].map(i => i.value).join('')`);
+const idx = (p: Scope) => p.eval(`[...document.querySelectorAll('[role=group][aria-label="Verification code"] input')].indexOf(document.activeElement)`);
 test('otp-input: each digit advances focus, letters are rejected, Backspace goes back, arrows move', async (p) => {
   await p.open('components/otp-input'); const ex = await p.example('Six digits');
   await ex.focus('input[aria-label="Digit 1 of 6"]');

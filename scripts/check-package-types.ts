@@ -20,16 +20,17 @@ if (temp) {
   symlinkSync(join(root, 'packages/react'), join(dir, 'node_modules/@monoline/react'));
 }
 // A wrong prop must be an error and a right one must not: that proves the types are real, not `any`.
-const body = (load) => `${load}
+const body = (load: string) => `${load}
 const ok: ButtonProps = {variant: 'solid'};
 // @ts-expect-error variant is a string union, 42 is not in it
 const bad: ButtonProps = {variant: 42};
 export {ok, bad};
 `;
-writeFileSync(join(dir, 'cjs.cts'), body(`import type {ButtonProps} from '@monoline/react';\nimport monoline = require('@monoline/react');\nvoid monoline.Button;`));
-writeFileSync(join(dir, 'esm.mts'), body(`import {Button, type ButtonProps} from '@monoline/react';\nvoid Button;`));
-writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({compilerOptions: {module: 'node16', moduleResolution: 'node16', target: 'ES2022', strict: true, noEmit: true, skipLibCheck: true, jsx: 'react-jsx', types: []}, files: ['cjs.cts', 'esm.mts']}, null, 2));
-const r = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', dir], {encoding: 'utf8'});
-if (temp) rmSync(dir, {recursive: true, force: true});
+// dir is set by here (from --project or the temp branch above); TS cannot follow that through `temp`.
+writeFileSync(join(dir!, 'cjs.cts'), body(`import type {ButtonProps} from '@monoline/react';\nimport monoline = require('@monoline/react');\nvoid monoline.Button;`));
+writeFileSync(join(dir!, 'esm.mts'), body(`import {Button, type ButtonProps} from '@monoline/react';\nvoid Button;`));
+writeFileSync(join(dir!, 'tsconfig.json'), JSON.stringify({compilerOptions: {module: 'node16', moduleResolution: 'node16', target: 'ES2022', strict: true, noEmit: true, skipLibCheck: true, jsx: 'react-jsx', types: []}, files: ['cjs.cts', 'esm.mts']}, null, 2));
+const r = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', dir!], {encoding: 'utf8'});
+if (temp) rmSync(dir!, {recursive: true, force: true});
 if (r.status !== 0) { process.stderr.write(`${r.stdout}${r.stderr}`); console.error('check-package-types: FAIL'); process.exit(1); }
 console.log('check-package-types: ok (node16 CJS and ESM both resolve real types)');

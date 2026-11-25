@@ -3,20 +3,25 @@
 // imports for the names it uses, the same-file helpers it references (transitively), then the render body.
 import ts from 'typescript';
 
+export type Demo = {title: string; description?: string; code: string};
+type Import = {module: string; imported: string; def?: boolean; type: boolean};
+/** A demo's render: any node, with a body when it is a function. */
+type Render = ts.Node & {body?: ts.ConciseBody};
+
 const ROOT_PKG = '@monoline/react';
-const isMonolineModule = (m) => /^(\.\.?\/)/.test(m); // relative imports all resolve to the kit
+const isMonolineModule = (m: string) => /^(\.\.?\/)/.test(m); // relative imports all resolve to the kit
 
 /** Remove the common leading indent of every line after the first (or of all lines when `all`). */
-export function dedent(text, all = false) {
+export function dedent(text: string, all = false) {
   const lines = text.split('\n');
   const rest = all ? lines : lines.slice(1);
-  const indents = rest.filter((l) => l.trim()).map((l) => l.match(/^ */)[0].length);
+  const indents = rest.filter((l) => l.trim()).map((l) => l.match(/^ */)![0].length);
   const cut = indents.length ? Math.min(...indents) : 0;
-  const fixed = lines.map((l, i) => (all || i > 0 ? l.slice(Math.min(cut, l.match(/^ */)[0].length)) : l));
+  const fixed = lines.map((l, i) => (all || i > 0 ? l.slice(Math.min(cut, l.match(/^ */)![0].length)) : l));
   return fixed.join('\n').trim();
 }
 
-const stringValue = (n) => {
+const stringValue = (n: ts.Expression | undefined): string | undefined => {
   if (!n) return undefined;
   if (ts.isStringLiteralLike(n)) return n.text;
   if (ts.isBinaryExpression(n) && n.operatorToken.kind === ts.SyntaxKind.PlusToken) {
@@ -27,8 +32,8 @@ const stringValue = (n) => {
 };
 
 /** Identifier names used as values or tags inside `node` (skips property names and JSX attribute names). */
-function usedNames(node, into = new Set()) {
-  const visit = (n) => {
+function usedNames(node: ts.Node, into = new Set<string>()) {
+  const visit = (n: ts.Node) => {
     if (ts.isIdentifier(n)) {
       const p = n.parent;
       const skip = p && ((ts.isPropertyAccessExpression(p) && p.name === n) || (ts.isPropertyAssignment(p) && p.name === n) || (ts.isJsxAttribute(p) && p.name === n) || (ts.isPropertySignature(p) && p.name === n));
@@ -40,14 +45,14 @@ function usedNames(node, into = new Set()) {
   return into;
 }
 
-export function extractDemos(source, fileName = 'x.demo.tsx') {
+export function extractDemos(source: string, fileName = 'x.demo.tsx') {
   const sf = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TSX);
-  const text = (n) => source.slice(n.getStart(sf), n.getEnd());
+  const text = (n: ts.Node) => source.slice(n.getStart(sf), n.getEnd());
 
   // Top-level declarations by name, and imports by local name.
-  const decls = new Map();
-  const imports = new Map(); // local name -> {module, imported, isDefault, typeOnly}
-  let demosArray;
+  const decls = new Map<string, ts.Statement>();
+  const imports = new Map<string, Import>(); // local name -> {module, imported, isDefault, typeOnly}
+  let demosArray: ts.Expression | undefined;
   for (const st of sf.statements) {
     if (ts.isImportDeclaration(st) && st.importClause && ts.isStringLiteral(st.moduleSpecifier)) {
       const mod = st.moduleSpecifier.text, c = st.importClause;
@@ -67,10 +72,10 @@ export function extractDemos(source, fileName = 'x.demo.tsx') {
   const declOrder = [...decls.entries()].map(([name, node]) => ({name, node})).sort((a, b) => a.node.getStart(sf) - b.node.getStart(sf));
   const declName = new Map(declOrder.map((d) => [d.node, d.name]));
 
-  const out = [];
+  const out: Demo[] = [];
   for (const el of demosArray.elements) {
     if (!ts.isObjectLiteralExpression(el)) continue;
-    let title, description, render;
+    let title: string | undefined, description: string | undefined, render: Render | undefined;
     for (const p of el.properties) {
       const key = p.name && (ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)) ? p.name.text : '';
       if (key === 'title' && ts.isPropertyAssignment(p)) title = stringValue(p.initializer) ?? text(p.initializer);
@@ -80,13 +85,13 @@ export function extractDemos(source, fileName = 'x.demo.tsx') {
     if (!title || !render) continue;
     // `render: renderFoo` -> use that function's declaration.
     if (ts.isIdentifier(render) && decls.has(render.text)) {
-      const d = decls.get(render.text);
-      const fn = ts.isFunctionDeclaration(d) ? d : d.declarationList.declarations.find((x) => x.name.text === render.text)?.initializer;
+      const d = decls.get(render.text)!;
+      const fn = ts.isFunctionDeclaration(d) ? d : (d as ts.VariableStatement).declarationList.declarations.find((x) => (x.name as ts.Identifier).text === (render as ts.Identifier).text)?.initializer;
       if (fn) render = fn;
     }
     // The part of the render function that becomes the snippet.
-    const body = render.body;
-    let nodes, snippet;
+    const body = (render as Render).body; // isIdentifier() above narrows away the optional body
+    let nodes: ts.Node[], snippet: string;
     if (!body) { nodes = [render]; snippet = dedent(text(render)); }
     else if (!ts.isBlock(body)) {
       let e = body;
@@ -103,11 +108,11 @@ export function extractDemos(source, fileName = 'x.demo.tsx') {
     }
 
     // Helpers referenced (transitively) from the snippet, in source order; imports for everything used.
-    const used = new Set(); nodes.forEach((n) => usedNames(n, used));
-    const helperNodes = new Set();
+    const used = new Set<string>(); nodes.forEach((n) => usedNames(n, used));
+    const helperNodes = new Set<ts.Statement>();
     const queue = [...used];
     while (queue.length) {
-      const name = queue.pop();
+      const name = queue.pop()!;
       const d = decls.get(name);
       if (!d || helperNodes.has(d)) continue;
       helperNodes.add(d);
@@ -115,18 +120,18 @@ export function extractDemos(source, fileName = 'x.demo.tsx') {
     }
     const helpers = declOrder.filter((d) => helperNodes.has(d.node)).map((d) => dedent(text(d.node).replace(/^export\s+(default\s+)?/, ''), false));
 
-    const byModule = new Map();
+    const byModule = new Map<string, {names: Set<string>; types: Set<string>; def: string | null}>();
     for (const name of used) {
       const imp = imports.get(name);
       if (!imp || (imp.type && !used.has(name))) continue;
       const mod = isMonolineModule(imp.module) ? ROOT_PKG : imp.module;
-      const entry = byModule.get(mod) ?? {names: new Set(), types: new Set(), def: null};
+      const entry = byModule.get(mod) ?? {names: new Set<string>(), types: new Set<string>(), def: null};
       if (imp.def) entry.def = name;
       else (imp.type ? entry.types : entry.names).add(imp.imported === name ? name : `${imp.imported} as ${name}`);
       byModule.set(mod, entry);
     }
     const importLines = [...byModule.entries()]
-      .sort(([a], [b]) => (b === 'react') - (a === 'react') || (a === ROOT_PKG) - (b === ROOT_PKG) || a.localeCompare(b))
+      .sort(([a], [b]) => +(b === 'react') - +(a === 'react') || +(a === ROOT_PKG) - +(b === ROOT_PKG) || a.localeCompare(b))
       .map(([mod, e]) => {
         const named = [...[...e.names].sort(), ...[...e.types].sort().map((t) => `type ${t}`)];
         const parts = [e.def, named.length ? `{${named.join(', ')}}` : null].filter(Boolean).join(', ');
@@ -140,9 +145,9 @@ export function extractDemos(source, fileName = 'x.demo.tsx') {
 }
 
 /** Exported names from an `index.ts`: `export {A, B} from './a'` and `export type {...}`. -> {values, types} */
-export function exportedNames(source) {
+export function exportedNames(source: string) {
   const sf = ts.createSourceFile('index.ts', source, ts.ScriptTarget.ES2022, true);
-  const values = [], types = [];
+  const values: string[] = [], types: string[] = [];
   for (const st of sf.statements) {
     if (ts.isExportDeclaration(st) && st.exportClause && ts.isNamedExports(st.exportClause)) {
       for (const e of st.exportClause.elements) (st.isTypeOnly || e.isTypeOnly ? types : values).push(e.name.text);

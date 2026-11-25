@@ -2,6 +2,11 @@
 import {existsSync, readdirSync, readFileSync, statSync} from 'node:fs';
 import {join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import type {ComponentMeta} from '../src/meta.ts';
+
+/** meta.json: the ComponentMeta shape plus optional `related` names. */
+export type Meta = ComponentMeta & {related?: string[]};
+export type Unit = {kind: 'components' | 'hooks'; name: string; dir: string};
 
 export const pkgRoot = fileURLToPath(new URL('..', import.meta.url));
 export const repoRoot = join(pkgRoot, '..', '..');
@@ -9,8 +14,8 @@ export const CATEGORIES = ['layout', 'typography', 'buttons', 'forms', 'data-dis
 
 /** Folders that hold a unit: src/components/<name>/ and src/hooks/<name>/ */
 export function units() {
-  const out = [];
-  for (const kind of ['components', 'hooks']) {
+  const out: Unit[] = [];
+  for (const kind of ['components', 'hooks'] as const) {
     const base = join(pkgRoot, 'src', kind);
     if (!existsSync(base)) continue;
     for (const name of readdirSync(base).sort()) {
@@ -21,13 +26,13 @@ export function units() {
   return out;
 }
 
-export function readMeta(u) {
+export function readMeta(u: Unit) {
   const file = join(u.dir, 'meta.json');
   if (!existsSync(file)) throw new Error(`${relative(repoRoot, u.dir)} has no meta.json`);
-  const m = JSON.parse(readFileSync(file, 'utf8'));
-  const errs = [];
+  const m = JSON.parse(readFileSync(file, 'utf8')) as Meta; // checked field by field below
+  const errs: string[] = [];
   if (m.name !== u.name) errs.push(`name "${m.name}" must equal folder "${u.name}"`);
-  for (const k of ['title', 'category', 'description', 'status']) if (!m[k]) errs.push(`missing "${k}"`);
+  for (const k of ['title', 'category', 'description', 'status'] as const) if (!m[k]) errs.push(`missing "${k}"`);
   if (!CATEGORIES.includes(m.category)) errs.push(`category "${m.category}" not in ${CATEGORIES.join(', ')}`);
   if (!['stable', 'beta'].includes(m.status)) errs.push(`status must be stable or beta`);
   if (!Array.isArray(m.a11y) || m.a11y.length === 0) errs.push('a11y must list at least one behaviour');

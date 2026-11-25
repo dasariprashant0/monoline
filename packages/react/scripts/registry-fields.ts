@@ -1,8 +1,11 @@
 // Pure helpers for the registry fields that are not props: the CSS classes and data attributes a component's
 // stylesheets select, the usage snippet, and related components. Used by gen-registry.ts; tested by check-registry.test.ts.
+import type {Meta} from './lib.ts';
+
+export type DataAttribute = {name: string; values: string[]};
 
 /** Remove /* comments *\/ so their words never count as selectors. */
-export function stripComments(css) {
+export function stripComments(css: string) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
 }
 
@@ -11,16 +14,16 @@ export function stripComments(css) {
  * -> {classes: ['btn', 'btn-solid'], dataAttributes: [{name: 'data-state', values: ['open', 'closed']}]}
  * Order is the order of first appearance; `values` are the quoted attribute values seen (may be empty).
  */
-export function cssFacts(cssTexts) {
-  const classes = [];
-  const data = new Map();
+export function cssFacts(cssTexts: string[]) {
+  const classes: string[] = [];
+  const data = new Map<string, DataAttribute>();
   for (const css of cssTexts) {
     const src = stripComments(css);
     const rule = /([^{}]+)\{/g;
     let m;
     while ((m = rule.exec(src))) {
       // Keep only the selector: drop anything before the last ';' (leftover @import lines).
-      const selector = m[1].split(';').pop().trim();
+      const selector = m[1].split(';').pop()!.trim();
       if (!selector || selector.startsWith('@')) continue;
       const bare = selector.replace(/"[^"]*"|'[^']*'/g, '');
       for (const c of bare.matchAll(/\.(-?[a-zA-Z_][\w-]*)/g)) if (!classes.includes(c[1])) classes.push(c[1]);
@@ -39,7 +42,7 @@ export function cssFacts(cssTexts) {
  * Keep only names the package really exports in the `@monoline/react` import lines of a snippet. The demo
  * extractor also brings in same-file helpers' names (a demo's own `type Demo`), which are not public.
  */
-export function pruneImports(code, publicNames) {
+export function pruneImports(code: string, publicNames: Set<string>) {
   return code.split('\n').flatMap((line) => {
     const m = /^import (.*) from '@monoline\/react';$/.exec(line);
     if (!m) return [line];
@@ -50,7 +53,7 @@ export function pruneImports(code, publicNames) {
 }
 
 /** Usage: the first demo's standalone snippet when there is one, else the import plus a bare element or call. */
-export function usageFor({demo, importLine, symbol, isHook, publicNames}) {
+export function usageFor({demo, importLine, symbol, isHook, publicNames}: {demo?: {code?: string}; importLine: string; symbol: string; isHook: boolean; publicNames: Set<string>}) {
   if (demo?.code) return pruneImports(demo.code, publicNames);
   if (isHook) return importLine;
   return `${importLine}\n\n<${symbol} />`;
@@ -60,7 +63,7 @@ export function usageFor({demo, importLine, symbol, isHook, publicNames}) {
  * Related components: explicit `related` and `uses` from meta.json (only names in the registry), else up to
  * three siblings from the same category. Never the component itself.
  */
-export function relatedFor({meta, known, siblings}) {
+export function relatedFor({meta, known, siblings}: {meta: Pick<Meta, 'name' | 'related' | 'uses'>; known: Set<string>; siblings: string[]}) {
   const explicit = [...(meta.related ?? []), ...(meta.uses ?? [])].filter((n) => known.has(n) && n !== meta.name);
   const picked = [...new Set(explicit)];
   if (picked.length) return picked;

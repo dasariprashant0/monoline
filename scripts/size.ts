@@ -6,7 +6,7 @@
 // Radix primitives drop out. If a case jumps, a new top-level side effect or a barrel import crept in.
 // Budgets are the measured size plus about 10 percent (all under the targets: Dialog 6, Tooltip 6, Popover 6,
 // Select 12 KB); Everything keeps the round 100 KB target.
-import {build} from 'esbuild';
+import {build, type Metafile} from 'esbuild';
 import {gzipSync} from 'node:zlib';
 import {readFileSync, writeFileSync, existsSync, readdirSync} from 'node:fs';
 import {join} from 'node:path';
@@ -20,9 +20,10 @@ const KB = 1024;
 const scale = Number(process.env.SIZE_BUDGET_SCALE ?? 1);
 const asJson = process.argv.includes('--json'); // machine-readable output for the docs Compare page
 const detail = process.argv.includes('--detail'); // per-component sizes and top contributing packages -> docs/bundle-report.md
-const report = {js: [], css: null};
-const say = (...a) => { if (!asJson) console.log(...a); };
-const cases = [
+type Row = {name: string; kb: number; budget: number};
+const report: {js: Row[]; css: Row | null; cssPaths?: Row[]} = {js: [], css: null};
+const say = (...a: unknown[]) => { if (!asJson) console.log(...a); };
+const cases: [name: string, code: string, budget: number][] = [
   ['Button', "import {Button} from '@monoline/react'; console.log(Button)", 0.9],
   ['Button + Badge + Card + Input', "import {Button, Badge, Card, Input} from '@monoline/react'; console.log(Button, Badge, Card, Input)", 3.3],
   ['Combobox', "import {Combobox} from '@monoline/react'; console.log(Combobox)", 3.4],
@@ -38,12 +39,12 @@ const cases = [
   ['Select', "import {Select, SelectContent} from '@monoline/react'; console.log(Select, SelectContent)", 5.9],
   ['Everything', "import * as m from '@monoline/react'; console.log(m)", 102.5], // was 102: the a11y fixes (Tab out of popovers and menus, nav-menu focus proxy, AppShell inside a main) add 0.26 KB
 ];
-const bundle = (code) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});
+const bundle = (code: string) => build({stdin: {contents: code, resolveDir: root, loader: 'js'}, bundle: true, minify: true, format: 'esm', write: false, treeShaking: true, metafile: true, external: ['react', 'react-dom', 'react/jsx-runtime'], alias: {'@monoline/react': dist}, logLevel: 'silent'});
 /** Package name of a metafile input path ('' for Monoline's own source). */
-const pkgOf = (f) => { const m = f.match(/node_modules\/((?:@[^/]+\/)?[^/]+)\/(?!.*node_modules)/); return m ? m[1] : 'monoline (own code)'; };
+const pkgOf = (f: string) => { const m = f.match(/node_modules\/((?:@[^/]+\/)?[^/]+)\/(?!.*node_modules)/); return m ? m[1] : 'monoline (own code)'; };
 /** Minified bytes each package contributes to the bundle, biggest first, with its share of the whole. */
-const contributors = (r) => {
-  const by = {}; let total = 0;
+const contributors = (r: {metafile: Metafile}) => {
+  const by: Record<string, number> = {}; let total = 0;
   for (const out of Object.values(r.metafile.outputs)) for (const [f, v] of Object.entries(out.inputs)) { by[pkgOf(f)] = (by[pkgOf(f)] || 0) + v.bytesInOutput; total += v.bytesInOutput; }
   return Object.entries(by).filter(([, b]) => b).sort((a, b) => b[1] - a[1]).map(([name, b]) => ({name, share: b / total}));
 };
@@ -68,11 +69,13 @@ if (existsSync(css)) {
   say(`${ok ? 'ok  ' : 'FAIL'} ${'All components, 3 themes, 8 accents'.padEnd(32)} ${kb.toFixed(1).padStart(6)} KB   budget ${budget} KB`);
 }
 // "Core plus the components you use": the @monoline/css/core.css + components/<name>.css path.
-const {bundles, minify} = await import(join(root, 'packages/css/scripts/bundle.ts'));
+// A computed path, so TS cannot see bundle.ts: these are the two exports used.
+type CssBundle = {bundles: () => {core: string; components: Record<string, string>}; minify: (css: string) => string};
+const {bundles, minify}: CssBundle = await import(join(root, 'packages/css/scripts/bundle.ts'));
 const b = bundles();
-const gz = (css) => gzipSync(minify(css)).length / KB;
-const pick = (names) => b.core + names.map((n) => b.components[n]).join('\n');
-const cssCases = [
+const gz = (css: string) => gzipSync(minify(css)).length / KB;
+const pick = (names: string[]) => b.core + names.map((n) => b.components[n]).join('\n');
+const cssCases: [name: string, css: string, budget: number][] = [
   ['core only (tokens, themes, accents, base)', b.core, 5],
   ['core + button', pick(['button']), 5],
   ['core + dashboard example (21 components)', pick(['avatar', 'badge', 'bar-chart', 'block-dashboard-shell', 'button', 'card', 'command', 'data-table', 'date-picker', 'dialog', 'dropdown-menu', 'field', 'form', 'grid', 'heading', 'input', 'line-chart', 'segmented-control', 'stat', 'text', 'toast']), 12.5],
@@ -101,7 +104,7 @@ async function writeDetail() {
   }
   const all = await bundle("import * as m from '@monoline/react'; console.log(m)");
   const total = {name: 'everything', kb: gzipSync(all.outputFiles[0].contents).length / KB, top: contributors(all)};
-  const fmt = (top, n) => top.slice(0, n).map((t) => `${t.name} ${Math.round(t.share * 100)}%`).join(', ');
+  const fmt = (top: ReturnType<typeof contributors>, n: number) => top.slice(0, n).map((t) => `${t.name} ${Math.round(t.share * 100)}%`).join(', ');
   const lines = [
     '# Bundle report', '',
     'Generated by `node scripts/size.ts --detail` (run `npm run build` first). Every component is bundled alone from the built `@monoline/react` with esbuild (minified, tree-shaken, `react` external) and gzipped. "Top contributors" are the packages behind the minified bytes, as a share of the raw output; `monoline` is the library\'s own code.', '',

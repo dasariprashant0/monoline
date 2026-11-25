@@ -17,7 +17,7 @@ import {registry} from './test.ts';
 const here = fileURLToPath(new URL('.', import.meta.url));
 const root = join(here, '../..');
 const args = process.argv.slice(2);
-const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
+const opt = <T,>(n: string, d: T) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
 const grep = opt('grep', ''); const retries = Number(opt('retries', 0)); const bail = args.includes('--bail');
 const dist = join(root, 'apps/docs/dist');
 if (!existsSync(join(dist, 'index.html'))) { console.error('Build the docs first: npm run build'); process.exit(2); }
@@ -28,16 +28,16 @@ if (args.includes('--list')) { for (const t of tests) console.log(t.name); proce
 
 const {server, base} = await serveDist(dist);
 let browser;
-try { browser = await launchChrome({label: 'monoline-e2e'}); } catch (e) { console.error(e.message); server.close(); process.exit(2); }
+try { browser = await launchChrome({label: 'monoline-e2e'}); } catch (e) { console.error((e as Error).message); server.close(); process.exit(2); }
 const cleanup = () => { browser.close(); try { server.close(); } catch {} };
 process.on('exit', cleanup);
 const page = await createPage(browser, base);
 
-const withTimeout = (p, ms) => { let timer; return Promise.race([p, new Promise((_, rej) => { timer = setTimeout(() => { page.abort(); rej(new Error(`test timed out after ${ms}ms, last call ${page.lastCall()}`)); }, ms); })]).finally(() => clearTimeout(timer)); };
-const failures = []; const flaky = []; let passed = 0;
+const withTimeout = (p: Promise<void>, ms: number) => { let timer: ReturnType<typeof setTimeout> | undefined; return Promise.race([p, new Promise((_, rej) => { timer = setTimeout(() => { page.abort(); rej(new Error(`test timed out after ${ms}ms, last call ${page.lastCall()}`)); }, ms); })]).finally(() => clearTimeout(timer)); };
+const failures: {name: string, message: string}[] = []; const flaky: string[] = []; let passed = 0;
 const started = Date.now();
 for (const t of tests) {
-  let err, attempt = 0;
+  let err: Error | undefined, attempt = 0;
   for (; attempt <= retries; attempt++) {
     const t0 = Date.now(); page.begin();
     try {
@@ -46,7 +46,7 @@ for (const t of tests) {
       err = undefined;
       if (attempt === 0) console.log(`  ok   ${t.name} (${Date.now() - t0}ms)`);
       break;
-    } catch (e) { err = e; }
+    } catch (e) { err = e as Error; }
   }
   if (!err) { passed++; if (attempt > 0) { flaky.push(t.name); console.log(`  FLAKY ${t.name} (passed on attempt ${attempt + 1})`); } continue; }
   failures.push({name: t.name, message: err.message});

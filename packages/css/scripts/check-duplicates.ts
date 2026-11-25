@@ -11,12 +11,12 @@ import {readdirSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {read} from './lib.ts';
 
-const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
-const norm = (s) => s.replace(/\s+/g, ' ').replace(/\s*([>+~,])\s*/g, '$1').trim();
+const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '');
+const norm = (s: string) => s.replace(/\s+/g, ' ').replace(/\s*([>+~,])\s*/g, '$1').trim();
 
 /** Split on a top-level separator, ignoring any inside (), [] or quotes. */
-function splitTop(s, sep) {
-  const out = []; let d = 0, q = '', from = 0;
+function splitTop(s: string, sep: string) {
+  const out: string[] = []; let d = 0, q = '', from = 0;
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
     if (q) { if (c === q) q = ''; continue; }
@@ -30,9 +30,9 @@ function splitTop(s, sep) {
 }
 
 /** Returns [{ctx, sel, props: {prop: value}}] for every style rule, with the at-rule context it sits in. */
-export function parseRules(css) {
-  const rules = [];
-  const walk = (text, ctx) => {
+export function parseRules(css: string) {
+  const rules: {ctx: string; sel: string; props: Record<string, string>}[] = [];
+  const walk = (text: string, ctx: string) => {
     let i = 0;
     while (i < text.length) {
       const open = text.indexOf('{', i);
@@ -48,7 +48,7 @@ export function parseRules(css) {
         if (/^@(keyframes|font-face|property)/.test(head)) continue; // names, not selectors
         walk(body, ctx ? `${ctx} ${norm(head)}` : norm(head));
       } else {
-        const props = {};
+        const props: Record<string, string> = {};
         for (const decl of splitTop(body, ';')) {
           const k = decl.indexOf(':');
           if (k > 0) props[decl.slice(0, k).trim().toLowerCase()] = norm(decl.slice(k + 1).replace(/\s*!important/, ' !important'));
@@ -65,12 +65,12 @@ export function findDuplicates() {
   const dir = new URL('../src/components/', import.meta.url);
   const files = ['utilities.css', 'base.css', ...readdirSync(dir).filter((f) => f.endsWith('.css')).sort().map((f) => `components/${f}`)];
   // key -> prop -> [{file, value}]
-  const seen = new Map();
+  const seen = new Map<string, Map<string, {file: string; value: string}[]>>();
   for (const f of files) {
     for (const {ctx, sel, props} of parseRules(read(`src/${f}`))) {
       const key = `${ctx}\u0000${sel}`;
-      const byProp = seen.get(key) ?? seen.set(key, new Map()).get(key);
-      for (const [p, v] of Object.entries(props)) (byProp.get(p) ?? byProp.set(p, []).get(p)).push({file: f, value: v});
+      const byProp = seen.get(key) ?? seen.set(key, new Map()).get(key)!;
+      for (const [p, v] of Object.entries(props)) (byProp.get(p) ?? byProp.set(p, []).get(p)!).push({file: f, value: v});
     }
   }
   const conflicts = [], agreeing = [];
@@ -91,7 +91,7 @@ export function findDuplicates() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const {conflicts, agreeing} = findDuplicates();
-  const label = (c) => (c.ctx ? `${c.ctx} { ${c.sel} }` : c.sel);
+  const label = (c: {ctx: string; sel: string}) => (c.ctx ? `${c.ctx} { ${c.sel} }` : c.sel);
   if (process.argv.includes('--all')) for (const a of agreeing) console.log(`same   ${label(a)}  (${a.files.join(', ')})`);
   if (conflicts.length) {
     for (const c of conflicts) {

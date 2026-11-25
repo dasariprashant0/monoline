@@ -1,12 +1,16 @@
 // Pure: builds the Markdown page for one component or hook. Plain text for AI tools and for "Copy page as Markdown".
 import {keyboardRows} from './a11y.mjs';
+import type {Meta} from '../../../../packages/react/scripts/lib.ts';
+import type {PropGroup} from '../../../../packages/react/scripts/props-extract.ts';
+import type {Demo} from './demos.ts';
+import type {Styling} from './styling.ts';
 
-const cell = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n+/g, ' ').trim();
-const table = (head, rows) => [`| ${head.join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${r.map(cell).join(' | ')} |`)].join('\n');
-const fence = (lang, code) => '```' + lang + '\n' + code.trimEnd() + '\n```';
+const cell = (s: unknown) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n+/g, ' ').trim();
+const table = (head: string[], rows: unknown[][]) => [`| ${head.join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${r.map(cell).join(' | ')} |`)].join('\n');
+const fence = (lang: string, code: string) => '```' + lang + '\n' + code.trimEnd() + '\n```';
 
 /** @param {{meta, extra?: {importName, parts, demos}, props?: {name, props}[], styling?: {file, classes, attributes}[], hook: boolean}} d */
-export function componentMarkdown({meta, extra, props = [], styling = [], hook}) {
+export function componentMarkdown({meta, extra, props = [], styling = [], hook}: {meta: Meta; extra?: {importName: string; parts: string[]; demos: Demo[]}; props?: PropGroup[]; styling?: Styling[]; hook: boolean}) {
   const importName = extra?.importName ?? meta.title;
   const demos = extra?.demos ?? [];
   const parts = extra?.parts ?? [];

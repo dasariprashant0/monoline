@@ -58,7 +58,7 @@ test('build writes a snippets file from a registry folder', () => {
 test('the committed snippets match the registry (run the build to refresh them)', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ml-snip-'));
   const {count, text} = build({registryDir: join(here, '../../../registry'), outFile: join(dir, 'x.code-snippets')});
-  const snippets = JSON.parse(text);
+  const snippets: Record<string, {prefix: string; body: string[]}> = JSON.parse(text);
   assert.equal(readFileSync(join(here, '../snippets/monoline.code-snippets'), 'utf8'), text);
   const prefixes = Object.values(snippets).map((s) => s.prefix);
   assert.equal(new Set(prefixes).size, count, 'prefixes are unique');

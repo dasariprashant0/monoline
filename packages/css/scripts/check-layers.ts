@@ -7,17 +7,17 @@ import {bundles, LAYERS} from './bundle.ts';
 import {read} from './lib.ts';
 
 const b = bundles();
-const fails = [];
-const css = (code, label) => {
+const fails: string[] = [];
+const css = (code: string, label: string) => {
   const r = transformSync(code, {loader: 'css', minify: true});
   for (const w of r.warnings) fails.push(`${label}: ${w.text}`);
   return r.code;
 };
 /** Top-level rules of minified CSS; an @layer block is replaced by the rules inside it. */
-function rules(min) {
-  const out = [];
+function rules(min: string) {
+  const out: string[] = [];
   let depth = 0, start = 0;
-  const walk = (s) => {
+  const walk = (s: string) => {
     let d = 0, from = 0;
     for (let i = 0; i < s.length; i++) {
       const c = s[i];
@@ -26,7 +26,7 @@ function rules(min) {
       else if (c === ';' && d === 0) { push(s.slice(from, i + 1)); from = i + 1; }
     }
   };
-  const push = (r) => {
+  const push = (r: string) => {
     const m = r.match(/^@layer [\w.]+\{([\s\S]*)\}$/);
     if (m) walk(m[1]); else if (!/^@layer [\w.,]+;$/.test(r)) out.push(r);
   };
@@ -36,10 +36,10 @@ function rules(min) {
 
 const sources = ['base', 'tokens', 'accents', 'options', 'utilities'].map((f) => `src/${f}.css`).concat(b.order.map((f) => `src/components/${f}`));
 for (const f of sources) css(read(f), f); // alone, each source file must be clean: an unclosed brace would swallow the next file in a bundle
-const expect = (files) => rules(css(files.map(read).join('\n'), 'source'));
-const same = (a, c) => a.length === c.length && a.every((r, i) => r === c[i]);
+const expect = (files: string[]) => rules(css(files.map(read).join('\n'), 'source'));
+const same = (a: string[], c: string[]) => a.length === c.length && a.every((r, i) => r === c[i]);
 
-const outputs = {
+const outputs: Record<string, [string, string[]]> = {
   'core.css': [b.core, sources.slice(0, 5)],
   'monoline.css': [b.all, sources],
   ...Object.fromEntries(Object.entries(b.components).map(([n, s]) => [`components/${n}.css`, [s, b.index[n].map((f) => `src/components/${f}`)]])),

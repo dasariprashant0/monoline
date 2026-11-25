@@ -5,7 +5,7 @@ const RTL = {dir: 'rtl'};
 
 test('rtl: tabs run right to left; ArrowLeft goes to the next tab, ArrowRight to the previous', async (p) => {
   await p.open('components/tabs', RTL); const ex = await p.example('Horizontal');
-  const a = await p.rect('[data-e2e] [role=tab]|Overview'), b = await p.rect('[data-e2e] [role=tab]|Activity');
+  const a = (await p.rect('[data-e2e] [role=tab]|Overview'))!, b = (await p.rect('[data-e2e] [role=tab]|Activity'))!;
   assert(a.x > b.x, `the first tab should be on the right in rtl: Overview x=${Math.round(a.x)}, Activity x=${Math.round(b.x)}`);
   await ex.focus('[role=tab]|Overview');
   await p.key('ArrowLeft'); await p.expectActive('[role=tab]|Activity', 'ArrowLeft in rtl');
@@ -18,7 +18,7 @@ test('rtl: slider thumb moves left as the value grows; ArrowLeft raises and Arro
   await ex.focus(T);
   await p.key('ArrowLeft'); eq(await v(), 61, 'ArrowLeft raises the value in rtl');
   await p.key('ArrowRight'); await p.key('ArrowRight'); eq(await v(), 59, 'ArrowRight lowers the value in rtl');
-  await p.key('Home'); const lo = await p.rect(T); await p.key('End'); const hi = await p.rect(T);
+  await p.key('Home'); const lo = (await p.rect(T))!; await p.key('End'); const hi = (await p.rect(T))!;
   assert(hi.x < lo.x - 100, `the maximum should be on the left in rtl: min x=${Math.round(lo.x)}, max x=${Math.round(hi.x)}`);
 });
 test('rtl: calendar columns run right to left; ArrowRight is the previous day, ArrowLeft the next', async (p) => {
@@ -48,8 +48,8 @@ test('rtl: menubar ArrowLeft moves to the next menu; tree ArrowLeft expands and 
 test('rtl: carousel starts at the right edge and Next scrolls toward the left', async (p) => {
   await p.open('components/carousel', RTL); const ex = await p.example('Cards');
   const L = () => p.eval(`document.querySelector('[data-e2e] [aria-label="Featured slides"]').scrollLeft`);
-  const first = await p.rect('[data-e2e] [aria-roledescription=slide]');
-  const track = await p.rect('[data-e2e] [aria-label="Featured slides"]');
+  const first = (await p.rect('[data-e2e] [aria-roledescription=slide]'))!;
+  const track = (await p.rect('[data-e2e] [aria-label="Featured slides"]'))!;
   assert(first.right > track.x + track.w / 2, 'the first slide should start at the right edge in rtl');
   await ex.click('button|Next slide'); await p.waitFor(`document.querySelector('[data-e2e] [aria-label="Featured slides"]').scrollLeft < -50`, `Next did not scroll leftwards in rtl (scrollLeft ${await L()})`, 3000);
 });

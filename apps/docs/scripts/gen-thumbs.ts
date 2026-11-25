@@ -7,7 +7,7 @@ import {createServer} from 'vite';
 import {docsRoot} from './lib/load.ts';
 
 /** Static markup, safe to paste 130 times into one page: no ids or references to them, nothing focusable or navigable. */
-export const clean = (html) => html
+export const clean = (html: string) => html
   .replace(/<(\/?)a(?=[\s>])/g, '<$1span') // the card is itself a link, and the HTML parser cannot nest one <a> in another
   .replace(/<(script|style)\b[\s\S]*?<\/\1>/g, '')
   .replace(/\s(?:id|for|name|form|href|tabindex|autofocus|accesskey|aria-(?:labelledby|describedby|controls|owns|activedescendant|details|errormessage|flowto)|popovertarget|list)="[^"]*"/g, '')
@@ -17,8 +17,8 @@ export const clean = (html) => html
 const server = await createServer({root: docsRoot, configFile: join(docsRoot, 'vite.config.ts'), server: {middlewareMode: true, hmr: false, watch: null}, appType: 'custom', logLevel: 'error'});
 try {
   const {renderThumbs} = await server.ssrLoadModule('/src/page/thumbs-ssr.tsx');
-  const html = renderThumbs();
-  const out = {};
+  const html: Record<string, string> = renderThumbs();
+  const out: Record<string, string> = {};
   for (const [name, h] of Object.entries(html)) out[name] = clean(h);
   const file = join(docsRoot, 'src/page/thumbs.generated.json');
   mkdirSync(dirname(file), {recursive: true});

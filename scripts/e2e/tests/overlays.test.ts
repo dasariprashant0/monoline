@@ -1,17 +1,18 @@
 // dialog, alert-dialog, drawer: modal behaviour. Popover and tooltip: non-modal overlays.
 import {test, assert, eq} from '../test.ts';
+import type {Scope} from '../page.ts';
 
 const TABBABLE = `a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])`;
 /** Focusable elements outside the open dialog that are not hidden from assistive tech or inert. */
-const reachableBehind = (p) => p.eval(`(() => {
+const reachableBehind = (p: Scope) => p.eval(`(() => {
   const dlg = document.querySelector('[role=dialog][data-state=open], [role=alertdialog][data-state=open]');
   if (dlg.matches(':modal')) return []; // a native modal <dialog> makes the whole page behind inert (the browser's own guarantee)
   return [...document.querySelectorAll(${JSON.stringify(TABBABLE)})].filter((e) => !dlg.contains(e) && !e.closest('[aria-hidden=true], [inert], [data-aria-hidden=true]') && __e2e.visible(e)).map(__e2e.describe).slice(0, 3);
 })()`);
-const inside = (p) => p.eval(`(() => { const d = document.querySelector('[role=dialog][data-state=open], [role=alertdialog][data-state=open]'); return !!d && d.contains(document.activeElement); })()`);
+const inside = (p: Scope) => p.eval(`(() => { const d = document.querySelector('[role=dialog][data-state=open], [role=alertdialog][data-state=open]'); return !!d && d.contains(document.activeElement); })()`);
 
-function modal({name, route, example, trigger, role, closer}) {
-  const open = async (p) => { await p.open(route); const ex = await p.example(example); return ex; };
+function modal({name, route, example, trigger, role, closer}: {name: string, route: string, example: string, trigger: string, role: string, closer?: {label: string, spec: string}}) {
+  const open = async (p: Scope) => { await p.open(route); const ex = await p.example(example); return ex; };
   test(`${name}: opens by click, focus moves inside, trigger is expanded`, async (p) => {
     const ex = await open(p);
     await ex.click(trigger);
@@ -92,7 +93,7 @@ test('drawer: the left drawer slides from the left edge, the right one from the 
     await ex.click(label);
     await p.waitFor(`document.querySelector('[role=dialog][data-state=open]')`, 'drawer did not open');
     await p.sleep(200);
-    const r = await p.rect('[role=dialog]');
+    const r = (await p.rect('[role=dialog]'))!;
     assert(side === 'left' ? r.x <= 1 : Math.abs(r.right - 1280) <= 1, `${side} drawer is at x=${r.x}..${r.right}, not against the ${side} edge`);
     await p.key('Escape'); await p.waitFor(`!document.querySelector('[role=dialog]')`, 'did not close');
   }
@@ -130,7 +131,7 @@ test('tooltip: focus shows it, Escape hides it', async (p) => {
   await p.open('components/tooltip'); const ex = await p.example('Basic');
   await ex.focus('button|Save');
   await p.waitFor(`document.querySelector('[role=tooltip]')`, 'tooltip did not show on keyboard focus');
-  assert((await p.text('[role=tooltip]')).includes('Saved to'), 'tooltip text is wrong');
+  assert((await p.text('[role=tooltip]'))!.includes('Saved to'), 'tooltip text is wrong');
   await p.waitFor(`__e2e.find('button|Save').getAttribute('aria-describedby')`, 'trigger is not described by the tooltip');
   await p.key('Escape');
   await p.waitFor(`!document.querySelector('[role=tooltip]')`, 'tooltip still visible after Escape');

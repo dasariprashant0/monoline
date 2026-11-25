@@ -4,8 +4,9 @@ import {readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, copyFileSync
 import {join} from 'node:path';
 import {discover, docsRoot, repo} from './lib/load.ts';
 import {componentMarkdown} from './lib/markdown.ts';
+import type {Meta} from '../../../packages/react/scripts/lib.ts';
 
-const readJson = (rel) => { const f = join(docsRoot, rel); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : {}; };
+const readJson = (rel: string) => { const f = join(docsRoot, rel); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : {}; };
 const props = readJson('src/props.generated.json'), demos = readJson('src/page/demos.generated.json'), styling = readJson('src/page/styling.generated.json');
 const outDir = join(docsRoot, 'public/docs');
 rmSync(outDir, {recursive: true, force: true});
@@ -15,7 +16,7 @@ const items = discover();
 for (const {meta, kind} of items) {
   writeFileSync(join(outDir, `${meta.name}.md`), componentMarkdown({meta, extra: demos[meta.name], props: props[meta.name], styling: styling[meta.name], hook: kind === 'hooks'}));
 }
-const byCat = {};
+const byCat: Record<string, Meta[]> = {};
 for (const {meta} of items) (byCat[meta.category] ??= []).push(meta);
 const index = ['# Monoline documentation', '', 'One Markdown page per component and hook. Install with `npx monoline add <name>`.', ''];
 for (const [cat, list] of Object.entries(byCat)) {

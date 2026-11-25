@@ -1,10 +1,11 @@
 // dropdown-menu, menubar, context-menu: roving focus, typeahead, Escape and focus return.
 import {test, assert, eq} from '../test.ts';
+import type {Scope} from '../page.ts';
 
-const items = (p, sel = '[role=menuitem]') => p.eval(`[...document.querySelectorAll('[role=menu][data-state=open] ${sel}')].filter(__e2e.visible).map(e => e.textContent.trim())`);
-const focusedItem = (p) => p.eval(`document.activeElement && document.activeElement.getAttribute('role') === 'menuitem' ? document.activeElement.textContent.trim() : 'focus is on ' + __e2e.describe(document.activeElement)`);
-const openMenu = (p) => p.waitFor(`document.querySelector('[role=menu][data-state=open]')`, 'menu did not open');
-const closed = (p) => p.waitFor(`!document.querySelector('[role=menu]')`, 'menu did not close');
+const items = (p: Scope, sel = '[role=menuitem]'): Promise<string[]> => p.eval(`[...document.querySelectorAll('[role=menu][data-state=open] ${sel}')].filter(__e2e.visible).map(e => e.textContent.trim())`);
+const focusedItem = (p: Scope) => p.eval(`document.activeElement && document.activeElement.getAttribute('role') === 'menuitem' ? document.activeElement.textContent.trim() : 'focus is on ' + __e2e.describe(document.activeElement)`);
+const openMenu = (p: Scope) => p.waitFor(`document.querySelector('[role=menu][data-state=open]')`, 'menu did not open');
+const closed = (p: Scope) => p.waitFor(`!document.querySelector('[role=menu]')`, 'menu did not close');
 
 test('dropdown-menu: Enter opens, first item is focused, arrow keys move, End/Home jump', async (p) => {
   await p.open('components/dropdown-menu'); const ex = await p.example('Actions');
@@ -73,7 +74,7 @@ test('context-menu: right click opens at the pointer, arrows move, Escape closes
   await p.open('components/context-menu'); const ex = await p.example('Right click the box');
   const box = await p.point('div|Right click here');
   await ex.click('div|Right click here', 'right'); await openMenu(p);
-  const r = await p.rect('[role=menu]');
+  const r = (await p.rect('[role=menu]'))!;
   assert(Math.abs(r.x - box.x) < 40 && Math.abs(r.y - box.y) < 40, `menu opened at ${Math.round(r.x)},${Math.round(r.y)}, not near the pointer ${Math.round(box.x)},${Math.round(box.y)}`);
   await p.key('ArrowDown');
   await p.waitFor(`document.activeElement.getAttribute('role') === 'menuitem'`, `ArrowDown did not focus an item; ${await p.active()}`);

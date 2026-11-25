@@ -6,7 +6,7 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = fileURLToPath(new URL('../src/', import.meta.url));
-const walk = (d) => readdirSync(d).flatMap((n) => {
+const walk = (d: string): string[] => readdirSync(d).flatMap((n) => {
   const p = join(d, n);
   return statSync(p).isDirectory() ? walk(p) : p.endsWith('.css') ? [p] : [];
 });
@@ -19,7 +19,7 @@ const PHYSICAL = [
   /(?<![\w-])float\s*:\s*(left|right)\b/,
 ];
 
-const bad = [];
+const bad: string[] = [];
 let files = 0;
 for (const file of walk(root)) {
   files++;

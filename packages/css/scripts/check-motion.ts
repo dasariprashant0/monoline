@@ -8,7 +8,7 @@ import {readdirSync} from 'node:fs';
 import {read} from './lib.ts';
 
 const fails = [];
-const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
+const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '');
 const comps = readdirSync(new URL('../src/components/', import.meta.url)).filter((f) => f.endsWith('.css')).map((f) => `src/components/${f}`);
 const shared = ['src/base.css', 'src/tokens.css', 'src/accents.css', 'src/options.css', 'src/utilities.css'];
 

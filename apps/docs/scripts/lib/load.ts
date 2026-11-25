@@ -2,6 +2,7 @@
 import {readdirSync, readFileSync, existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {join} from 'node:path';
+import type {Meta} from '../../../../packages/react/scripts/lib.ts';
 
 export const repo = fileURLToPath(new URL('../../../../', import.meta.url));
 export const docsRoot = fileURLToPath(new URL('../../', import.meta.url));
@@ -11,8 +12,8 @@ export const GITHUB = 'https://github.com/dasariprashant0/monoline/tree/master';
 
 /** -> [{meta, dir, kind: 'components' | 'hooks'}] sorted by name. */
 export function discover() {
-  const out = [];
-  for (const kind of ['components', 'hooks']) {
+  const out: {meta: Meta; dir: string; kind: 'components' | 'hooks'}[] = [];
+  for (const kind of ['components', 'hooks'] as const) {
     const base = join(reactSrc, kind);
     if (!existsSync(base)) continue;
     for (const name of readdirSync(base)) {

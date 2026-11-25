@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {buildTokens, figmaVariables, parseSources, tokensCss, typesDts} from './lib.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const source = (file) => readFileSync(join(here, '../../css/src', file), 'utf8');
+const source = (file: string) => readFileSync(join(here, '../../css/src', file), 'utf8');
 const dist = join(here, '../dist');
 
 const src = parseSources({tokens: source('tokens.css'), accents: source('accents.css'), options: source('options.css')});

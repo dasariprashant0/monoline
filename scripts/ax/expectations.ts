@@ -18,14 +18,35 @@
 //     known     {kind: 'reason'}: a finding that is understood and not fixed. It shows in the report as open and does not fail the run.
 //   Every phase also gets the generic checks in run.ts: named controls, no focusable generics, labelledby and describedby resolve, dialogs have a name
 //   and a description (unless noDescription), invalid controls explain why (unless allowInvalidWithoutMessage).
+import type {Page} from '../e2e/page.ts';
+import type {AXNode, Scope} from './ax.ts';
+
+type Pattern = string | RegExp;
+type States = Record<string, Pattern | boolean | number>;
+export type Step = [op: 'click' | 'rclick' | 'focus' | 'hover' | 'type' | 'eval' | 'waitFor', arg: string] | [op: 'key', key: string, ...modifiers: string[]] | [op: 'keys', ...keys: string[]] | [op: 'tab', n?: number] | [op: 'wait', ms: number];
+export type Expect = {role: string; name?: Pattern; value?: Pattern; states?: States; description?: Pattern; rel?: Record<string, Pattern>; count?: number; nth?: number; note?: string};
+export type Dom = {sel: string; attr: string; value: Pattern};
+export type Finding = {kind: string; msg: string; known?: string};
+export type Row = {node?: AXNode; note?: string; focus?: boolean; dom?: Dom};
+type Ctx = {nodes: AXNode[]; scoped: AXNode[]; focused: AXNode | null};
+export type Phase = {
+  name: string; reset?: boolean; steps?: Step[]; scope?: string; expect?: Expect[];
+  focus?: {role: string; name?: Pattern; states?: States; activedescendant?: Pattern; controls?: boolean};
+  dom?: Dom[]; modal?: boolean; noDescription?: boolean; noInteractive?: boolean; allowUnnamed?: string[]; allowGenericFocusable?: boolean; allowInvalidWithoutMessage?: boolean;
+  known?: Record<string, string>;
+  after?: (c: Ctx) => string[];
+  custom?: (c: Ctx & {scope: Scope | null; add: (kind: string, msg: string) => void}) => {findings: Finding[]; rows: Row[]};
+};
+export type Component = {id: string; route: string; example?: string; open?: Parameters<Page['open']>[1]; phases: Phase[]};
+
 const D = '[role=dialog]';
-export const pageChecks = [
+export const pageChecks: Component[] = [
   {id: 'docs-page-structure', route: 'components/button', phases: [{
     name: 'landmarks and headings', scope: 'page',
     expect: [{role: 'main', count: 1}, {role: 'navigation', name: 'Main'}, {role: 'banner', count: 1}, {role: 'heading', states: {level: 1}}],
     after: ({nodes}) => {
       const live = nodes.filter((n) => !n.ignored);
-      const out = []; let last = 0;
+      const out: string[] = []; let last = 0;
       for (const h of live.filter((n) => n.role === 'heading')) { const l = h.props.level; if (last && l > last + 1) out.push(`heading "${h.name}" jumps from level ${last} to ${l}`); last = l; }
       for (const r of ['navigation', 'complementary']) for (const n of live.filter((x) => x.role === r)) if (!n.name && live.filter((x) => x.role === r).length > 1) out.push(`more than one ${r} landmark and this one has no name`);
       return out;
@@ -33,7 +54,7 @@ export const pageChecks = [
   }]},
 ];
 
-export const components = [
+export const components: Component[] = [
   {id: 'button', route: 'components/button', example: 'States', phases: [{name: 'rest',
     expect: [{role: 'button', name: 'Small'}, {role: 'button', name: 'Disabled', states: {disabled: true}}, {role: 'button', name: 'Saving', states: {disabled: true, busy: true}, note: 'The loading state is busy and unavailable.'}]}]},
   {id: 'icon-button', route: 'components/icon-button', example: 'Variants', phases: [{name: 'rest', expect: [{role: 'button', name: 'Add'}, {role: 'button', name: 'Add item'}, {role: 'button', name: 'Add row'}]}]},

@@ -12,11 +12,11 @@ const origin = (process.env.DOCS_ORIGIN ?? 'https://monoline.prashantdasari.com'
 const base = `/${(process.env.DOCS_BASE ?? '/').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 const dist = join(docsRoot, 'dist');
 const ssrOut = join(docsRoot, 'node_modules/.prerender');
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 rmSync(ssrOut, {recursive: true, force: true});
 await build({root: docsRoot, logLevel: 'warn', build: {ssr: 'src/entry-server.tsx', outDir: ssrOut, emptyOutDir: true, copyPublicDir: false}});
-const {render, routes} = await import(pathToFileURL(join(ssrOut, 'entry-server.js')).href);
+const {render, routes} = await import(pathToFileURL(join(ssrOut, 'entry-server.js')).href) as {render: (path: string) => string; routes: {path: string; title: string; description: string}[]};
 
 const template = readFileSync(join(dist, 'index.html'), 'utf8');
 if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no empty #root');
@@ -27,7 +27,7 @@ const homeCss = assets.find((f) => /^Home-.*\.css$/.test(f));
 const overviewCss = assets.find((f) => /^Overview-.*\.css$/.test(f)); // the Components overview is a lazy chunk too
 const fonts = ['dm-mono-400', 'dm-mono-500'].map((n) => assets.find((f) => f.startsWith(`${n}-`) && f.endsWith('.woff2'))).filter(Boolean);
 const fontTags = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" crossorigin href="${base}assets/${f}" />`);
-const url = (path) => `${origin}${base}${path ? `${path}/` : ''}`;
+const url = (path: string) => `${origin}${base}${path ? `${path}/` : ''}`;
 
 for (const r of routes) {
   const {path, title, description} = r;

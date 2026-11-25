@@ -12,13 +12,15 @@ import {spawn} from 'node:child_process';
 import {createServer} from 'node:http';
 import {existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
+import type {AddressInfo} from 'node:net';
 import {extname, join, normalize} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {installSweep, sweepState} from './lib/sweep.ts';
+import type {Cdp, CdpMessage, Evaluate} from './lib/cdp.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
-const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
+const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const shotsDir = opt('shots', '');
 const apps = opt('apps', 'dashboard,auth-settings,landing').split(',');
 const scenarioFilter = opt('scenario', '');
@@ -27,8 +29,10 @@ const THEMES = opt('themes', 'warm,dark,midnight').split(',');
 if (shotsDir) mkdirSync(shotsDir, {recursive: true});
 
 // Actions: {click: [selector, text?]} real mouse click, {key: 'ctrl+k' | 'Escape' | 'Tab'}, {type: [selector, value]}, {wait: ms}, {js: code}
-const C = (sel, text) => ({click: [sel, text]});
-const SCENARIOS = {
+type Action = {click?: [string, string?]; hover?: [string, string]; key?: string; type?: [string, string]; wait?: number; js?: string; assert?: [string, string]};
+type Scenario = {name: string; hash: string; actions?: Action[]; known?: string[]; only?: string; sweep?: boolean};
+const C = (sel: string, text?: string): Action => ({click: [sel, text]});
+const SCENARIOS: Record<string, Scenario[]> = {
   dashboard: [
     {name: 'overview', hash: ''},
     {name: 'orders', hash: 'orders'},
@@ -65,7 +69,7 @@ const SCENARIOS = {
 
 // --- static server for examples/<app>/dist
 let current = '';
-const mime = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png'};
+const mime: Record<string, string> = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png'};
 const server = createServer((req, res) => {
   const dist = join(root, 'examples', current, 'dist');
   const path = normalize(decodeURIComponent((req.url ?? '/').split('?')[0])).replace(/^(\.\.[/\\])+/, '');
@@ -74,11 +78,11 @@ const server = createServer((req, res) => {
   res.writeHead(200, {'content-type': mime[extname(file)] ?? 'application/octet-stream'});
   res.end(readFileSync(file));
 });
-await new Promise((r) => server.listen(0, '127.0.0.1', r));
-const base = `http://127.0.0.1:${server.address().port}/`;
+await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
+const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/`;
 
 // --- launch Chrome (needs the sandbox off in Claude Code's own sandbox; fine on a normal machine)
-const candidates = [process.env.CHROME, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].filter(Boolean);
+const candidates = [process.env.CHROME, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].filter(Boolean) as string[];
 const chromePath = candidates.find((p) => existsSync(p));
 if (!chromePath) { console.error('Chrome not found. Set CHROME=/path/to/chrome.'); server.close(); process.exit(2); }
 const profile = mkdtempSync(join(tmpdir(), 'monoline-ex-audit-'));
@@ -95,30 +99,30 @@ const [port, wsPath] = readFileSync(portFile, 'utf8').trim().split('\n');
 // --- minimal CDP client
 const ws = new WebSocket(`ws://127.0.0.1:${port}${wsPath}`);
 await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });
-let id = 0; const waiting = new Map(); const listeners = [];
+let id = 0; const waiting = new Map(); const listeners: ((msg: CdpMessage) => void)[] = [];
 ws.onmessage = (m) => {
   const msg = JSON.parse(m.data);
   if (msg.id && waiting.has(msg.id)) { const {res, rej} = waiting.get(msg.id); waiting.delete(msg.id); msg.error ? rej(new Error(msg.error.message)) : res(msg.result); }
   else listeners.forEach((l) => l(msg));
 };
-const send = (method, params = {}, sessionId) => new Promise((res, rej) => { const i = ++id; waiting.set(i, {res, rej}); ws.send(JSON.stringify({id: i, method, params, sessionId})); });
+const send = (method: string, params: object = {}, sessionId?: string): Promise<CdpMessage> => new Promise((res, rej) => { const i = ++id; waiting.set(i, {res, rej}); ws.send(JSON.stringify({id: i, method, params, sessionId})); });
 const {targetId} = await send('Target.createTarget', {url: 'about:blank'});
 const {sessionId} = await send('Target.attachToTarget', {targetId, flatten: true});
-const cdp = (m, p) => send(m, p, sessionId);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const evaluate = async (expression) => {
+const cdp: Cdp = (m, p) => send(m, p, sessionId);
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const evaluate: Evaluate = async (expression) => {
   const r = await cdp('Runtime.evaluate', {expression, awaitPromise: true, returnByValue: true});
   if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
   return r.result.value;
 };
 
-const problems = [];
+const problems: {state: string; kind: string; detail: string}[] = [];
 let state = '';
-let knownKinds = [];
-const note = (kind, detail) => problems.push({state, kind: knownKinds.includes(kind) ? `known ${kind}` : kind, detail});
+let knownKinds: string[] = [];
+const note = (kind: string, detail: string) => problems.push({state, kind: knownKinds.includes(kind) ? `known ${kind}` : kind, detail});
 listeners.push((m) => {
   if (m.sessionId !== sessionId) return;
-  if (m.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(m.params.type)) note(`console-${m.params.type}`, m.params.args.map((a) => a.value ?? a.description ?? '').join(' ').slice(0, 220));
+  if (m.method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(m.params.type)) note(`console-${m.params.type}`, m.params.args.map((a: any) => a.value ?? a.description ?? '').join(' ').slice(0, 220));
   if (m.method === 'Runtime.exceptionThrown') note('exception', (m.params.exceptionDetails.exception?.description ?? m.params.exceptionDetails.text).slice(0, 220));
   if (m.method === 'Network.loadingFailed' && !m.params.canceled) note('request-failed', m.params.errorText);
 });
@@ -126,28 +130,28 @@ await cdp('Runtime.enable'); await cdp('Network.enable'); await cdp('Page.enable
 await cdp('Page.addScriptToEvaluateOnNewDocument', {source: readFileSync(join(root, 'node_modules/axe-core/axe.min.js'), 'utf8')});
 await installSweep(cdp);
 
-const KEYS = {Escape: 27, Tab: 9, Enter: 13};
-async function key(combo) {
-  const parts = combo.split('+'); const k = parts.pop();
+const KEYS: Record<string, number> = {Escape: 27, Tab: 9, Enter: 13};
+async function key(combo: string) {
+  const parts = combo.split('+'); const k = parts.pop()!;
   const modifiers = (parts.includes('alt') ? 1 : 0) | (parts.includes('ctrl') ? 2 : 0) | (parts.includes('meta') ? 4 : 0) | (parts.includes('shift') ? 8 : 0);
   const code = KEYS[k] ?? k.toUpperCase().charCodeAt(0);
   const ev = {key: k, code: k.length === 1 ? `Key${k.toUpperCase()}` : k, windowsVirtualKeyCode: code, modifiers};
   await cdp('Input.dispatchKeyEvent', {type: 'rawKeyDown', ...ev});
   await cdp('Input.dispatchKeyEvent', {type: 'keyUp', ...ev});
 }
-async function mouseClick([sel, text]) {
+async function mouseClick([sel, text]: [string, string?]) {
   const rect = await evaluate(`(() => { const els = [...document.querySelectorAll(${JSON.stringify(sel)})].filter(e => e.getClientRects().length); const el = ${text ? `els.find(e => (e.textContent || e.getAttribute('aria-label') || '').trim().startsWith(${JSON.stringify(text)}))` : 'els[0]'}; if (!el) return null; el.scrollIntoView({block: 'center'}); const r = el.getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()`);
   if (!rect) throw new Error(`click target not found: ${sel} ${text ?? ''}`);
   await cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: rect.x, y: rect.y});
   await cdp('Input.dispatchMouseEvent', {type: 'mousePressed', x: rect.x, y: rect.y, button: 'left', clickCount: 1});
   await cdp('Input.dispatchMouseEvent', {type: 'mouseReleased', x: rect.x, y: rect.y, button: 'left', clickCount: 1});
 }
-async function mouseHover([sel, text]) {
+async function mouseHover([sel, text]: [string, string]) {
   const rect = await evaluate(`(() => { const els = [...document.querySelectorAll(${JSON.stringify(sel)})].filter(e => e.getClientRects().length); const el = els.find(e => (e.textContent || '').trim().startsWith(${JSON.stringify(text)})); if (!el) return null; const r = el.getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()`);
   if (!rect) throw new Error(`hover target not found: ${sel} ${text}`);
   await cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: rect.x, y: rect.y});
 }
-async function act(a) {
+async function act(a: Action) {
   if (a.click) await mouseClick(a.click);
   else if (a.hover) await mouseHover(a.hover);
   else if (a.key) await key(a.key);
@@ -177,7 +181,7 @@ for (const app of apps) {
       await cdp('Page.navigate', {url: `${base}${sc.hash ? '#' + sc.hash : ''}`});
       await sleep(700);
       await evaluate(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
-      try { for (const a of sc.actions ?? []) await act(a); } catch (e) { note('scenario-failed', e.message.slice(0, 200)); continue; }
+      try { for (const a of sc.actions ?? []) await act(a); } catch (e) { note('scenario-failed', (e as Error).message.slice(0, 200)); continue; }
       await sleep(250);
       states++;
       if (await evaluate('document.documentElement.scrollWidth > innerWidth + 1')) note('horizontal-overflow', `${await evaluate('document.documentElement.scrollWidth')}px wide`);
@@ -193,8 +197,8 @@ for (const app of apps) {
 
 const seconds = ((Date.now() - started) / 1000).toFixed(0);
 cleanup();
-const groups = new Map();
-for (const p of problems) { const k = `${p.kind} | ${p.detail}`; const g = groups.get(k) ?? groups.set(k, []).get(k); g.push(p.state); }
+const groups = new Map<string, string[]>();
+for (const p of problems) { const k = `${p.kind} | ${p.detail}`; const g = groups.get(k) ?? groups.set(k, []).get(k)!; g.push(p.state); }
 console.log(`${states} states audited in ${seconds}s`);
 for (const [k, st] of groups) console.log(`${k.startsWith('known ') ? 'KNOWN' : 'FAIL'} ${k}  [${[...new Set(st)].slice(0, 3).join(', ')}${new Set(st).size > 3 ? ` +${new Set(st).size - 3}` : ''}]`);
 const failing = [...groups.keys()].filter((k) => !k.startsWith('known '));
