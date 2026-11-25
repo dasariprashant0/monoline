@@ -1,5 +1,5 @@
 // Components overview: one card per component and hook, grouped by category.
-// A component's thumbnail is the real component: scripts/gen-thumbs.mjs renders one demo to static HTML, and the card
+// A component's thumbnail is the real component: scripts/gen-thumbs.ts renders one demo to static HTML, and the card
 // shows it scaled down inside an SVG (foreignObject), so it follows the theme, accent and text direction with no
 // JavaScript. Hooks draw nothing, so each has a small purpose-made illustration below.
 import type {ReactNode} from 'react';

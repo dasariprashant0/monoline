@@ -1,5 +1,5 @@
 // First-run guides: Vite walkthrough, Next.js, copy-paste recipes and "is this for me". Code strings live in
-// site/start-snippets.ts, where each one is a file that was built in a clean app (see docs/ADOPTION.md).
+// site/start-snippets.ts, where each one is a file that was built in a clean app (see docs/archive/ADOPTION.md).
 import {CodeBlock} from '@monoline/react';
 import {Section, P, PmCode, pmInstall, href, GITHUB} from './guide-parts';
 import {viteMain1, viteMain2, settings, toastDemo} from './site/start-snippets';
@@ -92,7 +92,7 @@ export const choosing = () => (
       </dl>
     </Section>
     <Section title="Where the numbers come from">
-      <P>Sizes are measured with <code>npm run size</code>. Install steps were run from a clean folder against the published packages; the log is in <a href={`${GITHUB}/blob/master/docs/ADOPTION.md`}>docs/ADOPTION.md</a>.</P>
+      <P>Sizes are measured with <code>npm run size</code>. Install steps were run from a clean folder against the published packages; the log is in <a href={`${GITHUB}/blob/master/docs/archive/ADOPTION.md`}>docs/archive/ADOPTION.md</a>.</P>
     </Section>
   </>
 );

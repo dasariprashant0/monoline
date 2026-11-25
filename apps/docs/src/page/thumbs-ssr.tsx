@@ -1,4 +1,4 @@
-// Build-time only (scripts/gen-thumbs.mjs loads it through Vite's SSR): renders one demo per component to static HTML.
+// Build-time only (scripts/gen-thumbs.ts loads it through Vite's SSR): renders one demo per component to static HTML.
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {Demo} from '@monoline/react';
 import {OVERRIDES} from './thumb-overrides';

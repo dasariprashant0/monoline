@@ -11,7 +11,7 @@ review their diffs, and decide.
 1. `AGENTS.md`: layout, commands, component recipe, API conventions, a11y bar, parallel-work rules.
 2. `DESIGN.md`: the look and the token list. Monoline's restraint (monospace, square edges, thin
    rules, one accent) is a deliberate direction, not an unstyled default.
-3. `docs/ROADMAP.md`, `docs/STRATEGY.md`, `docs/IMPROVEMENT-PLAN.md`: what is done, open and planned.
+3. `docs/ROADMAP.md`: what is done, open and planned (the older `STRATEGY.md` and `IMPROVEMENT-PLAN.md` are in `docs/archive/`).
 4. `docs/decisions/0001–0007`: current ADRs. Read the one covering an area before changing it.
 5. `docs/research/`: 15 competitor write-ups plus a synthesis and coverage matrix. Extend it; do
    not redo it.
@@ -25,8 +25,8 @@ review their diffs, and decide.
   `packages/mcp` (zero-dep `.mjs` MCP server), `packages/vscode` (snippets).
 - Generated and CI-checked: `registry/` (160 JSON), `llms.txt`, `llms-full.txt`, react `src/index.ts`.
 - Tests: vitest + Testing Library + vitest-axe per component; e2e/audit/ax through a hand-written CDP
-  client (`scripts/lib/cdp.mjs`); Playwright only for Firefox/WebKit smoke. Size budgets via
-  `scripts/size.mjs`. Install smoke in Vite, Next, Astro, React Router starters (`examples/starters`).
+  client (`scripts/lib/cdp.ts`); Playwright only for Firefox/WebKit smoke. Size budgets via
+  `scripts/size.ts`. Install smoke in Vite, Next, Astro, React Router starters (`examples/starters`).
 - Gaps: ~70 tooling files are `.mjs` (incl. the published CLI and MCP); `exactOptionalPropertyTypes`
   is off everywhere; `apps/docs` lacks `noUncheckedIndexedAccess`; no lint/format tooling; no
   screenshot visual regression; no React Native, Expo, Electron or Tauri anywhere; 0.5.0 unpublished
@@ -54,7 +54,7 @@ force until an accepted ADR supersedes it; the same change then updates `AGENTS.
 
 Hard rules (each says what to do instead):
 
-1. **Publishing is the user's action.** Never run `npm publish`, `scripts/release.mjs`, `git push`,
+1. **Publishing is the user's action.** Never run `npm publish`, `scripts/release.ts`, `git push`,
    create releases or tags, or merge. Prepare everything and list the exact commands for the user.
 2. **Commit only when the user says so.** Work on a branch from `origin/master` after
    `sh scripts/sync-master.sh`; subagents get their own worktrees.

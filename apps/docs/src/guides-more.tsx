@@ -98,14 +98,14 @@ export const accessibility = () => (
         <dt>Slider</dt><dd>Arrows step, Home and End jump, PageUp and PageDown take larger steps.</dd>
         <dt>Calendar</dt><dd>Arrows move by day and week, Home and End go to the ends of the week, PageUp and PageDown change month.</dd>
       </dl>
-      <P>If you run axe against an open <strong>menu</strong> or <strong>select</strong>, it reports <code>aria-hidden-focus</code> on the app root. When the page behind an open overlay is hidden with <code>aria-hidden</code> and focus is held inside it, no user can reach the hidden content; axe only forgives this for <code>aria-modal</code> dialogs. The audit script treats it as known, not as a Monoline bug. <code>scripts/audit-examples.mjs</code> lists it as KNOWN.</P>
+      <P>If you run axe against an open <strong>menu</strong> or <strong>select</strong>, it reports <code>aria-hidden-focus</code> on the app root. When the page behind an open overlay is hidden with <code>aria-hidden</code> and focus is held inside it, no user can reach the hidden content; axe only forgives this for <code>aria-modal</code> dialogs. The audit script treats it as known, not as a Monoline bug. <code>scripts/audit-examples.ts</code> lists it as KNOWN.</P>
       <P>The exact behaviour of each component is listed in the Accessibility section of its page, from <code>meta.json</code>, and each item is covered by a test.</P>
     </Section>
     <Section title="Focus ring and motion">
       <P>Focus uses one shared rule in <code>base.css</code>: <code>:focus-visible</code> draws a 2px outline in <code>--accent</code> with a 3px offset. Components must not remove it. Under <code>prefers-reduced-motion: reduce</code> the same file turns off all animations and transitions. Components in the <code>effects</code> category are exempt from the shared rule but must respect the preference themselves. In your own code, the <code>useReducedMotion</code> hook reads the preference.</P>
     </Section>
     <Section title="Contrast rules and npm run check">
-      <P><code>npm run check</code> runs <code>packages/css/scripts/check.mjs</code>, which computes WCAG contrast ratios from the token files and fails the build when one is too low. For each of the three themes it requires:</P>
+      <P><code>npm run check</code> runs <code>packages/css/scripts/check.ts</code>, which computes WCAG contrast ratios from the token files and fails the build when one is too low. For each of the three themes it requires:</P>
       <ul className="why">
         <li>4.5:1 for foreground, muted, danger, warning and ok text on the background.</li>
         <li>4.5:1 for white text on the surface colour.</li>
@@ -248,8 +248,8 @@ export const contributing = () => (
     <Section title="What is generated">
       <P>Do not edit these by hand and do not commit them unless you are the maintainer (see the ownership rules in <code>AGENTS.md</code>).</P>
       <dl className="kv">
-        <dt><code>packages/react/src/index.ts</code></dt><dd>Written by <code>scripts/gen-index.mjs</code> (run by build, test and typecheck): one <code>export *</code> for each folder that has an <code>index.ts</code>. Gitignored.</dd>
-        <dt><code>registry/*.json</code></dt><dd>Written by <code>npm run registry</code> (<code>scripts/gen-registry.mjs</code>): one file per component with its metadata and full source, plus <code>index.json</code>. The CLI reads these.</dd>
+        <dt><code>packages/react/src/index.ts</code></dt><dd>Written by <code>scripts/gen-index.ts</code> (run by build, test and typecheck): one <code>export *</code> for each folder that has an <code>index.ts</code>. Gitignored.</dd>
+        <dt><code>registry/*.json</code></dt><dd>Written by <code>npm run registry</code> (<code>scripts/gen-registry.ts</code>): one file per component with its metadata and full source, plus <code>index.json</code>. The CLI reads these.</dd>
         <dt><code>llms.txt</code>, <code>llms-full.txt</code></dt><dd>Written by the same script: a short index and a full reference for language models.</dd>
         <dt><code>apps/docs/src/props.generated.json</code></dt><dd>The props tables on component pages, written before dev and build.</dd>
       </dl>
@@ -268,7 +268,7 @@ export const accessibilityStatement = () => (
         <dt>axe in unit tests</dt><dd>Every component has a <code>vitest-axe</code> test in jsdom, and one shared test renders every demo on this site and runs axe on it. jsdom has no layout, so colour contrast and landmark rules are switched off there.</dd>
         <dt>Keyboard and roles in unit tests</dt><dd>Testing Library with <code>user-event</code>: real key presses, found by role and name. Each item in a component's Accessibility list is covered by a test.</dd>
         <dt>Token contrast</dt><dd><code>npm run check</code> computes WCAG contrast ratios from the token files for all three themes and every accent, and fails on a raw colour in a component stylesheet. It checks tokens, not your pages.</dd>
-        <dt>axe in a real browser</dt><dd><code>scripts/audit.mjs</code> runs axe, an overflow check and a console check on the docs pages in three themes, at desktop width and at 375 px.</dd>
+        <dt>axe in a real browser</dt><dd><code>scripts/audit.ts</code> runs axe, an overflow check and a console check on the docs pages in three themes, at desktop width and at 375 px.</dd>
         <dt>Accessibility tree in Chrome</dt><dd><code>npm run ax</code> performs key presses and clicks in Chrome and reads the accessibility tree Chrome builds (the same tree screen readers read through the platform APIs). It asserts roles, names, states, focus and live regions for 41 components. It is not a screen reader test.</dd>
         <dt>Browsers</dt><dd>The end-to-end suite runs in Chrome. Firefox and WebKit run a smoke test only.</dd>
       </dl>

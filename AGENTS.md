@@ -28,16 +28,21 @@ npm install --cache "$TMPDIR/npm-cache"   # once
 npm run dev                               # docs site on :5180, live components and CSS
 npm test                                  # vitest + axe for every component
 npm run typecheck                         # tsc for react + docs
-npm run check                             # css lint (contrast, raw colours, motion), doc comments, 'use client', registry, typecheck, tests
-npm run build                             # css dist, react dist, docs site
+npm run check                             # css lint (contrast, raw colours, motion), doc comments, 'use client', registry, typecheck, script typecheck, tests
+npm run typecheck:scripts                 # tsc over every .ts script (tsconfig.scripts.json)
+npm run build                             # css dist, react dist, docs site, cli and mcp dist
 npm run size                              # gzip budgets for JS and CSS; run after build
 npm run typecheck:examples                # examples and the consumer type check, against dist; run after build
 npm run test:docs -w docs                 # docs scripts tests
 npm run registry                          # regenerate registry/ and llms*.txt
 npm run tokens                            # regenerate packages/tokens/dist
+npm run test:tokens                       # tokens generator tests
+npm run test:vscode                       # snippet generator tests
 ```
 
 The other root scripts (`test:cli`, `test:mcp`, `e2e`, `ax`, `install-smoke` and more) are listed in `package.json`.
+
+Scripts are TypeScript that Node runs directly (type stripping, Node 22.18 or later; `.nvmrc` says 22). Write erasable syntax only (no `enum`, `namespace` or parameter properties), end relative imports in `.ts`, and keep them passing `npm run typecheck:scripts` ([ADR 0010](docs/decisions/0010-typescript-scripts-and-one-build-ci.md)). The CLI and MCP packages are built with `tsc` instead, because Node does not strip types under `node_modules` ([ADR 0008](docs/decisions/0008-cli-mcp-typescript-and-pinned-registry.md)).
 
 ### Sandbox
 
@@ -99,7 +104,7 @@ packages/css/src/components/<name>.css   styles, tokens only
 
 - Tokens only: no raw hex, px font size or spacing number. `npm run check` fails on raw colours. If a value is missing, add a token to `tokens.css` first (all three themes).
 - Square edges (`--radius` is 0), thin `--rule` lines, no shadows except toast/popover layers, no gradients except `--hatch` (the `effects` category is exempt but must respect `prefers-reduced-motion`).
-- Source files are unlayered; `packages/css/scripts/bundle.mjs` adds the layers when it builds `dist/`. Do not write `@layer` in `src/`.
+- Source files are unlayered; `packages/css/scripts/bundle.ts` adds the layers when it builds `dist/`. Do not write `@layer` in `src/`.
 - Style Radix and native state through attributes: `[data-state="open"]`, `[aria-current]`, `[aria-invalid="true"]`, `:disabled`. Focus uses `:focus-visible` with the shared ring.
 - A component's CSS lives in its own file, named after the component. Do not append to another file.
 - Class names are plain and unprefixed (`.btn`, `.card`, `.dialog`). Variants are a second class (`.btn-solid`). Parts use a dash (`.card-header`). Keep them short and unsurprising.
@@ -135,7 +140,7 @@ Every prop in an exported `*Props` interface or type, every exported component a
 
 - Prop: one plain sentence saying what it does and when to use it, with the default or allowed values (`/** Shows a spinner and ignores clicks. Default false. */`).
 - Component or hook: one or two sentences, plus a one-line `@example` where it helps. For a hook, say what it returns, its parameters and what it does during server rendering.
-- `npm run check` runs `packages/react/scripts/check-docs.mjs`, which lists each file, line and name that is missing a comment and exits 1. Run `npm run check:docs -w @monoline/react` to run only this check.
+- `npm run check` runs `packages/react/scripts/check-docs.ts`, which lists each file, line and name that is missing a comment and exits 1. Run `npm run check:docs -w @monoline/react` to run only this check.
 
 ## Parallel work: ownership rules
 
@@ -155,7 +160,7 @@ Regenerate them with their command and commit the output in the same PR as the c
 |---|---|---|---|
 | `registry/`, `llms.txt`, `llms-full.txt` | `npm run registry` | yes | `ci.yml` diff step |
 | `packages/tokens/dist/` | `npm run tokens` | yes | `ci.yml` diff step |
-| `packages/vscode/snippets/` | `node packages/vscode/scripts/build.mjs`, after `npm run registry` | yes | no (its test runs nowhere yet) |
+| `packages/vscode/snippets/` | `node packages/vscode/scripts/build.ts`, after `npm run registry` | yes | `npm run test:vscode` in `ci.yml` |
 | `packages/react/src/index.ts` and `styles.ts`, `apps/docs/src/**/*.generated.json`, `apps/docs/public/docs/`, `apps/docs/public/llms.txt`, any `dist/` except tokens | run by `test`, `typecheck`, `build`, `dev` | no, gitignored | n/a |
 
 On a merge conflict in a generated file, take either side and run its command again; never merge it by hand.

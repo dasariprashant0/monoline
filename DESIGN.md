@@ -214,7 +214,7 @@ Every built file declares or joins five layers, in this order (later wins, whate
 | `monoline.options` | `options.css`: `data-font`, `data-radius`, `data-density`. After components, because `data-radius="round"` restyles `.btn`, `.badge` and `.tag` |
 | `monoline.utilities` | `utilities.css`: layout helpers, plus the forced-colours and more-contrast token overrides |
 
-The order is declared once, at the top of `core.css` (and `monoline.css`); per-component files only join the layers. Your own CSS outside any layer beats all five, so an app rule needs no extra specificity or `!important`. The source files are plain CSS: `scripts/bundle.mjs` adds the `@layer` wrappers at build time, and `npm run check` proves the wrapping loses no rule.
+The order is declared once, at the top of `core.css` (and `monoline.css`); per-component files only join the layers. Your own CSS outside any layer beats all five, so an app rule needs no extra specificity or `!important`. The source files are plain CSS: `scripts/bundle.ts` adds the `@layer` wrappers at build time, and `npm run check` proves the wrapping loses no rule.
 
 ## Options: font, corners, density, accents
 

@@ -8,7 +8,7 @@ Last updated 2026-11-24. Status is checked against this tree (measured 2026-11-2
 |---|---|---|
 | Components | 136 components and 23 hooks | `registry/index.json` (159 entries: 136 components plus 23 hooks; the folder holds 160 files with `index.json`) |
 | Tests | 1,550 unit tests with axe and keyboard checks; every demo renders in a test | `npm test` |
-| Real-browser checks | axe, overflow and console errors on every docs page in 3 themes at desktop and 375 px; e2e suite in Chrome (`scripts/e2e/tests`); Firefox and WebKit smoke (`scripts/e2e/cross-browser`) | `scripts/audit.mjs`, `scripts/e2e` |
+| Real-browser checks | axe, overflow and console errors on every docs page in 3 themes at desktop and 375 px; e2e suite in Chrome (`scripts/e2e/tests`); Firefox and WebKit smoke (`scripts/e2e/cross-browser`) | `scripts/audit.ts`, `scripts/e2e` |
 | Look options | 8 accents, 3 fonts, 3 corner styles, 3 densities, RTL | `packages/css/src/options.css`, `docs/rtl.md` |
 | Accessibility proof | axe and an accessibility-tree check for 41 components (0 fail, 3 distinct open findings in 10 occurrences). No NVDA, JAWS, VoiceOver or TalkBack run by anyone | `docs/a11y-report.md` |
 | Docs | page per component, search, playground, themes, blocks, compare | `apps/docs` |
@@ -33,13 +33,13 @@ Skip on purpose: 3D, WebGL and glow effects; enterprise-only widgets (Transfer, 
 
 | Step | Status | Evidence |
 |---|---|---|
-| 0.1 Per-module build and size budget | done | `scripts/size.mjs`; budgets raised on purpose (all CSS 21 KB; Tooltip +0.3, Popover +0.3, DropdownMenu +0.2, Select +0.1 KB for anchor positioning), see ADR 0002 |
+| 0.1 Per-module build and size budget | done | `scripts/size.ts`; budgets raised on purpose (all CSS 21 KB; Tooltip +0.3, Popover +0.3, DropdownMenu +0.2, Select +0.1 KB for anchor positioning), see ADR 0002 |
 | 0.2 Green CI on GitHub | unverified | workflows exist in `.github/workflows`; run history not read |
-| 0.3 Publish to npm with provenance | open | workflow, `scripts/release.mjs` and a release dry run exist; the owner decides when to publish. `@monoline/tokens` has never been published |
-| 0.4 Clean installs in Vite, Next.js, Astro, React Router | done | `npm run install-smoke` (`scripts/install-smoke/run.mjs`), `examples/starters/{vite,next,astro,react-router}`. A React Router starter stands in for Remix |
+| 0.3 Publish to npm with provenance | open | workflow, `scripts/release.ts` and a release dry run exist; the owner decides when to publish. `@monoline/tokens` has never been published |
+| 0.4 Clean installs in Vite, Next.js, Astro, React Router | done | `npm run install-smoke` (`scripts/install-smoke/run.ts`), `examples/starters/{vite,next,astro,react-router}`. A React Router starter stands in for Remix |
 | 0.5 React 18 and 19 matrix | done | `react-matrix` job in `.github/workflows/ci.yml` (run history not read) |
 | 0.6 Real-browser interaction tests | partial | `scripts/e2e` runs in Chrome. Firefox and WebKit run a smoke test only (`scripts/e2e/cross-browser/smoke.mjs`) |
-| 0.7 CSS split with `@layer` | done | `core.css` plus per-component files; layers added in `packages/css/scripts/bundle.mjs` (ADR 0003) |
+| 0.7 CSS split with `@layer` | done | `core.css` plus per-component files; layers added in `packages/css/scripts/bundle.ts` (ADR 0003) |
 
 ## Phase 1: make it consistent
 
@@ -134,7 +134,7 @@ Until 1.0: semver, a minor may change class names, every change listed in `CHANG
 
 - `npm run check`: CSS lint (contrast, raw colours, motion), doc comments on every prop, registry, typecheck, tests
 - `npm run size`: per-component and CSS budgets
-- `node scripts/audit.mjs`: real-browser axe, overflow, console errors; `--visual` writes and compares local screenshots (no CI job: it diffed byte-exact PNGs against its own base and was ignored)
+- `node scripts/audit.ts`: real-browser axe, overflow, console errors; `--visual` writes and compares local screenshots (no CI job: it diffed byte-exact PNGs against its own base and was ignored)
 
 ## Measures of success
 

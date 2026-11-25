@@ -6,7 +6,7 @@ import {cpSync, existsSync, readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 
 const root = (p: string) => fileURLToPath(new URL(p, import.meta.url));
-const cssBuild = root('../../packages/css/scripts/build.mjs');
+const cssBuild = root('../../packages/css/scripts/build.ts');
 
 /** Rebuild packages/css/dist when a stylesheet in packages/css/src changes, then reload. */
 function monolineCss(): Plugin {

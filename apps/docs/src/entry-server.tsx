@@ -1,4 +1,4 @@
-// Server entry for scripts/prerender.mjs: renders any docs route to an HTML string. Not shipped to the browser.
+// Server entry for scripts/prerender.ts: renders any docs route to an HTML string. Not shipped to the browser.
 import {renderToString} from 'react-dom/server';
 import {App, pageMeta, preloadAll} from './shell/App';
 import {entries} from './shell/registry';

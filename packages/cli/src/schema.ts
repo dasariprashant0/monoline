@@ -1,4 +1,4 @@
-// The registry JSON that packages/react/scripts/gen-registry.mjs writes, as types, plus a load-time guard.
+// The registry JSON that packages/react/scripts/gen-registry.ts writes, as types, plus a load-time guard.
 // The same file is in packages/cli/src and packages/mcp/src (a test keeps them identical): neither package
 // may depend on the other at runtime.
 

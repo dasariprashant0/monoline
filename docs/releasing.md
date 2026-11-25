@@ -10,7 +10,7 @@ Three packages are published from this repo, always at the same version:
 
 Nothing has been published yet. The packages are already at `0.3.0`, so the first release is `0.3.0` with no bump.
 
-Everything below runs from the repo root. `scripts/release.mjs` does the checking and the publishing; `.github/workflows/release.yml` runs the same steps in CI.
+Everything below runs from the repo root. `scripts/release.ts` does the checking and the publishing; `.github/workflows/release.yml` runs the same steps in CI.
 
 ## 1. Check the names
 
@@ -71,7 +71,7 @@ Never paste the token into a file, a chat or a commit. The workflow reads it fro
 ## 5. Commit the release state
 
 ```bash
-node scripts/release.mjs check
+node scripts/release.ts check
 ```
 
 `check` copies `LICENSE` into any package that lacks one. Commit those copies with the rest of the release work. A real publish refuses while the working tree is dirty.
@@ -85,7 +85,7 @@ npm run build
 npm run size
 npm run test:cli
 npm run test:release
-node scripts/release.mjs check
+node scripts/release.ts check
 ```
 
 Every line must pass. `check` prints the size and file list of each tarball. Read the list once: nothing from `test/`, `*.test.*`, `*.demo.*` or `scripts/` should be in it.
@@ -93,7 +93,7 @@ Every line must pass. `check` prints the size and file list of each tarball. Rea
 ## 6. Dry run
 
 ```bash
-node scripts/release.mjs publish --dry-run
+node scripts/release.ts publish --dry-run
 ```
 
 This runs `npm publish --dry-run --access public` for each package, in dependency order (`@monoline/css`, then `@monoline/react`, then `monoline`). It uploads nothing. The output ends with `publish dry run passed` when all three work.
@@ -112,7 +112,7 @@ Choose one of two paths.
 **B. From your machine (no provenance).** Use this only if CI is not set up yet.
 
 ```bash
-node scripts/release.mjs publish --yes
+node scripts/release.ts publish --yes
 ```
 
 npm asks for a one-time code from your authenticator app for each package. The script checks login and a clean git tree first, then publishes in order. If it stops halfway, run it again: packages already on npm are skipped. Then tag and release by hand:
@@ -120,7 +120,7 @@ npm asks for a one-time code from your authenticator app for each package. The s
 ```bash
 git tag -a v0.3.0 -m "Monoline v0.3.0"
 git push origin v0.3.0
-node scripts/release.mjs notes 0.3.0 | gh release create v0.3.0 --title "Monoline v0.3.0" --notes-file -
+node scripts/release.ts notes 0.3.0 | gh release create v0.3.0 --title "Monoline v0.3.0" --notes-file -
 ```
 
 ## 8. Verify in a clean project
@@ -160,7 +160,7 @@ npm view @monoline/react dist-tags
 ## 9. Every release after 0.3.0
 
 ```bash
-node scripts/release.mjs version minor     # or patch, major, or x.y.z
+node scripts/release.ts version minor     # or patch, major, or x.y.z
 ```
 
 This bumps every package to the same version, points the internal dependencies at it, and writes a new `CHANGELOG.md` section from the commit subjects since the last `v*` tag. Read the section and edit the wording if needed. It creates no tag. Then:

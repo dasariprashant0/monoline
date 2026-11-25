@@ -1,5 +1,5 @@
 // Compare: Monoline against six libraries, from the notes in docs/research/ (read from each project's live docs and
-// repo on 2026-11-12) plus the real Monoline bundle sizes captured at build time by scripts/gen-size.mjs.
+// repo on 2026-11-12) plus the real Monoline bundle sizes captured at build time by scripts/gen-size.ts.
 // Where the notes say "unverified" or have no entry, this page says "not stated on the pages read", never a guess.
 import {Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@monoline/react';
 import {components, hooks} from '../shell/registry';
