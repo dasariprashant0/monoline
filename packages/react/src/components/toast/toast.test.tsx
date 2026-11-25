@@ -10,8 +10,12 @@ function Demo({onUndo = () => {}}: {onUndo?: () => void}) {
     <ToastProvider duration={60000}>
       <button onClick={() => setOpen(true)}>Save</button>
       <Toast open={open} onOpenChange={setOpen}>
-        <ToastTitle>Saved</ToastTitle><ToastDescription>Draft stored.</ToastDescription>
-        <ToastAction altText="Undo the save" onClick={onUndo}>Undo</ToastAction><ToastClose />
+        <ToastTitle>Saved</ToastTitle>
+        <ToastDescription>Draft stored.</ToastDescription>
+        <ToastAction altText="Undo the save" onClick={onUndo}>
+          Undo
+        </ToastAction>
+        <ToastClose />
       </Toast>
       <ToastViewport label="Notifications" />
     </ToastProvider>
@@ -51,7 +55,10 @@ describe('Toast', () => {
     await waitFor(() => expect(region.querySelectorAll(':scope > [tabindex="0"]')).toHaveLength(0));
     expect(region.querySelectorAll(':scope > span[tabindex="-1"]').length).toBe(2);
     const seen = new Set<string>();
-    for (let i = 0; i < 4; i++) { await user.tab(); seen.add(document.activeElement?.textContent ?? ''); }
+    for (let i = 0; i < 4; i++) {
+      await user.tab();
+      seen.add(document.activeElement?.textContent ?? '');
+    }
     expect(seen.has('Undo') && seen.has('Dismiss')).toBe(true);
   });
   it('has no axe violations when open', async () => {

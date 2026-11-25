@@ -7,7 +7,10 @@ export interface FieldsetProps extends Omit<FieldsetHTMLAttributes<HTMLFieldSetE
 }
 
 /** A group of controls. Use it for radios, checkboxes or a block like "Billing address". */
-export const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset({legend, className, children, ...rest}, ref) {
+export const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset(
+  {legend, className, children, ...rest},
+  ref,
+) {
   return (
     <fieldset ref={ref} className={cx('fieldset', className)} {...rest}>
       <legend className="fieldset-legend">{legend}</legend>

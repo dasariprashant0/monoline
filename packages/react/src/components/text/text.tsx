@@ -4,23 +4,39 @@ import {cx} from '../../utils/cx';
 
 export interface TextProps extends HTMLAttributes<HTMLParagraphElement> {
   /** Type size: `xs`, `sm`, `md` (default) or `lg`. */
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   /**
    * Colour role: `default`, `muted`, `success`, `warning`, `danger` or `accent`, the same names as Alert. Never rely on colour alone to carry meaning.
    * `ok` still works.
    * @deprecated use `success` instead of `ok`.
    */
-  tone?: 'default' | 'muted' | 'success' | 'warning' | 'danger' | 'accent' | 'ok';
+  tone?: 'default' | 'muted' | 'success' | 'warning' | 'danger' | 'accent' | 'ok' | undefined;
   /** One line with an ellipsis. */
-  truncate?: boolean;
+  truncate?: boolean | undefined;
   /** Lets the text run the full width of its container. By default a paragraph stops at a readable line length (`--measure`). Default false. */
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
   /** Render the child (a span, label, li) with the text styles. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** A paragraph by default. */
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text({size = 'md', tone = 'default', truncate, fullWidth, asChild, className, ...rest}, ref) {
+export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text(
+  {size = 'md', tone = 'default', truncate, fullWidth, asChild, className, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'p';
-  return <Comp ref={ref} className={cx('text', `text-${size}`, tone !== 'default' && `text-${tone}`, truncate && 'text-truncate', fullWidth && 'text-full', className)} {...rest} />;
+  return (
+    <Comp
+      ref={ref}
+      className={cx(
+        'text',
+        `text-${size}`,
+        tone !== 'default' && `text-${tone}`,
+        truncate && 'text-truncate',
+        fullWidth && 'text-full',
+        className,
+      )}
+      {...rest}
+    />
+  );
 });

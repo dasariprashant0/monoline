@@ -4,18 +4,22 @@ import {cx} from '../../utils/cx';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /** Adds a hover outline. Use with `asChild` on a link or button so the whole card is one control. */
-  interactive?: boolean;
+  interactive?: boolean | undefined;
   /** Render the child element (a link, an `article`) with the card styles instead of a `div`. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** A bordered group for one thing you can pick up or open. Prefer rules and space over cards for everything else. */
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card({interactive, asChild, className, ...rest}, ref) {
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  {interactive, asChild, className, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'div';
   return <Comp ref={ref} className={cx('card', interactive && 'card-hover', className)} {...rest} />;
 });
 
 const part = (name: string, tag: 'div' | 'h3' | 'p', cls: string) => {
+  // biome-ignore lint/correctness/noComponentHookFactories: runs once per part at module load, never during render.
   const C = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(function Part({className, ...rest}, ref) {
     const T = tag as 'div';
     return <T ref={ref as never} className={cx(cls, className)} {...rest} />;

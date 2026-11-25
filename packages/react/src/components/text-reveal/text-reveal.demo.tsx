@@ -13,8 +13,6 @@ export const demos: Demo[] = [
   },
   {
     title: 'Slower',
-    render: () => (
-      <TextReveal text="Take your time with this one." stagger={200} />
-    ),
+    render: () => <TextReveal text="Take your time with this one." stagger={200} />,
   },
 ];

@@ -4,14 +4,14 @@
   "version": "0.5.0",
   "type": "module",
   "scripts": {
-    "gen": "node scripts/gen-props.mjs && node scripts/gen-demos.mjs && node scripts/gen-styling.mjs && node scripts/gen-markdown.mjs && node scripts/gen-size.mjs && node scripts/gen-thumbs.mjs",
+    "gen": "node scripts/gen-props.ts && node scripts/gen-demos.ts && node scripts/gen-styling.ts && node scripts/gen-markdown.ts && node scripts/gen-size.ts && node scripts/gen-thumbs.ts",
     "predev": "npm run gen",
     "dev": "vite",
     "prebuild": "npm run gen",
-    "build": "vite build && node scripts/prerender.mjs",
+    "build": "vite build && node scripts/prerender.ts",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test:docs": "node --test scripts"
+    "test:docs": "node --test 'scripts/*.test.ts'"
   },
   "dependencies": {
     "@monoline/react": "*",

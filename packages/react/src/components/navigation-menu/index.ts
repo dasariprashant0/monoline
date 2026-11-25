@@ -1,6 +1,20 @@
-export {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink} from './navigation-menu';
+export {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+} from './navigation-menu';
 import type {ComponentPropsWithoutRef} from 'react';
-import type {NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent, NavigationMenuLink} from './navigation-menu';
+import type {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+} from './navigation-menu';
 /** Props of `NavigationMenu`. */
 export type NavigationMenuProps = ComponentPropsWithoutRef<typeof NavigationMenu>;
 /** Props of `NavigationMenuList`. */

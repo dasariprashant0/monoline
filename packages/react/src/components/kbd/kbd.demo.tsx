@@ -5,7 +5,9 @@ export const demos: Demo[] = [
   {
     title: 'Shortcut',
     render: () => (
-      <p>Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.</p>
+      <p>
+        Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.
+      </p>
     ),
   },
 ];

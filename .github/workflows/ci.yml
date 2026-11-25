@@ -1,4 +1,7 @@
 name: ci
+# One workflow so the build runs once per push: `build` uploads every dist folder and the browser jobs download it
+# (ADR 0010). Job ids are the check names branch protection sees (check, e2e, ax, a11y...), so keep them stable.
+# Chrome is preinstalled on ubuntu runners.
 on:
   pull_request:
   push:
@@ -6,31 +9,85 @@ on:
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+permissions:
+  contents: read
 jobs:
-  check:
+  # Fast suites, no build: Biome lint and format (also the first step of npm run check), CSS checks, typecheck (react, docs, scripts), unit tests, script tests.
+  test:
+    name: test (node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 22, cache: npm}
+        with: {node-version: '${{ matrix.node }}', cache: npm}
       - run: npm ci
+      - run: npm run lint
       - run: npm run check
       - run: npm run test:cli
       - run: npm run test:mcp
       - run: npm run test:release
+      - run: npm run test:tokens
+      - run: npm run test:docs -w docs
+      - run: npm run test:vscode
+      - name: Tokens are up to date
+        run: npm run tokens && git diff --exit-code packages/tokens/dist
+
+  # The one build. Also runs everything that needs dist but no browser.
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
       - run: npm run build
       - run: npm run size
+      - run: npm run check:package-types
+      - run: npm run typecheck:examples
       - run: npm run registry
-      - name: Tokens are up to date
-        run: node packages/tokens/scripts/build.mjs && git diff --exit-code packages/tokens/dist
       - name: Registry and llms files are up to date
         run: git diff --exit-code registry llms.txt llms-full.txt
       - name: Release dry run (tarball contents, exports, nothing is published)
-        run: node scripts/release.mjs publish --dry-run
+        run: node scripts/release.ts publish --dry-run
+      # src/index.ts and src/styles.ts are generated and gitignored but ship in the @monoline/react tarball.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            apps/docs/dist
+            packages/css/dist
+            packages/react/dist
+            packages/react/src/index.ts
+            packages/react/src/styles.ts
+
+  # Single check name for what the old `check` job covered (fast suites, build, size, registry, release dry run).
+  check:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - run: echo "fast suites on node 22 and 24 and the build passed"
 
   # The peer range is react >=18, so run the react tests against both majors.
   react-matrix:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -39,20 +96,189 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 22, cache: npm}
+        with: {node-version-file: .nvmrc, cache: npm}
       - name: Install React ${{ matrix.react }} in every workspace
-        run: node scripts/lib/use-react.mjs ${{ matrix.react }} && npm install --no-package-lock --no-audit --no-fund
+        run: node scripts/lib/use-react.ts ${{ matrix.react }} && npm install --no-package-lock --no-audit --no-fund
       - name: Show the React version under test
         run: node -p "require('react/package.json').version"
       - run: npm test -w @monoline/react
 
-  # Packs the tarballs, installs them into a fresh directory with React 18 and 19, builds the Vite starter.
+  # Packs the tarballs, installs them into a fresh directory with React 18 and 19, builds the starters.
   install-smoke:
+    needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 22, cache: npm}
+        with: {node-version-file: .nvmrc, cache: npm}
       - run: npm ci
-      - run: npm run build -w @monoline/css && npm run build -w @monoline/react
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
       - run: npm run install-smoke
+
+  # Real keyboard and pointer input in Chrome against apps/docs/dist. One retry; a test that needs it is reported as FLAKY.
+  e2e:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - run: npm run e2e -- --retries 1
+        env:
+          CHROME: /usr/bin/google-chrome
+
+  # Firefox and WebKit: five flows (dialog, menu, select, combobox, tabs) with real key input via Playwright. Chrome above stays the full suite.
+  cross-browser:
+    needs: build
+    # Pinned: Playwright 1.56 cannot install Firefox/WebKit dependencies on ubuntu-latest (26.04). Unpin when Playwright is bumped.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm, cache-dependency-path: scripts/e2e/cross-browser/package-lock.json}
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      # smoke.mjs only needs Playwright (its own package) and the built docs; no root install.
+      - run: npm ci
+        working-directory: scripts/e2e/cross-browser
+      - run: npx playwright install --with-deps firefox webkit
+        working-directory: scripts/e2e/cross-browser
+      - run: node scripts/e2e/cross-browser/smoke.mjs --browsers firefox,webkit
+
+  # Known barriers (docs/e2e-findings.md). The fixes have landed and this passes on master, so it blocks.
+  probe:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - run: node scripts/e2e/probe.ts
+        env:
+          CHROME: /usr/bin/google-chrome
+
+  # Reads Chrome's accessibility tree for ~40 components after real key presses and fails when a role, name, state or
+  # relationship is missing. It is NOT a screen reader test (see docs/a11y-report.md).
+  ax:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - run: npm run ax
+        env:
+          CHROME: /usr/bin/google-chrome
+      - name: Report is up to date
+        run: git diff --exit-code docs/a11y-report.md
+
+  # Real-browser checks on the built docs site: axe (WCAG 2 A/AA, 2.1, 2.2 AA with colour contrast), overflow,
+  # console errors. One job per accent, in parallel (each accent is ~170 pages x 3 themes x 2 viewports in one Chrome).
+  audit:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        accent: [orange, green, blue, violet, rose, teal, amber, slate]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - name: Audit all pages, 3 themes, desktop and 375px, accent ${{ matrix.accent }}
+        run: node scripts/audit.ts --accents ${{ matrix.accent }}
+        env:
+          CHROME: /usr/bin/google-chrome
+  css-computed:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - name: Computed-style test (real browser, loads the full stylesheet)
+        run: npm run test:css-browser
+        env:
+          CHROME: /usr/bin/google-chrome
+  overlays:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - name: Open every overlay on every page; contrast, text overlap, hover and focus in each state
+        run: node scripts/audit.ts --overlays
+        env:
+          CHROME: /usr/bin/google-chrome
+  examples:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version-file: .nvmrc, cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: {name: dist}
+      - name: Example apps in a real browser (flows, overlays, hover, focus)
+        run: |
+          for n in dashboard auth-settings landing; do (cd examples/$n && npx vite build); done
+          node scripts/audit-examples.ts
+        env:
+          CHROME: /usr/bin/google-chrome
+  # Single check name for the whole audit, so anything that waits for "a11y" keeps working.
+  a11y:
+    needs: [audit, css-computed, overlays, examples]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - run: echo "all accents and the computed-style test passed"

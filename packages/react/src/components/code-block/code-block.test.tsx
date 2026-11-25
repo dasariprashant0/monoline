@@ -56,6 +56,7 @@ describe('CodeBlock', () => {
 describe('highlight', () => {
   it('always gives back the original text when joined', () => {
     const samples: Array<[string, Parameters<typeof highlight>[1]]> = [
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: highlighter input that contains a template literal.
       ['const a = <Button variant="x">hi</Button>; // c\n`t${1}`', 'tsx'],
       ['.a { color: var(--x); margin: 0 4px; } /* c */\n@media (min-width: 40rem) {}', 'css'],
       ['<div class="a" hidden>text</div> <!-- c -->', 'html'],
@@ -64,7 +65,12 @@ describe('highlight', () => {
       ['anything at all <> ""', 'text'],
       ['unterminated "string', 'tsx'],
     ];
-    for (const [code, lang] of samples) expect(highlight(code, lang).map((t) => t.text).join('')).toBe(code);
+    for (const [code, lang] of samples)
+      expect(
+        highlight(code, lang)
+          .map((t) => t.text)
+          .join(''),
+      ).toBe(code);
   });
   it('types css properties, variables and numbers', () => {
     const t = highlight('a { margin: 4px; color: var(--x); }', 'css');

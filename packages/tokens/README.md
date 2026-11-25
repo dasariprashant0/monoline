@@ -40,7 +40,7 @@ I could not open Figma from this environment, so none of these steps has been ru
 
 ## How it is checked
 
-`test/tokens.test.mjs` runs with `node:test` and checks that:
+`test/tokens.test.ts` runs with `node:test` and checks that:
 
 - every custom property in `tokens.css`, `accents.css` and `options.css` is in `tokens.json` with the same value;
 - `tokens.css` re-export parses back to the same values as the JSON, and `dist/tokens.css` is what the build writes;

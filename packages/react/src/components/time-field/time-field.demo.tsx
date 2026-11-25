@@ -13,8 +13,6 @@ export const demos: Demo[] = [
   },
   {
     title: '24-hour in 15 minute steps',
-    render: () => (
-      <TimeField aria-label="Meeting time" hourCycle={24} step={15} defaultValue="14:00" />
-    ),
+    render: () => <TimeField aria-label="Meeting time" hourCycle={24} step={15} defaultValue="14:00" />,
   },
 ];

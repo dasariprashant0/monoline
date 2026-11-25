@@ -6,7 +6,12 @@ import {NumberInput} from './number-input';
 
 function Controlled() {
   const [v, setV] = useState('2');
-  return <><NumberInput aria-label="Qty" value={v} min={0} max={3} onChange={(e) => setV(e.target.value)} /><output>{v}</output></>;
+  return (
+    <>
+      <NumberInput aria-label="Qty" value={v} min={0} max={3} onChange={(e) => setV(e.target.value)} />
+      <output>{v}</output>
+    </>
+  );
 }
 
 describe('NumberInput', () => {

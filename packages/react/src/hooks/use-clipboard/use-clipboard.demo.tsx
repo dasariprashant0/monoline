@@ -14,4 +14,6 @@ function ClipboardDemo() {
   );
 }
 
-export const demos: Demo[] = [{title: 'Copy', description: 'The label changes for two seconds.', render: () => <ClipboardDemo />}];
+export const demos: Demo[] = [
+  {title: 'Copy', description: 'The label changes for two seconds.', render: () => <ClipboardDemo />},
+];

@@ -5,20 +5,23 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
   /** The page title, rendered as a heading. */
   title: ReactNode;
   /** One sentence under the title saying what the page is for. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Shown above the title: a `Breadcrumb` or `BreadcrumbsAuto`. */
-  breadcrumbs?: ReactNode;
+  breadcrumbs?: ReactNode | undefined;
   /** Buttons at the end of the title row. They wrap under the title on small screens. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
   /** The heading level, 1 to 4. Default 1: one per page. */
-  level?: 1 | 2 | 3 | 4;
+  level?: 1 | 2 | 3 | 4 | undefined;
 }
 
 /**
  * The top of a page: breadcrumbs, a title, a description and actions.
  * @example <PageHeader title="Customers" description="Everyone who has signed up." actions={<Button variant="solid">Add customer</Button>} />
  */
-export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function PageHeader({title, description, breadcrumbs, actions, level = 1, className, ...rest}, ref) {
+export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function PageHeader(
+  {title, description, breadcrumbs, actions, level = 1, className, ...rest},
+  ref,
+) {
   return (
     <div ref={ref} className={cx('page-header', className)} {...rest}>
       {breadcrumbs}

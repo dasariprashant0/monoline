@@ -5,8 +5,20 @@ import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, Men
 
 const ui = () => (
   <Menubar aria-label="App">
-    <MenubarMenu><MenubarTrigger>File</MenubarTrigger><MenubarContent><MenubarItem>New</MenubarItem><MenubarSeparator /><MenubarItem>Quit</MenubarItem></MenubarContent></MenubarMenu>
-    <MenubarMenu><MenubarTrigger>Edit</MenubarTrigger><MenubarContent><MenubarItem>Undo</MenubarItem></MenubarContent></MenubarMenu>
+    <MenubarMenu>
+      <MenubarTrigger>File</MenubarTrigger>
+      <MenubarContent>
+        <MenubarItem>New</MenubarItem>
+        <MenubarSeparator />
+        <MenubarItem>Quit</MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
+    <MenubarMenu>
+      <MenubarTrigger>Edit</MenubarTrigger>
+      <MenubarContent>
+        <MenubarItem>Undo</MenubarItem>
+      </MenubarContent>
+    </MenubarMenu>
   </Menubar>
 );
 

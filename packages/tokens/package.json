@@ -6,8 +6,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "test": "node --test test/"
+    "build": "node scripts/build.ts",
+    "test": "node --test 'test/*.test.ts'"
   },
   "types": "./dist/tokens.d.ts",
   "exports": {

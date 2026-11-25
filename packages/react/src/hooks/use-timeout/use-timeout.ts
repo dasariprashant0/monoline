@@ -11,9 +11,17 @@ import {useCallback, useEffect, useRef} from 'react';
 export function useTimeout(callback: () => void, delay: number) {
   const fn = useRef(callback);
   const id = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  useEffect(() => { fn.current = callback; });
-  const clear = useCallback(() => { clearTimeout(id.current); id.current = undefined; }, []);
-  const start = useCallback(() => { clear(); id.current = setTimeout(() => fn.current(), delay); }, [clear, delay]);
+  useEffect(() => {
+    fn.current = callback;
+  });
+  const clear = useCallback(() => {
+    clearTimeout(id.current);
+    id.current = undefined;
+  }, []);
+  const start = useCallback(() => {
+    clear();
+    id.current = setTimeout(() => fn.current(), delay);
+  }, [clear, delay]);
   useEffect(() => clear, [clear]);
   return {start, clear};
 }

@@ -16,4 +16,6 @@ function SearchDemo() {
   );
 }
 
-export const demos: Demo[] = [{title: 'Debounced value', description: 'Updates 400 ms after you stop typing.', render: () => <SearchDemo />}];
+export const demos: Demo[] = [
+  {title: 'Debounced value', description: 'Updates 400 ms after you stop typing.', render: () => <SearchDemo />},
+];

@@ -57,7 +57,7 @@
       ]
     }
   ],
-  "usage": "import {useState} from 'react';\nimport {useWindowEvent} from '@monoline/react';\n\nfunction Demo() {\n  const [key, setKey] = useState('none');\n  useWindowEvent('keydown', (e) => setKey(e.key));\n  return <p>Last key pressed: <kbd className=\"kbd\">{key}</kbd></p>;\n}\n\n<Demo />",
+  "usage": "import {useState} from 'react';\nimport {useWindowEvent} from '@monoline/react';\n\nfunction Demo() {\n  const [key, setKey] = useState('none');\n  useWindowEvent('keydown', (e) => setKey(e.key));\n  return (\n    <p>\n      Last key pressed: <kbd className=\"kbd\">{key}</kbd>\n    </p>\n  );\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},
@@ -72,7 +72,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-window-event/use-window-event.ts",
-      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * `useWindowEvent('resize', () => ...)`. The latest handler is used without re-subscribing.\n *\n * @param type A `window` event name, for example `resize`.\n * @param listener Handler for the event. The latest version is used.\n * @param options Passed to `addEventListener`.\n */\nexport function useWindowEvent<K extends keyof WindowEventMap>(type: K, listener: (event: WindowEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void {\n  const fn = useRef(listener);\n  useEffect(() => { fn.current = listener; });\n  // An inline `{passive: true}` is a new object every render: re-subscribe only when its flags change.\n  const opts = useRef(options);\n  opts.current = options;\n  const flags = typeof options === 'object' ? `${options.capture}|${options.passive}|${options.once}` : String(options);\n  useEffect(() => {\n    const on = (e: WindowEventMap[K]) => fn.current(e);\n    window.addEventListener(type, on, opts.current);\n    return () => window.removeEventListener(type, on, opts.current);\n  }, [type, flags]);\n}\n"
+      "content": "'use client';\nimport {useEffect, useRef} from 'react';\n\n/**\n * `useWindowEvent('resize', () => ...)`. The latest handler is used without re-subscribing.\n *\n * @param type A `window` event name, for example `resize`.\n * @param listener Handler for the event. The latest version is used.\n * @param options Passed to `addEventListener`.\n */\nexport function useWindowEvent<K extends keyof WindowEventMap>(\n  type: K,\n  listener: (event: WindowEventMap[K]) => void,\n  options?: boolean | AddEventListenerOptions,\n): void {\n  const fn = useRef(listener);\n  useEffect(() => {\n    fn.current = listener;\n  });\n  // An inline `{passive: true}` is a new object every render: re-subscribe only when its flags change.\n  const opts = useRef(options);\n  opts.current = options;\n  const flags = typeof options === 'object' ? `${options.capture}|${options.passive}|${options.once}` : String(options);\n  useEffect(() => {\n    const on = (e: WindowEventMap[K]) => fn.current(e);\n    window.addEventListener(type, on, opts.current);\n    return () => window.removeEventListener(type, on, opts.current);\n  }, [type, flags]);\n}\n"
     }
   ],
   "utils": []

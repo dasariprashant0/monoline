@@ -2,8 +2,8 @@
 import {useCallback, useState} from 'react';
 
 export interface UseCounterOptions {
-  min?: number;
-  max?: number;
+  min?: number | undefined;
+  max?: number | undefined;
 }
 
 const clamp = (n: number, min = -Infinity, max = Infinity) => Math.min(max, Math.max(min, n));

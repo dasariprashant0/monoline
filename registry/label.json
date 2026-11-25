@@ -48,7 +48,7 @@
       ]
     }
   ],
-  "usage": "import {Label} from '@monoline/react';\n\n<div style={{display: 'grid', gap: 'var(--s2)', maxWidth: 320}}>\n  <Label htmlFor=\"demo-label\" required>Email</Label>\n  <input id=\"demo-label\" className=\"input\" placeholder=\"you@example.com\" />\n</div>",
+  "usage": "import {Label} from '@monoline/react';\n\n<div style={{display: 'grid', gap: 'var(--s2)', maxWidth: 320}}>\n  <Label htmlFor=\"demo-label\" required>\n    Email\n  </Label>\n  <input id=\"demo-label\" className=\"input\" placeholder=\"you@example.com\" />\n</div>",
   "dataAttributes": [],
   "classes": [
     "field",
@@ -77,7 +77,7 @@
     },
     {
       "path": "packages/react/src/components/label/label.tsx",
-      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Label as RadixLabel} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\nexport interface LabelProps extends ComponentPropsWithoutRef<typeof RadixLabel.Root> {\n  /** Adds a required marker. Pair with `required` on the control. */\n  required?: boolean;\n}\n\n/** A `<label>` styled as a Monoline label. Clicking it focuses the control it points to with `htmlFor`. */\nexport const Label = forwardRef<ElementRef<typeof RadixLabel.Root>, LabelProps>(function Label({className, required, ...rest}, ref) {\n  return <RadixLabel.Root ref={ref} className={cx('label', required && 'field-required', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type ComponentPropsWithoutRef, type ElementRef} from 'react';\nimport {Label as RadixLabel} from 'radix-ui';\nimport {cx} from '../../utils/cx';\n\nexport interface LabelProps extends ComponentPropsWithoutRef<typeof RadixLabel.Root> {\n  /** Adds a required marker. Pair with `required` on the control. */\n  required?: boolean | undefined;\n}\n\n/** A `<label>` styled as a Monoline label. Clicking it focuses the control it points to with `htmlFor`. */\nexport const Label = forwardRef<ElementRef<typeof RadixLabel.Root>, LabelProps>(function Label(\n  {className, required, ...rest},\n  ref,\n) {\n  return <RadixLabel.Root ref={ref} className={cx('label', required && 'field-required', className)} {...rest} />;\n});\n"
     },
     {
       "path": "packages/react/src/components/label/meta.json",

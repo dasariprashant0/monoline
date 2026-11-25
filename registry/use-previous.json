@@ -53,7 +53,7 @@
       ]
     }
   ],
-  "usage": "import {useState} from 'react';\nimport {Button, usePrevious} from '@monoline/react';\n\nfunction PreviousDemo() {\n  const [value, setValue] = useState(0);\n  const previous = usePrevious(value);\n  return (\n    <div>\n      <Button variant=\"line\" onClick={() => setValue((v) => v + 1)}>Increase</Button>\n      <p>Now {value}, before {previous ?? 'nothing'}.</p>\n    </div>\n  );\n}\n\n<PreviousDemo />",
+  "usage": "import {useState} from 'react';\nimport {Button, usePrevious} from '@monoline/react';\n\nfunction PreviousDemo() {\n  const [value, setValue] = useState(0);\n  const previous = usePrevious(value);\n  return (\n    <div>\n      <Button variant=\"line\" onClick={() => setValue((v) => v + 1)}>\n        Increase\n      </Button>\n      <p>\n        Now {value}, before {previous ?? 'nothing'}.\n      </p>\n    </div>\n  );\n}\n\n<PreviousDemo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},

@@ -7,7 +7,9 @@ function Example() {
   const [open, setOpen] = useState(false);
   return (
     <ToastProvider duration={5000}>
-      <Button variant="line" onClick={() => setOpen(true)}>Save draft</Button>
+      <Button variant="line" onClick={() => setOpen(true)}>
+        Save draft
+      </Button>
       <Toast open={open} onOpenChange={setOpen}>
         <ToastTitle>Draft saved</ToastTitle>
         <ToastDescription>Stored on this device.</ToastDescription>
@@ -19,9 +21,9 @@ function Example() {
   );
 }
 
-export const demos: Demo[] = [{
-  title: 'Trigger a toast',
-  render: () => (
-    <Example />
-  ),
-}];
+export const demos: Demo[] = [
+  {
+    title: 'Trigger a toast',
+    render: () => <Example />,
+  },
+];

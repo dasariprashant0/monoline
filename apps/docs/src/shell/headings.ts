@@ -2,10 +2,24 @@
 // <h2> and <h3>. Headings without an id get one from their text; each gets a hover "#" anchor link.
 import {useEffect, useState, type RefObject} from 'react';
 
-export interface Heading {id: string; text: string; level: 2 | 3}
+export interface Heading {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
 
-const slug = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '') || 'section';
-const textOf = (h: Element) => [...h.childNodes].filter((n) => !(n instanceof Element && n.classList.contains('h-anchor'))).map((n) => n.textContent).join('').replace(/\s+/g, ' ').trim();
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-+|-+$/g, '') || 'section';
+const textOf = (h: Element) =>
+  [...h.childNodes]
+    .filter((n) => !(n instanceof Element && n.classList.contains('h-anchor')))
+    .map((n) => n.textContent)
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 /** Give every h2/h3 outside live demos an id and an anchor link; return them in page order. Safe to call repeatedly. */
 function decorate(root: HTMLElement): Heading[] {
@@ -16,7 +30,8 @@ function decorate(root: HTMLElement): Heading[] {
     if (!text) return;
     if (!h.id) {
       const base = slug(text);
-      let id = base, n = 2;
+      let id = base,
+        n = 2;
       while (document.getElementById(id)) id = `${base}-${n++}`;
       h.id = id;
     }
@@ -33,7 +48,8 @@ function decorate(root: HTMLElement): Heading[] {
   return out;
 }
 
-const same = (a: Heading[], b: Heading[]) => a.length === b.length && a.every((h, i) => h.id === b[i]!.id && h.text === b[i]!.text);
+const same = (a: Heading[], b: Heading[]) =>
+  a.length === b.length && a.every((h, i) => h.id === b[i]!.id && h.text === b[i]!.text);
 
 /** Headings of the page inside `ref`, rescanned when the page changes (`key`) or its content does. */
 export function useHeadings(ref: RefObject<HTMLElement | null>, key: string): Heading[] {
@@ -42,12 +58,21 @@ export function useHeadings(ref: RefObject<HTMLElement | null>, key: string): He
     const root = ref.current;
     if (!root) return;
     let raf = 0;
-    const scan = () => { const next = decorate(root); setList((p) => (same(p, next) ? p : next)); };
+    const scan = () => {
+      const next = decorate(root);
+      setList((p) => (same(p, next) ? p : next));
+    };
     scan();
     // ponytail: one scan per animation frame while content mutates; debounce if a demo ever animates its children.
-    const mo = new MutationObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(scan); });
+    const mo = new MutationObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(scan);
+    });
     mo.observe(root, {childList: true, subtree: true});
-    return () => { mo.disconnect(); cancelAnimationFrame(raf); };
+    return () => {
+      mo.disconnect();
+      cancelAnimationFrame(raf);
+    };
   }, [ref, key]);
   return list;
 }

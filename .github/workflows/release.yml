@@ -1,7 +1,7 @@
 name: release
 # Publishes every package under packages/ to npm with provenance, then creates the GitHub release.
 # Run it from the Actions tab (Run workflow) with the version the packages already carry, e.g. 0.3.0.
-# The version must be committed first: `node scripts/release.mjs version ...`, commit, merge to master.
+# The version must be committed first: `node scripts/release.ts version ...`, commit, merge to master.
 # Needs the NPM_TOKEN secret (an npm automation token with publish rights to the @monoline scope).
 on:
   workflow_dispatch:
@@ -21,6 +21,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment: release
     permissions:
       contents: write # create the GitHub release and its tag
@@ -32,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
           registry-url: https://registry.npmjs.org
       - name: Validate the version input
@@ -55,13 +56,13 @@ jobs:
       - name: Clean-install smoke (packed tarballs into Vite, Next, Astro, React Router; React 18 and 19)
         run: npm run install-smoke
       - name: Release check (packages, exports, tarball contents)
-        run: node scripts/release.mjs check --expect "$VERSION"
+        run: node scripts/release.ts check --expect "$VERSION"
       - name: Publish dry run
-        run: node scripts/release.mjs publish --dry-run
+        run: node scripts/release.ts publish --dry-run
       - name: Publish to npm with provenance
-        run: node scripts/release.mjs publish --yes --provenance
+        run: node scripts/release.ts publish --yes --provenance
       - name: Release notes from CHANGELOG.md
-        run: node scripts/release.mjs notes "$VERSION" > "$RUNNER_TEMP/notes.md"
+        run: node scripts/release.ts notes "$VERSION" > "$RUNNER_TEMP/notes.md"
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

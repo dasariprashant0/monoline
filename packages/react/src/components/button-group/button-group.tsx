@@ -7,6 +7,9 @@ export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** Buttons that act on the same thing, sharing borders. */
-export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function ButtonGroup({className, ...rest}, ref) {
+export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function ButtonGroup(
+  {className, ...rest},
+  ref,
+) {
   return <div ref={ref} role="group" className={cx('btn-group', className)} {...rest} />;
 });

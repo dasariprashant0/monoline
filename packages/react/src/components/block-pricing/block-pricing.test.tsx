@@ -4,8 +4,21 @@ import {axe} from '../../test/axe';
 import {BlockPricing, type PricingTier} from './block-pricing';
 
 const tiers: PricingTier[] = [
-  {name: 'Free', price: {monthly: '$0', yearly: '$0'}, features: ['One project'], ctaLabel: 'Start free', href: '/start'},
-  {name: 'Pro', description: 'For teams.', price: {monthly: '$12', yearly: '$120'}, features: ['Unlimited projects', 'Priority support'], ctaLabel: 'Choose Pro', highlighted: true},
+  {
+    name: 'Free',
+    price: {monthly: '$0', yearly: '$0'},
+    features: ['One project'],
+    ctaLabel: 'Start free',
+    href: '/start',
+  },
+  {
+    name: 'Pro',
+    description: 'For teams.',
+    price: {monthly: '$12', yearly: '$120'},
+    features: ['Unlimited projects', 'Priority support'],
+    ctaLabel: 'Choose Pro',
+    highlighted: true,
+  },
 ];
 
 describe('BlockPricing', () => {
@@ -45,7 +58,17 @@ describe('BlockPricing', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
   it('renders a tier link through renderLink and keeps the button look', () => {
-    render(<BlockPricing title="Pricing" tiers={tiers} renderLink={({href, children}) => <a href={`/app${href}`} data-router>{children}</a>} />);
+    render(
+      <BlockPricing
+        title="Pricing"
+        tiers={tiers}
+        renderLink={({href, children}) => (
+          <a href={`/app${href}`} data-router>
+            {children}
+          </a>
+        )}
+      />,
+    );
     const link = screen.getByRole('link', {name: 'Start free'});
     expect(link).toHaveAttribute('href', '/app/start');
     expect(link).toHaveAttribute('data-router');

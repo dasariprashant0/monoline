@@ -10,20 +10,41 @@ export interface CarouselProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** Wrap each slide in a CarouselItem. Native scroll-snap does the movement. */
-export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carousel({className, children, ...rest}, ref) {
+export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(function Carousel(
+  {className, children, ...rest},
+  ref,
+) {
   const track = useRef<HTMLDivElement>(null);
   const isRtl = useIsRtl();
   const reduced = useReducedMotion();
   const items = Children.toArray(children);
-  const step = (dir: 1 | -1) => { const el = track.current; if (el) el.scrollBy?.({left: dir * (isRtl(el) ? -1 : 1) * el.clientWidth * 0.9, behavior: reduced ? 'auto' : 'smooth'}); };
+  const step = (dir: 1 | -1) => {
+    const el = track.current;
+    if (el)
+      el.scrollBy?.({left: dir * (isRtl(el) ? -1 : 1) * el.clientWidth * 0.9, behavior: reduced ? 'auto' : 'smooth'});
+  };
   return (
     <div ref={ref} role="region" aria-roledescription="carousel" className={cx('carousel', className)} {...rest}>
       <div ref={track} role="group" className="carousel-track" tabIndex={0} aria-label={`${rest['aria-label']} slides`}>
-        {items.map((c, i) => <div key={isValidElement(c) && c.key !== null ? c.key : i} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${items.length}`} className="carousel-slide">{c}</div>)}
+        {items.map((c, i) => (
+          <div
+            key={isValidElement(c) && c.key !== null ? c.key : i}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${items.length}`}
+            className="carousel-slide"
+          >
+            {c}
+          </div>
+        ))}
       </div>
       <div className="carousel-controls">
-        <button type="button" className="btn btn-line btn-sm" onClick={() => step(-1)}>Previous<span className="sr-only"> slide</span></button>
-        <button type="button" className="btn btn-line btn-sm" onClick={() => step(1)}>Next<span className="sr-only"> slide</span></button>
+        <button type="button" className="btn btn-line btn-sm" onClick={() => step(-1)}>
+          Previous<span className="sr-only"> slide</span>
+        </button>
+        <button type="button" className="btn btn-line btn-sm" onClick={() => step(1)}>
+          Next<span className="sr-only"> slide</span>
+        </button>
       </div>
     </div>
   );

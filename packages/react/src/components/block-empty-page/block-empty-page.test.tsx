@@ -6,7 +6,14 @@ import {createRef} from 'react';
 
 describe('BlockEmptyPage', () => {
   it('renders an h1 title, description and actions', () => {
-    render(<BlockEmptyPage code="404" title="Page not found" description="Check the address." actions={<Button variant="solid">Go home</Button>} />);
+    render(
+      <BlockEmptyPage
+        code="404"
+        title="Page not found"
+        description="Check the address."
+        actions={<Button variant="solid">Go home</Button>}
+      />,
+    );
     expect(screen.getByRole('region', {name: 'Page not found'})).toBeInTheDocument();
     expect(screen.getByRole('heading', {level: 1, name: 'Page not found'})).toBeInTheDocument();
     expect(screen.getByText('Check the address.')).toBeInTheDocument();
@@ -42,7 +49,17 @@ describe('BlockEmptyPage', () => {
     }
   });
   it('renders several actions inside the actions slot', () => {
-    render(<BlockEmptyPage title="T" actions={<><Button>One</Button><Button>Two</Button></>} />);
+    render(
+      <BlockEmptyPage
+        title="T"
+        actions={
+          <>
+            <Button>One</Button>
+            <Button>Two</Button>
+          </>
+        }
+      />,
+    );
     expect(screen.getByRole('button', {name: 'One'}).parentElement).toHaveClass('block-empty-page-actions');
     expect(screen.getAllByRole('button')).toHaveLength(2);
   });
@@ -58,7 +75,14 @@ describe('BlockEmptyPage', () => {
     expect(container.querySelector('p')).toBeNull();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<BlockEmptyPage code="404" title="Page not found" description="Check the address." actions={<Button variant="solid">Go home</Button>} />);
+    const {container} = render(
+      <BlockEmptyPage
+        code="404"
+        title="Page not found"
+        description="Check the address."
+        actions={<Button variant="solid">Go home</Button>}
+      />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

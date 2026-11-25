@@ -6,6 +6,9 @@ import {cx} from '../../utils/cx';
 export type ToggleProps = ComponentPropsWithoutRef<typeof RadixToggle.Root>;
 
 /** A two-state button (pressed or not), for things like Bold. Use a Switch for a setting. */
-export const Toggle = forwardRef<ElementRef<typeof RadixToggle.Root>, ComponentPropsWithoutRef<typeof RadixToggle.Root>>(function Toggle({className, ...rest}, ref) {
+export const Toggle = forwardRef<
+  ElementRef<typeof RadixToggle.Root>,
+  ComponentPropsWithoutRef<typeof RadixToggle.Root>
+>(function Toggle({className, ...rest}, ref) {
   return <RadixToggle.Root ref={ref} className={cx('toggle', className)} {...rest} />;
 });

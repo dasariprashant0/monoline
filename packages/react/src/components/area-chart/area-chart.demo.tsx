@@ -21,7 +21,11 @@ export const demos: Demo[] = [
         title="Traffic by source"
         stacked
         labels={months}
-        series={[{name: 'Search', values: [40, 55, 48, 70, 90, 85]}, {name: 'Email', values: [20, 25, 30, 32, 40, 44]}, {name: 'Social', values: [10, 12, 9, 18, 22, 20]}]}
+        series={[
+          {name: 'Search', values: [40, 55, 48, 70, 90, 85]},
+          {name: 'Email', values: [20, 25, 30, 32, 40, 44]},
+          {name: 'Social', values: [10, 12, 9, 18, 22, 20]},
+        ]}
       />
     ),
   },
@@ -31,7 +35,12 @@ export const demos: Demo[] = [
       <AreaChart
         title="Seats in use"
         curve="step"
-        data={[{label: 'W1', value: 10}, {label: 'W2', value: 14}, {label: 'W3', value: 14}, {label: 'W4', value: 22}]}
+        data={[
+          {label: 'W1', value: 10},
+          {label: 'W2', value: 14},
+          {label: 'W3', value: 14},
+          {label: 'W4', value: 22},
+        ]}
       />
     ),
   },

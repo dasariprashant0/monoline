@@ -22,9 +22,20 @@ function Example() {
         setErrors(next);
       }}
     >
-      <Field label="Name" name="name"><Input name="name" /></Field>
-      <Field label="Email" name="email"><Input name="email" type="email" /></Field>
-      <FormActions><Button type="submit" variant="solid">Send</Button><Button variant="line" type="reset">Clear</Button></FormActions>
+      <Field label="Name" name="name">
+        <Input name="name" />
+      </Field>
+      <Field label="Email" name="email">
+        <Input name="email" type="email" />
+      </Field>
+      <FormActions>
+        <Button type="submit" variant="solid">
+          Send
+        </Button>
+        <Button variant="line" type="reset">
+          Clear
+        </Button>
+      </FormActions>
     </Form>
   );
 }
@@ -32,9 +43,8 @@ function Example() {
 export const demos: Demo[] = [
   {
     title: 'With an error summary',
-    description: 'Submit empty. Each error is passed once, in errors; every Field reads its own message by name, and the summary links to each invalid field.',
-    render: () => (
-      <Example />
-    ),
+    description:
+      'Submit empty. Each error is passed once, in errors; every Field reads its own message by name, and the summary links to each invalid field.',
+    render: () => <Example />,
   },
 ];

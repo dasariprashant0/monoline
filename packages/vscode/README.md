@@ -29,10 +29,10 @@ Reload the window if the snippets do not show up.
 The file is generated from `registry/`. After `npm run registry`, run:
 
 ```bash
-node packages/vscode/scripts/build.mjs
+node packages/vscode/scripts/build.ts
 ```
 
-`test/build.test.mjs` checks the generator and fails if the committed file is out of date.
+`test/build.test.ts` checks the generator and fails if the committed file is out of date.
 
 ## Notes
 

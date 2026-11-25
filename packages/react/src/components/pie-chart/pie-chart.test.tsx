@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {PieChart} from './pie-chart';
 
-const data = [{label: 'Search', value: 50}, {label: 'Email', value: 30}, {label: 'Social', value: 20}];
+const data = [
+  {label: 'Search', value: 50},
+  {label: 'Email', value: 30},
+  {label: 'Social', value: 20},
+];
 const arcs = (c: HTMLElement) => (c.querySelector('path.chart-slice')?.getAttribute('d') ?? '').match(/A/g)?.length;
 
 describe('PieChart', () => {

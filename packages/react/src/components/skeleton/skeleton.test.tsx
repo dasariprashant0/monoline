@@ -5,7 +5,12 @@ import {createRef} from 'react';
 
 describe('Skeleton', () => {
   it('is hidden from assistive tech and styled by variant', () => {
-    const {container} = render(<><Skeleton /><Skeleton variant="hatch" /></>);
+    const {container} = render(
+      <>
+        <Skeleton />
+        <Skeleton variant="hatch" />
+      </>,
+    );
     const [a, b] = Array.from(container.children);
     expect(a).toHaveAttribute('aria-hidden', 'true');
     expect(b).toHaveClass('skeleton-hatch');
@@ -35,7 +40,13 @@ describe('Skeleton', () => {
     expect(ref.current!.style.width).toBe('120px');
   });
   it('renders many in a loading region marked aria-busy without leaking text', () => {
-    render(<div role="status" aria-busy="true" aria-label="Loading list">{Array.from({length: 50}, (_, i) => <Skeleton key={i} />)}</div>);
+    render(
+      <div role="status" aria-busy="true" aria-label="Loading list">
+        {Array.from({length: 50}, (_, i) => (
+          <Skeleton key={i} />
+        ))}
+      </div>,
+    );
     expect(screen.getByRole('status', {name: 'Loading list'})).toHaveTextContent('');
   });
   it('has no axe violations', async () => {

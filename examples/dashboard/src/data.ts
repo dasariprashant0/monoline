@@ -8,7 +8,20 @@ export interface Order {
   date: Date;
 }
 
-const names = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Pauling', 'Katherine Johnson', 'Margaret Hamilton', 'Dennis Ritchie', 'Barbara Liskov', 'Donald Knuth', 'Edsger Dijkstra', 'Radia Perlman', 'Tim Berners-Lee'];
+const names = [
+  'Ada Lovelace',
+  'Grace Hopper',
+  'Alan Turing',
+  'Linus Pauling',
+  'Katherine Johnson',
+  'Margaret Hamilton',
+  'Dennis Ritchie',
+  'Barbara Liskov',
+  'Donald Knuth',
+  'Edsger Dijkstra',
+  'Radia Perlman',
+  'Tim Berners-Lee',
+];
 const statuses: Status[] = ['paid', 'paid', 'paid', 'pending', 'refunded'];
 
 export const orders: Order[] = Array.from({length: 48}, (_, i) => {
@@ -23,4 +36,5 @@ export const orders: Order[] = Array.from({length: 48}, (_, i) => {
   };
 });
 
-export const money = (n: number) => n.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
+export const money = (n: number) =>
+  n.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});

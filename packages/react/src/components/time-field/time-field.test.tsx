@@ -93,7 +93,11 @@ describe('TimeField', () => {
   });
   it('mirrors segment navigation in rtl', async () => {
     const user = userEvent.setup();
-    render(<div dir="rtl"><TimeField defaultValue="09:30" /></div>);
+    render(
+      <div dir="rtl">
+        <TimeField defaultValue="09:30" />
+      </div>,
+    );
     hour().focus();
     await user.keyboard('{ArrowLeft}');
     expect(minute()).toHaveFocus();
@@ -132,7 +136,17 @@ describe('TimeField', () => {
   it('treats a non-finite step as 1 and does not submit when disabled', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
-    const {container} = render(<TimeField aria-label="Start" defaultValue="10:00" hourCycle={24} step={NaN} name="t" disabled onValueChange={fn} />);
+    const {container} = render(
+      <TimeField
+        aria-label="Start"
+        defaultValue="10:00"
+        hourCycle={24}
+        step={NaN}
+        name="t"
+        disabled
+        onValueChange={fn}
+      />,
+    );
     expect(container.querySelector('input[type=hidden]')).toBeDisabled();
     minute().focus();
     await user.keyboard('{ArrowUp}');

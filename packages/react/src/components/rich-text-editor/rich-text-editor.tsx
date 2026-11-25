@@ -1,5 +1,15 @@
 'use client';
-import {forwardRef, useCallback, useEffect, useId, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent} from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+  type HTMLAttributes,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react';
 import {cx} from '../../utils/cx';
 import {Button} from '../button';
 import {Input} from '../input';
@@ -11,29 +21,43 @@ import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 export {sanitizeHtml, isSafeUrl} from './sanitize';
 
-type Name = {'aria-label': string; 'aria-labelledby'?: string} | {'aria-labelledby': string; 'aria-label'?: string};
+type Name =
+  | {'aria-label': string; 'aria-labelledby'?: string | undefined}
+  | {'aria-labelledby': string; 'aria-label'?: string | undefined};
 
-export type RichTextEditorProps = Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange' | 'aria-label' | 'aria-labelledby'> & Name & {
-  /** Controlled content as an HTML string. It is sanitized with `sanitizeHtml` before it is shown. */
-  value?: string;
-  /** Initial HTML when uncontrolled. Sanitized with `sanitizeHtml` before it is shown. */
-  defaultValue?: string;
-  /** Called with sanitized HTML after every edit. */
-  onValueChange?: (html: string) => void;
-  /** Shown while the editor is empty (a data attribute and CSS, not a text node). */
-  placeholder?: string;
-  /** Disables editing and the toolbar. */
-  disabled?: boolean;
-  /** Shows the content without letting anyone change it; the toolbar is disabled. */
-  readOnly?: boolean;
-  /** Names the formatting toolbar. */
-  toolbarLabel?: string;
-};
+export type RichTextEditorProps = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'defaultValue' | 'onChange' | 'aria-label' | 'aria-labelledby'
+> &
+  Name & {
+    /** Controlled content as an HTML string. It is sanitized with `sanitizeHtml` before it is shown. */
+    value?: string | undefined;
+    /** Initial HTML when uncontrolled. Sanitized with `sanitizeHtml` before it is shown. */
+    defaultValue?: string | undefined;
+    /** Called with sanitized HTML after every edit. */
+    onValueChange?: ((html: string) => void) | undefined;
+    /** Shown while the editor is empty (a data attribute and CSS, not a text node). */
+    placeholder?: string | undefined;
+    /** Disables editing and the toolbar. */
+    disabled?: boolean | undefined;
+    /** Shows the content without letting anyone change it; the toolbar is disabled. */
+    readOnly?: boolean | undefined;
+    /** Names the formatting toolbar. */
+    toolbarLabel?: string | undefined;
+  };
 
-interface Fmt { bold: boolean; italic: boolean; underline: boolean; ul: boolean; ol: boolean; block: string }
+interface Fmt {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  ul: boolean;
+  ol: boolean;
+  block: string;
+}
 const NO_FMT: Fmt = {bold: false, italic: false, underline: false, ul: false, ol: false, block: ''};
 
-const isMac = () => typeof navigator !== 'undefined' && /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+const isMac = () =>
+  typeof navigator !== 'undefined' && /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
 
 /** Inserts sanitized HTML at the caret; used for paste. Falls back to a DOM range where `execCommand` is missing. */
 function insertHtml(html: string) {
@@ -46,7 +70,12 @@ function insertHtml(html: string) {
   tpl.innerHTML = html;
   const last = tpl.content.lastChild;
   range.insertNode(tpl.content);
-  if (last) { range.setStartAfter(last); range.collapse(true); sel.removeAllRanges(); sel.addRange(range); }
+  if (last) {
+    range.setStartAfter(last);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
 
 const escapeText = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -60,7 +89,19 @@ const escapeText = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
  * @example <RichTextEditor aria-label="Notes" defaultValue="<p>Hello</p>" onValueChange={save} />
  */
 export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(function RichTextEditor(
-  {value, defaultValue, onValueChange, placeholder, disabled, readOnly, toolbarLabel = 'Text formatting', className, 'aria-label': ariaLabel, 'aria-labelledby': labelledBy, ...rest},
+  {
+    value,
+    defaultValue,
+    onValueChange,
+    placeholder,
+    disabled,
+    readOnly,
+    toolbarLabel = 'Text formatting',
+    className,
+    'aria-label': ariaLabel,
+    'aria-labelledby': labelledBy,
+    ...rest
+  },
   ref,
 ) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -75,7 +116,10 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const inert = disabled || readOnly;
   const controlled = value !== undefined;
 
-  const refreshEmpty = () => { const el = editorRef.current; if (el) setEmpty(!el.textContent && !el.querySelector('li, br')); };
+  const refreshEmpty = () => {
+    const el = editorRef.current;
+    if (el) setEmpty(!el.textContent && !el.querySelector('li, br'));
+  };
 
   // Write the HTML into the DOM: on mount, and when a controlled value differs from what the editor holds. `defaultValue`
   // is read once, so a changed default never wipes what the user typed.
@@ -93,12 +137,16 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     refreshEmpty();
   }, [value, controlled, defaultValue]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refreshEmpty reads the editor ref only; a new emit for it would behave the same.
   const emit = useCallback(() => {
     const el = editorRef.current;
     if (!el) return;
     const html = sanitizeHtml(el.innerHTML);
     refreshEmpty();
-    if (html !== last.current) { last.current = html; onValueChange?.(html); }
+    if (html !== last.current) {
+      last.current = html;
+      onValueChange?.(html);
+    }
   }, [onValueChange]);
 
   const refreshFmt = useCallback(() => {
@@ -106,7 +154,14 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     const sel = typeof window !== 'undefined' ? window.getSelection() : null;
     if (!el || !sel || !sel.rangeCount || !el.contains(sel.anchorNode)) return;
     range.current = sel.getRangeAt(0).cloneRange();
-    setFmt({bold: queryState('bold'), italic: queryState('italic'), underline: queryState('underline'), ul: queryState('insertUnorderedList'), ol: queryState('insertOrderedList'), block: queryBlock()});
+    setFmt({
+      bold: queryState('bold'),
+      italic: queryState('italic'),
+      underline: queryState('underline'),
+      ul: queryState('insertUnorderedList'),
+      ol: queryState('insertOrderedList'),
+      block: queryBlock(),
+    });
   }, []);
 
   useEffect(() => {
@@ -117,7 +172,10 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const restoreSelection = () => {
     editorRef.current?.focus();
     const sel = window.getSelection();
-    if (range.current && sel) { sel.removeAllRanges(); sel.addRange(range.current); }
+    if (range.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(range.current);
+    }
   };
 
   const run = (command: string, arg?: string) => {
@@ -128,7 +186,11 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     refreshFmt();
   };
 
-  const clear = () => { run('removeFormat'); run('unlink'); run('formatBlock', '<p>'); };
+  const clear = () => {
+    run('removeFormat');
+    run('unlink');
+    run('formatBlock', '<p>');
+  };
 
   const openLink = () => {
     if (inert) return;
@@ -144,7 +206,10 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     e.preventDefault();
     e.stopPropagation(); // the popover renders in a portal; keep React from bubbling to an outer form
     const href = url.trim();
-    if (!isSafeUrl(href)) { setUrlError(true); return; }
+    if (!isSafeUrl(href)) {
+      setUrlError(true);
+      return;
+    }
     setLinkOpen(false);
     run('createLink', href);
   };
@@ -152,8 +217,13 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   const onEditorKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     if (!(isMac() ? e.metaKey : e.ctrlKey) || e.altKey || inert) return;
     const cmd = {b: 'bold', i: 'italic', u: 'underline'}[e.key.toLowerCase()];
-    if (cmd) { e.preventDefault(); run(cmd); }
-    else if (e.key.toLowerCase() === 'k') { e.preventDefault(); openLink(); }
+    if (cmd) {
+      e.preventDefault();
+      run(cmd);
+    } else if (e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      openLink();
+    }
   };
 
   const onPaste = (e: React.ClipboardEvent) => {
@@ -166,27 +236,83 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   };
 
   const mouseDown = (e: React.MouseEvent) => e.preventDefault(); // keep the selection in the editor when a toolbar button is clicked
-  const btn = (label: string, on: boolean, action: () => void, extra?: {pressed?: boolean}) => (
-    <ToolbarButton aria-pressed={extra?.pressed === false ? undefined : on} disabled={inert} onMouseDown={mouseDown} onClick={action}>{label}</ToolbarButton>
+  const btn = (label: string, on: boolean, action: () => void, extra?: {pressed?: boolean | undefined}) => (
+    <ToolbarButton
+      aria-pressed={extra?.pressed === false ? undefined : on}
+      disabled={inert}
+      onMouseDown={mouseDown}
+      onClick={action}
+    >
+      {label}
+    </ToolbarButton>
   );
 
   return (
-    <div className={cx('rte', className)} data-disabled={disabled ? '' : undefined} data-readonly={readOnly ? '' : undefined} ref={ref} {...rest}>
-      <Toolbar aria-label={toolbarLabel} className="rte-toolbar" onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); editorRef.current?.focus(); } }}>
+    <div
+      className={cx('rte', className)}
+      data-disabled={disabled ? '' : undefined}
+      data-readonly={readOnly ? '' : undefined}
+      ref={ref}
+      {...rest}
+    >
+      <Toolbar
+        aria-label={toolbarLabel}
+        className="rte-toolbar"
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            editorRef.current?.focus();
+          }
+        }}
+      >
         {btn('Bold', fmt.bold, () => run('bold'))}
         {btn('Italic', fmt.italic, () => run('italic'))}
         {btn('Underline', fmt.underline, () => run('underline'))}
         <ToolbarSeparator />
         <Popover open={linkOpen} onOpenChange={setLinkOpen}>
           <PopoverAnchor asChild>{btn('Link', false, openLink, {pressed: false})}</PopoverAnchor>
-          <PopoverContent aria-label="Insert link" onCloseAutoFocus={(e) => { e.preventDefault(); restoreSelection(); }}>
+          <PopoverContent
+            aria-label="Insert link"
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              restoreSelection();
+            }}
+          >
             <form className="rte-link" onSubmit={submitLink} noValidate>
-              <label className="rte-link-label" htmlFor={`${errId}-url`}>Link address</label>
-              <Input id={`${errId}-url`} type="url" value={url} invalid={urlError} aria-describedby={urlError ? errId : undefined} onChange={(e) => { setUrl(e.target.value); setUrlError(false); }} autoFocus />
-              {urlError && <p id={errId} role="alert" className="rte-link-error">Use an address that starts with http://, https:// or mailto:.</p>}
+              <label className="rte-link-label" htmlFor={`${errId}-url`}>
+                Link address
+              </label>
+              <Input
+                id={`${errId}-url`}
+                type="url"
+                value={url}
+                invalid={urlError}
+                aria-describedby={urlError ? errId : undefined}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  setUrlError(false);
+                }}
+                autoFocus
+              />
+              {urlError && (
+                <p id={errId} role="alert" className="rte-link-error">
+                  Use an address that starts with http://, https:// or mailto:.
+                </p>
+              )}
               <div className="rte-link-actions">
-                <Button type="submit" variant="solid" size="sm">Apply</Button>
-                <Button variant="line" size="sm" onClick={() => { setLinkOpen(false); run('unlink'); }}>Remove link</Button>
+                <Button type="submit" variant="solid" size="sm">
+                  Apply
+                </Button>
+                <Button
+                  variant="line"
+                  size="sm"
+                  onClick={() => {
+                    setLinkOpen(false);
+                    run('unlink');
+                  }}
+                >
+                  Remove link
+                </Button>
               </div>
             </form>
           </PopoverContent>
@@ -195,7 +321,9 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         {btn('Paragraph', fmt.block === 'p', () => run('formatBlock', '<p>'))}
         {btn('Heading 2', fmt.block === 'h2', () => run('formatBlock', fmt.block === 'h2' ? '<p>' : '<h2>'))}
         {btn('Heading 3', fmt.block === 'h3', () => run('formatBlock', fmt.block === 'h3' ? '<p>' : '<h3>'))}
-        {btn('Quote', fmt.block === 'blockquote', () => run('formatBlock', fmt.block === 'blockquote' ? '<p>' : '<blockquote>'))}
+        {btn('Quote', fmt.block === 'blockquote', () =>
+          run('formatBlock', fmt.block === 'blockquote' ? '<p>' : '<blockquote>'),
+        )}
         <ToolbarSeparator />
         {btn('Bulleted list', fmt.ul, () => run('insertUnorderedList'))}
         {btn('Numbered list', fmt.ol, () => run('insertOrderedList'))}

@@ -10,24 +10,44 @@ describe('BorderBeam', () => {
     expect(container.querySelector('.border-beam-light')).toHaveAttribute('aria-hidden', 'true');
   });
   it('sets the duration', () => {
-    render(<BorderBeam data-testid="b" duration={10}>x</BorderBeam>);
+    render(
+      <BorderBeam data-testid="b" duration={10}>
+        x
+      </BorderBeam>,
+    );
     expect(screen.getByTestId('b').style.getPropertyValue('--border-beam-duration')).toBe('10s');
   });
   it('merges className and forwards the ref', () => {
     const ref = createRef<HTMLDivElement>();
-    render(<BorderBeam ref={ref} className="x">y</BorderBeam>);
+    render(
+      <BorderBeam ref={ref} className="x">
+        y
+      </BorderBeam>,
+    );
     expect(ref.current).toHaveClass('border-beam', 'x');
   });
   it('defaults the duration to 6s and accepts fractional and zero values', () => {
     const {rerender} = render(<BorderBeam data-testid="b">x</BorderBeam>);
     expect(screen.getByTestId('b').style.getPropertyValue('--border-beam-duration')).toBe('6s');
-    rerender(<BorderBeam data-testid="b" duration={0.5}>x</BorderBeam>);
+    rerender(
+      <BorderBeam data-testid="b" duration={0.5}>
+        x
+      </BorderBeam>,
+    );
     expect(screen.getByTestId('b').style.getPropertyValue('--border-beam-duration')).toBe('0.5s');
-    rerender(<BorderBeam data-testid="b" duration={0}>x</BorderBeam>);
+    rerender(
+      <BorderBeam data-testid="b" duration={0}>
+        x
+      </BorderBeam>,
+    );
     expect(screen.getByTestId('b').style.getPropertyValue('--border-beam-duration')).toBe('0s');
   });
   it('keeps the caller style and lets it override the duration variable', () => {
-    render(<BorderBeam data-testid="b" style={{color: 'red', ['--border-beam-duration' as string]: '1s'}}>x</BorderBeam>);
+    render(
+      <BorderBeam data-testid="b" style={{color: 'red', ['--border-beam-duration' as string]: '1s'}}>
+        x
+      </BorderBeam>,
+    );
     const el = screen.getByTestId('b');
     expect(el.style.color).toBe('red');
     expect(el.style.getPropertyValue('--border-beam-duration')).toBe('1s');
@@ -46,7 +66,11 @@ describe('BorderBeam', () => {
     expect(screen.getByTestId('b').tagName).toBe('DIV');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<BorderBeam><p>Content</p></BorderBeam>);
+    const {container} = render(
+      <BorderBeam>
+        <p>Content</p>
+      </BorderBeam>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

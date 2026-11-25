@@ -6,8 +6,18 @@ import {createRef} from 'react';
 const ui = () => (
   <Table wrapperLabel="Invoices">
     <TableCaption>March invoices</TableCaption>
-    <TableHeader><TableRow><TableHead>Name</TableHead><TableHead numeric>Total</TableHead></TableRow></TableHeader>
-    <TableBody><TableRow><TableCell>Ada</TableCell><TableCell numeric>$12</TableCell></TableRow></TableBody>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Name</TableHead>
+        <TableHead numeric>Total</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableRow>
+        <TableCell>Ada</TableCell>
+        <TableCell numeric>$12</TableCell>
+      </TableRow>
+    </TableBody>
   </Table>
 );
 
@@ -28,8 +38,18 @@ describe('Table', () => {
   });
   const sample = (
     <Table>
-      <TableHeader><TableRow><TableHead>Name</TableHead><TableHead numeric>Qty</TableHead></TableRow></TableHeader>
-      <TableBody><TableRow><TableCell>Bolt</TableCell><TableCell numeric>12</TableCell></TableRow></TableBody>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead numeric>Qty</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>Bolt</TableCell>
+          <TableCell numeric>12</TableCell>
+        </TableRow>
+      </TableBody>
     </Table>
   );
   it('exposes the native table roles with column headers scoped to col', () => {
@@ -40,7 +60,16 @@ describe('Table', () => {
     expect(screen.getByRole('cell', {name: 'Bolt'})).toBeInTheDocument();
   });
   it('lets TableHead scope be overridden for row headers', () => {
-    render(<Table><TableBody><TableRow><TableHead scope="row">Row</TableHead><TableCell>x</TableCell></TableRow></TableBody></Table>);
+    render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableHead scope="row">Row</TableHead>
+            <TableCell>x</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
     expect(screen.getByRole('rowheader', {name: 'Row'})).toHaveAttribute('scope', 'row');
   });
   it('numeric adds the num class on head and cell only when set', () => {
@@ -64,18 +93,43 @@ describe('Table', () => {
   });
   it('puts ref, className and other props on the table, not the wrapper', () => {
     const ref = createRef<HTMLTableElement>();
-    render(<Table ref={ref} className="mine" id="t" aria-label="Parts">{null}</Table>);
+    render(
+      <Table ref={ref} className="mine" id="t" aria-label="Parts">
+        {null}
+      </Table>,
+    );
     expect(ref.current).toBe(screen.getByRole('table', {name: 'Parts'}));
     expect(ref.current).toHaveClass('table', 'mine');
     expect(ref.current).toHaveAttribute('id', 't');
   });
   it('every part forwards its ref and spreads props', () => {
-    const refs = {cap: createRef<HTMLTableCaptionElement>(), head: createRef<HTMLTableSectionElement>(), body: createRef<HTMLTableSectionElement>(), row: createRef<HTMLTableRowElement>(), th: createRef<HTMLTableCellElement>(), td: createRef<HTMLTableCellElement>()};
+    const refs = {
+      cap: createRef<HTMLTableCaptionElement>(),
+      head: createRef<HTMLTableSectionElement>(),
+      body: createRef<HTMLTableSectionElement>(),
+      row: createRef<HTMLTableRowElement>(),
+      th: createRef<HTMLTableCellElement>(),
+      td: createRef<HTMLTableCellElement>(),
+    };
     render(
       <Table>
-        <TableCaption ref={refs.cap} data-x="c">Cap</TableCaption>
-        <TableHeader ref={refs.head}><TableRow ref={refs.row}><TableHead ref={refs.th} className="h">H</TableHead></TableRow></TableHeader>
-        <TableBody ref={refs.body}><TableRow><TableCell ref={refs.td} className="d" colSpan={2}>D</TableCell></TableRow></TableBody>
+        <TableCaption ref={refs.cap} data-x="c">
+          Cap
+        </TableCaption>
+        <TableHeader ref={refs.head}>
+          <TableRow ref={refs.row}>
+            <TableHead ref={refs.th} className="h">
+              H
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody ref={refs.body}>
+          <TableRow>
+            <TableCell ref={refs.td} className="d" colSpan={2}>
+              D
+            </TableCell>
+          </TableRow>
+        </TableBody>
       </Table>,
     );
     expect(refs.cap.current!.tagName).toBe('CAPTION');
@@ -88,11 +142,30 @@ describe('Table', () => {
     expect(refs.td.current).toHaveAttribute('colspan', '2');
   });
   it('names the table by its caption', () => {
-    render(<Table><TableCaption>Inventory</TableCaption><TableBody><TableRow><TableCell>x</TableCell></TableRow></TableBody></Table>);
+    render(
+      <Table>
+        <TableCaption>Inventory</TableCaption>
+        <TableBody>
+          <TableRow>
+            <TableCell>x</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
     expect(screen.getByRole('table', {name: 'Inventory'})).toBeInTheDocument();
   });
   it('handles zero, negative, long and RTL cell content and empty bodies', () => {
-    render(<Table><TableBody><TableRow><TableCell numeric>{0}</TableCell><TableCell numeric>{-5}</TableCell><TableCell dir="rtl">{'نص '.repeat(300)}</TableCell></TableRow></TableBody></Table>);
+    render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell numeric>{0}</TableCell>
+            <TableCell numeric>{-5}</TableCell>
+            <TableCell dir="rtl">{'نص '.repeat(300)}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
     expect(screen.getByRole('cell', {name: '0'})).toBeInTheDocument();
     expect(screen.getByRole('cell', {name: '-5'})).toBeInTheDocument();
     expect(screen.getAllByRole('cell')).toHaveLength(3);

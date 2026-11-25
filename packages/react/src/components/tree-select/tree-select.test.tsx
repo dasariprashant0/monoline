@@ -5,7 +5,14 @@ import type {TreeNode} from '../tree';
 import {TreeSelect} from './tree-select';
 
 const items: TreeNode[] = [
-  {id: 'eng', label: 'Engineering', children: [{id: 'web', label: 'Web'}, {id: 'infra', label: 'Infrastructure'}]},
+  {
+    id: 'eng',
+    label: 'Engineering',
+    children: [
+      {id: 'web', label: 'Web'},
+      {id: 'infra', label: 'Infrastructure'},
+    ],
+  },
   {id: 'design', label: 'Design', children: [{id: 'brand', label: 'Brand'}]},
   {id: 'ops', label: 'Operations', disabled: true},
 ];
@@ -19,7 +26,11 @@ describe('TreeSelect', () => {
     expect(box()).toHaveAttribute('aria-expanded', 'false');
     await user.click(box());
     const tree = screen.getByRole('tree', {name: 'Team'});
-    expect(within(tree).getAllByRole('treeitem').map((t) => t.textContent?.replace(/^[+−]/, ''))).toEqual(['Engineering', 'Design', 'Operations']);
+    expect(
+      within(tree)
+        .getAllByRole('treeitem')
+        .map((t) => t.textContent?.replace(/^[+−]/, '')),
+    ).toEqual(['Engineering', 'Design', 'Operations']);
     expect(box()).toHaveAttribute('aria-expanded', 'true');
   });
   it('gives each item level, size and position', async () => {
@@ -72,7 +83,10 @@ describe('TreeSelect', () => {
     render(<TreeSelect aria-label="Team" items={items} />);
     await user.click(box());
     await user.keyboard('infra');
-    expect(screen.getAllByRole('treeitem').map((t) => t.textContent?.replace(/^[+−]/, ''))).toEqual(['Engineering', 'Infrastructure']);
+    expect(screen.getAllByRole('treeitem').map((t) => t.textContent?.replace(/^[+−]/, ''))).toEqual([
+      'Engineering',
+      'Infrastructure',
+    ]);
     await user.clear(box());
     await user.keyboard('zzz');
     expect(screen.getByText('No matches')).toBeInTheDocument();
@@ -80,7 +94,9 @@ describe('TreeSelect', () => {
   it('multiple: toggles, stays open and summarises', async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<TreeSelect multiple aria-label="Teams" items={items} onValueChange={onValueChange} defaultValue={['brand']} />);
+    render(
+      <TreeSelect multiple aria-label="Teams" items={items} onValueChange={onValueChange} defaultValue={['brand']} />,
+    );
     await user.click(box());
     expect(screen.getByRole('tree')).toHaveAttribute('aria-multiselectable', 'true');
     await user.keyboard('{Enter}'); // Engineering

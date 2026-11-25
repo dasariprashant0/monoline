@@ -1,22 +1,41 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
-import {NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger} from './navigation-menu';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from './navigation-menu';
 
 const ui = () => (
   <NavigationMenu aria-label="Main">
     <NavigationMenuList>
-      <NavigationMenuItem><NavigationMenuLink href="/" active>Home</NavigationMenuLink></NavigationMenuItem>
+      <NavigationMenuItem>
+        <NavigationMenuLink href="/" active>
+          Home
+        </NavigationMenuLink>
+      </NavigationMenuItem>
       <NavigationMenuItem>
         <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-        <NavigationMenuContent><NavigationMenuLink href="/ui">UI kit</NavigationMenuLink></NavigationMenuContent>
+        <NavigationMenuContent>
+          <NavigationMenuLink href="/ui">UI kit</NavigationMenuLink>
+        </NavigationMenuContent>
       </NavigationMenuItem>
     </NavigationMenuList>
   </NavigationMenu>
 );
 
 describe('NavigationMenu', () => {
-  beforeAll(() => { globalThis.ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} } as never; });
+  beforeAll(() => {
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as never;
+  });
   it('is a named navigation landmark with links', () => {
     render(ui());
     expect(screen.getByRole('navigation', {name: 'Main'})).toBeInTheDocument();

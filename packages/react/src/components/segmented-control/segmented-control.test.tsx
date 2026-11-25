@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {SegmentedControl} from './segmented-control';
 
-const options = [{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}];
+const options = [
+  {value: 'day', label: 'Day'},
+  {value: 'week', label: 'Week'},
+  {value: 'month', label: 'Month'},
+];
 
 describe('SegmentedControl', () => {
   it('selects the first option by default and exposes radios', () => {

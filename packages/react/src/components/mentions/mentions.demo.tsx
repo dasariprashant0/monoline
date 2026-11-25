@@ -9,7 +9,10 @@ const people: MentionOption[] = [
   {value: 'linus', label: 'Linus Torvalds', disabled: true},
 ];
 
-const load = (q: string): Promise<MentionOption[]> => new Promise((done) => setTimeout(() => done(people.filter((p) => p.label.toLowerCase().includes(q.toLowerCase()))), 300));
+const load = (q: string): Promise<MentionOption[]> =>
+  new Promise((done) =>
+    setTimeout(() => done(people.filter((p) => p.label.toLowerCase().includes(q.toLowerCase()))), 300),
+  );
 
 export const demos: Demo[] = [
   {

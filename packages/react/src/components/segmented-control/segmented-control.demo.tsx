@@ -7,7 +7,11 @@ export const demos: Demo[] = [
     render: () => (
       <SegmentedControl
         aria-label="Chart range"
-        options={[{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}]}
+        options={[
+          {value: 'day', label: 'Day'},
+          {value: 'week', label: 'Week'},
+          {value: 'month', label: 'Month'},
+        ]}
         defaultValue="week"
       />
     ),

@@ -4,7 +4,13 @@ import {BlockFooter} from './block-footer';
 import {createRef} from 'react';
 
 const columns = [
-  {title: 'Product', links: [{label: 'Docs', href: '/docs'}, {label: 'Changelog', href: '/changelog'}]},
+  {
+    title: 'Product',
+    links: [
+      {label: 'Docs', href: '/docs'},
+      {label: 'Changelog', href: '/changelog'},
+    ],
+  },
   {title: 'Company', links: [{label: 'About', href: '/about'}]},
 ];
 
@@ -28,7 +34,9 @@ describe('BlockFooter', () => {
     render(<BlockFooter columns={columns} />);
     const nav = screen.getByRole('navigation', {name: 'Company'});
     expect(within(nav).getByRole('link', {name: 'About'})).toHaveAttribute('href', '/about');
-    expect(within(screen.getByRole('navigation', {name: 'Product'})).getByRole('link', {name: 'Changelog'})).toHaveAttribute('href', '/changelog');
+    expect(
+      within(screen.getByRole('navigation', {name: 'Product'})).getByRole('link', {name: 'Changelog'}),
+    ).toHaveAttribute('href', '/changelog');
   });
   it('omits the brand block when neither brand nor description is given', () => {
     const {container} = render(<BlockFooter columns={columns} />);
@@ -67,7 +75,16 @@ describe('BlockFooter', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
   it('renders links through renderLink', () => {
-    render(<BlockFooter columns={columns} renderLink={({href, children, ...p}) => <a {...p} href={`/app${href}`} data-router>{children}</a>} />);
+    render(
+      <BlockFooter
+        columns={columns}
+        renderLink={({href, children, ...p}) => (
+          <a {...p} href={`/app${href}`} data-router>
+            {children}
+          </a>
+        )}
+      />,
+    );
     const link = screen.getByRole('link', {name: 'About'});
     expect(link).toHaveAttribute('href', '/app/about');
     expect(link).toHaveAttribute('data-router');

@@ -12,15 +12,23 @@ function Counter({value, defaultValue = 0, onValueChange}: CounterProps) {
   const [count, setCount] = useControllableState({value, defaultValue, onChange: onValueChange});
   return (
     <div>
-      <Button variant="line" aria-label="Decrease" onClick={() => setCount(count - 1)}>−</Button>{' '}
+      <Button variant="line" aria-label="Decrease" onClick={() => setCount(count - 1)}>
+        −
+      </Button>{' '}
       <output>{count}</output>{' '}
-      <Button variant="line" aria-label="Increase" onClick={() => setCount(count + 1)}>+</Button>
+      <Button variant="line" aria-label="Increase" onClick={() => setCount(count + 1)}>
+        +
+      </Button>
     </div>
   );
 }
 
 export const demos: Demo[] = [
-  {title: 'Uncontrolled', description: 'Starts at defaultValue and keeps its own state.', render: () => <Counter defaultValue={2} />},
+  {
+    title: 'Uncontrolled',
+    description: 'Starts at defaultValue and keeps its own state.',
+    render: () => <Counter defaultValue={2} />,
+  },
   {
     title: 'Controlled',
     description: 'The parent owns the value and rounds it to the nearest 5 before storing it.',

@@ -5,7 +5,14 @@ import {Breadcrumb} from '../breadcrumb';
 
 describe('PageHeader', () => {
   it('renders the title as an h1 with description, breadcrumbs and actions', () => {
-    render(<PageHeader title="Customers" description="Everyone." breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '/'}, {label: 'Customers'}]} />} actions={<button>Add</button>} />);
+    render(
+      <PageHeader
+        title="Customers"
+        description="Everyone."
+        breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '/'}, {label: 'Customers'}]} />}
+        actions={<button>Add</button>}
+      />,
+    );
     expect(screen.getByRole('heading', {level: 1, name: 'Customers'})).toBeInTheDocument();
     expect(screen.getByText('Everyone.')).toBeInTheDocument();
     expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeInTheDocument();

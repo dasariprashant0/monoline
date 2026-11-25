@@ -2,7 +2,8 @@
 import {useCallback, useRef, useState} from 'react';
 
 /** True for a DOM or React event, so `onClick={toggle}` flips instead of trying to set the event as a value. */
-const isEvent = (v: unknown) => typeof v === 'object' && v !== null && ('nativeEvent' in v || (typeof Event !== 'undefined' && v instanceof Event));
+const isEvent = (v: unknown) =>
+  typeof v === 'object' && v !== null && ('nativeEvent' in v || (typeof Event !== 'undefined' && v instanceof Event));
 
 /**
  * `const [on, toggle] = useToggle()` flips a boolean; `useToggle(true)` starts on.
@@ -29,7 +30,10 @@ export function useToggle<T>(arg: boolean | readonly [T, ...T[]] = false): [T, (
   const toggle = useCallback((value?: T) => {
     setIndex((i) => {
       const all = list.current;
-      if (value !== undefined && !isEvent(value)) { const at = all.indexOf(value); return at === -1 ? i : at; }
+      if (value !== undefined && !isEvent(value)) {
+        const at = all.indexOf(value);
+        return at === -1 ? i : at;
+      }
       return (i + 1) % all.length;
     });
   }, []);

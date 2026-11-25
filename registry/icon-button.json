@@ -60,7 +60,7 @@
       ]
     }
   ],
-  "usage": "import {IconButton} from '@monoline/react';\n\nconst Plus = () => <svg aria-hidden=\"true\" viewBox=\"0 0 12 12\" width=\"12\" height=\"12\"><path d=\"M6 1v10M1 6h10\" stroke=\"currentColor\" fill=\"none\" /></svg>;\n\n<div style={{display: 'flex', gap: 'var(--s3)'}}>\n  <IconButton aria-label=\"Add\">\n    <Plus />\n  </IconButton>\n  <IconButton variant=\"solid\" aria-label=\"Add item\">\n    <Plus />\n  </IconButton>\n  <IconButton variant=\"ghost\" size=\"sm\" aria-label=\"Add row\">\n    <Plus />\n  </IconButton>\n</div>",
+  "usage": "import {IconButton} from '@monoline/react';\n\nconst Plus = () => (\n  <svg aria-hidden=\"true\" viewBox=\"0 0 12 12\" width=\"12\" height=\"12\">\n    <path d=\"M6 1v10M1 6h10\" stroke=\"currentColor\" fill=\"none\" />\n  </svg>\n);\n\n<div style={{display: 'flex', gap: 'var(--s3)'}}>\n  <IconButton aria-label=\"Add\">\n    <Plus />\n  </IconButton>\n  <IconButton variant=\"solid\" aria-label=\"Add item\">\n    <Plus />\n  </IconButton>\n  <IconButton variant=\"ghost\" size=\"sm\" aria-label=\"Add row\">\n    <Plus />\n  </IconButton>\n</div>",
   "dataAttributes": [],
   "classes": [
     "btn",
@@ -78,7 +78,7 @@
   "source": [
     {
       "path": "packages/react/src/components/icon-button/icon-button.tsx",
-      "content": "import {forwardRef} from 'react';\nimport {Button, type ButtonProps} from '../button';\nimport {cx} from '../../utils/cx';\n\nexport interface IconButtonProps extends Omit<ButtonProps, 'aria-label' | 'children'> {\n  /** Required: what the button does, because there is no visible text. */\n  'aria-label': string;\n  /** An inline SVG with `currentColor` and `aria-hidden`. */\n  children: React.ReactNode;\n}\n\n/** A square button for one icon. */\nexport const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({className, ...rest}, ref) {\n  return <Button ref={ref} variant=\"line\" className={cx('btn-icon', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef} from 'react';\nimport {Button, type ButtonProps} from '../button';\nimport {cx} from '../../utils/cx';\n\nexport interface IconButtonProps extends Omit<ButtonProps, 'aria-label' | 'children'> {\n  /** Required: what the button does, because there is no visible text. */\n  'aria-label': string;\n  /** An inline SVG with `currentColor` and `aria-hidden`. */\n  children: React.ReactNode;\n}\n\n/** A square button for one icon. */\nexport const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(\n  {className, ...rest},\n  ref,\n) {\n  return <Button ref={ref} variant=\"line\" className={cx('btn-icon', className)} {...rest} />;\n});\n"
     },
     {
       "path": "packages/react/src/components/icon-button/index.ts",

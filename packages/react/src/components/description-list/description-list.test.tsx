@@ -3,7 +3,10 @@ import {axe} from '../../test/axe';
 import {DescriptionList} from './description-list';
 import {createRef} from 'react';
 
-const items = [{term: 'Plan', details: 'Pro'}, {term: 'Seats', details: '12'}];
+const items = [
+  {term: 'Plan', details: 'Pro'},
+  {term: 'Seats', details: '12'},
+];
 
 describe('DescriptionList', () => {
   it('renders each term with its details', () => {
@@ -39,7 +42,14 @@ describe('DescriptionList', () => {
     expect(container.querySelector('dl')).toBeEmptyDOMElement();
   });
   it('accepts rich nodes, zero and long or RTL text', () => {
-    render(<DescriptionList items={[{term: <b>مفتاح</b>, details: 0}, {term: 'Long', details: 'y'.repeat(5000)}]} />);
+    render(
+      <DescriptionList
+        items={[
+          {term: <b>مفتاح</b>, details: 0},
+          {term: 'Long', details: 'y'.repeat(5000)},
+        ]}
+      />,
+    );
     expect(screen.getByText('مفتاح').tagName).toBe('B');
     expect(screen.getByText('0').tagName).toBe('DD');
     expect(screen.getByText('y'.repeat(5000))).toBeInTheDocument();

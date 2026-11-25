@@ -8,13 +8,13 @@ export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
   /** The number to count to. Screen readers get this, never the frames in between. */
   value: number;
   /** Where the count starts. Default 0. */
-  from?: number;
+  from?: number | undefined;
   /** Milliseconds for the count. Default 1500. */
-  duration?: number;
+  duration?: number | undefined;
   /** Digits after the decimal point. Default 0. */
-  decimals?: number;
+  decimals?: number | undefined;
   /** Custom formatting, for currency or units. Overrides `decimals`. */
-  format?: (n: number) => string;
+  format?: ((n: number) => string) | undefined;
 }
 
 /**
@@ -22,14 +22,22 @@ export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
  * The visible digits are `aria-hidden`; an `sr-only` copy holds the final number.
  * @example <NumberTicker value={1200} format={(n) => n.toLocaleString()} />
  */
-export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(function NumberTicker({value, from = 0, duration = 1500, decimals = 0, format, className, ...rest}, ref) {
+export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(function NumberTicker(
+  {value, from = 0, duration = 1500, decimals = 0, format, className, ...rest},
+  ref,
+) {
   const [shown, setShown] = useState(value);
   const reduced = useReducedMotion();
   const local = useRef<HTMLSpanElement | null>(null);
-  const fmt = format ?? ((n: number) => n.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}));
+  const fmt =
+    format ??
+    ((n: number) => n.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}));
 
   useEffect(() => {
-    if (reduced || typeof requestAnimationFrame === 'undefined') { setShown(value); return; }
+    if (reduced || typeof requestAnimationFrame === 'undefined') {
+      setShown(value);
+      return;
+    }
     let raf = 0;
     let io: IntersectionObserver | undefined;
     const run = () => {
@@ -43,10 +51,18 @@ export const NumberTicker = forwardRef<HTMLSpanElement, NumberTickerProps>(funct
     };
     setShown(from);
     if (local.current && typeof IntersectionObserver !== 'undefined') {
-      io = new IntersectionObserver(([entry]) => { if (entry?.isIntersecting) { io?.disconnect(); run(); } });
+      io = new IntersectionObserver(([entry]) => {
+        if (entry?.isIntersecting) {
+          io?.disconnect();
+          run();
+        }
+      });
       io.observe(local.current);
     } else run();
-    return () => { cancelAnimationFrame(raf); io?.disconnect(); };
+    return () => {
+      cancelAnimationFrame(raf);
+      io?.disconnect();
+    };
   }, [value, from, duration, reduced]);
 
   return (

@@ -2,7 +2,10 @@ import type {Demo} from '../../demo';
 import {Field} from '../field';
 import {Combobox} from './combobox';
 
-const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({value: n.toLowerCase().replace(/\W+/g, '-'), label: n}));
+const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({
+  value: n.toLowerCase().replace(/\W+/g, '-'),
+  label: n,
+}));
 
 export const demos: Demo[] = [
   {

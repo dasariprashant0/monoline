@@ -6,7 +6,7 @@ export interface DirectionProviderProps {
   /** Reading direction for everything below: `ltr` or `rtl`. */
   dir: 'ltr' | 'rtl';
   /** The part of the app that should use this direction. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**

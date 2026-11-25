@@ -3,17 +3,24 @@ import assert from 'node:assert/strict';
 import {existsSync, mkdtempSync, readFileSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
-import {run, unifiedDiff} from '../src/cli.mjs';
+import {run, unifiedDiff} from '../dist/cli.js';
 
 const registry = resolve(import.meta.dirname, '../../../registry');
 const tmp = () => mkdtempSync(join(tmpdir(), 'monoline-cmd-'));
 const exec = async (args, cwd, extra = {}) => {
-  const lines = [], errs = [];
-  const code = await run([...args, '--registry', registry, '--cwd', cwd], {out: (s) => lines.push(s), err: (s) => errs.push(s), ...extra});
+  const lines = [],
+    errs = [];
+  const code = await run([...args, '--registry', registry, '--cwd', cwd], {
+    out: (s) => lines.push(s),
+    err: (s) => errs.push(s),
+    ...extra,
+  });
   return {code, out: lines.join('\n'), err: errs.join('\n')};
 };
 const button = (cwd) => join(cwd, 'src/components/monoline/button/button.tsx');
-const noAsk = async () => { throw new Error('should not ask'); };
+const noAsk = async () => {
+  throw new Error('should not ask');
+};
 
 test('unifiedDiff: equal texts give nothing; a change gives a hunk with context', () => {
   assert.equal(unifiedDiff('a\nb\n', 'a\nb\n', 'x', 'y'), '');
@@ -118,7 +125,11 @@ test('search: matches name, keyword and description; all words must match; no ma
   assert.equal(r.code, 0);
   assert.match(r.out, /^input\s/m);
   assert.match(r.out, /^textarea\s/m);
-  assert.match((await exec(['search', 'dialog'], tmp())).out.split('\n')[0], /^dialog\s/, 'exact name matches come first');
+  assert.match(
+    (await exec(['search', 'dialog'], tmp())).out.split('\n')[0],
+    /^dialog\s/,
+    'exact name matches come first',
+  );
   const none = await exec(['search', 'zzqqxx'], tmp());
   assert.equal(none.code, 1);
   assert.match(none.out, /no components match "zzqqxx"/);

@@ -27,7 +27,11 @@ describe('ShimmerButton', () => {
   });
   it('ignores clicks when disabled', async () => {
     const onClick = vi.fn();
-    render(<ShimmerButton disabled onClick={onClick}>Go</ShimmerButton>);
+    render(
+      <ShimmerButton disabled onClick={onClick}>
+        Go
+      </ShimmerButton>,
+    );
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
   });

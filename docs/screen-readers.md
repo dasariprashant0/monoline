@@ -14,7 +14,7 @@
 - toasts, alerts and status messages sit in live regions with the right politeness;
 - nothing focusable is left with no role (a "generic" element a screen reader cannot announce), and each docs page has one main landmark and no skipped heading levels.
 
-The expectations are plain data in `scripts/ax/expectations.mjs`: to cover another component, add one entry. The run writes `docs/a11y-report.md`, which lists for each component the role, name, states, the announcement the tree implies ("Save, button, collapsed") and any finding. CI runs it on every pull request (`.github/workflows/ax.yml`) and fails when the report would change.
+The expectations are plain data in `scripts/ax/expectations.ts`: to cover another component, add one entry. The run writes `docs/a11y-report.md`, which lists for each component the role, name, states, the announcement the tree implies ("Save, button, collapsed") and any finding. CI runs it on every pull request (the `ax` job in `.github/workflows/ci.yml`) and fails when the report would change.
 
 ## What is not checked
 
@@ -94,4 +94,4 @@ Run the 16 flows above with these changes:
 |---|---|---|---|---|
 | 1 | | | | |
 
-Report a problem as an issue with: component, screen reader and version, browser and version, the steps, and what was said. Add the line to `docs/a11y-report.md` only through `scripts/ax/report.mjs`, which generates it.
+Report a problem as an issue with: component, screen reader and version, browser and version, the steps, and what was said. Add the line to `docs/a11y-report.md` only through `scripts/ax/report.ts`, which generates it.

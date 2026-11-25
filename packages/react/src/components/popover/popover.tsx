@@ -1,12 +1,31 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactNode, type RefObject} from 'react';
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import {Slot} from '../../utils/slot';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {TABBABLE, setRefs, vetoed} from '../../utils/overlay';
 import {Floating, useDismiss, useHydrated, type Placement} from './float';
 
-interface Ctx { open: boolean; setOpen: (o: boolean) => void; contentId: string; trigger: RefObject<HTMLElement | null>; anchor: RefObject<HTMLElement | null> }
+interface Ctx {
+  open: boolean;
+  setOpen: (o: boolean) => void;
+  contentId: string;
+  trigger: RefObject<HTMLElement | null>;
+  anchor: RefObject<HTMLElement | null>;
+}
 const Context = createContext<Ctx | null>(null);
 /** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
 function usePopoverCtx(): Ctx {
@@ -17,57 +36,108 @@ function usePopoverCtx(): Ctx {
 
 export interface PopoverProps {
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state when the user opens or dismisses it. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** The parts of the component: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** The root of a floating panel. Holds the open state (`open`, `defaultOpen`, `onOpenChange`); put a `PopoverTrigger` and `PopoverContent` inside. */
 export function Popover({open, defaultOpen = false, onOpenChange, children}: PopoverProps) {
   const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: onOpenChange});
-  const trigger = useRef<HTMLElement | null>(null), anchor = useRef<HTMLElement | null>(null);
-  return <Context.Provider value={{open: isOpen, setOpen, contentId: useId(), trigger, anchor}}>{children}</Context.Provider>;
+  const trigger = useRef<HTMLElement | null>(null),
+    anchor = useRef<HTMLElement | null>(null);
+  return (
+    <Context.Provider value={{open: isOpen, setOpen, contentId: useId(), trigger, anchor}}>{children}</Context.Provider>
+  );
 }
 
-interface AsChild { /** Render your own element instead of the default; it receives the props and handlers. */ asChild?: boolean }
+interface AsChild {
+  /** Render your own element instead of the default; it receives the props and handlers. */ asChild?:
+    | boolean
+    | undefined;
+}
 
 /** The element (usually a `Button`) that toggles the popover; use `asChild` to render your own element. */
-export const PopoverTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & AsChild>(function PopoverTrigger({asChild, onClick, ...rest}, ref) {
-  const c = usePopoverCtx();
-  const Comp = asChild ? Slot : 'button';
-  return <Comp ref={(n: HTMLButtonElement | null) => setRefs(n, c.trigger, ref)} type={asChild ? undefined : 'button'} aria-haspopup="dialog" aria-expanded={c.open} aria-controls={c.open ? c.contentId : undefined} data-state={c.open ? 'open' : 'closed'} {...rest} onClick={(e: MouseEvent<HTMLButtonElement>) => { onClick?.(e); if (!e.defaultPrevented) c.setOpen(!c.open); }} />;
-});
+export const PopoverTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & AsChild>(
+  function PopoverTrigger({asChild, onClick, ...rest}, ref) {
+    const c = usePopoverCtx();
+    const Comp = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={(n: HTMLButtonElement | null) => setRefs(n, c.trigger, ref)}
+        type={asChild ? undefined : 'button'}
+        aria-haspopup="dialog"
+        aria-expanded={c.open}
+        aria-controls={c.open ? c.contentId : undefined}
+        data-state={c.open ? 'open' : 'closed'}
+        {...rest}
+        onClick={(e: MouseEvent<HTMLButtonElement>) => {
+          onClick?.(e);
+          if (!e.defaultPrevented) c.setOpen(!c.open);
+        }}
+      />
+    );
+  },
+);
 
 /** Positions the popover against this element instead of the trigger. */
-export const PopoverAnchor = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & AsChild>(function PopoverAnchor({asChild, ...rest}, ref) {
-  const c = usePopoverCtx();
-  const Comp = asChild ? Slot : 'div';
-  return <Comp ref={(n: HTMLDivElement | null) => setRefs(n, c.anchor, ref)} {...rest} />;
-});
+export const PopoverAnchor = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & AsChild>(
+  function PopoverAnchor({asChild, ...rest}, ref) {
+    const c = usePopoverCtx();
+    const Comp = asChild ? Slot : 'div';
+    return <Comp ref={(n: HTMLDivElement | null) => setRefs(n, c.anchor, ref)} {...rest} />;
+  },
+);
 
 /** An element that closes the popover when activated; use `asChild` to wrap your own button. */
-export const PopoverClose = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & AsChild>(function PopoverClose({asChild, onClick, ...rest}, ref) {
-  const c = usePopoverCtx();
-  const Comp = asChild ? Slot : 'button';
-  return <Comp ref={ref} type={asChild ? undefined : 'button'} {...rest} onClick={(e: MouseEvent<HTMLButtonElement>) => { onClick?.(e); if (!e.defaultPrevented) c.setOpen(false); }} />;
-});
+export const PopoverClose = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & AsChild>(
+  function PopoverClose({asChild, onClick, ...rest}, ref) {
+    const c = usePopoverCtx();
+    const Comp = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={ref}
+        type={asChild ? undefined : 'button'}
+        {...rest}
+        onClick={(e: MouseEvent<HTMLButtonElement>) => {
+          onClick?.(e);
+          if (!e.defaultPrevented) c.setOpen(false);
+        }}
+      />
+    );
+  },
+);
 
 export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement>, Placement {
   /** Called when Escape is pressed; call `event.preventDefault()` to keep it open. */
-  onEscapeKeyDown?: (event: Event) => void;
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
   /** Called when a press or focus lands outside; call `event.preventDefault()` to keep it open. */
-  onInteractOutside?: (event: Event) => void;
+  onInteractOutside?: ((event: Event) => void) | undefined;
   /** Called after it opens, before focus moves in; `preventDefault()` keeps focus where it is or lets you move it yourself. */
-  onOpenAutoFocus?: (event: Event) => void;
+  onOpenAutoFocus?: ((event: Event) => void) | undefined;
   /** Called after it closes, before focus returns to the trigger; `preventDefault()` lets you move focus yourself. */
-  onCloseAutoFocus?: (event: Event) => void;
+  onCloseAutoFocus?: ((event: Event) => void) | undefined;
 }
 
-const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({className, sideOffset = 8, align = 'start', side, onEscapeKeyDown, onInteractOutside, onOpenAutoFocus, onCloseAutoFocus, onKeyDown, ...rest}, forwarded) {
+const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel(
+  {
+    className,
+    sideOffset = 8,
+    align = 'start',
+    side,
+    onEscapeKeyDown,
+    onInteractOutside,
+    onOpenAutoFocus,
+    onCloseAutoFocus,
+    onKeyDown,
+    ...rest
+  },
+  forwarded,
+) {
   const c = usePopoverCtx();
   const el = useRef<HTMLDivElement | null>(null);
   const outside = useRef(false);
@@ -78,22 +148,49 @@ const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({cl
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once per opening; on close it focuses the trigger through its stable ref.
   useEffect(() => {
     const p = el.current!;
     if (!vetoed(hooks.current.onOpenAutoFocus, p)) (p.querySelector<HTMLElement>(TABBABLE) ?? p).focus();
-    return () => { if (!vetoed(hooks.current.onCloseAutoFocus, p) && !outside.current) c.trigger.current?.focus(); };
+    return () => {
+      if (!vetoed(hooks.current.onCloseAutoFocus, p) && !outside.current) c.trigger.current?.focus();
+    };
   }, []);
   // Tab from the last control (Shift+Tab from the first) closes the panel. It sits at the end of <body>, so the browser's own order would jump to the page start: focus goes to the trigger first and the default Tab carries on from there.
   const tab = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
-    const t = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)].filter((x) => x.tabIndex > -1), a = document.activeElement;
-    if (e.key === 'Tab' && (a === (e.shiftKey ? t[0] : t.at(-1)) || (a === e.currentTarget && (e.shiftKey || !t.length)))) { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); }
+    const t = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)].filter((x) => x.tabIndex > -1),
+      a = document.activeElement;
+    if (
+      e.key === 'Tab' &&
+      (a === (e.shiftKey ? t[0] : t.at(-1)) || (a === e.currentTarget && (e.shiftKey || !t.length)))
+    ) {
+      outside.current = true;
+      c.trigger.current?.focus();
+      c.setOpen(false);
+    }
   };
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} onKeyDown={tab} anchor={() => c.anchor.current ?? c.trigger.current} side={side} align={align} sideOffset={sideOffset} role="dialog" id={c.contentId} tabIndex={-1} data-state="open" className={cx('popover', className)} {...rest} />;
+  return (
+    <Floating
+      ref={(n) => setRefs(n, el, forwarded)}
+      onKeyDown={tab}
+      anchor={() => c.anchor.current ?? c.trigger.current}
+      side={side}
+      align={align}
+      sideOffset={sideOffset}
+      role="dialog"
+      id={c.contentId}
+      tabIndex={-1}
+      data-state="open"
+      className={cx('popover', className)}
+      {...rest}
+    />
+  );
 });
 
 /** A floating panel anchored to its trigger, placed on the side with room. Focus moves in, Escape closes and returns focus to the trigger, a press outside closes it. */
 export const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(function PopoverContent(props, ref) {
-  const {open} = usePopoverCtx(), hydrated = useHydrated();
+  const {open} = usePopoverCtx(),
+    hydrated = useHydrated();
   return open && hydrated ? <Panel ref={ref} {...props} /> : null;
 });

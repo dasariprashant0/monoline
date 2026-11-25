@@ -12,17 +12,24 @@ export interface TimelineItemProps extends Omit<HTMLAttributes<HTMLLIElement>, '
   /** What happened, shown as the entry's heading line. */
   title: ReactNode;
   /** Human text for when it happened, such as "2 days ago". */
-  time?: ReactNode;
+  time?: ReactNode | undefined;
   /** Machine-readable date for the time element. */
-  dateTime?: string;
+  dateTime?: string | undefined;
 }
 
 /** One event: a `title`, optional `time` and optional body text as children. */
-export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(function TimelineItem({title, time, dateTime, className, children, ...rest}, ref) {
+export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(function TimelineItem(
+  {title, time, dateTime, className, children, ...rest},
+  ref,
+) {
   return (
     <li ref={ref} className={cx('timeline-item', className)} {...rest}>
       <div className="timeline-title">{title}</div>
-      {time && <time className="timeline-time" dateTime={dateTime}>{time}</time>}
+      {time && (
+        <time className="timeline-time" dateTime={dateTime}>
+          {time}
+        </time>
+      )}
       {children && <div className="timeline-body">{children}</div>}
     </li>
   );

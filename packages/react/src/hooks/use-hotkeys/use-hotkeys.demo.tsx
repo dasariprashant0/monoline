@@ -17,4 +17,6 @@ function HotkeysDemo() {
   );
 }
 
-export const demos: Demo[] = [{title: 'Shortcuts', description: 'Ignored while typing in a field.', render: () => <HotkeysDemo />}];
+export const demos: Demo[] = [
+  {title: 'Shortcuts', description: 'Ignored while typing in a field.', render: () => <HotkeysDemo />},
+];

@@ -72,7 +72,7 @@
   "source": [
     {
       "path": "packages/react/src/components/badge/badge.tsx",
-      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {\n  /** `accent` only for \"new\" or \"now\". */\n  variant?: 'outline' | 'solid' | 'accent';\n}\n\n/** A short status word or count. Never rely on its colour alone: the text carries the meaning. */\nexport const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({variant = 'outline', className, ...rest}, ref) {\n  return <span ref={ref} className={cx('badge', variant === 'solid' && 'badge-solid', variant === 'accent' && 'badge-accent', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {\n  /** `accent` only for \"new\" or \"now\". */\n  variant?: 'outline' | 'solid' | 'accent' | undefined;\n}\n\n/** A short status word or count. Never rely on its colour alone: the text carries the meaning. */\nexport const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(\n  {variant = 'outline', className, ...rest},\n  ref,\n) {\n  return (\n    <span\n      ref={ref}\n      className={cx('badge', variant === 'solid' && 'badge-solid', variant === 'accent' && 'badge-accent', className)}\n      {...rest}\n    />\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/badge/index.ts",

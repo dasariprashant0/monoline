@@ -6,12 +6,20 @@ import {createRef} from 'react';
 
 describe('Marquee', () => {
   it('renders the items once for assistive tech and a hidden copy', () => {
-    const {container} = render(<Marquee><span>Acme</span></Marquee>);
+    const {container} = render(
+      <Marquee>
+        <span>Acme</span>
+      </Marquee>,
+    );
     expect(screen.getAllByText('Acme')).toHaveLength(2);
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
   });
   it('sets the duration, direction and pause classes', () => {
-    render(<Marquee data-testid="m" duration={12} reverse>x</Marquee>);
+    render(
+      <Marquee data-testid="m" duration={12} reverse>
+        x
+      </Marquee>,
+    );
     const el = screen.getByTestId('m');
     expect(el.style.getPropertyValue('--marquee-duration')).toBe('12s');
     expect(el).toHaveClass('marquee-reverse', 'marquee-pause');
@@ -24,11 +32,20 @@ describe('Marquee', () => {
     expect(el).not.toHaveClass('marquee-reverse');
   });
   it('pauseOnHover=false drops the pause class', () => {
-    render(<Marquee data-testid="m" pauseOnHover={false}>x</Marquee>);
+    render(
+      <Marquee data-testid="m" pauseOnHover={false}>
+        x
+      </Marquee>,
+    );
     expect(screen.getByTestId('m')).not.toHaveClass('marquee-pause');
   });
   it('renders two tracks with identical content, only the second hidden', () => {
-    const {container} = render(<Marquee><span>A</span><span>B</span></Marquee>);
+    const {container} = render(
+      <Marquee>
+        <span>A</span>
+        <span>B</span>
+      </Marquee>,
+    );
     const tracks = container.querySelectorAll('.marquee-track');
     expect(tracks).toHaveLength(2);
     expect(tracks[0]).not.toHaveAttribute('aria-hidden');
@@ -36,7 +53,12 @@ describe('Marquee', () => {
     expect(tracks[0]!.textContent).toBe(tracks[1]!.textContent);
   });
   it('exposes interactive children to assistive tech only once (the copy is hidden)', () => {
-    render(<Marquee><a href="/a">Link</a></Marquee>);
+    render(
+      <Marquee>
+        {/* biome-ignore lint/a11y/noAmbiguousAnchorText: test fixture; the text does not matter. */}
+        <a href="/a">Link</a>
+      </Marquee>,
+    );
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
   it('renders empty tracks for no children', () => {
@@ -45,14 +67,22 @@ describe('Marquee', () => {
   });
   it('merges className and style, forwards ref', () => {
     const ref = createRef<HTMLDivElement>();
-    render(<Marquee ref={ref} className="mine" style={{color: 'red'}} duration={0}>x</Marquee>);
+    render(
+      <Marquee ref={ref} className="mine" style={{color: 'red'}} duration={0}>
+        x
+      </Marquee>,
+    );
     expect(ref.current).toHaveClass('marquee', 'mine');
     expect(ref.current!.style.color).toBe('red');
     expect(ref.current!.style.getPropertyValue('--marquee-duration')).toBe('0s');
   });
   it('pausable adds a Pause toggle that sets aria-pressed and data-paused', async () => {
     const user = userEvent.setup();
-    const {container} = render(<Marquee pausable><span>Acme</span></Marquee>);
+    const {container} = render(
+      <Marquee pausable>
+        <span>Acme</span>
+      </Marquee>,
+    );
     const btn = screen.getByRole('button', {name: /pause/i});
     expect(btn).toHaveAttribute('aria-pressed', 'false');
     await user.click(btn);
@@ -60,11 +90,19 @@ describe('Marquee', () => {
     expect(container.firstElementChild).toHaveAttribute('data-paused');
   });
   it('has no pause button when pausable is false', () => {
-    render(<Marquee pausable={false}><span>Acme</span></Marquee>);
+    render(
+      <Marquee pausable={false}>
+        <span>Acme</span>
+      </Marquee>,
+    );
     expect(screen.queryByRole('button')).toBeNull();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<Marquee><span>Acme</span></Marquee>);
+    const {container} = render(
+      <Marquee>
+        <span>Acme</span>
+      </Marquee>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -15,7 +15,11 @@ export const routeOf = (pathname: string) => {
   return rest.replace(/\/$/, '');
 };
 
-export type Route = {kind: 'home'} | {kind: 'playground'} | {kind: 'page'; entry: Entry} | {kind: 'missing'; path: string};
+export type Route =
+  | {kind: 'home'}
+  | {kind: 'playground'}
+  | {kind: 'page'; entry: Entry}
+  | {kind: 'missing'; path: string};
 
 export const resolve = (pathname: string): Route => {
   const path = routeOf(pathname);
@@ -27,23 +31,36 @@ export const resolve = (pathname: string): Route => {
 
 const listeners = new Set<() => void>();
 let navCount = 0;
-const emit = () => { navCount++; listeners.forEach((l) => l()); };
+const emit = () => {
+  navCount++;
+  listeners.forEach((l) => l());
+};
 const subscribe = (cb: () => void) => {
   listeners.add(cb);
   addEventListener('popstate', cb);
-  return () => { listeners.delete(cb); removeEventListener('popstate', cb); };
+  return () => {
+    listeners.delete(cb);
+    removeEventListener('popstate', cb);
+  };
 };
 
 let ssrPathname = BASE;
 /** Prerender only: the pathname the next server render should show. */
-export const setServerPathname = (p: string) => { ssrPathname = p; };
+export const setServerPathname = (p: string) => {
+  ssrPathname = p;
+};
 // Server render uses ssrPathname; the first client (hydration) render must read the real URL so both agree.
 const serverPathname = () => (typeof location === 'undefined' ? ssrPathname : location.pathname);
 
 /** Current pathname; re-renders on navigation and Back/Forward. */
 export const usePathname = () => useSyncExternalStore(subscribe, () => location.pathname, serverPathname);
 /** Counts every navigation, including ones to the same path, so effects can react to a repeat click. */
-export const useNavCount = () => useSyncExternalStore(subscribe, () => navCount, () => 0);
+export const useNavCount = () =>
+  useSyncExternalStore(
+    subscribe,
+    () => navCount,
+    () => 0,
+  );
 
 export function navigate(to: string, replace = false) {
   history[replace ? 'replaceState' : 'pushState'](null, '', to);
@@ -51,7 +68,8 @@ export function navigate(to: string, replace = false) {
 }
 
 /** An old-style hash that names a page, unless an element on this page has that id (then it is an in-page anchor). */
-const legacy = (hash: string) => (hash && !document.getElementById(decodeURIComponent(hash.slice(1))) ? legacyPath(hash) : undefined);
+const legacy = (hash: string) =>
+  hash && !document.getElementById(decodeURIComponent(hash.slice(1))) ? legacyPath(hash) : undefined;
 
 /** Turn an old `#button` or `#guides/forms` hash into a real path. Returns true if it redirected. */
 export function upgradeLegacyHash(): boolean {
@@ -67,17 +85,22 @@ export function installLinks() {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
     if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download') || a.origin !== location.origin) return;
-    if (a.getAttribute('href')!.startsWith('#')) { // old hash link or in-page anchor
+    if (a.getAttribute('href')!.startsWith('#')) {
+      // old hash link or in-page anchor
       const p = legacy(a.hash);
       if (!p) return;
-      e.preventDefault(); navigate(href(p)); return;
+      e.preventDefault();
+      navigate(href(p));
+      return;
     }
     if (!a.pathname.startsWith(BASE) || /\.\w+$/.test(a.pathname)) return; // other site, or a file such as llms.txt
     if (a.pathname === location.pathname && a.hash) return; // same page anchor: the browser scrolls
     e.preventDefault();
     navigate(a.pathname + a.search + a.hash);
   };
-  const onHash = () => { upgradeLegacyHash(); };
+  const onHash = () => {
+    upgradeLegacyHash();
+  };
   document.addEventListener('click', onClick);
   addEventListener('hashchange', onHash);
   upgradeLegacyHash();

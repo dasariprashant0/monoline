@@ -50,14 +50,14 @@
     "!src/vitest.d.ts"
   ],
   "scripts": {
-    "gen": "node scripts/gen-index.mjs",
-    "registry": "node scripts/gen-registry.mjs",
-    "build": "npm run gen && vite build && node scripts/emit-cts.mjs",
+    "gen": "node scripts/gen-index.ts",
+    "registry": "node scripts/gen-registry.ts",
+    "build": "npm run gen && vite build && node scripts/emit-cts.ts",
     "dev": "vite build --watch",
     "test": "npm run gen && vitest run",
     "test:watch": "vitest",
     "typecheck": "npm run gen && tsc --noEmit",
-    "check:docs": "node scripts/check-docs.mjs && node scripts/check-use-client.mjs"
+    "check:docs": "node scripts/check-docs.ts && node scripts/check-use-client.ts"
   },
   "dependencies": {
     "radix-ui": "^1.4.2"

@@ -7,9 +7,15 @@ function Basic() {
   return (
     <div>
       <div style={{display: 'flex', gap: 'var(--s4)', alignItems: 'center'}}>
-        <button type="button" className="btn btn-solid" onClick={() => setOpen(true)}>Start tour</button>
-        <button type="button" className="btn" id="tour-demo-a">Create</button>
-        <button type="button" className="btn" id="tour-demo-b">Share</button>
+        <button type="button" className="btn btn-solid" onClick={() => setOpen(true)}>
+          Start tour
+        </button>
+        <button type="button" className="btn" id="tour-demo-a">
+          Create
+        </button>
+        <button type="button" className="btn" id="tour-demo-b">
+          Share
+        </button>
       </div>
       <Tour
         open={open}
@@ -24,10 +30,10 @@ function Basic() {
   );
 }
 
-export const demos: Demo[] = [{
-  title: 'Three steps',
-  description: 'The last step has no target, so its card is centred.',
-  render: () => (
-    <Basic />
-  ),
-}];
+export const demos: Demo[] = [
+  {
+    title: 'Three steps',
+    description: 'The last step has no target, so its card is centred.',
+    render: () => <Basic />,
+  },
+];

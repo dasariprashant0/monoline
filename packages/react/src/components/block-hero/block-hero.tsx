@@ -6,31 +6,40 @@ import {Text} from '../text';
 
 export interface BlockHeroProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Optional small line above the title, for example a category or announcement. */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
   /** The main headline of the page. */
   title: ReactNode;
   /** Optional muted supporting text under the title. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Buttons or links. Make one of them the solid Button. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
   /** An image, screenshot or illustration shown beside (wide) or below (narrow) the copy. */
-  media?: ReactNode;
+  media?: ReactNode | undefined;
   /** `start` (default) left-aligns the copy; `center` centres it. */
-  align?: 'start' | 'center';
+  align?: 'start' | 'center' | undefined;
   /** Outline level of the title. A hero is usually the page's h1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** A page opener: eyebrow, title, description, actions and optional media. Copy comes from props. */
-export const BlockHero = forwardRef<HTMLElement, BlockHeroProps>(function BlockHero({eyebrow, title, description, actions, media, align = 'start', headingLevel = 1, className, ...rest}, ref) {
+export const BlockHero = forwardRef<HTMLElement, BlockHeroProps>(function BlockHero(
+  {eyebrow, title, description, actions, media, align = 'start', headingLevel = 1, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <section ref={ref} className={cx('block-hero', className)} data-align={align} aria-labelledby={id} {...rest}>
       <Container className="block-hero-inner">
         <div className="block-hero-copy">
           {eyebrow && <p className="block-hero-eyebrow">{eyebrow}</p>}
-          <Heading id={id} level={headingLevel} size="display">{title}</Heading>
-          {description && <Text size="lg" tone="muted" className="block-hero-description">{description}</Text>}
+          <Heading id={id} level={headingLevel} size="display">
+            {title}
+          </Heading>
+          {description && (
+            <Text size="lg" tone="muted" className="block-hero-description">
+              {description}
+            </Text>
+          )}
           {actions && <div className="block-hero-actions">{actions}</div>}
         </div>
         {media && <div className="block-hero-media">{media}</div>}

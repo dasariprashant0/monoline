@@ -7,8 +7,15 @@ const disconnect = vi.fn();
 beforeEach(() => {
   disconnect.mockClear();
   globalThis.IntersectionObserver = class {
-    constructor(c: IntersectionObserverCallback) { cb = c; }
-    observe() {} unobserve() {} disconnect = disconnect; takeRecords() { return []; }
+    constructor(c: IntersectionObserverCallback) {
+      cb = c;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect = disconnect;
+    takeRecords() {
+      return [];
+    }
   } as never;
 });
 
@@ -32,8 +39,16 @@ describe('useIntersection', () => {
   it('does not rebuild the observer when an inline threshold array is passed each render', () => {
     let made = 0;
     globalThis.IntersectionObserver = class {
-      constructor(c: IntersectionObserverCallback) { cb = c; made++; }
-      observe() {} unobserve() {} disconnect = disconnect; takeRecords() { return []; }
+      constructor(c: IntersectionObserverCallback) {
+        cb = c;
+        made++;
+      }
+      observe() {}
+      unobserve() {}
+      disconnect = disconnect;
+      takeRecords() {
+        return [];
+      }
     } as never;
     function Inline() {
       const [ref, entry] = useIntersection<HTMLDivElement>({threshold: [0, 0.5]});

@@ -94,8 +94,18 @@ describe('useFocusTrap', () => {
   });
   it('only the newest of two traps reacts', () => {
     function Two() {
-      const a = useFocusTrap<HTMLDivElement>(true), b = useFocusTrap<HTMLDivElement>(true);
-      return <><div ref={a}><button>A</button></div><div ref={b}><button>B</button></div></>;
+      const a = useFocusTrap<HTMLDivElement>(true),
+        b = useFocusTrap<HTMLDivElement>(true);
+      return (
+        <>
+          <div ref={a}>
+            <button>A</button>
+          </div>
+          <div ref={b}>
+            <button>B</button>
+          </div>
+        </>
+      );
     }
     render(<Two />);
     expect(screen.getByText('B')).toHaveFocus();

@@ -10,6 +10,9 @@ export interface IconButtonProps extends Omit<ButtonProps, 'aria-label' | 'child
 }
 
 /** A square button for one icon. */
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({className, ...rest}, ref) {
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
+  {className, ...rest},
+  ref,
+) {
   return <Button ref={ref} variant="line" className={cx('btn-icon', className)} {...rest} />;
 });

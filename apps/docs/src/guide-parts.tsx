@@ -2,7 +2,10 @@ import type {ReactNode} from 'react';
 import {CodeBlock, Tabs, TabsContent, TabsList, TabsTrigger, useLocalStorage} from '@monoline/react';
 
 export const Section = ({title, children}: {title: string; children: ReactNode}) => (
-  <section className="block"><h2 className="cdoc-h2">{title}</h2>{children}</section>
+  <section className="block">
+    <h2 className="cdoc-h2">{title}</h2>
+    {children}
+  </section>
 );
 export const P = ({children}: {children: ReactNode}) => <p className="prose">{children}</p>;
 
@@ -20,8 +23,18 @@ export function PmCode({cmds, label = 'Package manager'}: {cmds: Record<string, 
   const current = pm in cmds ? pm : 'npm';
   return (
     <Tabs value={current} onValueChange={setPm}>
-      <TabsList aria-label={label}>{Object.keys(cmds).map((k) => <TabsTrigger key={k} value={k}>{k}</TabsTrigger>)}</TabsList>
-      {Object.entries(cmds).map(([k, cmd]) => <TabsContent key={k} value={k} style={{minWidth: 0}}><CodeBlock title="bash" code={cmd} /></TabsContent>)}
+      <TabsList aria-label={label}>
+        {Object.keys(cmds).map((k) => (
+          <TabsTrigger key={k} value={k}>
+            {k}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {Object.entries(cmds).map(([k, cmd]) => (
+        <TabsContent key={k} value={k} style={{minWidth: 0}}>
+          <CodeBlock title="bash" code={cmd} />
+        </TabsContent>
+      ))}
     </Tabs>
   );
 }

@@ -6,9 +6,9 @@ export interface RollingNumberProps extends Omit<HTMLAttributes<HTMLSpanElement>
   /** The number to show. When it changes, each digit rolls to its new value. */
   value: number;
   /** BCP 47 locale for the digits and separators, such as "de-DE". Default the browser's locale. */
-  locale?: string;
+  locale?: string | undefined;
   /** `Intl.NumberFormat` options, for example `{style: 'currency', currency: 'USD'}`. */
-  format?: Intl.NumberFormatOptions;
+  format?: Intl.NumberFormatOptions | undefined;
 }
 
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -18,7 +18,10 @@ const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
  * never the rolling strip; with `prefers-reduced-motion` the digits switch at once.
  * @example <RollingNumber value={1204} format={{style: 'currency', currency: 'USD'}} />
  */
-export const RollingNumber = forwardRef<HTMLSpanElement, RollingNumberProps>(function RollingNumber({value, locale, format, className, ...rest}, ref) {
+export const RollingNumber = forwardRef<HTMLSpanElement, RollingNumberProps>(function RollingNumber(
+  {value, locale, format, className, ...rest},
+  ref,
+) {
   const text = new Intl.NumberFormat(locale, format).format(value);
   const chars = Array.from(text);
   return (
@@ -30,9 +33,17 @@ export const RollingNumber = forwardRef<HTMLSpanElement, RollingNumberProps>(fun
           const key = chars.length - i;
           return /[0-9]/.test(ch) ? (
             <span key={key} className="rolling-number-digit" style={{'--digit': ch} as CSSProperties}>
-              <span className="rolling-number-strip">{DIGITS.map((d) => <span key={d}>{d}</span>)}</span>
+              <span className="rolling-number-strip">
+                {DIGITS.map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </span>
             </span>
-          ) : <span key={key} className="rolling-number-char">{ch}</span>;
+          ) : (
+            <span key={key} className="rolling-number-char">
+              {ch}
+            </span>
+          );
         })}
       </span>
     </span>

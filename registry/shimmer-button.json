@@ -76,7 +76,7 @@
     },
     {
       "path": "packages/react/src/components/shimmer-button/shimmer-button.tsx",
-      "content": "import {forwardRef} from 'react';\nimport {Button, type ButtonProps} from '../button';\nimport {cx} from '../../utils/cx';\n\nexport type ShimmerButtonProps = ButtonProps;\n\n/** The regular `Button` with a light sweep across it now and then. Same props, same native `<button>`. The sweep is off for reduced motion. Defaults to the `solid` variant. */\nexport const ShimmerButton = forwardRef<HTMLButtonElement, ShimmerButtonProps>(function ShimmerButton({variant = 'solid', className, ...rest}, ref) {\n  return <Button ref={ref} variant={variant} className={cx('shimmer-button', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef} from 'react';\nimport {Button, type ButtonProps} from '../button';\nimport {cx} from '../../utils/cx';\n\nexport type ShimmerButtonProps = ButtonProps;\n\n/** The regular `Button` with a light sweep across it now and then. Same props, same native `<button>`. The sweep is off for reduced motion. Defaults to the `solid` variant. */\nexport const ShimmerButton = forwardRef<HTMLButtonElement, ShimmerButtonProps>(function ShimmerButton(\n  {variant = 'solid', className, ...rest},\n  ref,\n) {\n  return <Button ref={ref} variant={variant} className={cx('shimmer-button', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []

@@ -1,11 +1,15 @@
 /** A tiny dependency-free syntax highlighter for docs snippets: tsx/ts/js, css, html, bash and json. Not a parser. */
 export type TokenType = 'keyword' | 'string' | 'number' | 'comment' | 'tag' | 'attr' | 'fn' | 'plain';
-export interface Token {type: TokenType; text: string}
+export interface Token {
+  type: TokenType;
+  text: string;
+}
 export type Language = 'tsx' | 'ts' | 'jsx' | 'js' | 'css' | 'html' | 'bash' | 'json' | 'text';
 
 type Rule = [TokenType, RegExp];
 
-const JS_KEYWORDS = 'import|export|from|default|const|let|var|function|return|if|else|for|while|switch|case|break|continue|new|class|extends|interface|type|as|async|await|typeof|instanceof|in|of|null|undefined|true|false|void|throw|try|catch|finally|this';
+const JS_KEYWORDS =
+  'import|export|from|default|const|let|var|function|return|if|else|for|while|switch|case|break|continue|new|class|extends|interface|type|as|async|await|typeof|instanceof|in|of|null|undefined|true|false|void|throw|try|catch|finally|this';
 const js: Rule[] = [
   ['comment', /\/\/[^\n]*|\/\*[\s\S]*?\*\//y],
   ['string', /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\[\s\S])*`/y],
@@ -53,7 +57,8 @@ export function highlight(code: string, language: Language = 'text'): Token[] {
   const out: Token[] = [];
   const push = (type: TokenType, text: string) => {
     const last = out[out.length - 1];
-    if (last && last.type === type) last.text += text; else out.push({type, text});
+    if (last && last.type === type) last.text += text;
+    else out.push({type, text});
   };
   let i = 0;
   while (i < code.length) {
@@ -61,10 +66,18 @@ export function highlight(code: string, language: Language = 'text'): Token[] {
     for (const [type, re] of rules) {
       re.lastIndex = i;
       const m = re.exec(code);
-      if (m && m.index === i && m[0].length > 0) { hit = [type, m[0]]; break; }
+      if (m && m.index === i && m[0].length > 0) {
+        hit = [type, m[0]];
+        break;
+      }
     }
-    if (hit) { push(hit[0], hit[1]); i += hit[1].length; }
-    else { push('plain', code[i]!); i += 1; }
+    if (hit) {
+      push(hit[0], hit[1]);
+      i += hit[1].length;
+    } else {
+      push('plain', code[i]!);
+      i += 1;
+    }
   }
   return out;
 }
@@ -72,6 +85,18 @@ export function highlight(code: string, language: Language = 'text'): Token[] {
 /** Guess a language from a file name like `button.tsx` or a label like `bash`. */
 export function languageFromName(name?: string): Language {
   const ext = (name ?? '').toLowerCase().split('.').pop() ?? '';
-  const map: Record<string, Language> = {tsx: 'tsx', ts: 'ts', jsx: 'jsx', js: 'js', mjs: 'js', css: 'css', html: 'html', json: 'json', bash: 'bash', sh: 'bash', shell: 'bash'};
+  const map: Record<string, Language> = {
+    tsx: 'tsx',
+    ts: 'ts',
+    jsx: 'jsx',
+    js: 'js',
+    mjs: 'js',
+    css: 'css',
+    html: 'html',
+    json: 'json',
+    bash: 'bash',
+    sh: 'bash',
+    shell: 'bash',
+  };
   return map[ext] ?? 'text';
 }

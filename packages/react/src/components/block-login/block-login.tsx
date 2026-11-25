@@ -16,33 +16,54 @@ export interface LoginValues {
 
 export interface BlockLoginProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'onSubmit'> {
   /** Heading of the form. Default "Sign in". */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
   /** Optional muted line under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Text of the submit button. Default "Sign in". */
-  submitLabel?: ReactNode;
+  submitLabel?: ReactNode | undefined;
   /** Called with the values once they pass validation. */
-  onSubmit?: (values: LoginValues) => void;
+  onSubmit?: ((values: LoginValues) => void) | undefined;
   /** Shows a spinner on the submit button while you sign in. */
-  loading?: boolean;
+  loading?: boolean | undefined;
   /** Links under the form: forgot password, create an account. */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
   /** Replace the validation messages (translate them, or change the tone). */
-  messages?: Partial<{email: string; emailInvalid: string; password: string}>;
+  messages?: Partial<{email: string; emailInvalid: string; password: string}> | undefined;
   /** Outline level of the title, 1 to 3. Default 1 because a login page is usually the page's h1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** Email and password with a submit button. Validation messages show in an error summary and under each field. */
-export const BlockLogin = forwardRef<HTMLElement, BlockLoginProps>(function BlockLogin({title = 'Sign in', description, submitLabel = 'Sign in', onSubmit, loading, footer, messages, headingLevel = 1, className, ...rest}, ref) {
+export const BlockLogin = forwardRef<HTMLElement, BlockLoginProps>(function BlockLogin(
+  {
+    title = 'Sign in',
+    description,
+    submitLabel = 'Sign in',
+    onSubmit,
+    loading,
+    footer,
+    messages,
+    headingLevel = 1,
+    className,
+    ...rest
+  },
+  ref,
+) {
   const id = useId();
   const [errors, setErrors] = useState<FormError[]>([]);
-  const m = {email: 'Enter your email.', emailInvalid: 'Enter an email like name@example.com.', password: 'Enter your password.', ...messages};
+  const m = {
+    email: 'Enter your email.',
+    emailInvalid: 'Enter an email like name@example.com.',
+    password: 'Enter your password.',
+    ...messages,
+  };
   const msg = (name: string) => errors.find((e) => e.name === name)?.message;
   return (
     <section ref={ref} className={cx('block-login', className)} aria-labelledby={id} {...rest}>
       <div className="block-login-head">
-        <Heading id={id} level={headingLevel} size="xl">{title}</Heading>
+        <Heading id={id} level={headingLevel} size="xl">
+          {title}
+        </Heading>
         {description && <Text tone="muted">{description}</Text>}
       </div>
       <Form
@@ -62,9 +83,17 @@ export const BlockLogin = forwardRef<HTMLElement, BlockLoginProps>(function Bloc
           if (!next.length) onSubmit?.({email, password});
         }}
       >
-        <Field label="Email" required error={msg('email')}><Input name="email" type="email" autoComplete="email" /></Field>
-        <Field label="Password" required error={msg('password')}><PasswordInput name="password" autoComplete="current-password" /></Field>
-        <FormActions><Button type="submit" variant="solid" loading={loading}>{submitLabel}</Button></FormActions>
+        <Field label="Email" required error={msg('email')}>
+          <Input name="email" type="email" autoComplete="email" />
+        </Field>
+        <Field label="Password" required error={msg('password')}>
+          <PasswordInput name="password" autoComplete="current-password" />
+        </Field>
+        <FormActions>
+          <Button type="submit" variant="solid" loading={loading}>
+            {submitLabel}
+          </Button>
+        </FormActions>
       </Form>
       {footer && <div className="block-login-footer">{footer}</div>}
     </section>

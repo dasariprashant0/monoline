@@ -5,7 +5,9 @@ import {createRef} from 'react';
 
 function scrollTo(y: number) {
   Object.defineProperty(window, 'scrollY', {value: y, configurable: true});
-  act(() => { window.dispatchEvent(new Event('scroll')); });
+  act(() => {
+    window.dispatchEvent(new Event('scroll'));
+  });
 }
 beforeEach(() => {
   Object.defineProperty(document.documentElement, 'scrollHeight', {value: 2000, configurable: true});
@@ -61,7 +63,9 @@ describe('ScrollProgress', () => {
     render(<ScrollProgress label="p" />);
     scrollTo(500);
     Object.defineProperty(window, 'innerHeight', {value: 500, configurable: true});
-    act(() => { window.dispatchEvent(new Event('resize')); });
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
   });
   it('exposes aria-valuemin 0 and no progressbar semantics without a label', () => {
@@ -79,7 +83,8 @@ describe('ScrollProgress', () => {
     expect(added).toHaveLength(2);
     unmount();
     for (const [t, h] of added) expect(remove).toHaveBeenCalledWith(t, h);
-    add.mockRestore(); remove.mockRestore();
+    add.mockRestore();
+    remove.mockRestore();
   });
   it('merges className and caller style, forwards ref', () => {
     const ref = createRef<HTMLDivElement>();

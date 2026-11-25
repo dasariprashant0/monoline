@@ -1,7 +1,11 @@
 import type {Demo} from '../../demo';
 import {Image} from './image';
 
-const svg = (c: string) => 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="${c}"/></svg>`);
+const svg = (c: string) =>
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="${c}"/></svg>`,
+  );
 
 export const demos: Demo[] = [
   {

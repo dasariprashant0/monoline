@@ -10,7 +10,10 @@ import {useDemoLandmarks} from '../page/demo-landmarks';
 
 type DemoCode = {title: string; code: string};
 type Extra = {importName: string; demos: DemoCode[]};
-const extras: Record<string, Extra> = Object.values(import.meta.glob<Record<string, Extra>>('../page/demos.generated.json', {eager: true, import: 'default'}))[0] ?? {};
+const extras: Record<string, Extra> =
+  Object.values(
+    import.meta.glob<Record<string, Extra>>('../page/demos.generated.json', {eager: true, import: 'default'}),
+  )[0] ?? {};
 
 const VIEWPORTS = [
   {value: 'mobile', label: 'Mobile 375', width: 375},
@@ -20,11 +23,30 @@ const VIEWPORTS = [
 
 function CopyCode({code}: {code: string}) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
-  useEffect(() => { if (state === 'idle') return; const t = setTimeout(() => setState('idle'), 2000); return () => clearTimeout(t); }, [state]);
+  useEffect(() => {
+    if (state === 'idle') return;
+    const t = setTimeout(() => setState('idle'), 2000);
+    return () => clearTimeout(t);
+  }, [state]);
   return (
     <>
-      <Button variant="line" size="sm" onClick={async () => { try { await navigator.clipboard.writeText(code); setState('copied'); } catch { setState('failed'); } }}>Copy code</Button>
-      <span className="cdoc-status" role="status">{state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : ''}</span>
+      <Button
+        variant="line"
+        size="sm"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            setState('copied');
+          } catch {
+            setState('failed');
+          }
+        }}
+      >
+        Copy code
+      </Button>
+      <span className="cdoc-status" role="status">
+        {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : ''}
+      </span>
     </>
   );
 }
@@ -33,7 +55,15 @@ function Preview({demo, width, label}: {demo: Demo; width: number; label: string
   const el = useRef<HTMLDivElement>(null);
   useDemoLandmarks(el, 3, label);
   return (
-    <div ref={el} className="blocks-frame" data-no-toc role="region" aria-label={`${label} preview`} tabIndex={0} style={width ? {width: `min(100%, ${width}px)`} : undefined}>
+    <div
+      ref={el}
+      className="blocks-frame"
+      data-no-toc
+      role="region"
+      aria-label={`${label} preview`}
+      tabIndex={0}
+      style={width ? {width: `min(100%, ${width}px)`} : undefined}
+    >
       {demo.render()}
     </div>
   );
@@ -45,17 +75,29 @@ export function Blocks() {
   const blocks = inCategory('blocks');
   return (
     <>
-      <p className="prose">{blocks.length} page sections you can drop in. Pick a width to see how the content wraps, resize a frame by dragging its lower corner, then copy the code or install the block with the CLI.</p>
+      <p className="prose">
+        {blocks.length} page sections you can drop in. Pick a width to see how the content wraps, resize a frame by
+        dragging its lower corner, then copy the code or install the block with the CLI.
+      </p>
       <div className="blocks-bar" role="group" aria-label="Preview width">
-        <SegmentedControl aria-label="Preview width" value={vp} onValueChange={setVp} options={VIEWPORTS.map((v) => ({value: v.value, label: v.label}))} />
-        <span className="cdoc-muted">Layout rules that depend on the screen, not the frame, follow your browser window.</span>
+        <SegmentedControl
+          aria-label="Preview width"
+          value={vp}
+          onValueChange={setVp}
+          options={VIEWPORTS.map((v) => ({value: v.value, label: v.label}))}
+        />
+        <span className="cdoc-muted">
+          Layout rules that depend on the screen, not the frame, follow your browser window.
+        </span>
       </div>
       {blocks.map((m) => {
         const demos = demosFor(m.name);
         const code = extras[m.name]?.demos ?? [];
         return (
           <section key={m.name} className="block blocks-item" aria-labelledby={`b-${m.name}`}>
-            <h2 id={`b-${m.name}`} className="cdoc-h3"><a href={href(pathOf(m))}>{m.title}</a></h2>
+            <h2 id={`b-${m.name}`} className="cdoc-h3">
+              <a href={href(pathOf(m))}>{m.title}</a>
+            </h2>
             <p className="cdoc-muted">{m.description}</p>
             {demos.map((d, i) => {
               const src = code.find((c) => c.title === d.title)?.code ?? code[i]?.code ?? '';

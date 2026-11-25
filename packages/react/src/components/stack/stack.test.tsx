@@ -5,14 +5,22 @@ import {createRef} from 'react';
 
 describe('Stack', () => {
   it('stacks in a column by default and sets the gap token', () => {
-    render(<Stack data-testid="s" gap={5}>x</Stack>);
+    render(
+      <Stack data-testid="s" gap={5}>
+        x
+      </Stack>,
+    );
     const el = screen.getByTestId('s');
     expect(el).toHaveClass('stack');
     expect(el).not.toHaveClass('stack-row');
     expect(el.style.getPropertyValue('--stack-gap')).toBe('var(--s5)');
   });
   it('supports row, wrap, align and justify', () => {
-    render(<Stack data-testid="s" direction="row" wrap align="center" justify="between">x</Stack>);
+    render(
+      <Stack data-testid="s" direction="row" wrap align="center" justify="between">
+        x
+      </Stack>,
+    );
     const el = screen.getByTestId('s');
     expect(el).toHaveClass('stack-row', 'stack-wrap');
     expect(el).toHaveAttribute('data-align', 'center');
@@ -66,7 +74,16 @@ describe('Stack', () => {
     expect(ref.current!.style.getPropertyValue('--stack-gap')).toBe('2px');
   });
   it('keeps children in source order and renders empty', () => {
-    const {container} = render(<><Stack data-testid="s"><i>1</i><i>2</i><i>3</i></Stack><Stack data-testid="e" /></>);
+    const {container} = render(
+      <>
+        <Stack data-testid="s">
+          <i>1</i>
+          <i>2</i>
+          <i>3</i>
+        </Stack>
+        <Stack data-testid="e" />
+      </>,
+    );
     expect([...screen.getByTestId('s').children].map((c) => c.textContent)).toEqual(['1', '2', '3']);
     expect(screen.getByTestId('e')).toBeEmptyDOMElement();
     expect(container).toBeTruthy();

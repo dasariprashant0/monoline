@@ -5,11 +5,11 @@ export type HotkeyHandler = (event: KeyboardEvent) => void;
 
 export interface UseHotkeysOptions {
   /** Set false to turn every binding off. Default true. */
-  enabled?: boolean;
+  enabled?: boolean | undefined;
   /** Also fire while focus is in a text field, select or contenteditable. Default false. */
-  allowInInputs?: boolean;
+  allowInInputs?: boolean | undefined;
   /** Call `preventDefault` on a matched key. Default true. */
-  preventDefault?: boolean;
+  preventDefault?: boolean | undefined;
 }
 
 interface Combo {
@@ -27,7 +27,10 @@ const KEY_ALIASES: Record<string, string> = {esc: 'escape', space: ' ', spacebar
 
 /** Parses "mod+shift+k" into parts. `mod` means Cmd on macOS and Ctrl elsewhere. */
 export function parseHotkey(combo: string): Combo {
-  const parts = combo.toLowerCase().split('+').map((p) => p.trim());
+  const parts = combo
+    .toLowerCase()
+    .split('+')
+    .map((p) => p.trim());
   const key = parts.filter((p) => !['mod', 'ctrl', 'meta', 'cmd', 'shift', 'alt', 'option'].includes(p)).pop() ?? '';
   return {
     key: KEY_ALIASES[key] ?? key,
@@ -42,7 +45,8 @@ export function parseHotkey(combo: string): Combo {
 function matches(combo: Combo, event: KeyboardEvent): boolean {
   // Autofill can dispatch a keydown without `key`. On macOS Option changes the character (Option+A gives "å"), so Alt combos match the physical key.
   let keyOk = event.key?.toLowerCase() === combo.key;
-  if (!keyOk && combo.alt && /^[a-z0-9]$/.test(combo.key)) keyOk = event.code === (/\d/.test(combo.key) ? 'Digit' : 'Key') + combo.key.toUpperCase();
+  if (!keyOk && combo.alt && /^[a-z0-9]$/.test(combo.key))
+    keyOk = event.code === (/\d/.test(combo.key) ? 'Digit' : 'Key') + combo.key.toUpperCase();
   if (!keyOk) return false;
   const mac = isMac();
   const wantMeta = combo.meta || (combo.mod && mac);

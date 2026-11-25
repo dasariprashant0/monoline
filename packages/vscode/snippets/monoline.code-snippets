@@ -7,8 +7,14 @@
 			"import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@monoline/react';",
 			"",
 			"<Accordion type=\"single\" collapsible defaultValue=\"a\">",
-			"  <AccordionItem value=\"a\"><AccordionTrigger>What is Monoline?</AccordionTrigger><AccordionContent>A small UI kit: plain CSS plus accessible React components.</AccordionContent></AccordionItem>",
-			"  <AccordionItem value=\"b\"><AccordionTrigger>Do I need React?</AccordionTrigger><AccordionContent>No. The CSS works on its own.</AccordionContent></AccordionItem>",
+			"  <AccordionItem value=\"a\">",
+			"    <AccordionTrigger>What is Monoline?</AccordionTrigger>",
+			"    <AccordionContent>A small UI kit: plain CSS plus accessible React components.</AccordionContent>",
+			"  </AccordionItem>",
+			"  <AccordionItem value=\"b\">",
+			"    <AccordionTrigger>Do I need React?</AccordionTrigger>",
+			"    <AccordionContent>No. The CSS works on its own.</AccordionContent>",
+			"  </AccordionItem>",
 			"</Accordion>"
 		]
 	},
@@ -20,10 +26,18 @@
 			"import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, Button} from '@monoline/react';",
 			"",
 			"<AlertDialog>",
-			"  <AlertDialogTrigger asChild><Button variant=\"danger\">Delete project</Button></AlertDialogTrigger>",
+			"  <AlertDialogTrigger asChild>",
+			"    <Button variant=\"danger\">Delete project</Button>",
+			"  </AlertDialogTrigger>",
 			"  <AlertDialogContent>",
-			"    <AlertDialogHeader><AlertDialogTitle>Delete this project?</AlertDialogTitle><AlertDialogDescription>All files and history are removed. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>",
-			"    <AlertDialogFooter><AlertDialogCancel>Keep it</AlertDialogCancel><AlertDialogAction>Delete project</AlertDialogAction></AlertDialogFooter>",
+			"    <AlertDialogHeader>",
+			"      <AlertDialogTitle>Delete this project?</AlertDialogTitle>",
+			"      <AlertDialogDescription>All files and history are removed. This cannot be undone.</AlertDialogDescription>",
+			"    </AlertDialogHeader>",
+			"    <AlertDialogFooter>",
+			"      <AlertDialogCancel>Keep it</AlertDialogCancel>",
+			"      <AlertDialogAction>Delete project</AlertDialogAction>",
+			"    </AlertDialogFooter>",
 			"  </AlertDialogContent>",
 			"</AlertDialog>"
 		]
@@ -60,7 +74,10 @@
 			"import {type CSSProperties} from 'react';",
 			"import {AppShell, Breadcrumb, Button, Command, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, PageHeader, Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarItem, SidebarToggle, SidebarTrigger} from '@monoline/react';",
 			"",
-			"<AppShell scroll=\"contained\" style={height} navbar={navbar} sidebar={sidebar}>{header}<p>Your page goes here.</p></AppShell>"
+			"<AppShell scroll=\"contained\" style={height} navbar={navbar} sidebar={sidebar}>",
+			"  {header}",
+			"  <p>Your page goes here.</p>",
+			"</AppShell>"
 		]
 	},
 	"Monoline Area chart": {
@@ -87,7 +104,17 @@
 			"import {AspectRatio} from '@monoline/react';",
 			"",
 			"<AspectRatio ratio={16 / 9}>",
-			"  <div style={{width: '100%', height: '100%', border: '1px solid var(--rule)', display: 'grid', placeItems: 'center'}}>16:9</div>",
+			"  <div",
+			"    style={{",
+			"      width: '100%',",
+			"      height: '100%',",
+			"      border: '1px solid var(--rule)',",
+			"      display: 'grid',",
+			"      placeItems: 'center',",
+			"    }}",
+			"  >",
+			"    16:9",
+			"  </div>",
 			"</AspectRatio>"
 		]
 	},
@@ -109,7 +136,9 @@
 			"import {Avatar, AvatarGroup} from '@monoline/react';",
 			"",
 			"<AvatarGroup aria-label=\"Project members\" max={3}>",
-			"  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => <Avatar key={n} name={n} />)}",
+			"  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => (",
+			"    <Avatar key={n} name={n} />",
+			"  ))}",
 			"</AvatarGroup>"
 		]
 	},
@@ -151,10 +180,14 @@
 			"import {BentoCard, BentoGrid} from '@monoline/react';",
 			"",
 			"<BentoGrid>",
-			"  <BentoCard colSpan={2} rowSpan={2}>{tile('Tokens first', 'Every colour, space and rule comes from one small set of tokens.')}</BentoCard>",
+			"  <BentoCard colSpan={2} rowSpan={2}>",
+			"    {tile('Tokens first', 'Every colour, space and rule comes from one small set of tokens.')}",
+			"  </BentoCard>",
 			"  <BentoCard>{tile('Three themes', 'Warm, dark and midnight.')}</BentoCard>",
 			"  <BentoCard>{tile('Four accents', 'One accent at a time.')}</BentoCard>",
-			"  <BentoCard colSpan={3}>{tile('Plain CSS core', 'Use the stylesheets alone, or the React layer on top.')}</BentoCard>",
+			"  <BentoCard colSpan={3}>",
+			"    {tile('Plain CSS core', 'Use the stylesheets alone, or the React layer on top.')}",
+			"  </BentoCard>",
 			"</BentoGrid>"
 		]
 	},
@@ -168,7 +201,12 @@
 			"<BlockCta",
 			"  title=\"Start building today\"",
 			"  description=\"Install the package and copy your first component.\"",
-			"  actions={<><Button variant=\"solid\">Get started</Button><Button variant=\"line\">Read the docs</Button></>}",
+			"  actions={",
+			"    <>",
+			"      <Button variant=\"solid\">Get started</Button>",
+			"      <Button variant=\"line\">Read the docs</Button>",
+			"    </>",
+			"  }",
 			"/>"
 		]
 	},
@@ -181,10 +219,17 @@
 			"",
 			"<BlockDashboardShell",
 			"  brand=\"Your app\"",
-			"  nav={[{label: 'Overview', href: '#', current: true}, {label: 'Reports', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Settings', href: '#'}]}",
+			"  nav={[",
+			"    {label: 'Overview', href: '#', current: true},",
+			"    {label: 'Reports', href: '#'},",
+			"    {label: 'Customers', href: '#'},",
+			"    {label: 'Settings', href: '#'},",
+			"  ]}",
 			"  topbar={<Badge>Ada Example</Badge>}",
 			">",
-			"  <Heading level={1} size=\"xl\">Overview</Heading>",
+			"  <Heading level={1} size=\"xl\">",
+			"    Overview",
+			"  </Heading>",
 			"  <Text tone=\"muted\">Your content goes here.</Text>",
 			"</BlockDashboardShell>"
 		]
@@ -200,7 +245,12 @@
 			"  code=\"404\"",
 			"  title=\"Page not found\"",
 			"  description=\"The address may be wrong, or the page moved.\"",
-			"  actions={<><Button variant=\"solid\">Go home</Button><Button variant=\"line\">Contact support</Button></>}",
+			"  actions={",
+			"    <>",
+			"      <Button variant=\"solid\">Go home</Button>",
+			"      <Button variant=\"line\">Contact support</Button>",
+			"    </>",
+			"  }",
 			"/>"
 		]
 	},
@@ -211,22 +261,7 @@
 		"body": [
 			"import {BlockFeatureGrid} from '@monoline/react';",
 			"",
-			"const dot = <svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\"><rect x=\"3\" y=\"3\" width=\"14\" height=\"14\" /></svg>;",
-			"",
-			"const features = [",
-			"  {title: 'Plain CSS', description: 'Works with any framework, or none.', icon: dot},",
-			"  {title: 'Accessible', description: 'Keyboard and screen reader behaviour is tested.', icon: dot},",
-			"  {title: 'Three themes', description: 'Warm, dark and midnight, one accent.', icon: dot},",
-			"  {title: 'Copy and own', description: 'Every component is one small folder.', icon: dot},",
-			"  {title: 'Typed', description: 'Props are string unions with sane defaults.', icon: dot},",
-			"  {title: 'No runtime styling', description: 'Tokens and classes only.', icon: dot},",
-			"];",
-			"",
-			"<BlockFeatureGrid",
-			"  title=\"Why Monoline\"",
-			"  description=\"Fewer parts, clearer pages.\"",
-			"  features={features}",
-			"/>"
+			"<BlockFeatureGrid title=\"Why Monoline\" description=\"Fewer parts, clearer pages.\" features={features} />"
 		]
 	},
 	"Monoline Footer block": {
@@ -240,9 +275,28 @@
 			"  brand=\"Your brand\"",
 			"  description=\"Short line about what you make.\"",
 			"  columns={[",
-			"    {title: 'Product', links: [{label: 'Components', href: '#'}, {label: 'Blocks', href: '#'}, {label: 'Changelog', href: '#'}]},",
-			"    {title: 'Resources', links: [{label: 'Docs', href: '#'}, {label: 'Source', href: '#'}]},",
-			"    {title: 'Company', links: [{label: 'About', href: '#'}, {label: 'Contact', href: '#'}]},",
+			"    {",
+			"      title: 'Product',",
+			"      links: [",
+			"        {label: 'Components', href: '#'},",
+			"        {label: 'Blocks', href: '#'},",
+			"        {label: 'Changelog', href: '#'},",
+			"      ],",
+			"    },",
+			"    {",
+			"      title: 'Resources',",
+			"      links: [",
+			"        {label: 'Docs', href: '#'},",
+			"        {label: 'Source', href: '#'},",
+			"      ],",
+			"    },",
+			"    {",
+			"      title: 'Company',",
+			"      links: [",
+			"        {label: 'About', href: '#'},",
+			"        {label: 'Contact', href: '#'},",
+			"      ],",
+			"    },",
 			"  ]}",
 			"  legal=\"© 2026 Your brand. All rights reserved.\"",
 			"/>"
@@ -259,8 +313,17 @@
 			"  eyebrow=\"Version 1.0\"",
 			"  title=\"Interfaces with fewer parts\"",
 			"  description=\"A small kit of plain components. Copy the ones you need.\"",
-			"  actions={<><Button variant=\"solid\">Get started</Button><Button variant=\"line\">Read the docs</Button></>}",
-			"  media={<div style={{border: '1px solid var(--rule)', aspectRatio: '4 / 3', display: 'grid', placeItems: 'center'}}>Preview</div>}",
+			"  actions={",
+			"    <>",
+			"      <Button variant=\"solid\">Get started</Button>",
+			"      <Button variant=\"line\">Read the docs</Button>",
+			"    </>",
+			"  }",
+			"  media={",
+			"    <div style={{border: '1px solid var(--rule)', aspectRatio: '4 / 3', display: 'grid', placeItems: 'center'}}>",
+			"      Preview",
+			"    </div>",
+			"  }",
 			"/>"
 		]
 	},
@@ -273,7 +336,12 @@
 			"",
 			"<BlockLogin",
 			"  description=\"Use the email you signed up with.\"",
-			"  footer={<><Link href=\"#\">Forgot your password?</Link><Link href=\"#\">Create an account</Link></>}",
+			"  footer={",
+			"    <>",
+			"      <Link href=\"#\">Forgot your password?</Link>",
+			"      <Link href=\"#\">Create an account</Link>",
+			"    </>",
+			"  }",
 			"/>"
 		]
 	},
@@ -288,9 +356,30 @@
 			"  title=\"Simple pricing\"",
 			"  description=\"Switch to yearly for two months free.\"",
 			"  tiers={[",
-			"    {name: 'Free', description: 'For trying it out.', price: {monthly: '\\$0', yearly: '\\$0'}, features: ['One project', 'Community support'], ctaLabel: 'Start free', href: '#'},",
-			"    {name: 'Team', description: 'For small teams.', price: {monthly: '\\$12', yearly: '\\$120'}, features: ['Unlimited projects', 'Email support', 'Shared themes'], ctaLabel: 'Choose Team', highlighted: true},",
-			"    {name: 'Scale', description: 'For larger groups.', price: {monthly: '\\$48', yearly: '\\$480'}, features: ['Everything in Team', 'Single sign-on', 'Priority support'], ctaLabel: 'Talk to us', href: '#'},",
+			"    {",
+			"      name: 'Free',",
+			"      description: 'For trying it out.',",
+			"      price: {monthly: '\\$0', yearly: '\\$0'},",
+			"      features: ['One project', 'Community support'],",
+			"      ctaLabel: 'Start free',",
+			"      href: '#',",
+			"    },",
+			"    {",
+			"      name: 'Team',",
+			"      description: 'For small teams.',",
+			"      price: {monthly: '\\$12', yearly: '\\$120'},",
+			"      features: ['Unlimited projects', 'Email support', 'Shared themes'],",
+			"      ctaLabel: 'Choose Team',",
+			"      highlighted: true,",
+			"    },",
+			"    {",
+			"      name: 'Scale',",
+			"      description: 'For larger groups.',",
+			"      price: {monthly: '\\$48', yearly: '\\$480'},",
+			"      features: ['Everything in Team', 'Single sign-on', 'Priority support'],",
+			"      ctaLabel: 'Talk to us',",
+			"      href: '#',",
+			"    },",
 			"  ]}",
 			"/>"
 		]
@@ -306,14 +395,46 @@
 			"  title=\"Settings\"",
 			"  description=\"Changes apply to your account.\"",
 			"  sections={[",
-			"    {legend: 'Notifications', description: 'Choose what we email you.', items: [",
-			"      {kind: 'switch', name: 'product', label: 'Product updates', hint: 'About once a month.', defaultChecked: true},",
-			"      {kind: 'switch', name: 'digest', label: 'Weekly digest'},",
-			"    ]},",
-			"    {legend: 'Display', items: [",
-			"      {kind: 'select', name: 'theme', label: 'Theme', options: [{value: 'warm', label: 'Warm'}, {value: 'dark', label: 'Dark'}, {value: 'midnight', label: 'Midnight'}], defaultValue: 'warm'},",
-			"      {kind: 'select', name: 'density', label: 'Density', hint: 'Compact fits more rows.', options: [{value: 'comfortable', label: 'Comfortable'}, {value: 'compact', label: 'Compact'}]},",
-			"    ]},",
+			"    {",
+			"      legend: 'Notifications',",
+			"      description: 'Choose what we email you.',",
+			"      items: [",
+			"        {",
+			"          kind: 'switch',",
+			"          name: 'product',",
+			"          label: 'Product updates',",
+			"          hint: 'About once a month.',",
+			"          defaultChecked: true,",
+			"        },",
+			"        {kind: 'switch', name: 'digest', label: 'Weekly digest'},",
+			"      ],",
+			"    },",
+			"    {",
+			"      legend: 'Display',",
+			"      items: [",
+			"        {",
+			"          kind: 'select',",
+			"          name: 'theme',",
+			"          label: 'Theme',",
+			"          options: [",
+			"            {value: 'warm', label: 'Warm'},",
+			"            {value: 'dark', label: 'Dark'},",
+			"            {value: 'midnight', label: 'Midnight'},",
+			"          ],",
+			"          defaultValue: 'warm',",
+			"        },",
+			"        {",
+			"          kind: 'select',",
+			"          name: 'density',",
+			"          label: 'Density',",
+			"          hint: 'Compact fits more rows.',",
+			"          options: [",
+			"            {value: 'comfortable', label: 'Comfortable'},",
+			"            {value: 'compact', label: 'Compact'},",
+			"          ],",
+			"        },",
+			"      ],",
+			"    },",
 			"  ]}",
 			"/>"
 		]
@@ -327,7 +448,11 @@
 			"",
 			"<BlockSignup",
 			"  description=\"It takes a minute.\"",
-			"  footer={<span>Already have an account? <Link href=\"#\">Sign in</Link></span>}",
+			"  footer={",
+			"    <span>",
+			"      Already have an account? <Link href=\"#\">Sign in</Link>",
+			"    </span>",
+			"  }",
 			"/>"
 		]
 	},
@@ -341,7 +466,11 @@
 			"<BlockTestimonials",
 			"  title=\"What people say\"",
 			"  items={[",
-			"    {quote: 'It stayed out of the way and the pages got simpler.', name: 'Ada Example', role: 'Engineer, Example Co'},",
+			"    {",
+			"      quote: 'It stayed out of the way and the pages got simpler.',",
+			"      name: 'Ada Example',",
+			"      role: 'Engineer, Example Co',",
+			"    },",
 			"    {quote: 'Keyboard support worked on day one.', name: 'Sam Sample', role: 'Designer, Sample Studio'},",
 			"    {quote: 'We deleted a lot of CSS.', name: 'Robin Placeholder', role: 'Founder, Placeholder'},",
 			"  ]}",
@@ -367,7 +496,9 @@
 		"body": [
 			"import {Box} from '@monoline/react';",
 			"",
-			"<Box padding={5} border>A bordered box with step 5 padding.</Box>"
+			"<Box padding={5} border>",
+			"  A bordered box with step 5 padding.",
+			"</Box>"
 		]
 	},
 	"Monoline Breadcrumb": {
@@ -377,9 +508,7 @@
 		"body": [
 			"import {Breadcrumb} from '@monoline/react';",
 			"",
-			"<Breadcrumb",
-			"  items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]}",
-			"/>"
+			"<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]} />"
 		]
 	},
 	"Monoline Breadcrumbs from path": {
@@ -389,7 +518,10 @@
 		"body": [
 			"import {BreadcrumbsAuto} from '@monoline/react';",
 			"",
-			"<BreadcrumbsAuto pathname=\"/projects/website-redesign/settings\" labels={{'website-redesign': 'Website redesign'}} />"
+			"<BreadcrumbsAuto",
+			"  pathname=\"/projects/website-redesign/settings\"",
+			"  labels={{'website-redesign': 'Website redesign'}}",
+			"/>"
 		]
 	},
 	"Monoline Button group": {
@@ -424,7 +556,7 @@
 			"import {useState} from 'react';",
 			"import {Calendar} from '@monoline/react';",
 			"",
-			"return <div style={{display: 'grid', gap: 'var(--s3)', justifyItems: 'start'}}><Calendar value={d} onValueChange={setD} weekStartsOn={1} /><p className=\"muted small\" role=\"status\">{d ? d.toDateString() : 'No date picked'}</p></div>;"
+			"<Calendar value={d} onValueChange={setD} weekStartsOn={1} />"
 		]
 	},
 	"Monoline Card": {
@@ -443,8 +575,12 @@
 			"    <p>Rewrote the headline and the plan table.</p>",
 			"  </CardContent>",
 			"  <CardFooter>",
-			"    <Button variant=\"solid\" size=\"sm\">Open</Button>",
-			"    <Button variant=\"line\" size=\"sm\">Share</Button>",
+			"    <Button variant=\"solid\" size=\"sm\">",
+			"      Open",
+			"    </Button>",
+			"    <Button variant=\"line\" size=\"sm\">",
+			"      Share",
+			"    </Button>",
 			"  </CardFooter>",
 			"</Card>"
 		]
@@ -457,7 +593,14 @@
 			"import {Carousel} from '@monoline/react';",
 			"",
 			"<Carousel aria-label=\"Featured\">",
-			"  {['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => <div key={n} style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}>{n}</div>)}",
+			"  {['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => (",
+			"    <div",
+			"      key={n}",
+			"      style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}",
+			"    >",
+			"      {n}",
+			"    </div>",
+			"  ))}",
 			"</Carousel>"
 		]
 	},
@@ -490,7 +633,9 @@
 			"",
 			"<Collapsible>",
 			"  <CollapsibleTrigger asChild>",
-			"    <Button variant=\"line\" size=\"sm\">Show details</Button>",
+			"    <Button variant=\"line\" size=\"sm\">",
+			"      Show details",
+			"    </Button>",
 			"  </CollapsibleTrigger>",
 			"  <CollapsibleContent>",
 			"    <p>Extra detail appears here when the trigger is pressed.</p>",
@@ -506,7 +651,7 @@
 			"import {useState} from 'react';",
 			"import {ColorPicker} from '@monoline/react';",
 			"",
-			"return <div style={{maxWidth: '280px'}}><ColorPicker aria-label=\"Brand colour\" value={c} onValueChange={setC} /><p>Chosen: {c}</p></div>;"
+			"<ColorPicker aria-label=\"Brand colour\" value={c} onValueChange={setC} />"
 		]
 	},
 	"Monoline Combobox": {
@@ -538,7 +683,11 @@
 			"<Command",
 			"  shortcut=\"mod+j\"",
 			"  items={items}",
-			"  trigger={<button type=\"button\" className=\"btn btn-outline\">Open palette</button>}",
+			"  trigger={",
+			"    <button type=\"button\" className=\"btn btn-outline\">",
+			"      Open palette",
+			"    </button>",
+			"  }",
 			"/>"
 		]
 	},
@@ -573,8 +722,30 @@
 			"import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger} from '@monoline/react';",
 			"",
 			"<ContextMenu>",
-			"  <ContextMenuTrigger asChild><button type=\"button\" style={{display: 'grid', placeItems: 'center', height: '120px', width: '100%', border: '1px dashed var(--rule)', background: 'none', font: 'inherit', color: 'inherit'}}>Right click here, or focus and press Shift+F10</button></ContextMenuTrigger>",
-			"  <ContextMenuContent aria-label=\"File actions\"><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone=\"danger\">Delete</ContextMenuItem></ContextMenuContent>",
+			"  <ContextMenuTrigger asChild>",
+			"    <button",
+			"      type=\"button\"",
+			"      style={{",
+			"        display: 'grid',",
+			"        placeItems: 'center',",
+			"        height: '120px',",
+			"        width: '100%',",
+			"        border: '1px dashed var(--rule)',",
+			"        background: 'none',",
+			"        font: 'inherit',",
+			"        color: 'inherit',",
+			"      }}",
+			"    >",
+			"      Right click here, or focus and press Shift+F10",
+			"    </button>",
+			"  </ContextMenuTrigger>",
+			"  <ContextMenuContent aria-label=\"File actions\">",
+			"    <ContextMenuLabel>File</ContextMenuLabel>",
+			"    <ContextMenuItem>Rename</ContextMenuItem>",
+			"    <ContextMenuItem>Duplicate</ContextMenuItem>",
+			"    <ContextMenuSeparator />",
+			"    <ContextMenuItem tone=\"danger\">Delete</ContextMenuItem>",
+			"  </ContextMenuContent>",
 			"</ContextMenu>"
 		]
 	},
@@ -595,31 +766,7 @@
 		"body": [
 			"import {DataGrid, type DataGridColumn} from '@monoline/react';",
 			"",
-			"interface Order { id: string; customer: string; city: string; items: number; total: number }",
-			"",
-			"const cities = ['Pune', 'Berlin', 'Lagos', 'Lima', 'Oslo', 'Hanoi', 'Cairo', 'Quito'];",
-			"",
-			"const make = (count: number): Order[] => Array.from({length: count}, (_, i) => ({",
-			"  id: `ORD-\\${i + 1}`, customer: `Customer \\${(i * 7919) % 10007}`, city: cities[i % cities.length]!, items: (i * 13) % 9 + 1, total: ((i * 2654435761) % 100000) / 100,",
-			"}));",
-			"",
-			"const columns: DataGridColumn<Order>[] = [",
-			"  {id: 'id', header: 'Order', field: 'id', width: 120, sortable: true},",
-			"  {id: 'customer', header: 'Customer', field: 'customer', sortable: true},",
-			"  {id: 'city', header: 'City', field: 'city', sortable: true},",
-			"  {id: 'items', header: 'Items', field: 'items', width: 90, sortable: true, align: 'end'},",
-			"  {id: 'total', header: 'Total', cell: (r) => r.total.toFixed(2), sortValue: (r) => r.total, width: 110, sortable: true, align: 'end'},",
-			"];",
-			"",
-			"const big = make(100000);",
-			"",
-			"<DataGrid",
-			"  aria-label=\"Orders, 100,000 rows\"",
-			"  columns={columns}",
-			"  rows={big}",
-			"  height={320}",
-			"  getRowId={(r) => r.id}",
-			"/>"
+			"<DataGrid aria-label=\"Orders, 100,000 rows\" columns={columns} rows={big} height={320} getRowId={(r) => r.id} />"
 		]
 	},
 	"Monoline Data table": {
@@ -629,25 +776,7 @@
 		"body": [
 			"import {DataTable, type DataTableColumn} from '@monoline/react';",
 			"",
-			"interface Person {id: string; name: string; role: string; projects: number}",
-			"",
-			"const people: Person[] = [",
-			"  ['Ada Lovelace', 'Engineer', 4], ['Grace Hopper', 'Admiral', 9], ['Alan Turing', 'Researcher', 6], ['Katherine Johnson', 'Mathematician', 7],",
-			"  ['Linus Torvalds', 'Maintainer', 12], ['Margaret Hamilton', 'Director', 5], ['Dennis Ritchie', 'Engineer', 3], ['Barbara Liskov', 'Professor', 8],",
-			"].map(([name, role, projects], i) => ({id: String(i), name: name as string, role: role as string, projects: projects as number}));",
-			"",
-			"const columns: DataTableColumn<Person>[] = [",
-			"  {id: 'name', header: 'Name', sortable: true},",
-			"  {id: 'role', header: 'Role', sortable: true},",
-			"  {id: 'projects', header: 'Projects', sortable: true, align: 'end'},",
-			"];",
-			"",
-			"<DataTable",
-			"  label=\"Team\"",
-			"  columns={columns}",
-			"  data={people}",
-			"  defaultSort={{id: 'name', direction: 'asc'}}",
-			"/>"
+			"<DataTable label=\"Team\" columns={columns} data={people} defaultSort={{id: 'name', direction: 'asc'}} />"
 		]
 	},
 	"Monoline Date picker": {
@@ -678,7 +807,11 @@
 			"import {DescriptionList} from '@monoline/react';",
 			"",
 			"<DescriptionList",
-			"  items={[{term: 'Plan', details: 'Pro'}, {term: 'Seats', details: '12'}, {term: 'Renews', details: '1 March 2027'}]}",
+			"  items={[",
+			"    {term: 'Plan', details: 'Pro'},",
+			"    {term: 'Seats', details: '12'},",
+			"    {term: 'Renews', details: '1 March 2027'},",
+			"  ]}",
 			"/>"
 		]
 	},
@@ -690,10 +823,24 @@
 			"import {Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from '@monoline/react';",
 			"",
 			"<Dialog>",
-			"  <DialogTrigger asChild><Button variant=\"line\">Overwrite copy</Button></DialogTrigger>",
+			"  <DialogTrigger asChild>",
+			"    <Button variant=\"line\">Overwrite copy</Button>",
+			"  </DialogTrigger>",
 			"  <DialogContent>",
-			"    <DialogHeader><DialogTitle>Overwrite the remote copy?</DialogTitle><DialogDescription>The copy on this device is newer. Changes from 12 March on the other device will be lost.</DialogDescription></DialogHeader>",
-			"    <DialogFooter><DialogClose asChild><Button variant=\"line\">Keep both</Button></DialogClose><DialogClose asChild><Button variant=\"solid\">Overwrite</Button></DialogClose></DialogFooter>",
+			"    <DialogHeader>",
+			"      <DialogTitle>Overwrite the remote copy?</DialogTitle>",
+			"      <DialogDescription>",
+			"        The copy on this device is newer. Changes from 12 March on the other device will be lost.",
+			"      </DialogDescription>",
+			"    </DialogHeader>",
+			"    <DialogFooter>",
+			"      <DialogClose asChild>",
+			"        <Button variant=\"line\">Keep both</Button>",
+			"      </DialogClose>",
+			"      <DialogClose asChild>",
+			"        <Button variant=\"solid\">Overwrite</Button>",
+			"      </DialogClose>",
+			"    </DialogFooter>",
 			"  </DialogContent>",
 			"</Dialog>"
 		]
@@ -735,8 +882,15 @@
 			"import {Button, Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger} from '@monoline/react';",
 			"",
 			"<Drawer key={side}>",
-			"  <DrawerTrigger asChild><Button variant=\"line\">Open {side}</Button></DrawerTrigger>",
-			"  <DrawerContent side={side}><DrawerHeader><DrawerTitle>Filters</DrawerTitle><DrawerDescription>Narrow the list by status or owner.</DrawerDescription></DrawerHeader></DrawerContent>",
+			"  <DrawerTrigger asChild>",
+			"    <Button variant=\"line\">Open {side}</Button>",
+			"  </DrawerTrigger>",
+			"  <DrawerContent side={side}>",
+			"    <DrawerHeader>",
+			"      <DrawerTitle>Filters</DrawerTitle>",
+			"      <DrawerDescription>Narrow the list by status or owner.</DrawerDescription>",
+			"    </DrawerHeader>",
+			"  </DrawerContent>",
 			"</Drawer>"
 		]
 	},
@@ -748,7 +902,9 @@
 			"import {Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from '@monoline/react';",
 			"",
 			"<DropdownMenu>",
-			"  <DropdownMenuTrigger asChild><Button variant=\"line\">Actions</Button></DropdownMenuTrigger>",
+			"  <DropdownMenuTrigger asChild>",
+			"    <Button variant=\"line\">Actions</Button>",
+			"  </DropdownMenuTrigger>",
 			"  <DropdownMenuContent>",
 			"    <DropdownMenuLabel>Entry</DropdownMenuLabel>",
 			"    <DropdownMenuItem>Rename</DropdownMenuItem>",
@@ -847,9 +1003,20 @@
 			"        setErrors(next);",
 			"      }}",
 			"    >",
-			"      <Field label=\"Name\" name=\"name\"><Input name=\"name\" /></Field>",
-			"      <Field label=\"Email\" name=\"email\"><Input name=\"email\" type=\"email\" /></Field>",
-			"      <FormActions><Button type=\"submit\" variant=\"solid\">Send</Button><Button variant=\"line\" type=\"reset\">Clear</Button></FormActions>",
+			"      <Field label=\"Name\" name=\"name\">",
+			"        <Input name=\"name\" />",
+			"      </Field>",
+			"      <Field label=\"Email\" name=\"email\">",
+			"        <Input name=\"email\" type=\"email\" />",
+			"      </Field>",
+			"      <FormActions>",
+			"        <Button type=\"submit\" variant=\"solid\">",
+			"          Send",
+			"        </Button>",
+			"        <Button variant=\"line\" type=\"reset\">",
+			"          Clear",
+			"        </Button>",
+			"      </FormActions>",
 			"    </Form>",
 			"  );",
 			"}",
@@ -875,7 +1042,9 @@
 			"import {Card, Grid} from '@monoline/react';",
 			"",
 			"<Grid columns={3}>",
-			"  {['One', 'Two', 'Three'].map((n) => <Card key={n}>{n}</Card>)}",
+			"  {['One', 'Two', 'Three'].map((n) => (",
+			"    <Card key={n}>{n}</Card>",
+			"  ))}",
 			"</Grid>"
 		]
 	},
@@ -956,7 +1125,7 @@
 		"body": [
 			"import {Kbd} from '@monoline/react';",
 			"",
-			"<p>Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.</p>"
+			"Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search."
 		]
 	},
 	"Monoline Label": {
@@ -966,7 +1135,9 @@
 		"body": [
 			"import {Label} from '@monoline/react';",
 			"",
-			"<Label htmlFor=\"demo-label\" required>Email</Label>"
+			"<Label htmlFor=\"demo-label\" required>",
+			"  Email",
+			"</Label>"
 		]
 	},
 	"Monoline Line chart": {
@@ -979,7 +1150,13 @@
 			"<LineChart",
 			"  title=\"Response time\"",
 			"  showPoints",
-			"  data={[{label: 'Mon', value: 120}, {label: 'Tue', value: 98}, {label: 'Wed', value: 143}, {label: 'Thu', value: 110}, {label: 'Fri', value: 87}]}",
+			"  data={[",
+			"    {label: 'Mon', value: 120},",
+			"    {label: 'Tue', value: 98},",
+			"    {label: 'Wed', value: 143},",
+			"    {label: 'Thu', value: 110},",
+			"    {label: 'Fri', value: 87},",
+			"  ]}",
 			"/>"
 		]
 	},
@@ -990,7 +1167,7 @@
 		"body": [
 			"import {Link} from '@monoline/react';",
 			"",
-			"<p>Read the <Link href=\"#button\">button docs</Link> or visit <Link href=\"https://github.com\" external>GitHub</Link>.</p>"
+			"Read the <Link href=\"#button\">button docs</Link> or visit{' '}"
 		]
 	},
 	"Monoline Marquee": {
@@ -1001,7 +1178,11 @@
 			"import {Marquee} from '@monoline/react';",
 			"",
 			"<Marquee duration={20}>",
-			"  {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>{n}</span>)}",
+			"  {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => (",
+			"    <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>",
+			"      {n}",
+			"    </span>",
+			"  ))}",
 			"</Marquee>"
 		]
 	},
@@ -1023,8 +1204,22 @@
 			"import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger} from '@monoline/react';",
 			"",
 			"<Menubar aria-label=\"Application\">",
-			"  <MenubarMenu><MenubarTrigger>File</MenubarTrigger><MenubarContent><MenubarItem>New file</MenubarItem><MenubarItem>Open</MenubarItem><MenubarSeparator /><MenubarItem>Quit</MenubarItem></MenubarContent></MenubarMenu>",
-			"  <MenubarMenu><MenubarTrigger>Edit</MenubarTrigger><MenubarContent><MenubarItem>Undo</MenubarItem><MenubarItem>Redo</MenubarItem></MenubarContent></MenubarMenu>",
+			"  <MenubarMenu>",
+			"    <MenubarTrigger>File</MenubarTrigger>",
+			"    <MenubarContent>",
+			"      <MenubarItem>New file</MenubarItem>",
+			"      <MenubarItem>Open</MenubarItem>",
+			"      <MenubarSeparator />",
+			"      <MenubarItem>Quit</MenubarItem>",
+			"    </MenubarContent>",
+			"  </MenubarMenu>",
+			"  <MenubarMenu>",
+			"    <MenubarTrigger>Edit</MenubarTrigger>",
+			"    <MenubarContent>",
+			"      <MenubarItem>Undo</MenubarItem>",
+			"      <MenubarItem>Redo</MenubarItem>",
+			"    </MenubarContent>",
+			"  </MenubarMenu>",
 			"</Menubar>"
 		]
 	},
@@ -1035,17 +1230,7 @@
 		"body": [
 			"import {Field, MultiSelect} from '@monoline/react';",
 			"",
-			"const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({value: n.toLowerCase().replace(/\\\\W+/g, '-'), label: n}));",
-			"",
-			"<div style={{maxWidth: '360px', minHeight: '280px'}}>",
-			"  <Field label=\"People\">",
-			"    <MultiSelect",
-			"      options={options}",
-			"      placeholder=\"Type a name\"",
-			"      defaultValue={['ada-lovelace']}",
-			"    />",
-			"  </Field>",
-			"</div>"
+			"<MultiSelect options={options} placeholder=\"Type a name\" defaultValue={['ada-lovelace']} />"
 		]
 	},
 	"Monoline Native select": {
@@ -1069,7 +1254,21 @@
 		"body": [
 			"import {Button, Navbar} from '@monoline/react';",
 			"",
-			"<Navbar brand=\"Acme\" links={links} actions={<Button variant=\"solid\" size=\"sm\">Sign in</Button>} />"
+			"const links = [",
+			"  {label: 'Product', href: '#product', current: true},",
+			"  {label: 'Pricing', href: '#pricing'},",
+			"  {label: 'Docs', href: '#docs'},",
+			"];",
+			"",
+			"<Navbar",
+			"  brand=\"Acme\"",
+			"  links={links}",
+			"  actions={",
+			"    <Button variant=\"solid\" size=\"sm\">",
+			"      Sign in",
+			"    </Button>",
+			"  }",
+			"/>"
 		]
 	},
 	"Monoline Navigation menu": {
@@ -1081,12 +1280,24 @@
 			"",
 			"<NavigationMenu aria-label=\"Site\">",
 			"  <NavigationMenuList>",
-			"    <NavigationMenuItem><NavigationMenuLink href=\"#\" active>Home</NavigationMenuLink></NavigationMenuItem>",
+			"    <NavigationMenuItem>",
+			"      <NavigationMenuLink href=\"#\" active>",
+			"        Home",
+			"      </NavigationMenuLink>",
+			"    </NavigationMenuItem>",
 			"    <NavigationMenuItem>",
 			"      <NavigationMenuTrigger>Products</NavigationMenuTrigger>",
-			"      <NavigationMenuContent><div className=\"navmenu-panel\"><NavigationMenuLink href=\"#\">UI kit</NavigationMenuLink><NavigationMenuLink href=\"#\">Icons</NavigationMenuLink><NavigationMenuLink href=\"#\">Templates</NavigationMenuLink></div></NavigationMenuContent>",
+			"      <NavigationMenuContent>",
+			"        <div className=\"navmenu-panel\">",
+			"          <NavigationMenuLink href=\"#\">UI kit</NavigationMenuLink>",
+			"          <NavigationMenuLink href=\"#\">Icons</NavigationMenuLink>",
+			"          <NavigationMenuLink href=\"#\">Templates</NavigationMenuLink>",
+			"        </div>",
+			"      </NavigationMenuContent>",
 			"    </NavigationMenuItem>",
-			"    <NavigationMenuItem><NavigationMenuLink href=\"#\">Docs</NavigationMenuLink></NavigationMenuItem>",
+			"    <NavigationMenuItem>",
+			"      <NavigationMenuLink href=\"#\">Docs</NavigationMenuLink>",
+			"    </NavigationMenuItem>",
 			"  </NavigationMenuList>",
 			"</NavigationMenu>"
 		]
@@ -1149,7 +1360,11 @@
 		"body": [
 			"import {OrbitingCircles} from '@monoline/react';",
 			"",
-			"<OrbitingCircles radius={96} center={dot('M')}>{dot('A')}{dot('B')}{dot('C')}</OrbitingCircles>"
+			"<OrbitingCircles radius={96} center={dot('M')}>",
+			"  {dot('A')}",
+			"  {dot('B')}",
+			"  {dot('C')}",
+			"</OrbitingCircles>"
 		]
 	},
 	"Monoline OTP input": {
@@ -1160,7 +1375,7 @@
 			"import {useState} from 'react';",
 			"import {OtpInput} from '@monoline/react';",
 			"",
-			"return <div style={{display: 'grid', gap: 'var(--s3)'}}><OtpInput aria-label=\"Verification code\" onComplete={setDone} /><p className=\"muted small\" role=\"status\">{done ? `Entered \\${done}` : 'Enter 6 digits'}</p></div>;"
+			"<OtpInput aria-label=\"Verification code\" onComplete={setDone} />"
 		]
 	},
 	"Monoline Overflow list": {
@@ -1181,10 +1396,17 @@
 			"import {Breadcrumb, Button, PageHeader} from '@monoline/react';",
 			"",
 			"<PageHeader",
-			"  breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Ada Example'}]} />}",
+			"  breadcrumbs={",
+			"    <Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Ada Example'}]} />",
+			"  }",
 			"  title=\"Ada Example\"",
 			"  description=\"Joined in March. On the Team plan.\"",
-			"  actions={<><Button>Export</Button><Button variant=\"solid\">Edit customer</Button></>}",
+			"  actions={",
+			"    <>",
+			"      <Button>Export</Button>",
+			"      <Button variant=\"solid\">Edit customer</Button>",
+			"    </>",
+			"  }",
 			"/>"
 		]
 	},
@@ -1287,9 +1509,13 @@
 			"import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from '@monoline/react';",
 			"",
 			"<ResizablePanelGroup style={{height: '200px', border: '1px solid var(--rule)'}}>",
-			"  <ResizablePanel defaultSize={30} minSize={15}><div style={box}>Sidebar</div></ResizablePanel>",
+			"  <ResizablePanel defaultSize={30} minSize={15}>",
+			"    <div style={box}>Sidebar</div>",
+			"  </ResizablePanel>",
 			"  <ResizableHandle aria-label=\"Resize sidebar\" />",
-			"  <ResizablePanel defaultSize={70}><div style={box}>Content</div></ResizablePanel>",
+			"  <ResizablePanel defaultSize={70}>",
+			"    <div style={box}>Content</div>",
+			"  </ResizablePanel>",
 			"</ResizablePanelGroup>"
 		]
 	},
@@ -1311,7 +1537,7 @@
 			"import {useState} from 'react';",
 			"import {Button, RollingNumber} from '@monoline/react';",
 			"",
-			"<strong style={{fontSize: 'var(--display-sm)'}}><RollingNumber value={n} format={{style: 'currency', currency: 'USD', maximumFractionDigits: 0}} /></strong>"
+			"<RollingNumber value={n} format={{style: 'currency', currency: 'USD', maximumFractionDigits: 0}} />"
 		]
 	},
 	"Monoline Scroll area": {
@@ -1326,7 +1552,9 @@
 			"  viewportProps={{'aria-label': 'Release notes'}}",
 			">",
 			"  <div style={{padding: 'var(--s3)'}}>",
-			"    {Array.from({length: 20}, (_, i) => <p key={i}>Release note {i + 1}</p>)}",
+			"    {Array.from({length: 20}, (_, i) => (",
+			"      <p key={i}>Release note {i + 1}</p>",
+			"    ))}",
 			"  </div>",
 			"</ScrollArea>"
 		]
@@ -1350,7 +1578,11 @@
 			"",
 			"<SegmentedControl",
 			"  aria-label=\"Chart range\"",
-			"  options={[{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}]}",
+			"  options={[",
+			"    {value: 'day', label: 'Day'},",
+			"    {value: 'week', label: 'Week'},",
+			"    {value: 'month', label: 'Month'},",
+			"  ]}",
 			"  defaultValue=\"week\"",
 			"/>"
 		]
@@ -1405,7 +1637,20 @@
 			"import {type CSSProperties, type ReactNode} from 'react';",
 			"import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarItem, SidebarProvider, SidebarToggle, SidebarTrigger, useSidebar} from '@monoline/react';",
 			"",
-			"<Sidebar drawerTitle=\"Acme\"><Nav><SidebarFooter><SidebarGroup><SidebarItem href=\"#help\" icon={<Icon d=\"M8 14A6 6 0 108 2a6 6 0 000 12zM8 11v.01M6.5 6.5a1.5 1.5 0 113 0c0 1-1.5 1-1.5 2\" />}>Help</SidebarItem></SidebarGroup></SidebarFooter></Nav></Sidebar>"
+			"<Sidebar drawerTitle=\"Acme\">",
+			"  <Nav>",
+			"    <SidebarFooter>",
+			"      <SidebarGroup>",
+			"        <SidebarItem",
+			"          href=\"#help\"",
+			"          icon={<Icon d=\"M8 14A6 6 0 108 2a6 6 0 000 12zM8 11v.01M6.5 6.5a1.5 1.5 0 113 0c0 1-1.5 1-1.5 2\" />}",
+			"        >",
+			"          Help",
+			"        </SidebarItem>",
+			"      </SidebarGroup>",
+			"    </SidebarFooter>",
+			"  </Nav>",
+			"</Sidebar>"
 		]
 	},
 	"Monoline Skeleton": {
@@ -1445,7 +1690,7 @@
 		"body": [
 			"import {Sparkline} from '@monoline/react';",
 			"",
-			"<p>Signups <Sparkline title=\"Signups, last 10 days\" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week.</p>"
+			"Signups <Sparkline title=\"Signups, last 10 days\" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week."
 		]
 	},
 	"Monoline Spinner": {
@@ -1467,7 +1712,9 @@
 			"",
 			"<Spotlight style={{padding: 'var(--s7)', border: '1px solid var(--rule)', maxWidth: '28rem'}}>",
 			"  <h3 style={{margin: 0, fontWeight: 500}}>Hover here</h3>",
-			"  <p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>A soft light follows the pointer. Keyboard and touch see a plain surface.</p>",
+			"  <p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>",
+			"    A soft light follows the pointer. Keyboard and touch see a plain surface.",
+			"  </p>",
 			"</Spotlight>"
 		]
 	},
@@ -1528,10 +1775,24 @@
 			"",
 			"<Table wrapperLabel=\"Team\">",
 			"  <TableCaption>Team members</TableCaption>",
-			"  <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead numeric>Projects</TableHead></TableRow></TableHeader>",
+			"  <TableHeader>",
+			"    <TableRow>",
+			"      <TableHead>Name</TableHead>",
+			"      <TableHead>Role</TableHead>",
+			"      <TableHead numeric>Projects</TableHead>",
+			"    </TableRow>",
+			"  </TableHeader>",
 			"  <TableBody>",
-			"    <TableRow><TableCell>Ada Lovelace</TableCell><TableCell>Engineer</TableCell><TableCell numeric>4</TableCell></TableRow>",
-			"    <TableRow><TableCell>Grace Hopper</TableCell><TableCell>Admiral</TableCell><TableCell numeric>9</TableCell></TableRow>",
+			"    <TableRow>",
+			"      <TableCell>Ada Lovelace</TableCell>",
+			"      <TableCell>Engineer</TableCell>",
+			"      <TableCell numeric>4</TableCell>",
+			"    </TableRow>",
+			"    <TableRow>",
+			"      <TableCell>Grace Hopper</TableCell>",
+			"      <TableCell>Admiral</TableCell>",
+			"      <TableCell numeric>9</TableCell>",
+			"    </TableRow>",
 			"  </TableBody>",
 			"</Table>"
 		]
@@ -1648,7 +1909,9 @@
 			"import {Timeline, TimelineItem} from '@monoline/react';",
 			"",
 			"<Timeline aria-label=\"Activity\">",
-			"  <TimelineItem title=\"Project created\" time=\"3 days ago\" dateTime=\"2026-11-09\">Ada started the project.</TimelineItem>",
+			"  <TimelineItem title=\"Project created\" time=\"3 days ago\" dateTime=\"2026-11-09\">",
+			"    Ada started the project.",
+			"  </TimelineItem>",
 			"  <TimelineItem title=\"First release\" time=\"Yesterday\" dateTime=\"2026-11-11\" />",
 			"  <TimelineItem title=\"Public\" time=\"Today\" dateTime=\"2026-11-12\" />",
 			"</Timeline>"
@@ -1756,9 +2019,15 @@
 			"  return (",
 			"    <div>",
 			"      <div style={{display: 'flex', gap: 'var(--s4)', alignItems: 'center'}}>",
-			"        <button type=\"button\" className=\"btn btn-solid\" onClick={() => setOpen(true)}>Start tour</button>",
-			"        <button type=\"button\" className=\"btn\" id=\"tour-demo-a\">Create</button>",
-			"        <button type=\"button\" className=\"btn\" id=\"tour-demo-b\">Share</button>",
+			"        <button type=\"button\" className=\"btn btn-solid\" onClick={() => setOpen(true)}>",
+			"          Start tour",
+			"        </button>",
+			"        <button type=\"button\" className=\"btn\" id=\"tour-demo-a\">",
+			"          Create",
+			"        </button>",
+			"        <button type=\"button\" className=\"btn\" id=\"tour-demo-b\">",
+			"          Share",
+			"        </button>",
 			"      </div>",
 			"      <Tour",
 			"        open={open}",
@@ -1819,7 +2088,9 @@
 			"  const ref = useClickOutside<HTMLDivElement>(() => setOpen(false), open);",
 			"  return (",
 			"    <div>",
-			"      <Button variant=\"line\" aria-expanded={open} onClick={() => setOpen((o) => !o)}>Open panel</Button>",
+			"      <Button variant=\"line\" aria-expanded={open} onClick={() => setOpen((o) => !o)}>",
+			"        Open panel",
+			"      </Button>",
 			"      {open && (",
 			"        <div ref={ref} role=\"group\" aria-label=\"Panel\">",
 			"          <p>Click anywhere outside this panel to close it.</p>",
@@ -1907,11 +2178,15 @@
 			"  const ref = useFocusTrap<HTMLDivElement>(open);",
 			"  return (",
 			"    <div>",
-			"      <Button variant=\"line\" onClick={() => setOpen(true)}>Open trapped panel</Button>",
+			"      <Button variant=\"line\" onClick={() => setOpen(true)}>",
+			"        Open trapped panel",
+			"      </Button>",
 			"      {open && (",
 			"        <div ref={ref} role=\"dialog\" aria-label=\"Trapped panel\">",
 			"          <p>Tab stays inside this panel.</p>",
-			"          <Button variant=\"line\" onClick={() => setOpen(false)}>Close</Button>",
+			"          <Button variant=\"line\" onClick={() => setOpen(false)}>",
+			"            Close",
+			"          </Button>",
 			"          <Button variant=\"ghost\">Second action</Button>",
 			"        </div>",
 			"      )}",
@@ -1952,7 +2227,18 @@
 			"",
 			"function Demo() {",
 			"  const [ref, hovered] = useHover<HTMLDivElement>();",
-			"  return <div ref={ref} style={{padding: 'var(--s5)', border: '1px solid var(--rule)', background: hovered ? 'var(--wash-2)' : 'transparent'}}>{hovered ? 'Pointer is over this box' : 'Move the pointer here'}</div>;",
+			"  return (",
+			"    <div",
+			"      ref={ref}",
+			"      style={{",
+			"        padding: 'var(--s5)',",
+			"        border: '1px solid var(--rule)',",
+			"        background: hovered ? 'var(--wash-2)' : 'transparent',",
+			"      }}",
+			"    >",
+			"      {hovered ? 'Pointer is over this box' : 'Move the pointer here'}",
+			"    </div>",
+			"  );",
 			"}",
 			"",
 			"<Demo />"
@@ -1968,9 +2254,19 @@
 			"function Demo() {",
 			"  const [ref, entry] = useIntersection<HTMLDivElement>({threshold: 0.5});",
 			"  return (",
-			"    <div style={{height: '120px', overflowY: 'auto', border: '1px solid var(--rule)'}} tabIndex={0} aria-label=\"Scrollable area\">",
+			"    <div",
+			"      style={{height: '120px', overflowY: 'auto', border: '1px solid var(--rule)'}}",
+			"      role=\"region\"",
+			"      tabIndex={0}",
+			"      aria-label=\"Scrollable area\"",
+			"    >",
 			"      <div style={{height: '160px', padding: 'var(--s3)'}}>Scroll down</div>",
-			"      <div ref={ref} style={{padding: 'var(--s4)', background: entry?.isIntersecting ? 'var(--wash-2)' : 'transparent'}}>{entry?.isIntersecting ? 'In view' : 'Out of view'}</div>",
+			"      <div",
+			"        ref={ref}",
+			"        style={{padding: 'var(--s4)', background: entry?.isIntersecting ? 'var(--wash-2)' : 'transparent'}}",
+			"      >",
+			"        {entry?.isIntersecting ? 'In view' : 'Out of view'}",
+			"      </div>",
 			"      <div style={{height: '120px'}} />",
 			"    </div>",
 			"  );",

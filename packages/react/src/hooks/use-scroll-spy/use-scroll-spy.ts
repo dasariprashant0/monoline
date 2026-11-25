@@ -24,7 +24,10 @@ export function useScrollSpy(ids: readonly string[], offset = 80): string | null
     update();
     window.addEventListener('scroll', update, {passive: true});
     window.addEventListener('resize', update);
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
   }, [key, offset]);
   return active;
 }

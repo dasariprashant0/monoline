@@ -6,6 +6,17 @@ import {cx} from '../../utils/cx';
 export type SeparatorProps = ComponentPropsWithoutRef<typeof RadixSeparator.Root>;
 
 /** A thin rule. Decorative by default (hidden from assistive tech); pass `decorative={false}` when it really divides content. */
-export const Separator = forwardRef<ElementRef<typeof RadixSeparator.Root>, ComponentPropsWithoutRef<typeof RadixSeparator.Root>>(function Separator({className, orientation = 'horizontal', decorative = true, ...rest}, ref) {
-  return <RadixSeparator.Root ref={ref} orientation={orientation} decorative={decorative} className={cx('separator', className)} {...rest} />;
+export const Separator = forwardRef<
+  ElementRef<typeof RadixSeparator.Root>,
+  ComponentPropsWithoutRef<typeof RadixSeparator.Root>
+>(function Separator({className, orientation = 'horizontal', decorative = true, ...rest}, ref) {
+  return (
+    <RadixSeparator.Root
+      ref={ref}
+      orientation={orientation}
+      decorative={decorative}
+      className={cx('separator', className)}
+      {...rest}
+    />
+  );
 });

@@ -4,13 +4,16 @@ import {cx} from '../../utils/cx';
 
 export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   /** `text` is a reading column, `page` the widest main column, `full` no limit. */
-  size?: 'text' | 'page' | 'full';
+  size?: 'text' | 'page' | 'full' | undefined;
   /** Render the child (a `main`, `section`) with the container styles. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** Centres content and limits its width. */
-export const Container = forwardRef<HTMLDivElement, ContainerProps>(function Container({size = 'page', asChild, className, ...rest}, ref) {
+export const Container = forwardRef<HTMLDivElement, ContainerProps>(function Container(
+  {size = 'page', asChild, className, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'div';
   return <Comp ref={ref} className={cx('container', `container-${size}`, className)} {...rest} />;
 });

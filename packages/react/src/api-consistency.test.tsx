@@ -20,19 +20,44 @@ import {TimePicker} from './components/time-picker/time-picker';
 
 const CSS_DIR = '../../css/src/components/'; // concatenated so Vite does not treat it as an asset URL
 const css = (f: string) => readFileSync(new URL(CSS_DIR + f, import.meta.url), 'utf8');
-const buttons = css('02-buttons.css'), fields = css('03-form-fields.css'), select = css('select.css');
+const buttons = css('02-buttons.css'),
+  fields = css('03-form-fields.css'),
+  select = css('select.css');
 const opts = [{value: 'a', label: 'A'}];
 
 describe('size scale: sm | md | lg on every single-line control', () => {
   const cases: Array<[string, (size: 'sm' | 'lg') => React.ReactElement, string, string]> = [
     ['Button', (s) => <Button size={s}>x</Button>, 'button', 'btn'],
     ['Input', (s) => <Input aria-label="x" size={s} />, 'textbox', 'input'],
-    ['NativeSelect', (s) => <NativeSelect aria-label="x" size={s}><option>a</option></NativeSelect>, 'combobox', 'input'],
+    [
+      'NativeSelect',
+      (s) => (
+        <NativeSelect aria-label="x" size={s}>
+          <option>a</option>
+        </NativeSelect>
+      ),
+      'combobox',
+      'input',
+    ],
     ['Combobox', (s) => <Combobox aria-label="x" options={opts} size={s} />, 'combobox', 'input'],
     ['Autocomplete', (s) => <Autocomplete aria-label="x" suggestions={['a']} size={s} />, 'combobox', 'input'],
     ['NumberInput', (s) => <NumberInput aria-label="x" size={s} />, 'spinbutton', 'input'],
     ['DatePicker', (s) => <DatePicker aria-label="x" size={s} />, 'button', 'input'],
-    ['SelectTrigger', (s) => <Select><SelectTrigger aria-label="x" size={s}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="a">A</SelectItem></SelectContent></Select>, 'combobox', 'select-trigger'],
+    [
+      'SelectTrigger',
+      (s) => (
+        <Select>
+          <SelectTrigger aria-label="x" size={s}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="a">A</SelectItem>
+          </SelectContent>
+        </Select>
+      ),
+      'combobox',
+      'select-trigger',
+    ],
   ];
   it.each(cases)('%s takes size="sm" and size="lg" and leaves md unclassed', (_n, make, role, base) => {
     const {unmount} = render(make('sm'));
@@ -54,7 +79,16 @@ describe('size scale: sm | md | lg on every single-line control', () => {
 
 describe('state attributes: data-invalid and data-disabled', () => {
   it('an `invalid` prop sets aria-invalid and data-invalid', () => {
-    render(<><Input aria-label="a" invalid /><Textarea aria-label="b" invalid /><NativeSelect aria-label="c" invalid><option>a</option></NativeSelect><Combobox aria-label="d" options={opts} invalid /></>);
+    render(
+      <>
+        <Input aria-label="a" invalid />
+        <Textarea aria-label="b" invalid />
+        <NativeSelect aria-label="c" invalid>
+          <option>a</option>
+        </NativeSelect>
+        <Combobox aria-label="d" options={opts} invalid />
+      </>,
+    );
     for (const n of ['a', 'b', 'c', 'd']) {
       const el = screen.getByLabelText(n);
       expect(el).toHaveAttribute('aria-invalid', 'true');
@@ -62,17 +96,40 @@ describe('state attributes: data-invalid and data-disabled', () => {
     }
   });
   it('a Field error sets data-invalid on its control', () => {
-    render(<Field label="Name" error="Required"><Input /></Field>);
+    render(
+      <Field label="Name" error="Required">
+        <Input />
+      </Field>,
+    );
     expect(screen.getByLabelText('Name')).toHaveAttribute('data-invalid');
   });
   it('Checkbox and DatePicker expose data-invalid', () => {
-    render(<><Checkbox aria-label="c" invalid /><DatePicker aria-label="d" invalid /></>);
+    render(
+      <>
+        <Checkbox aria-label="c" invalid />
+        <DatePicker aria-label="d" invalid />
+      </>,
+    );
     expect(screen.getByRole('checkbox')).toHaveAttribute('data-invalid');
     expect(screen.getByRole('button', {name: /^d: /})).toHaveAttribute('data-invalid');
   });
   it('disabled form controls expose data-disabled, like Radix parts do', () => {
-    render(<><Input aria-label="a" disabled /><Textarea aria-label="b" disabled /><Button disabled>c</Button><Combobox aria-label="d" options={opts} disabled /><TimePicker aria-label="e" disabled /></>);
-    for (const el of [screen.getByLabelText('a'), screen.getByLabelText('b'), screen.getByRole('button', {name: 'c'}), screen.getByLabelText('d'), screen.getByLabelText('e')]) {
+    render(
+      <>
+        <Input aria-label="a" disabled />
+        <Textarea aria-label="b" disabled />
+        <Button disabled>c</Button>
+        <Combobox aria-label="d" options={opts} disabled />
+        <TimePicker aria-label="e" disabled />
+      </>,
+    );
+    for (const el of [
+      screen.getByLabelText('a'),
+      screen.getByLabelText('b'),
+      screen.getByRole('button', {name: 'c'}),
+      screen.getByLabelText('d'),
+      screen.getByLabelText('e'),
+    ]) {
       expect(el).toHaveAttribute('data-disabled');
       expect(el).toBeDisabled();
     }
@@ -105,7 +162,13 @@ describe('ref forwarding and className merging', () => {
 
 describe('deprecated aliases keep working', () => {
   it('Text tone="ok" keeps its class, and success and warning are styled by the same stylesheet', () => {
-    const {container} = render(<><Text tone="ok">a</Text><Text tone="success">b</Text><Text tone="warning">c</Text></>);
+    const {container} = render(
+      <>
+        <Text tone="ok">a</Text>
+        <Text tone="success">b</Text>
+        <Text tone="warning">c</Text>
+      </>,
+    );
     const [a, b, c] = Array.from(container.querySelectorAll('p'));
     expect(a!.className).toContain('text-ok');
     expect(b!.className).toContain('text-success');
@@ -142,9 +205,27 @@ describe('control heights come from one scale', () => {
     return m?.match(/(?<![-\w])height:\s*(var\(--control-(?:sm|md|lg)\))/)?.[1];
   };
   it.each([
-    ['md', 'var(--control-md)', rule(buttons, '.btn'), rule(fields, '.input, .select'), rule(select, '.select-trigger')],
-    ['sm', 'var(--control-sm)', rule(buttons, '.btn-sm'), rule(fields, '.input-sm'), rule(select, '.select-trigger.input-sm')],
-    ['lg', 'var(--control-lg)', rule(buttons, '.btn-lg'), rule(fields, '.input-lg'), rule(select, '.select-trigger.input-lg')],
+    [
+      'md',
+      'var(--control-md)',
+      rule(buttons, '.btn'),
+      rule(fields, '.input, .select'),
+      rule(select, '.select-trigger'),
+    ],
+    [
+      'sm',
+      'var(--control-sm)',
+      rule(buttons, '.btn-sm'),
+      rule(fields, '.input-sm'),
+      rule(select, '.select-trigger.input-sm'),
+    ],
+    [
+      'lg',
+      'var(--control-lg)',
+      rule(buttons, '.btn-lg'),
+      rule(fields, '.input-lg'),
+      rule(select, '.select-trigger.input-lg'),
+    ],
   ])('size %s: Button, Input/NativeSelect and Select trigger all use %s', (_s, token, btn, input, trigger) => {
     expect([btn, input, trigger]).toEqual([token, token, token]);
   });

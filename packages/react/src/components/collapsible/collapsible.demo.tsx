@@ -8,7 +8,9 @@ export const demos: Demo[] = [
     render: () => (
       <Collapsible>
         <CollapsibleTrigger asChild>
-          <Button variant="line" size="sm">Show details</Button>
+          <Button variant="line" size="sm">
+            Show details
+          </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <p>Extra detail appears here when the trigger is pressed.</p>

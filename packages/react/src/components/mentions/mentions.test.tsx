@@ -31,7 +31,8 @@ describe('Mentions', () => {
   });
   it('filters by the query and inserts with Enter', async () => {
     const user = userEvent.setup();
-    const fn = vi.fn(), sel = vi.fn();
+    const fn = vi.fn(),
+      sel = vi.fn();
     render(<Mentions aria-label="Comment" options={people} onValueChange={fn} onMentionSelect={sel} />);
     await user.type(box(), 'hi @gr');
     expect(screen.getAllByRole('option')).toHaveLength(1);
@@ -83,7 +84,12 @@ describe('Mentions', () => {
   it('loads options with onSearch and ignores stale answers', async () => {
     const user = userEvent.setup();
     const resolvers: Record<string, (o: MentionOption[]) => void> = {};
-    const search = vi.fn((q: string) => new Promise<MentionOption[]>((r) => { resolvers[q] = r; }));
+    const search = vi.fn(
+      (q: string) =>
+        new Promise<MentionOption[]>((r) => {
+          resolvers[q] = r;
+        }),
+    );
     render(<Mentions aria-label="Comment" onSearch={search} />);
     await user.type(box(), '@a');
     expect(screen.getByRole('status')).toHaveTextContent('Loading');
@@ -108,7 +114,11 @@ describe('Mentions', () => {
     expect(box()).toHaveValue('fixed');
   });
   it('is labelled by a Field and forwards its ref', () => {
-    render(<Field label="Comment"><Mentions options={people} /></Field>);
+    render(
+      <Field label="Comment">
+        <Mentions options={people} />
+      </Field>,
+    );
     expect(screen.getByLabelText('Comment')).toBe(box());
   });
   it('has no axe violations, open or closed', async () => {
@@ -121,7 +131,15 @@ describe('Mentions', () => {
   it('reports a failing search through onSearchError and shows no options', async () => {
     const user = userEvent.setup();
     const err = vi.fn();
-    render(<Mentions aria-label="Comment" onSearch={() => { throw new Error('boom'); }} onSearchError={err} />);
+    render(
+      <Mentions
+        aria-label="Comment"
+        onSearch={() => {
+          throw new Error('boom');
+        }}
+        onSearchError={err}
+      />,
+    );
     await user.type(screen.getByRole('textbox', {name: 'Comment'}), '@a');
     await waitFor(() => expect(err).toHaveBeenCalledWith(expect.objectContaining({message: 'boom'})));
     expect(screen.queryAllByRole('option')).toHaveLength(0);

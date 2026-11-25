@@ -3,12 +3,17 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {OverflowList, type OverflowItem} from './overflow-list';
 
-const items = (onSelect?: (id: string) => void): OverflowItem[] => ['One', 'Two', 'Three', 'Four'].map((n) => ({id: n, label: n, onSelect: () => onSelect?.(n)}));
+const items = (onSelect?: (id: string) => void): OverflowItem[] =>
+  ['One', 'Two', 'Three', 'Four'].map((n) => ({id: n, label: n, onSelect: () => onSelect?.(n)}));
 
 // jsdom has no layout: give each item 100px and the container a width.
 function layout(container: number) {
-  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.classList.contains('overflow-list-item') ? 100 : 40; });
-  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.classList.contains('overflow-list') ? container : 0; });
+  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+    return this.classList.contains('overflow-list-item') ? 100 : 40;
+  });
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+    return this.classList.contains('overflow-list') ? container : 0;
+  });
 }
 afterEach(() => vi.restoreAllMocks());
 
@@ -28,7 +33,12 @@ describe('OverflowList', () => {
   it('flags hidden items so CSS can take them out of the accessibility tree', () => {
     layout(250);
     const {container} = render(<OverflowList items={items()} />);
-    expect([...container.querySelectorAll('li')].map((li) => li.hasAttribute('data-hidden'))).toEqual([false, false, true, true]);
+    expect([...container.querySelectorAll('li')].map((li) => li.hasAttribute('data-hidden'))).toEqual([
+      false,
+      false,
+      true,
+      true,
+    ]);
   });
   it('lists the hidden items in a menu and selects with the keyboard', async () => {
     layout(250);

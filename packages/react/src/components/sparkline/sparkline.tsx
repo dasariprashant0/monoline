@@ -9,23 +9,38 @@ export interface SparklineProps extends Omit<HTMLAttributes<HTMLSpanElement>, 't
   /** Values in order. Non-finite values count as 0. */
   data: number[];
   /** Names for the values, used in the screen reader table. Default: 1, 2, 3... */
-  labels?: string[];
+  labels?: string[] | undefined;
   /** Fill under the line. */
-  area?: boolean;
+  area?: boolean | undefined;
   /** Width in px. Default 96. */
-  width?: number;
+  width?: number | undefined;
   /** Height in px. Default 24. */
-  height?: number;
+  height?: number | undefined;
   /** Format a value for the screen reader table. */
-  valueFormat?: (value: number) => string;
+  valueFormat?: ((value: number) => string) | undefined;
 }
 
 /** A tiny inline trend: no axes, no tooltip, the last value marked. The full values are in a visually hidden table. */
-export const Sparkline = forwardRef<HTMLSpanElement, SparklineProps>(function Sparkline({title, data, labels, area = false, width = 96, height = 24, valueFormat, className, ...rest}, ref) {
+export const Sparkline = forwardRef<HTMLSpanElement, SparklineProps>(function Sparkline(
+  {title, data, labels, area = false, width = 96, height = 24, valueFormat, className, ...rest},
+  ref,
+) {
   const vals = data.map((v) => (Number.isFinite(v) ? v : 0));
-  if (!vals.length) return <span ref={ref} className={cx('sparkline', 'sparkline-empty', className)} role="img" aria-label={`${title}: no data`} {...rest}>No data</span>;
+  if (!vals.length)
+    return (
+      <span
+        ref={ref}
+        className={cx('sparkline', 'sparkline-empty', className)}
+        role="img"
+        aria-label={`${title}: no data`}
+        {...rest}
+      >
+        No data
+      </span>
+    );
   const fmt = valueFormat ?? formatFull;
-  const pad = 3, n = vals.length;
+  const pad = 3,
+    n = vals.length;
   const y = linearScale(minOf(vals), maxOf(vals), height - pad, pad);
   const xs = vals.map((_, i) => (n === 1 ? width / 2 : pad + (i * (width - 2 * pad)) / (n - 1)));
   const ys = vals.map(y);
@@ -39,8 +54,20 @@ export const Sparkline = forwardRef<HTMLSpanElement, SparklineProps>(function Sp
       </svg>
       {/* Spans with table roles, not a <table>: a sparkline sits inside a paragraph, where a real table is invalid HTML. */}
       <span role="table" aria-label={title} className="sr-only">
-        <span role="rowgroup"><span role="row"><span role="columnheader">Point</span><span role="columnheader">Value</span></span></span>
-        <span role="rowgroup">{vals.map((v, i) => <span role="row" key={i}><span role="rowheader">{labels?.[i] ?? String(i + 1)}</span><span role="cell">{fmt(v)}</span></span>)}</span>
+        <span role="rowgroup">
+          <span role="row">
+            <span role="columnheader">Point</span>
+            <span role="columnheader">Value</span>
+          </span>
+        </span>
+        <span role="rowgroup">
+          {vals.map((v, i) => (
+            <span role="row" key={i}>
+              <span role="rowheader">{labels?.[i] ?? String(i + 1)}</span>
+              <span role="cell">{fmt(v)}</span>
+            </span>
+          ))}
+        </span>
       </span>
     </span>
   );

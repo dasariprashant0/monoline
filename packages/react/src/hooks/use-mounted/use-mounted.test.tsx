@@ -9,7 +9,9 @@ describe('useMounted', () => {
     expect(result.current).toBe(true);
   });
   it('is false when rendered to a string (server)', () => {
-    function Probe() { return createElement('span', null, String(useMounted())); }
+    function Probe() {
+      return createElement('span', null, String(useMounted()));
+    }
     expect(renderToString(createElement(Probe))).toContain('false');
   });
 });

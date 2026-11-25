@@ -7,30 +7,49 @@ import {invalidAttrs, useFieldControl, useFieldLabelId, hiddenInputs} from '../f
 export interface ComboboxOption {
   value: string;
   label: string;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
-export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
+export interface ComboboxProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** The choices, each with a `value`, a `label` and an optional `disabled`. The user filters them by typing part of the label. */
   options: ComboboxOption[];
   /** The selected option's `value` when controlled; `''` means none. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The initially selected option's `value` when uncontrolled. Default none. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the chosen option's value, or '' when cleared. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Form field name. A hidden input submits the chosen option `value` (not its label); the visible text box is not submitted. */
-  name?: string;
+  name?: string | undefined;
   /** Shown when nothing matches. */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox({options, value, defaultValue = '', onValueChange, emptyText = 'No matches', size = 'md', invalid, disabled, name, className, onBlur, onClick, onKeyDown, ...rest}, ref) {
+export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
+  {
+    options,
+    value,
+    defaultValue = '',
+    onValueChange,
+    emptyText = 'No matches',
+    size = 'md',
+    invalid,
+    disabled,
+    name,
+    className,
+    onBlur,
+    onClick,
+    onKeyDown,
+    ...rest
+  },
+  ref,
+) {
   const f = useFieldControl(rest);
   const labelId = useFieldLabelId();
   const listId = useId();
@@ -45,24 +64,50 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
   const shown = text === null ? options : options.filter((o) => o.label.toLowerCase().includes(query));
   const optId = (i: number) => `${listId}-${i}`;
   // Arrow keys move through a list taller than its popup: keep the active option in view.
-  useEffect(() => { if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'}); }, [open, active]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the id helper only formats the stable listId; listing it would re-run on every render.
+  useEffect(() => {
+    if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'});
+  }, [open, active]);
 
   const pick = (o: ComboboxOption) => {
     if (o.disabled) return;
     if (value === undefined) setInner(o.value);
     onValueChange?.(o.value);
-    setText(null); setOpen(false);
+    setText(null);
+    setOpen(false);
   };
-  const move = (dir: 1 | -1) => { if (shown.length) setActive(nextEnabled(shown, active, dir)); };
+  const move = (dir: 1 | -1) => {
+    if (shown.length) setActive(nextEnabled(shown, active, dir));
+  };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) { setOpen(true); } else move(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else move(-1); }
-    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && shown[active]) { e.preventDefault(); pick(shown[active]!); }
-    else if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } else if (text !== null) { setText(null); } }
-    else if (e.key === 'Home' && open) { e.preventDefault(); setActive(0); }
-    else if (e.key === 'End' && open) { e.preventDefault(); setActive(Math.max(0, shown.length - 1)); }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+      } else move(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!open) setOpen(true);
+      else move(-1);
+    } else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && shown[active]) {
+      e.preventDefault();
+      pick(shown[active]!);
+    } else if (e.key === 'Escape') {
+      if (open) {
+        e.preventDefault();
+        setOpen(false);
+      } else if (text !== null) {
+        setText(null);
+      }
+    } else if (e.key === 'Home' && open) {
+      e.preventDefault();
+      setActive(0);
+    } else if (e.key === 'End' && open) {
+      e.preventDefault();
+      setActive(Math.max(0, shown.length - 1));
+    }
   };
 
   return (
@@ -81,18 +126,43 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
         aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && shown[active] ? optId(active) : undefined}
-       
         {...invalidAttrs(invalid)}
         value={text ?? selected?.label ?? ''}
-        onChange={(e) => { setText(e.target.value); setActive(0); setOpen(true); if (!e.target.value && current !== '') { if (value === undefined) setInner(''); onValueChange?.(''); } }}
-        onClick={(e) => { onClick?.(e); setOpen(true); }}
-        onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
+        onChange={(e) => {
+          setText(e.target.value);
+          setActive(0);
+          setOpen(true);
+          if (!e.target.value && current !== '') {
+            if (value === undefined) setInner('');
+            onValueChange?.('');
+          }
+        }}
+        onClick={(e) => {
+          onClick?.(e);
+          setOpen(true);
+        }}
+        onBlur={(e) => {
+          onBlur?.(e);
+          setOpen(false);
+          setText(null);
+        }}
         onKeyDown={keydown}
-        {...rest} {...f}
+        {...rest}
+        {...f}
       />
       {open && (
-        <ul id={listId} role="listbox" className="combobox-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId}>
-          {shown.length === 0 && <li className="combobox-empty" role="presentation">{emptyText}</li>}
+        <ul
+          id={listId}
+          role="listbox"
+          className="combobox-list"
+          aria-label={rest['aria-label']}
+          aria-labelledby={rest['aria-label'] ? undefined : (rest['aria-labelledby'] ?? labelId)}
+        >
+          {shown.length === 0 && (
+            <li className="combobox-empty" role="presentation">
+              {emptyText}
+            </li>
+          )}
           {shown.map((o, i) => (
             <li
               key={o.value}
@@ -105,7 +175,9 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
               onMouseDown={(e) => e.preventDefault()}
               onMouseEnter={() => setActive(i)}
               onClick={() => pick(o)}
-            >{o.label}</li>
+            >
+              {o.label}
+            </li>
           ))}
         </ul>
       )}

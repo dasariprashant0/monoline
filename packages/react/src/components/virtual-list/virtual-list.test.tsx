@@ -4,7 +4,15 @@ import {axe} from '../../test/axe';
 import {VirtualList} from './virtual-list';
 
 const ui = (props: Partial<React.ComponentProps<typeof VirtualList>> = {}) => (
-  <VirtualList aria-label="Rows" count={1000} itemHeight={20} height={100} overscan={2} renderItem={(i) => `Row ${i + 1}`} {...props} />
+  <VirtualList
+    aria-label="Rows"
+    count={1000}
+    itemHeight={20}
+    height={100}
+    overscan={2}
+    renderItem={(i) => `Row ${i + 1}`}
+    {...props}
+  />
 );
 
 describe('VirtualList', () => {

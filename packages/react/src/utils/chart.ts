@@ -1,7 +1,13 @@
 /** Chart maths shared by BarChart, LineChart, AreaChart, PieChart and Sparkline. Pure functions, no React. */
 
-export interface ChartDatum { label: string; value: number }
-export interface ChartSeries { name: string; values: number[] }
+export interface ChartDatum {
+  label: string;
+  value: number;
+}
+export interface ChartSeries {
+  name: string;
+  values: number[];
+}
 
 /** How many distinct series styles exist (colour + pattern + dash + marker). Series beyond this cycle. */
 export const SERIES_STYLES = 5;
@@ -14,7 +20,12 @@ export const r2 = (n: number): number => Math.round(n * 100) / 100;
  * Turn the two input shapes into one: `data` (single series of {label, value}) or `series` + `labels`.
  * Non-finite values become 0. Short series are padded with 0.
  */
-export function normalize(data: ChartDatum[] | undefined, series: ChartSeries[] | undefined, labels: string[] | undefined, fallbackName: string): {labels: string[]; series: ChartSeries[]} {
+export function normalize(
+  data: ChartDatum[] | undefined,
+  series: ChartSeries[] | undefined,
+  labels: string[] | undefined,
+  fallbackName: string,
+): {labels: string[]; series: ChartSeries[]} {
   if (series && series.length) {
     const n = Math.max(labels?.length ?? 0, ...series.map((s) => s.values.length));
     return {
@@ -23,7 +34,10 @@ export function normalize(data: ChartDatum[] | undefined, series: ChartSeries[] 
     };
   }
   const d = data ?? [];
-  return {labels: d.map((x) => x.label), series: d.length ? [{name: fallbackName, values: d.map((x) => finite(x.value))}] : []};
+  return {
+    labels: d.map((x) => x.label),
+    series: d.length ? [{name: fallbackName, values: d.map((x) => finite(x.value))}] : [],
+  };
 }
 
 /** Round a raw step up to 1, 2, 5 or 10 times a power of ten. */
@@ -37,16 +51,26 @@ function niceStep(raw: number): number {
  * Axis ticks that start and end on round numbers and cover [min, max].
  * `niceTicks(0, 97)` gives 0, 20, 40, 60, 80, 100. `count` is the wanted number of ticks, not a guarantee.
  */
-export function niceTicks(min: number, max: number, count = 5): {ticks: number[]; min: number; max: number; step: number} {
-  let lo = finite(min), hi = finite(max);
+export function niceTicks(
+  min: number,
+  max: number,
+  count = 5,
+): {ticks: number[]; min: number; max: number; step: number} {
+  let lo = finite(min),
+    hi = finite(max);
   if (lo > hi) [lo, hi] = [hi, lo];
-  if (lo === hi) { if (lo === 0) hi = 1; else if (lo > 0) lo = 0; else hi = 0; }
+  if (lo === hi) {
+    if (lo === 0) hi = 1;
+    else if (lo > 0) lo = 0;
+    else hi = 0;
+  }
   const step = niceStep((hi - lo) / Math.max(1, count - 1));
   const nlo = Math.floor(lo / step + 1e-9) * step;
   const nhi = Math.ceil(hi / step - 1e-9) * step;
   const dec = Math.max(0, -Math.floor(Math.log10(step)));
   const ticks: number[] = [];
-  for (let i = 0, v = nlo; v <= nhi + step / 1e6 && i < 200; i++, v = nlo + i * step) ticks.push(Number(v.toFixed(Math.min(dec, 12))));
+  for (let i = 0, v = nlo; v <= nhi + step / 1e6 && i < 200; i++, v = nlo + i * step)
+    ticks.push(Number(v.toFixed(Math.min(dec, 12))));
   return {ticks, min: ticks[0]!, max: ticks[ticks.length - 1]!, step};
 }
 
@@ -62,24 +86,47 @@ export function linearScale(d0: number, d1: number, r0: number, r1: number): (v:
  */
 export function stack(values: number[][]): {lo: number; hi: number}[][] {
   const n = Math.max(0, ...values.map((s) => s.length));
-  const pos = new Array<number>(n).fill(0), neg = new Array<number>(n).fill(0);
-  return values.map((s) => s.map((v, i) => {
-    if (v >= 0) { const lo = pos[i]!; pos[i] = lo + v; return {lo, hi: pos[i]!}; }
-    const hi = neg[i]!; neg[i] = hi + v; return {lo: neg[i]!, hi};
-  }));
+  const pos = new Array<number>(n).fill(0),
+    neg = new Array<number>(n).fill(0);
+  return values.map((s) =>
+    s.map((v, i) => {
+      if (v >= 0) {
+        const lo = pos[i]!;
+        pos[i] = lo + v;
+        return {lo, hi: pos[i]!};
+      }
+      const hi = neg[i]!;
+      neg[i] = hi + v;
+      return {lo: neg[i]!, hi};
+    }),
+  );
 }
 
 /** The value range a set of series needs on its axis, always including 0. */
 export function extent(values: number[][], stacked: boolean): {min: number; max: number} {
   if (stacked) {
     const s = stack(values).flat();
-    return {min: minOf(s.map((x) => x.lo), 0), max: maxOf(s.map((x) => x.hi), 0)};
+    return {
+      min: minOf(
+        s.map((x) => x.lo),
+        0,
+      ),
+      max: maxOf(
+        s.map((x) => x.hi),
+        0,
+      ),
+    };
   }
   const all = values.flat();
   return {min: minOf(all, 0), max: maxOf(all, 0)};
 }
 
-export interface PieArc { value: number; fraction: number; start: number; end: number }
+export interface PieArc {
+  value: number;
+  fraction: number;
+  start: number;
+  end: number;
+}
 
 /** Slice angles in degrees, clockwise from 12 o'clock. Negative values count as 0; angles sum to 360 unless the total is 0. */
 export function pieArcs(values: number[]): PieArc[] {
@@ -122,7 +169,8 @@ export function polyline(xs: number[], ys: number[], step = false, reverse = fal
   let d = '';
   for (let k = 0; k < n; k++) {
     const i = reverse ? n - 1 - k : k;
-    const x = r2(xs[i]!), y = r2(ys[i]!);
+    const x = r2(xs[i]!),
+      y = r2(ys[i]!);
     if (k === 0) d += `${cmd}${x} ${y}`;
     else d += step ? (reverse ? `V${y}H${x}` : `H${x}V${y}`) : `L${x} ${y}`;
   }
@@ -132,11 +180,16 @@ export function polyline(xs: number[], ys: number[], step = false, reverse = fal
 /** Marker outline for series k, centred on (x, y) with radius r. Shapes differ so series do not rely on colour. */
 export function markerPath(k: number, x: number, y: number, r: number): string {
   switch (k % SERIES_STYLES) {
-    case 0: return `M${x - r} ${y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
-    case 1: return `M${x - r} ${y - r}h${2 * r}v${2 * r}h${-2 * r}Z`;
-    case 2: return `M${x} ${y - r * 1.3}L${x + r * 1.3} ${y}L${x} ${y + r * 1.3}L${x - r * 1.3} ${y}Z`;
-    case 3: return `M${x} ${y - r * 1.2}L${x + r * 1.2} ${y + r}L${x - r * 1.2} ${y + r}Z`;
-    default: return `M${x - r} ${y}h${2 * r}M${x} ${y - r}v${2 * r}`;
+    case 0:
+      return `M${x - r} ${y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+    case 1:
+      return `M${x - r} ${y - r}h${2 * r}v${2 * r}h${-2 * r}Z`;
+    case 2:
+      return `M${x} ${y - r * 1.3}L${x + r * 1.3} ${y}L${x} ${y + r * 1.3}L${x - r * 1.3} ${y}Z`;
+    case 3:
+      return `M${x} ${y - r * 1.2}L${x + r * 1.2} ${y + r}L${x - r * 1.2} ${y + r}Z`;
+    default:
+      return `M${x - r} ${y}h${2 * r}M${x} ${y - r}v${2 * r}`;
   }
 }
 
@@ -165,11 +218,18 @@ export function labelStride(count: number, room: number, labelSize: number): num
 export const textWidth = (s: string, size = 7): number => s.length * size;
 
 /** Cut a label to `max` characters with an ellipsis. */
-export const truncate = (s: string, max: number): string => (s.length > max ? `${s.slice(0, Math.max(1, max - 1))}…` : s);
+export const truncate = (s: string, max: number): string =>
+  s.length > max ? `${s.slice(0, Math.max(1, max - 1))}…` : s;
 
 /** Left margin that fits the widest y tick label. */
 /** Smallest and largest of a list, with a start value. Unlike `Math.min(...list)` this does not overflow the call stack on a very long list. */
-export const minOf = (list: readonly number[], start = Infinity): number => list.reduce((m, v) => (v < m ? v : m), start);
-export const maxOf = (list: readonly number[], start = -Infinity): number => list.reduce((m, v) => (v > m ? v : m), start);
+export const minOf = (list: readonly number[], start = Infinity): number =>
+  list.reduce((m, v) => (v < m ? v : m), start);
+export const maxOf = (list: readonly number[], start = -Infinity): number =>
+  list.reduce((m, v) => (v > m ? v : m), start);
 
-export const axisLeft = (ticks: number[], fmt: (n: number) => string): number => maxOf(ticks.map((t) => textWidth(fmt(t))), 0) + 14;
+export const axisLeft = (ticks: number[], fmt: (n: number) => string): number =>
+  maxOf(
+    ticks.map((t) => textWidth(fmt(t))),
+    0,
+  ) + 14;

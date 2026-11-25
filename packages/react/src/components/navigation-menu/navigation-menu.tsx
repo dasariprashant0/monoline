@@ -8,37 +8,61 @@ import {setRefs} from '../../utils/overlay';
 export type NavigationMenuProps = ComponentPropsWithoutRef<typeof Radix.Root>;
 
 /** A site navigation bar whose items can open rich panels of links. Put a `NavigationMenuList` inside; the panels share one viewport. */
-export const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(function NavigationMenu({className, children, ...rest}, ref) {
-  const root = useRef<HTMLElement | null>(null);
-  // Radix adds an aria-hidden <span tabindex="0"> focus proxy next to a trigger when it opens (so it is fixed by the observer below); it passes focus into the panel at once. A focusable element
-  // must not be aria-hidden (WCAG 4.1.2), so drop the attribute (the proxy is empty and never holds focus).
-  useEffect(() => {
-    const el = root.current!, fix = () => el.querySelectorAll('span[aria-hidden][tabindex="0"]').forEach((n) => n.removeAttribute('aria-hidden'));
-    const mo = new MutationObserver(fix); mo.observe(el, {subtree: true, childList: true});
-    return () => mo.disconnect();
-  }, []);
-  return (
-    <Radix.Root ref={(n) => setRefs(n, root, ref)} className={cx('navmenu', className)} {...rest}>
-      {children}
-      <div className="navmenu-viewport-wrap"><Radix.Viewport className="navmenu-viewport" /></div>
-    </Radix.Root>
-  );
-});
+export const NavigationMenu = forwardRef<ElementRef<typeof Radix.Root>, ComponentPropsWithoutRef<typeof Radix.Root>>(
+  function NavigationMenu({className, children, ...rest}, ref) {
+    const root = useRef<HTMLElement | null>(null);
+    // Radix adds an aria-hidden <span tabindex="0"> focus proxy next to a trigger when it opens (so it is fixed by the observer below); it passes focus into the panel at once. A focusable element
+    // must not be aria-hidden (WCAG 4.1.2), so drop the attribute (the proxy is empty and never holds focus).
+    useEffect(() => {
+      const el = root.current!,
+        fix = () =>
+          el.querySelectorAll('span[aria-hidden][tabindex="0"]').forEach((n) => n.removeAttribute('aria-hidden'));
+      const mo = new MutationObserver(fix);
+      mo.observe(el, {subtree: true, childList: true});
+      return () => mo.disconnect();
+    }, []);
+    return (
+      <Radix.Root ref={(n) => setRefs(n, root, ref)} className={cx('navmenu', className)} {...rest}>
+        {children}
+        <div className="navmenu-viewport-wrap">
+          <Radix.Viewport className="navmenu-viewport" />
+        </div>
+      </Radix.Root>
+    );
+  },
+);
 /** The row that holds the `NavigationMenuItem`s. */
-export const NavigationMenuList = forwardRef<ElementRef<typeof Radix.List>, ComponentPropsWithoutRef<typeof Radix.List>>(function NavigationMenuList({className, ...rest}, ref) {
+export const NavigationMenuList = forwardRef<
+  ElementRef<typeof Radix.List>,
+  ComponentPropsWithoutRef<typeof Radix.List>
+>(function NavigationMenuList({className, ...rest}, ref) {
   return <Radix.List ref={ref} className={cx('navmenu-list', className)} {...rest} />;
 });
 /** One entry in the list: either a `NavigationMenuLink`, or a `NavigationMenuTrigger` with its `NavigationMenuContent`. */
 export const NavigationMenuItem = Radix.Item;
 /** The button that opens its item's panel; shows a small arrow. */
-export const NavigationMenuTrigger = forwardRef<ElementRef<typeof Radix.Trigger>, ComponentPropsWithoutRef<typeof Radix.Trigger>>(function NavigationMenuTrigger({className, children, ...rest}, ref) {
-  return <Radix.Trigger ref={ref} className={cx('navmenu-link navmenu-trigger', className)} {...rest}>{children}<span aria-hidden="true"> ▾</span></Radix.Trigger>;
+export const NavigationMenuTrigger = forwardRef<
+  ElementRef<typeof Radix.Trigger>,
+  ComponentPropsWithoutRef<typeof Radix.Trigger>
+>(function NavigationMenuTrigger({className, children, ...rest}, ref) {
+  return (
+    <Radix.Trigger ref={ref} className={cx('navmenu-link navmenu-trigger', className)} {...rest}>
+      {children}
+      <span aria-hidden="true"> ▾</span>
+    </Radix.Trigger>
+  );
 });
 /** The panel of links shown under the trigger when it is open. */
-export const NavigationMenuContent = forwardRef<ElementRef<typeof Radix.Content>, ComponentPropsWithoutRef<typeof Radix.Content>>(function NavigationMenuContent({className, ...rest}, ref) {
+export const NavigationMenuContent = forwardRef<
+  ElementRef<typeof Radix.Content>,
+  ComponentPropsWithoutRef<typeof Radix.Content>
+>(function NavigationMenuContent({className, ...rest}, ref) {
   return <Radix.Content ref={ref} className={cx('navmenu-content', className)} {...rest} />;
 });
 /** A link in the bar or inside a panel; use `asChild` for a router link and `active` to mark the current page. */
-export const NavigationMenuLink = forwardRef<ElementRef<typeof Radix.Link>, ComponentPropsWithoutRef<typeof Radix.Link>>(function NavigationMenuLink({className, ...rest}, ref) {
+export const NavigationMenuLink = forwardRef<
+  ElementRef<typeof Radix.Link>,
+  ComponentPropsWithoutRef<typeof Radix.Link>
+>(function NavigationMenuLink({className, ...rest}, ref) {
   return <Radix.Link ref={ref} className={cx('navmenu-link', className)} {...rest} />;
 });

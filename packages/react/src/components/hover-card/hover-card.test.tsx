@@ -3,7 +3,14 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {HoverCard, HoverCardContent, HoverCardTrigger} from './hover-card';
 
-const ui = () => <HoverCard openDelay={0} closeDelay={0}><HoverCardTrigger asChild><a href="#ada">@ada</a></HoverCardTrigger><HoverCardContent>Ada Lovelace, engineer</HoverCardContent></HoverCard>;
+const ui = () => (
+  <HoverCard openDelay={0} closeDelay={0}>
+    <HoverCardTrigger asChild>
+      <a href="#ada">@ada</a>
+    </HoverCardTrigger>
+    <HoverCardContent>Ada Lovelace, engineer</HoverCardContent>
+  </HoverCard>
+);
 
 describe('HoverCard', () => {
   it('is hidden until hovered', async () => {

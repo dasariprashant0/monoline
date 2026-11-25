@@ -36,7 +36,8 @@ describe('NotificationCenter', () => {
   });
   it('marks one read and marks all read', async () => {
     const user = userEvent.setup();
-    const onMarkRead = vi.fn(), onMarkAllRead = vi.fn();
+    const onMarkRead = vi.fn(),
+      onMarkAllRead = vi.fn();
     render(<NotificationCenter notifications={list} onMarkRead={onMarkRead} onMarkAllRead={onMarkAllRead} />);
     await user.click(screen.getByRole('button', {name: /Notifications/}));
     await user.click(await screen.findByRole('button', {name: 'Mark read: New comment'}));

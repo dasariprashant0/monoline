@@ -5,7 +5,9 @@ export const demos: Demo[] = [
   {
     title: 'Padding and border',
     render: () => (
-      <Box padding={5} border>A bordered box with step 5 padding.</Box>
+      <Box padding={5} border>
+        A bordered box with step 5 padding.
+      </Box>
     ),
   },
   {

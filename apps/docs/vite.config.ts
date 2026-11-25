@@ -6,19 +6,24 @@ import {cpSync, existsSync, readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 
 const root = (p: string) => fileURLToPath(new URL(p, import.meta.url));
-const cssBuild = root('../../packages/css/scripts/build.mjs');
+const cssBuild = root('../../packages/css/scripts/build.ts');
 
 /** Rebuild packages/css/dist when a stylesheet in packages/css/src changes, then reload. */
 function monolineCss(): Plugin {
   const build = () => spawnSync('node', [cssBuild], {stdio: 'inherit'});
   return {
     name: 'monoline-css',
-    buildStart: () => { build(); },
+    buildStart: () => {
+      build();
+    },
     configureServer(server) {
       const src = root('../../packages/css/src');
       server.watcher.add(src);
       server.watcher.on('change', (f) => {
-        if (f.startsWith(src) && f.endsWith('.css')) { build(); server.ws.send({type: 'full-reload'}); }
+        if (f.startsWith(src) && f.endsWith('.css')) {
+          build();
+          server.ws.send({type: 'full-reload'});
+        }
       });
     },
   };
@@ -33,8 +38,12 @@ function notFoundBase(): Plugin {
   return {
     name: 'monoline-404-base',
     apply: 'build',
-    configResolved: (c) => { out = c.build.ssr ? '' : join(c.root, c.build.outDir, '404.html'); },
-    closeBundle() { if (out && existsSync(out)) writeFileSync(out, readFileSync(out, 'utf8').replaceAll('__BASE__', base)); },
+    configResolved: (c) => {
+      out = c.build.ssr ? '' : join(c.root, c.build.outDir, '404.html');
+    },
+    closeBundle() {
+      if (out && existsSync(out)) writeFileSync(out, readFileSync(out, 'utf8').replaceAll('__BASE__', base));
+    },
   };
 }
 
@@ -45,30 +54,45 @@ function aiFilesPlugin(): Plugin {
   let out = '';
   return {
     name: 'monoline-ai-files',
-    configResolved: (c) => { out = c.build.ssr ? '' : join(c.root, c.build.outDir); }, // the prerender's server build copies nothing
+    configResolved: (c) => {
+      out = c.build.ssr ? '' : join(c.root, c.build.outDir);
+    }, // the prerender's server build copies nothing
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const rel = decodeURIComponent((req.url ?? '').split('?')[0]!.slice(base.length)).replace(/^\/+/, '');
-        const hit = req.url?.startsWith(base) && !rel.includes('..') && aiFiles.includes(rel.split('/')[0]!) && join(repo, rel);
+        const hit =
+          req.url?.startsWith(base) && !rel.includes('..') && aiFiles.includes(rel.split('/')[0]!) && join(repo, rel);
         if (!hit || !existsSync(hit) || !/\.\w+$/.test(hit)) return next();
         res.setHeader('Content-Type', hit.endsWith('.json') ? 'application/json' : 'text/plain; charset=utf-8');
         res.end(readFileSync(hit));
       });
     },
-    closeBundle() { if (out) for (const f of aiFiles) if (existsSync(join(repo, f))) cpSync(join(repo, f), join(out, f), {recursive: true}); },
+    closeBundle() {
+      if (out)
+        for (const f of aiFiles) if (existsSync(join(repo, f))) cpSync(join(repo, f), join(out, f), {recursive: true});
+    },
   };
 }
 
 export default defineConfig({
   base,
   plugins: [react(), monolineCss(), notFoundBase(), aiFilesPlugin()],
-  resolve: {alias: {'@monoline/react': root('../../packages/react/src/index.ts'), '@css': root('../../packages/css/dist')}},
+  resolve: {
+    alias: {'@monoline/react': root('../../packages/react/src/index.ts'), '@css': root('../../packages/css/dist')},
+  },
   server: {port: 5180, fs: {allow: ['../..']}},
   build: {
     outDir: 'dist',
     rollupOptions: {
       // Without this, every component shared by two lazy demo chunks becomes its own tiny chunk and the entry page lists ~200 modulepreloads.
-      output: {manualChunks: (id) => (id.includes('/packages/react/src/') ? 'monoline' : /node_modules\/(@radix-ui|radix-ui|@floating-ui)\//.test(id) ? 'radix' : undefined)},
+      output: {
+        manualChunks: (id) =>
+          id.includes('/packages/react/src/')
+            ? 'monoline'
+            : /node_modules\/(@radix-ui|radix-ui|@floating-ui)\//.test(id)
+              ? 'radix'
+              : undefined,
+      },
     },
   },
 });

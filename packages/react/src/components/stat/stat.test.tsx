@@ -34,7 +34,13 @@ describe('Stat', () => {
     expect(container.querySelector('dl')!.textContent).toBe('Errors00');
   });
   it('handles negative, huge, rich and RTL values', () => {
-    render(<><Stat label="Delta" value={-42} /><Stat label="Big" value={'9'.repeat(40)} /><Stat label={<b>الإيرادات</b>} value={<span>١٢٣</span>} /></>);
+    render(
+      <>
+        <Stat label="Delta" value={-42} />
+        <Stat label="Big" value={'9'.repeat(40)} />
+        <Stat label={<b>الإيرادات</b>} value={<span>١٢٣</span>} />
+      </>,
+    );
     expect(screen.getByText('-42')).toHaveClass('stat-value');
     expect(screen.getByText('9'.repeat(40))).toBeInTheDocument();
     expect(screen.getByText('الإيرادات').tagName).toBe('B');

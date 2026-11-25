@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {CopyButton} from './copy-button';
 
-const stub = (writeText: (t: string) => Promise<void>) => Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true});
-afterEach(() => { Reflect.deleteProperty(navigator, 'clipboard'); });
+const stub = (writeText: (t: string) => Promise<void>) =>
+  Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true});
+afterEach(() => {
+  Reflect.deleteProperty(navigator, 'clipboard');
+});
 
 describe('CopyButton', () => {
   it('is a named icon button by default', () => {
@@ -33,7 +36,11 @@ describe('CopyButton', () => {
   });
   it('text form swaps its label', async () => {
     const user = userEvent.setup();
-    render(<CopyButton value="v" copiedLabel="Done">Copy link</CopyButton>);
+    render(
+      <CopyButton value="v" copiedLabel="Done">
+        Copy link
+      </CopyButton>,
+    );
     stub(async () => {});
     await user.click(screen.getByRole('button', {name: 'Copy link'}));
     expect(screen.getByRole('button', {name: 'Done'})).toBeInTheDocument();
@@ -41,7 +48,9 @@ describe('CopyButton', () => {
   it('announces a failure', async () => {
     const user = userEvent.setup();
     render(<CopyButton value="v" />);
-    stub(async () => { throw new Error('no'); });
+    stub(async () => {
+      throw new Error('no');
+    });
     await user.click(screen.getByRole('button'));
     expect(screen.getByRole('status')).toHaveTextContent('Copy failed');
   });
@@ -51,7 +60,12 @@ describe('CopyButton', () => {
     expect(ref.current).toBeDisabled();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<><CopyButton value="a" /><CopyButton value="b">Copy</CopyButton></>);
+    const {container} = render(
+      <>
+        <CopyButton value="a" />
+        <CopyButton value="b">Copy</CopyButton>
+      </>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

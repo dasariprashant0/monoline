@@ -9,25 +9,39 @@
     "packages/*",
     "apps/*"
   ],
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "dev": "npm run dev -w apps/docs",
-    "build": "npm run build -w @monoline/css && npm run build -w @monoline/react && npm run build -w apps/docs",
+    "build": "npm run build -w @monoline/css && npm run build -w @monoline/react && npm run build -w apps/docs && npm run build --if-present -w monoline -w @monoline/mcp",
     "test": "npm run test -w @monoline/react",
     "typecheck": "npm run typecheck -w @monoline/react && npm run typecheck -w apps/docs",
-    "check": "npm run check -w @monoline/css && npm run check:docs -w @monoline/react && npm run check:registry && npm run typecheck && npm run test",
-    "check:registry": "node --test packages/react/scripts/check-registry.test.mjs",
+    "typecheck:examples": "tsc --noEmit -p examples/consumer-types && tsc --noEmit -p examples/dashboard && tsc --noEmit -p examples/auth-settings && tsc --noEmit -p examples/landing",
+    "check": "npm run lint && npm run check -w @monoline/css && npm run check:docs -w @monoline/react && npm run check:registry && npm run typecheck && npm run typecheck:scripts && npm run test",
+    "check:registry": "node --test packages/react/scripts/check-registry.test.ts",
     "registry": "npm run registry -w @monoline/react",
     "test:mcp": "npm test -w @monoline/mcp",
     "cli": "node packages/cli/bin/monoline.mjs",
     "test:cli": "npm test -w monoline",
-    "tokens": "node packages/tokens/scripts/build.mjs",
-    "test:tokens": "node --test packages/tokens/test/",
-    "test:release": "node --test scripts/release.test.mjs",
-    "size": "node scripts/size.mjs",
-    "test:css-browser": "node scripts/css-computed.mjs",
-    "e2e": "node scripts/e2e/run.mjs",
-    "ax": "node scripts/ax/run.mjs",
-    "check:package-types": "node scripts/check-package-types.mjs",
-    "install-smoke": "node scripts/install-smoke/run.mjs"
+    "tokens": "node packages/tokens/scripts/build.ts",
+    "test:tokens": "node --test 'packages/tokens/test/*.test.ts'",
+    "test:release": "node --test scripts/release.test.ts",
+    "size": "node scripts/size.ts",
+    "test:css-browser": "node scripts/css-computed.ts",
+    "e2e": "node scripts/e2e/run.ts",
+    "ax": "node scripts/ax/run.ts",
+    "check:package-types": "node scripts/check-package-types.ts",
+    "install-smoke": "node scripts/install-smoke/run.ts",
+    "test:vscode": "node --test 'packages/vscode/test/*.test.ts'",
+    "typecheck:scripts": "tsc -p tsconfig.scripts.json",
+    "lint": "biome check --error-on-warnings .",
+    "lint:fix": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.9",
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.3"
   }
 }

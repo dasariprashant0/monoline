@@ -24,7 +24,14 @@ export const demos: Demo[] = [
   {
     title: 'Inline',
     render: () => (
-      <div>Text with an <Flex inline gap={1} align="baseline"><Badge>inline</Badge><Badge>flex</Badge></Flex> in the line.</div>
+      <div>
+        Text with an{' '}
+        <Flex inline gap={1} align="baseline">
+          <Badge>inline</Badge>
+          <Badge>flex</Badge>
+        </Flex>{' '}
+        in the line.
+      </div>
     ),
   },
 ];

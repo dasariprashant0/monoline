@@ -3,19 +3,22 @@ import {cx} from '../../utils/cx';
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
   /** `column` (default) stacks children vertically; `row` lays them out horizontally. */
-  direction?: 'column' | 'row';
+  direction?: 'column' | 'row' | undefined;
   /** Step on the spacing scale: 1 = --s1 (4px) up to 9. */
-  gap?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+  gap?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | undefined;
   /** Cross-axis alignment (`align-items`): `start`, `center`, `end` or `stretch`. */
-  align?: 'start' | 'center' | 'end' | 'stretch';
+  align?: 'start' | 'center' | 'end' | 'stretch' | undefined;
   /** Main-axis distribution (`justify-content`): `start`, `center`, `end` or `between`. */
-  justify?: 'start' | 'center' | 'end' | 'between';
+  justify?: 'start' | 'center' | 'end' | 'between' | undefined;
   /** Lets children wrap onto new lines. Useful with `direction="row"`. Default false. */
-  wrap?: boolean;
+  wrap?: boolean | undefined;
 }
 
 /** A flex container. Use it instead of one-off margins. */
-export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack({direction = 'column', gap = 3, align, justify, wrap, className, style, ...rest}, ref) {
+export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
+  {direction = 'column', gap = 3, align, justify, wrap, className, style, ...rest},
+  ref,
+) {
   return (
     <div
       ref={ref}

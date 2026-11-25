@@ -8,9 +8,15 @@ import {useEffect, useRef} from 'react';
  * @param listener Handler for the event. The latest version is used.
  * @param options Passed to `addEventListener`.
  */
-export function useWindowEvent<K extends keyof WindowEventMap>(type: K, listener: (event: WindowEventMap[K]) => void, options?: boolean | AddEventListenerOptions): void {
+export function useWindowEvent<K extends keyof WindowEventMap>(
+  type: K,
+  listener: (event: WindowEventMap[K]) => void,
+  options?: boolean | AddEventListenerOptions,
+): void {
   const fn = useRef(listener);
-  useEffect(() => { fn.current = listener; });
+  useEffect(() => {
+    fn.current = listener;
+  });
   // An inline `{passive: true}` is a new object every render: re-subscribe only when its flags change.
   const opts = useRef(options);
   opts.current = options;

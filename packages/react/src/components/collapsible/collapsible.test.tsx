@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from './collapsible';
 
-const ui = () => <Collapsible><CollapsibleTrigger>Details</CollapsibleTrigger><CollapsibleContent>Hidden text</CollapsibleContent></Collapsible>;
+const ui = () => (
+  <Collapsible>
+    <CollapsibleTrigger>Details</CollapsibleTrigger>
+    <CollapsibleContent>Hidden text</CollapsibleContent>
+  </Collapsible>
+);
 
 describe('Collapsible', () => {
   it('is closed by default and toggles by click', async () => {
@@ -27,15 +32,27 @@ describe('Collapsible', () => {
   });
   it('opens when the browser finds its text (beforematch)', async () => {
     render(ui());
-    act(() => { screen.getByText('Hidden text').dispatchEvent(new Event('beforematch')); });
+    act(() => {
+      screen.getByText('Hidden text').dispatchEvent(new Event('beforematch'));
+    });
     await waitFor(() => expect(screen.getByRole('button', {name: 'Details'})).toHaveAttribute('aria-expanded', 'true'));
   });
   it('can start open', () => {
-    render(<Collapsible defaultOpen><CollapsibleTrigger>Details</CollapsibleTrigger><CollapsibleContent>Shown</CollapsibleContent></Collapsible>);
+    render(
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>Details</CollapsibleTrigger>
+        <CollapsibleContent>Shown</CollapsibleContent>
+      </Collapsible>,
+    );
     expect(screen.getByText('Shown')).toBeVisible();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<Collapsible defaultOpen><CollapsibleTrigger>Details</CollapsibleTrigger><CollapsibleContent>Shown</CollapsibleContent></Collapsible>);
+    const {container} = render(
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>Details</CollapsibleTrigger>
+        <CollapsibleContent>Shown</CollapsibleContent>
+      </Collapsible>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

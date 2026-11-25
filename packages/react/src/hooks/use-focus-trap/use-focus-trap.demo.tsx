@@ -8,11 +8,15 @@ function TrapDemo() {
   const ref = useFocusTrap<HTMLDivElement>(open);
   return (
     <div>
-      <Button variant="line" onClick={() => setOpen(true)}>Open trapped panel</Button>
+      <Button variant="line" onClick={() => setOpen(true)}>
+        Open trapped panel
+      </Button>
       {open && (
         <div ref={ref} role="dialog" aria-label="Trapped panel">
           <p>Tab stays inside this panel.</p>
-          <Button variant="line" onClick={() => setOpen(false)}>Close</Button>
+          <Button variant="line" onClick={() => setOpen(false)}>
+            Close
+          </Button>
           <Button variant="ghost">Second action</Button>
         </div>
       )}
@@ -20,4 +24,6 @@ function TrapDemo() {
   );
 }
 
-export const demos: Demo[] = [{title: 'Focus trap', description: 'Focus returns to the opening button on close.', render: () => <TrapDemo />}];
+export const demos: Demo[] = [
+  {title: 'Focus trap', description: 'Focus returns to the opening button on close.', render: () => <TrapDemo />},
+];

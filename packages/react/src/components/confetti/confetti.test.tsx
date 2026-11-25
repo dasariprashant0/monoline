@@ -3,12 +3,26 @@ import {render} from '@testing-library/react';
 import {axe} from '../../test/axe';
 import {Confetti, type ConfettiHandle} from './confetti';
 
-const ctx = {clearRect: vi.fn(), save: vi.fn(), restore: vi.fn(), translate: vi.fn(), rotate: vi.fn(), fillRect: vi.fn(), globalAlpha: 1, fillStyle: ''};
+const ctx = {
+  clearRect: vi.fn(),
+  save: vi.fn(),
+  restore: vi.fn(),
+  translate: vi.fn(),
+  rotate: vi.fn(),
+  fillRect: vi.fn(),
+  globalAlpha: 1,
+  fillStyle: '',
+};
 let getContext: ReturnType<typeof vi.fn>;
 let raf: ReturnType<typeof vi.fn>;
 
 function reduced(on: boolean) {
-  window.matchMedia = ((q: string) => ({matches: on, media: q, addEventListener() {}, removeEventListener() {}})) as unknown as typeof window.matchMedia;
+  window.matchMedia = ((q: string) => ({
+    matches: on,
+    media: q,
+    addEventListener() {},
+    removeEventListener() {},
+  })) as unknown as typeof window.matchMedia;
 }
 beforeEach(() => {
   getContext = vi.fn(() => ctx);
@@ -18,7 +32,10 @@ beforeEach(() => {
   vi.stubGlobal('cancelAnimationFrame', vi.fn());
   Object.values(ctx).forEach((f) => typeof f === 'function' && (f as ReturnType<typeof vi.fn>).mockClear());
 });
-afterEach(() => { delete (window as {matchMedia?: unknown}).matchMedia; vi.unstubAllGlobals(); });
+afterEach(() => {
+  delete (window as {matchMedia?: unknown}).matchMedia;
+  vi.unstubAllGlobals();
+});
 
 describe('Confetti', () => {
   it('is a decorative canvas that ignores the pointer', () => {
@@ -54,7 +71,11 @@ describe('Confetti', () => {
   });
   const runToEnd = () => {
     let frames = 0;
-    while (raf.mock.calls.length > frames && frames < 500) { const cb = raf.mock.calls[frames]![0] as () => void; frames += 1; cb(); }
+    while (raf.mock.calls.length > frames && frames < 500) {
+      const cb = raf.mock.calls[frames]![0] as () => void;
+      frames += 1;
+      cb();
+    }
     return frames;
   };
   it('sizes the canvas to the window when firing', () => {

@@ -9,8 +9,16 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from './components/tabs';
 import {Tree, type TreeNode} from './components/tree';
 
 // Radix reads direction from DirectionProvider; Monoline's own widgets also read the `dir` attribute.
-const rtl = (ui: React.ReactNode) => <div dir="rtl"><DirectionProvider dir="rtl">{ui}</DirectionProvider></div>;
-const ltr = (ui: React.ReactNode) => <div dir="ltr"><DirectionProvider dir="ltr">{ui}</DirectionProvider></div>;
+const rtl = (ui: React.ReactNode) => (
+  <div dir="rtl">
+    <DirectionProvider dir="rtl">{ui}</DirectionProvider>
+  </div>
+);
+const ltr = (ui: React.ReactNode) => (
+  <div dir="ltr">
+    <DirectionProvider dir="ltr">{ui}</DirectionProvider>
+  </div>
+);
 
 describe('RTL keyboard behaviour', () => {
   describe('Calendar', () => {
@@ -62,7 +70,10 @@ describe('RTL keyboard behaviour', () => {
   });
 
   describe('Tree', () => {
-    const items: TreeNode[] = [{id: 'src', label: 'src', children: [{id: 'a', label: 'alpha.ts'}]}, {id: 'pkg', label: 'package.json'}];
+    const items: TreeNode[] = [
+      {id: 'src', label: 'src', children: [{id: 'a', label: 'alpha.ts'}]},
+      {id: 'pkg', label: 'package.json'},
+    ];
     const src = () => screen.getByRole('treeitem', {name: /^src/});
     it('ArrowRight opens a folder in ltr', async () => {
       const user = userEvent.setup();
@@ -88,7 +99,14 @@ describe('RTL keyboard behaviour', () => {
 
   describe('Carousel', () => {
     const scroll = (wrapper: (ui: React.ReactNode) => React.ReactElement) => {
-      const {container} = render(wrapper(<Carousel aria-label="Projects"><div>One</div><div>Two</div></Carousel>));
+      const {container} = render(
+        wrapper(
+          <Carousel aria-label="Projects">
+            <div>One</div>
+            <div>Two</div>
+          </Carousel>,
+        ),
+      );
       const track = container.querySelector('.carousel-track') as HTMLElement;
       const by = vi.fn();
       track.scrollBy = by;
@@ -103,9 +121,18 @@ describe('RTL keyboard behaviour', () => {
   describe('Radix widgets through DirectionProvider', () => {
     it('tabs: ArrowLeft moves to the next tab in rtl', async () => {
       const user = userEvent.setup();
-      render(rtl(
-        <Tabs defaultValue="a"><TabsList aria-label="S"><TabsTrigger value="a">A</TabsTrigger><TabsTrigger value="b">B</TabsTrigger></TabsList><TabsContent value="a">x</TabsContent><TabsContent value="b">y</TabsContent></Tabs>,
-      ));
+      render(
+        rtl(
+          <Tabs defaultValue="a">
+            <TabsList aria-label="S">
+              <TabsTrigger value="a">A</TabsTrigger>
+              <TabsTrigger value="b">B</TabsTrigger>
+            </TabsList>
+            <TabsContent value="a">x</TabsContent>
+            <TabsContent value="b">y</TabsContent>
+          </Tabs>,
+        ),
+      );
       screen.getByRole('tab', {name: 'A'}).focus();
       await user.keyboard('{ArrowLeft}');
       expect(screen.getByRole('tab', {name: 'B'})).toHaveFocus();

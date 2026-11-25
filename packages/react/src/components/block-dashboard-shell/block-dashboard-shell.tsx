@@ -10,22 +10,22 @@ export interface ShellNavItem {
   label: ReactNode;
   href: string;
   /** The current page: sets `aria-current="page"`. */
-  current?: boolean;
+  current?: boolean | undefined;
 }
 
 export interface BlockDashboardShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Your logo or name, shown above the navigation. */
-  brand?: ReactNode;
+  brand?: ReactNode | undefined;
   /** Renders each navigation link, so a client router can handle the click. Default a plain `<a href>`. @example renderLink={({href, ...p}) => <NavLink to={href} {...p} />} */
-  renderLink?: RenderLink;
+  renderLink?: RenderLink | undefined;
   /** The navigation links shown in the sidebar and in the small-screen drawer. */
   nav: ShellNavItem[];
   /** Names the navigation landmark. Default "Main". */
-  navLabel?: string;
+  navLabel?: string | undefined;
   /** Right side of the top bar: search, account menu. */
-  topbar?: ReactNode;
+  topbar?: ReactNode | undefined;
   /** Text of the button that opens the navigation drawer on small screens. Default "Menu". */
-  menuLabel?: string;
+  menuLabel?: string | undefined;
   /** The page: put its h1 inside. */
   children: ReactNode;
 }
@@ -35,22 +35,33 @@ export interface BlockDashboardShellProps extends Omit<HTMLAttributes<HTMLDivEle
  * the same navigation in a left `Drawer`. Put one `h1` in the content.
  * Pass `renderLink` to use a client router (React Router, Next.js) for the links.
  */
-export const BlockDashboardShell = forwardRef<HTMLDivElement, BlockDashboardShellProps>(function BlockDashboardShell({brand, nav, renderLink, navLabel = 'Main', topbar, menuLabel = 'Menu', children, className, ...rest}, ref) {
+export const BlockDashboardShell = forwardRef<HTMLDivElement, BlockDashboardShellProps>(function BlockDashboardShell(
+  {brand, nav, renderLink, navLabel = 'Main', topbar, menuLabel = 'Menu', children, className, ...rest},
+  ref,
+) {
   return (
     <AppShell
       ref={ref}
       className={cx('block-shell', className)}
       navbar={<Navbar leading={<SidebarTrigger>{menuLabel}</SidebarTrigger>} actions={topbar} />}
-      sidebar={(
+      sidebar={
         <Sidebar label={navLabel} drawerTitle={brand ?? menuLabel} renderLink={renderLink}>
-          {brand && <SidebarHeader><div className="block-shell-brand">{brand}</div></SidebarHeader>}
+          {brand && (
+            <SidebarHeader>
+              <div className="block-shell-brand">{brand}</div>
+            </SidebarHeader>
+          )}
           <SidebarContent>
             <SidebarGroup>
-              {nav.map((it, i) => <SidebarItem key={i} href={it.href} current={it.current} className="block-shell-link">{it.label}</SidebarItem>)}
+              {nav.map((it, i) => (
+                <SidebarItem key={i} href={it.href} current={it.current} className="block-shell-link">
+                  {it.label}
+                </SidebarItem>
+              ))}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-      )}
+      }
       {...rest}
     >
       {children}

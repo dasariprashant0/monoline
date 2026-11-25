@@ -8,46 +8,51 @@ export interface CommandItem {
   id: string;
   label: string;
   /** Items with the same group are listed together under a heading. */
-  group?: string;
+  group?: string | undefined;
   /** Extra words that also match the search. */
-  keywords?: string[];
+  keywords?: string[] | undefined;
   /** Shown at the right, for example "⌘N". Display only. */
-  hint?: string;
-  disabled?: boolean;
-  onSelect?: () => void;
+  hint?: string | undefined;
+  disabled?: boolean | undefined;
+  onSelect?: (() => void) | undefined;
 }
 
 export interface CommandProps {
   /** The actions to list, each with an `id`, `label` and optional `group`, `keywords`, `hint`, `disabled` and `onSelect`. */
   items: CommandItem[];
   /** Whether the palette is open when controlled. Pair with `onOpenChange`. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Whether the palette starts open when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the new open state when the palette opens or closes. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** A global key that toggles the palette, like `mod+k` (`mod` is Cmd on Mac, Ctrl elsewhere). */
-  shortcut?: string;
+  shortcut?: string | undefined;
   /** Names the dialog. Visually hidden. */
-  title?: string;
+  title?: string | undefined;
   /** Placeholder text of the search box. Default "Type a command". */
-  placeholder?: string;
+  placeholder?: string | undefined;
   /** Message shown when no item matches the search. Default "No results". */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** Optional trigger element, rendered as-is (use a Button with aria-haspopup="dialog"). */
-  trigger?: ReactNode;
+  trigger?: ReactNode | undefined;
   /** Extra class name for the palette panel. */
-  className?: string;
+  className?: string | undefined;
 }
 
 /** True when a keydown matches a combo such as `mod+k` or `shift+p`. */
-export function matchesShortcut(e: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrlKey' | 'shiftKey' | 'altKey'>, shortcut: string) {
+export function matchesShortcut(
+  e: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrlKey' | 'shiftKey' | 'altKey'>,
+  shortcut: string,
+) {
   const parts = shortcut.toLowerCase().split('+');
   const key = parts.pop();
-  return e.key.toLowerCase() === key
-    && (e.metaKey || e.ctrlKey) === parts.includes('mod')
-    && e.shiftKey === parts.includes('shift')
-    && e.altKey === parts.includes('alt');
+  return (
+    e.key.toLowerCase() === key &&
+    (e.metaKey || e.ctrlKey) === parts.includes('mod') &&
+    e.shiftKey === parts.includes('shift') &&
+    e.altKey === parts.includes('alt')
+  );
 }
 
 /**
@@ -55,15 +60,37 @@ export function matchesShortcut(e: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrl
  * Models the listbox on Combobox: focus stays in the input, ArrowUp/Down moves the active option, Enter runs it.
  * @example <Command shortcut="mod+k" items={[{id: 'new', label: 'New file', onSelect: create}]} />
  */
-export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Command({items, open, defaultOpen = false, onOpenChange, shortcut, title = 'Command palette', placeholder = 'Type a command', emptyText = 'No results', trigger, className}, ref) {
+export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Command(
+  {
+    items,
+    open,
+    defaultOpen = false,
+    onOpenChange,
+    shortcut,
+    title = 'Command palette',
+    placeholder = 'Type a command',
+    emptyText = 'No results',
+    trigger,
+    className,
+  },
+  ref,
+) {
   const [inner, setInner] = useState(defaultOpen);
   const isOpen = open ?? inner;
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const listId = useId();
-  const setOpen = (next: boolean) => { if (open === undefined) setInner(next); onOpenChange?.(next); };
+  const setOpen = (next: boolean) => {
+    if (open === undefined) setInner(next);
+    onOpenChange?.(next);
+  };
   // However it closes (Escape, a pick, or the parent setting `open` to false), the next opening starts empty.
-  useEffect(() => { if (!isOpen) { setQuery(''); setActive(0); } }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery('');
+      setActive(0);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!shortcut) return;
@@ -71,83 +98,126 @@ export const Command = forwardRef<HTMLDialogElement, CommandProps>(function Comm
       // A plain-key shortcut such as "/" must not fire, or swallow the key, while someone types in a field.
       const t = e.target as HTMLElement;
       if (!/mod|alt/i.test(shortcut) && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-      if (matchesShortcut(e, shortcut)) { e.preventDefault(); setOpen(!isOpen); } };
+      if (matchesShortcut(e, shortcut)) {
+        e.preventDefault();
+        setOpen(!isOpen);
+      }
+    };
     document.addEventListener('keydown', h);
     return () => document.removeEventListener('keydown', h);
   });
 
   const q = query.trim().toLowerCase();
-  const shown = q ? items.filter((it) => [it.label, ...(it.keywords ?? [])].some((s) => s.toLowerCase().includes(q))) : items;
+  const shown = q
+    ? items.filter((it) => [it.label, ...(it.keywords ?? [])].some((s) => s.toLowerCase().includes(q)))
+    : items;
   const groups: Array<{name: string | undefined; items: CommandItem[]}> = [];
   for (const it of shown) {
     const g = groups.find((x) => x.name === it.group);
-    if (g) g.items.push(it); else groups.push({name: it.group, items: [it]});
+    if (g) g.items.push(it);
+    else groups.push({name: it.group, items: [it]});
   }
   const flat = groups.flatMap((g) => g.items); // display order, used for keyboard
   const optId = (id: string) => `${listId}-${id}`;
   const cur = Math.min(active, Math.max(0, flat.length - 1));
   const activeItem = flat[cur];
 
-  const run = (it: CommandItem) => { if (it.disabled) return; setOpen(false); it.onSelect?.(); };
-  const move = (dir: 1 | -1) => { if (flat.length) setActive(nextEnabled(flat, cur, dir)); };
+  const run = (it: CommandItem) => {
+    if (it.disabled) return;
+    setOpen(false);
+    it.onSelect?.();
+  };
+  const move = (dir: 1 | -1) => {
+    if (flat.length) setActive(nextEnabled(flat, cur, dir));
+  };
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
-    else if (e.key === 'End') { e.preventDefault(); setActive(Math.max(0, flat.length - 1)); }
-    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && activeItem) { e.preventDefault(); run(activeItem); }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      move(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      move(-1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setActive(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setActive(Math.max(0, flat.length - 1));
+    } else if (e.key === 'Enter' && !e.nativeEvent.isComposing && activeItem) {
+      e.preventDefault();
+      run(activeItem);
+    }
   };
 
   return (
     <Modal open={isOpen} onOpenChange={setOpen}>
       {trigger && <ModalTrigger asChild>{trigger}</ModalTrigger>}
-        <ModalContent ref={ref} className={cx('command', className)} aria-describedby={undefined}>
-          <ModalTitle className="sr-only">{title}</ModalTitle>
-          <input
-            type="text"
-            role="combobox"
-            autoComplete="off"
-            className="command-input"
-            aria-label={title}
-            aria-expanded="true"
-            aria-controls={listId}
-            aria-autocomplete="list"
-            aria-activedescendant={activeItem ? optId(activeItem.id) : undefined}
-            placeholder={placeholder}
-            value={query}
-            onChange={(e) => { setQuery(e.target.value); setActive(0); }}
-            onKeyDown={keydown}
-          />
-          <div id={listId} role="listbox" aria-label={title} className="command-list">
-            {flat.length === 0 && <p className="command-empty" role="presentation">{emptyText}</p>}
-            {groups.map((g, gi) => {
-              const opts = g.items.map((it) => (
-                <div
-                  key={it.id}
-                  id={optId(it.id)}
-                  role="option"
-                  aria-selected={it === activeItem}
-                  aria-disabled={it.disabled || undefined}
-                  data-active={it === activeItem || undefined}
-                  className="command-item"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onMouseMove={() => setActive(flat.indexOf(it))}
-                  onClick={() => run(it)}
-                >
-                  <span>{it.label}</span>
-                  {it.hint && <kbd className="command-hint" aria-hidden="true">{it.hint}</kbd>}
+      <ModalContent ref={ref} className={cx('command', className)} aria-describedby={undefined}>
+        <ModalTitle className="sr-only">{title}</ModalTitle>
+        <input
+          type="text"
+          role="combobox"
+          autoComplete="off"
+          className="command-input"
+          aria-label={title}
+          aria-expanded="true"
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={activeItem ? optId(activeItem.id) : undefined}
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setActive(0);
+          }}
+          onKeyDown={keydown}
+        />
+        <div id={listId} role="listbox" aria-label={title} className="command-list">
+          {flat.length === 0 && (
+            <p className="command-empty" role="presentation">
+              {emptyText}
+            </p>
+          )}
+          {groups.map((g, gi) => {
+            const opts = g.items.map((it) => (
+              <div
+                key={it.id}
+                id={optId(it.id)}
+                role="option"
+                aria-selected={it === activeItem}
+                aria-disabled={it.disabled || undefined}
+                data-active={it === activeItem || undefined}
+                className="command-item"
+                onMouseDown={(e) => e.preventDefault()}
+                onMouseMove={() => setActive(flat.indexOf(it))}
+                onClick={() => run(it)}
+              >
+                <span>{it.label}</span>
+                {it.hint && (
+                  <kbd className="command-hint" aria-hidden="true">
+                    {it.hint}
+                  </kbd>
+                )}
+              </div>
+            ));
+            return g.name ? (
+              <div key={g.name} role="group" aria-labelledby={`${listId}-g${gi}`} className="command-group">
+                <div id={`${listId}-g${gi}`} className="command-heading" role="presentation">
+                  {g.name}
                 </div>
-              ));
-              return g.name ? (
-                <div key={g.name} role="group" aria-labelledby={`${listId}-g${gi}`} className="command-group">
-                  <div id={`${listId}-g${gi}`} className="command-heading" role="presentation">{g.name}</div>
-                  {opts}
-                </div>
-              ) : <div key={`g${gi}`} role="presentation" className="command-group">{opts}</div>;
-            })}
-          </div>
-          <p className="sr-only" role="status">{flat.length === 0 ? emptyText : `${flat.length} results`}</p>
-        </ModalContent>
+                {opts}
+              </div>
+            ) : (
+              <div key={`g${gi}`} role="presentation" className="command-group">
+                {opts}
+              </div>
+            );
+          })}
+        </div>
+        <p className="sr-only" role="status">
+          {flat.length === 0 ? emptyText : `${flat.length} results`}
+        </p>
+      </ModalContent>
     </Modal>
   );
 });

@@ -1,12 +1,22 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
-import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger} from './context-menu';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from './context-menu';
 
 const ui = (fn = () => {}) => (
   <ContextMenu>
     <ContextMenuTrigger>Right click here</ContextMenuTrigger>
-    <ContextMenuContent><ContextMenuItem onSelect={fn}>Rename</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone="danger">Delete</ContextMenuItem></ContextMenuContent>
+    <ContextMenuContent>
+      <ContextMenuItem onSelect={fn}>Rename</ContextMenuItem>
+      <ContextMenuSeparator />
+      <ContextMenuItem tone="danger">Delete</ContextMenuItem>
+    </ContextMenuContent>
   </ContextMenu>
 );
 
@@ -27,7 +37,16 @@ describe('ContextMenu', () => {
   });
   it('opens from the keyboard context-menu event when the trigger is focusable (e2e F7)', async () => {
     const user = userEvent.setup();
-    render(<ContextMenu><ContextMenuTrigger asChild><button>Area</button></ContextMenuTrigger><ContextMenuContent><ContextMenuItem>Rename</ContextMenuItem></ContextMenuContent></ContextMenu>);
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <button>Area</button>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Rename</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    );
     await user.tab();
     expect(screen.getByRole('button', {name: 'Area'})).toHaveFocus();
     fireEvent.contextMenu(screen.getByRole('button', {name: 'Area'}));
@@ -79,7 +98,9 @@ describe('ContextMenu', () => {
     const area = screen.getByText('Right click here');
     touch(area, 'pointerdown', 5, 5);
     touch(area, 'pointermove', 7, 6);
-    await act(async () => { vi.advanceTimersByTime(800); });
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+    });
     expect(screen.getByRole('menu')).toBeInTheDocument();
     vi.useRealTimers();
   });
@@ -89,7 +110,9 @@ describe('ContextMenu', () => {
     const area = screen.getByText('Right click here');
     touch(area, 'pointerdown', 5, 5);
     touch(area, 'pointermove', 60, 5);
-    await act(async () => { vi.advanceTimersByTime(800); });
+    await act(async () => {
+      vi.advanceTimersByTime(800);
+    });
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     vi.useRealTimers();
   });
@@ -99,7 +122,14 @@ describe('ContextMenu', () => {
     await user.pointer({keys: '[MouseRight]', target: screen.getByText('Right click here')});
     expect(await screen.findByRole('menu', {name: 'Menu'})).toBeInTheDocument();
     unmount();
-    render(<ContextMenu><ContextMenuTrigger>Area</ContextMenuTrigger><ContextMenuContent aria-label="File actions"><ContextMenuItem>Rename</ContextMenuItem></ContextMenuContent></ContextMenu>);
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Area</ContextMenuTrigger>
+        <ContextMenuContent aria-label="File actions">
+          <ContextMenuItem>Rename</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    );
     await user.pointer({keys: '[MouseRight]', target: screen.getByText('Area')});
     expect(await screen.findByRole('menu', {name: 'File actions'})).toBeInTheDocument();
   });

@@ -3,8 +3,17 @@
  * The docs site, the registry and `llms.txt` are generated from it.
  */
 export type Category =
-  | 'layout' | 'typography' | 'buttons' | 'forms' | 'data-display'
-  | 'feedback' | 'overlays' | 'navigation' | 'effects' | 'blocks' | 'hooks';
+  | 'layout'
+  | 'typography'
+  | 'buttons'
+  | 'forms'
+  | 'data-display'
+  | 'feedback'
+  | 'overlays'
+  | 'navigation'
+  | 'effects'
+  | 'blocks'
+  | 'hooks';
 
 export interface ComponentMeta {
   /** kebab-case, equals the folder name: `dropdown-menu` */
@@ -17,13 +26,13 @@ export interface ComponentMeta {
   /** `stable` once tested and documented; `beta` while the API may change. */
   status: 'stable' | 'beta';
   /** Other Monoline components this one imports, by name. */
-  uses?: string[];
+  uses?: string[] | undefined;
   /** The headless primitive it wraps, if any: `radix-ui/Dialog`. */
-  primitive?: string;
+  primitive?: string | undefined;
   /** Stylesheets in packages/css/src/components/ this component needs (the CSS-only classes it renders). */
   css: string[];
   /** Keyboard and screen reader behaviour, one line each. */
   a11y: string[];
   /** Words people may search for: `modal`, `popup`. */
-  keywords?: string[];
+  keywords?: string[] | undefined;
 }

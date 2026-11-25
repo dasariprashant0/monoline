@@ -28,14 +28,20 @@ export const demos: Demo[] = [
   },
   {
     title: 'Sizes and form rows',
-    description: 'Button, Input and NativeSelect share one height at each size (`sm`, `md`, `lg`), so they line up in a row.',
+    description:
+      'Button, Input and NativeSelect share one height at each size (`sm`, `md`, `lg`), so they line up in a row.',
     render: () => (
       <div style={{display: 'grid', gap: 'var(--s4)'}}>
         {(['sm', 'md', 'lg'] as const).map((size) => (
           <div key={size} style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
             <Input aria-label={`Name, ${size}`} size={size} placeholder={size} />
-            <NativeSelect aria-label={`Kind, ${size}`} size={size}><option>Entry</option><option>Note</option></NativeSelect>
-            <Button size={size} variant="solid">Add</Button>
+            <NativeSelect aria-label={`Kind, ${size}`} size={size}>
+              <option>Entry</option>
+              <option>Note</option>
+            </NativeSelect>
+            <Button size={size} variant="solid">
+              Add
+            </Button>
           </div>
         ))}
       </div>

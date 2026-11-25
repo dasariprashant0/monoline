@@ -6,7 +6,10 @@ import {Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger} fr
 const ui = () => (
   <Dialog>
     <DialogTrigger>Open</DialogTrigger>
-    <DialogContent><DialogTitle>Title</DialogTitle><DialogDescription>Details</DialogDescription></DialogContent>
+    <DialogContent>
+      <DialogTitle>Title</DialogTitle>
+      <DialogDescription>Details</DialogDescription>
+    </DialogContent>
   </Dialog>
 );
 
@@ -52,7 +55,14 @@ describe('Dialog', () => {
   });
   it('has no dangling aria-labelledby when there is no title', async () => {
     const user = userEvent.setup();
-    render(<Dialog><DialogTrigger>Open</DialogTrigger><DialogContent aria-label="Plain"><p>body</p></DialogContent></Dialog>);
+    render(
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent aria-label="Plain">
+          <p>body</p>
+        </DialogContent>
+      </Dialog>,
+    );
     await user.click(screen.getByRole('button', {name: 'Open'}));
     expect(await screen.findByRole('dialog', {name: 'Plain'})).not.toHaveAttribute('aria-labelledby');
   });

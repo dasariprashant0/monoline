@@ -10,7 +10,11 @@ describe('EmptyState', () => {
     expect(screen.queryByRole('heading')).toBeNull();
   });
   it('shows the title, description and action', () => {
-    render(<EmptyState title="No projects" description="Create one to start."><Button>Create project</Button></EmptyState>);
+    render(
+      <EmptyState title="No projects" description="Create one to start.">
+        <Button>Create project</Button>
+      </EmptyState>,
+    );
     expect(screen.getByRole('heading', {name: 'No projects'})).toBeInTheDocument();
     expect(screen.getByText('Create one to start.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: 'Create project'})).toBeInTheDocument();
@@ -31,7 +35,12 @@ describe('EmptyState', () => {
     expect(screen.getByTestId('i')).toBeInTheDocument();
   });
   it('puts children in the actions slot, and several are all kept', () => {
-    render(<EmptyState title="T"><Button>One</Button><Button>Two</Button></EmptyState>);
+    render(
+      <EmptyState title="T">
+        <Button>One</Button>
+        <Button>Two</Button>
+      </EmptyState>,
+    );
     const slot = screen.getByRole('button', {name: 'One'}).parentElement!;
     expect(slot).toHaveClass('empty-actions');
     expect(slot.querySelectorAll('button')).toHaveLength(2);

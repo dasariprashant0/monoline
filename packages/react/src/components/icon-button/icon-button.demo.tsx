@@ -1,7 +1,11 @@
 import type {Demo} from '../../demo';
 import {IconButton} from './icon-button';
 
-const Plus = () => <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12"><path d="M6 1v10M1 6h10" stroke="currentColor" fill="none" /></svg>;
+const Plus = () => (
+  <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12">
+    <path d="M6 1v10M1 6h10" stroke="currentColor" fill="none" />
+  </svg>
+);
 
 export const demos: Demo[] = [
   {

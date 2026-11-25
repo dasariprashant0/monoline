@@ -3,11 +3,11 @@ import {useCallback, useRef, useState} from 'react';
 
 export interface UseDisclosureOptions {
   /** Open on first render. Default `false`. */
-  initialOpen?: boolean;
+  initialOpen?: boolean | undefined;
   /** Called when the state changes from closed to open. Not called on mount. */
-  onOpen?: () => void;
+  onOpen?: (() => void) | undefined;
   /** Called when the state changes from open to closed. Not called on mount. */
-  onClose?: () => void;
+  onClose?: (() => void) | undefined;
 }
 
 export interface UseDisclosureReturn {

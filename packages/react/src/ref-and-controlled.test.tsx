@@ -20,10 +20,24 @@ import {SegmentedControl} from './components/segmented-control';
 
 const cases: Array<[string, (ref: React.Ref<never>) => React.ReactElement]> = [
   ['Button', (ref) => <Button ref={ref as never}>x</Button>],
-  ['IconButton', (ref) => <IconButton ref={ref as never} aria-label="x">x</IconButton>],
+  [
+    'IconButton',
+    (ref) => (
+      <IconButton ref={ref as never} aria-label="x">
+        x
+      </IconButton>
+    ),
+  ],
   ['Tag', (ref) => <Tag ref={ref as never}>x</Tag>],
   ['Textarea', (ref) => <Textarea ref={ref as never} aria-label="x" />],
-  ['NativeSelect', (ref) => <NativeSelect ref={ref as never} aria-label="x"><option>a</option></NativeSelect>],
+  [
+    'NativeSelect',
+    (ref) => (
+      <NativeSelect ref={ref as never} aria-label="x">
+        <option>a</option>
+      </NativeSelect>
+    ),
+  ],
   ['Checkbox', (ref) => <Checkbox ref={ref as never} aria-label="x" />],
   ['Switch', (ref) => <Switch ref={ref as never} aria-label="x" />],
   ['Rating', (ref) => <Rating ref={ref as never} aria-label="x" />],
@@ -65,7 +79,17 @@ describe('controlled value stays put until the parent changes it', () => {
   it('SegmentedControl', async () => {
     const user = userEvent.setup();
     const change = vi.fn();
-    render(<SegmentedControl aria-label="s" value="a" onValueChange={change} options={[{value: 'a', label: 'A'}, {value: 'b', label: 'B'}]} />);
+    render(
+      <SegmentedControl
+        aria-label="s"
+        value="a"
+        onValueChange={change}
+        options={[
+          {value: 'a', label: 'A'},
+          {value: 'b', label: 'B'},
+        ]}
+      />,
+    );
     await user.click(screen.getByRole('radio', {name: 'B'}));
     expect(change).toHaveBeenCalledWith('b');
     expect(screen.getByRole('radio', {name: 'A'})).toBeChecked();

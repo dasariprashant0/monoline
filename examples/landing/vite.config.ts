@@ -11,7 +11,7 @@ export default defineConfig({
   resolve: {
     alias: [
       {find: '@monoline/react', replacement: p('../../packages/react/dist/index.js')},
-      {find: /^@monoline\/css\//, replacement: p('../../packages/css/dist/') },
+      {find: /^@monoline\/css\//, replacement: p('../../packages/css/dist/')},
     ],
   },
   build: {outDir: 'dist'},
