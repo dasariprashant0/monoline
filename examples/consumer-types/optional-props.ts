@@ -8,10 +8,7 @@ import type {JSXElementConstructor} from 'react';
 type RejectsUndefined<T> = {[K in keyof T]-?: {} extends Pick<T, K> ? (undefined extends Required<T>[K] ? never : K) : never}[keyof T];
 // Components only: PascalCase exports (hooks and helpers such as `sanitizeHtml` are plain functions).
 type PerExport = {[N in keyof typeof Monoline]: N extends Capitalize<N> ? ((typeof Monoline)[N] extends JSXElementConstructor<infer P> ? RejectsUndefined<P> : never) : never};
-// ThemeProvider spreads its look props over the defaults (`{...DEFAULTS, ...initial}`), so an explicit `undefined`
-// would replace a default at runtime; its types keep rejecting it until the runtime ignores undefined (ADR 0009).
-type Exempt = 'ThemeProvider';
-type Offenders = {[N in Exclude<keyof PerExport, Exempt> as [PerExport[N]] extends [never] ? never : N]: PerExport[N]};
+type Offenders = {[N in keyof PerExport as [PerExport[N]] extends [never] ? never : N]: PerExport[N]};
 
 // `{}` only fits when Offenders has no keys; otherwise the error names each component and prop.
 export const none: Offenders = {};

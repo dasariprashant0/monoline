@@ -48,6 +48,11 @@ describe('ThemeProvider', () => {
     expect(root).toHaveAttribute('data-theme', 'warm');
     expect(root).toHaveAttribute('data-accent', 'orange');
   });
+  it('uses initial props, and keeps the default for an explicit undefined', async () => {
+    render(<ThemeProvider theme="dark" accent={undefined}><Probe /></ThemeProvider>);
+    expect(await screen.findByText('dark/dark/orange')).toBeInTheDocument();
+    expect(root).toHaveAttribute('data-accent', 'orange');
+  });
   it('sets every option on <html> and saves it', async () => {
     const user = userEvent.setup();
     render(<ThemeProvider><Probe /></ThemeProvider>);

@@ -3976,12 +3976,12 @@ Import: import {ThemeProvider} from '@monoline/react'
 Props (name: type = default, ? means optional):
 - storageKey?: string = 'monoline' — Prefix of the localStorage keys, e.g. `monoline` stores `monoline-theme`. Default "monoline". Match it in `themeScript`.
 - children?: ReactNode — The app.
-- theme?: Theme
-- accent?: Accent
-- font?: Font
-- radius?: Radius
-- density?: Density
-- dir?: Dir
+- theme?: Theme = 'system'
+- accent?: Accent = 'orange'
+- font?: Font = 'mono'
+- radius?: Radius = 'square'
+- density?: Density = 'comfortable'
+- dir?: Dir = 'ltr'
 
 Usage:
 ```tsx

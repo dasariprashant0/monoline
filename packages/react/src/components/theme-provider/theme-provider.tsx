@@ -26,8 +26,7 @@ export const themeOptions = {
 } as const;
 
 type Look = {theme: Theme; accent: Accent; font: Font; radius: Radius; density: Density; dir: Dir};
-const DEFAULTS: Look = {theme: 'system', accent: 'orange', font: 'mono', radius: 'square', density: 'comfortable', dir: 'ltr'};
-const KEYS = Object.keys(DEFAULTS) as (keyof Look)[];
+const KEYS = Object.keys(themeOptions) as (keyof Look)[];
 
 /** What `useTheme()` returns: the current choices, the theme actually applied, and one setter per choice. */
 export interface ThemeContextValue extends Look {
@@ -49,7 +48,7 @@ export interface ThemeContextValue extends Look {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export interface ThemeProviderProps extends Partial<Look> {
+export interface ThemeProviderProps extends Partial<{[K in keyof Look]: Look[K] | undefined}> {
   /** Prefix of the localStorage keys, e.g. `monoline` stores `monoline-theme`. Default "monoline". Match it in `themeScript`. */
   storageKey?: string | undefined;
   /** The app. */
@@ -67,8 +66,9 @@ const systemTheme = () => (typeof matchMedia === 'function' && matchMedia('(pref
  * put `themeScript()` in the `<head>` of server-rendered pages.
  * @example <ThemeProvider accent="green"><App /></ThemeProvider>
  */
-export function ThemeProvider({storageKey = 'monoline', children, ...initial}: ThemeProviderProps) {
-  const [look, setLook] = useState<Look>({...DEFAULTS, ...initial});
+export function ThemeProvider({storageKey = 'monoline', children, theme = 'system', accent = 'orange', font = 'mono', radius = 'square', density = 'comfortable', dir = 'ltr'}: ThemeProviderProps) {
+  // Destructuring defaults, so an explicit `undefined` keeps the default (a spread over defaults would not).
+  const [look, setLook] = useState<Look>({theme, accent, font, radius, density, dir});
   const [ready, setReady] = useState(false);
   const [system, setSystem] = useState<'warm' | 'dark'>('warm');
 
