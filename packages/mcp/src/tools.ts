@@ -1,15 +1,23 @@
 // Pure helpers for the tools: ranking, props extraction, install closure, page composition.
+import type {Registry} from './registry.js';
+import type {FileContent, IndexEntry, PropGroup, RegistryEntry} from './schema.js';
 
-const words = (s) => String(s).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+const words = (s: string): string[] => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+
+export interface Hit {
+  c: IndexEntry;
+  score: number;
+  matchedProps: string[];
+}
 
 /**
  * Rank components for a query. Name beats title beats keywords beats prop names beats category beats description.
  * Prop names come from the registry's `propNames` (exact word match, e.g. "asChild", "selected").
  */
-export function rank(components, query) {
+export function rank(components: IndexEntry[], query: string): Hit[] {
   const q = words(query);
   const phrase = q.join('-');
-  const out = [];
+  const out: Hit[] = [];
   for (const c of components) {
     const name = c.name.toLowerCase(), title = (c.title ?? '').toLowerCase(), desc = (c.description ?? '').toLowerCase();
     const kws = (c.keywords ?? []).map((k) => k.toLowerCase());
@@ -36,7 +44,7 @@ export function rank(components, query) {
  * Props in the registry's shape: [{name, props: [{name, type, optional, default, description}]}].
  * Registries built before props were in the registry only have source: those are read with propsSummary.
  */
-export function propGroupsOf(c) {
+export function propGroupsOf(c: RegistryEntry): PropGroup[] {
   if (Array.isArray(c.props)) return c.props;
   return propsSummary(c.source ?? []).map((g) => ({
     name: g.interface,
@@ -44,8 +52,15 @@ export function propGroupsOf(c) {
   }));
 }
 
+interface SummaryProp {
+  name: string;
+  required: boolean;
+  type: string;
+  doc?: string;
+}
+
 /** Pull `export interface FooProps { ... }` members out of component source: name, type, optional, doc. */
-export function propsSummary(files) {
+export function propsSummary(files: FileContent[]): Array<{interface: string; props: SummaryProp[]}> {
   const out = [];
   for (const f of files) {
     if (!/\.tsx?$/.test(f.path) || /\.(test|demo)\./.test(f.path)) continue;
@@ -55,38 +70,37 @@ export function propsSummary(files) {
       let depth = 1, i = re.lastIndex;
       while (i < f.content.length && depth) { const ch = f.content[i++]; if (ch === '{') depth++; else if (ch === '}') depth--; }
       const body = f.content.slice(re.lastIndex, i - 1);
-      const props = [];
+      const props: SummaryProp[] = [];
       let doc = '', d = 0;
       for (const raw of body.split('\n')) {
         const line = raw.trim();
         if (d === 0) {
           const dm = /^\/\*\*\s*(.*?)\s*\*\/$/.exec(line);
-          if (dm) { doc = dm[1]; continue; }
+          if (dm) { doc = dm[1] ?? ''; continue; }
           const pm = /^(?:readonly )?(['"]?[\w-]+['"]?)(\??):\s*(.*?);?$/.exec(line);
-          if (pm) { props.push({name: pm[1].replace(/['"]/g, ''), required: !pm[2], type: pm[3].replace(/;$/, ''), ...(doc && {doc})}); doc = ''; }
+          if (pm) { props.push({name: (pm[1] ?? '').replace(/['"]/g, ''), required: !pm[2], type: (pm[3] ?? '').replace(/;$/, ''), ...(doc && {doc})}); doc = ''; }
           else if (line && !line.startsWith('*') && !line.startsWith('/*') && !line.startsWith('//')) doc = '';
         }
         d += (line.match(/[{(]/g) ?? []).length - (line.match(/[})]/g) ?? []).length;
         if (d < 0) d = 0;
       }
-      out.push({interface: m[1] ?? m[2], props});
+      out.push({interface: m[1] ?? m[2] ?? '', props});
     }
   }
   return out;
 }
 
 /** The npx line for the requested names plus what they pull in (the registry's `uses`) and npm packages. */
-export async function installInfo(reg, wanted) {
-  const seen = new Map();
+export async function installInfo(reg: Pick<Registry, 'component'>, wanted: string[]) {
+  const seen = new Map<string, RegistryEntry>();
   const queue = [...wanted];
-  while (queue.length) {
-    const n = queue.shift();
+  for (let n = queue.shift(); n !== undefined; n = queue.shift()) {
     if (seen.has(n)) continue;
     const c = await reg.component(n);
     seen.set(n, c);
     queue.push(...(c.uses ?? []));
   }
-  const dependencies = {};
+  const dependencies: Record<string, string> = {};
   for (const c of seen.values()) Object.assign(dependencies, c.dependencies);
   const alsoCopied = [...seen.keys()].filter((n) => !wanted.includes(n));
   const pkgs = Object.entries(dependencies).map(([k, v]) => `${k}@${v}`);
@@ -95,13 +109,13 @@ export async function installInfo(reg, wanted) {
     alsoCopied,
     dependencies,
     npmInstall: ['npm install react', ...(pkgs.length ? [`npm install ${pkgs.join(' ')}`] : [])],
-    css: [...new Set([...seen.values()].flatMap((c) => (c.css ?? []).map((f) => f.path.split('/').pop())))],
+    css: [...new Set([...seen.values()].flatMap((c) => (c.css ?? []).map((f) => f.path.split('/').pop() ?? f.path)))],
     note: 'Also import tokens.css, base.css and accents.css from @monoline/css once. Each added component prints its own CSS import.',
   };
 }
 
 // keyword -> components. First match order is the page order.
-const RULES = [
+const RULES: Array<[RegExp, string[]]> = [
   [/landing|marketing|home ?page|hero|startup|saas|product page/, ['block-hero', 'block-feature-grid', 'block-testimonials', 'block-cta', 'block-footer']],
   [/pricing|plans?|subscription|tiers?/, ['block-pricing']],
   [/testimonial|review|quote|social proof/, ['block-testimonials']],
@@ -127,10 +141,10 @@ const RULES = [
 ];
 
 /** Keyword mapping from a description to existing registry entries. Always adds layout and the main action. */
-export function compose(description, all) {
+export function compose(description: string, all: Map<string, IndexEntry>) {
   const d = description.toLowerCase();
-  const chosen = new Map();
-  const add = (n, why) => { if (all.has(n) && !chosen.has(n)) chosen.set(n, why); };
+  const chosen = new Map<string, string>();
+  const add = (n: string, why: string) => { if (all.has(n) && !chosen.has(n)) chosen.set(n, why); };
   add('container', 'page layout');
   for (const [re, list] of RULES) {
     const hit = re.exec(d);
@@ -140,8 +154,8 @@ export function compose(description, all) {
   if (chosen.size <= 1) for (const {c} of rank([...all.values()], description).slice(0, 5)) add(c.name, 'search match');
   add('heading', 'page title');
   add('button', 'main action');
-  return [...chosen].map(([name, reason]) => {
+  return [...chosen].flatMap(([name, reason]) => {
     const c = all.get(name);
-    return {name, title: c.title, category: c.category, reason, import: c.import};
+    return c ? [{name, title: c.title, category: c.category, reason, import: c.import}] : [];
   });
 }

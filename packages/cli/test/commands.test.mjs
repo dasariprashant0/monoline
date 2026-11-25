@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {existsSync, mkdtempSync, readFileSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
-import {run, unifiedDiff} from '../src/cli.mjs';
+import {run, unifiedDiff} from '../dist/cli.js';
 
 const registry = resolve(import.meta.dirname, '../../../registry');
 const tmp = () => mkdtempSync(join(tmpdir(), 'monoline-cmd-'));
