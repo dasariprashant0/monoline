@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Real-browser computed-style test of the shipped CSS. jsdom cannot see the cascade, so a rule that is silently
-// overridden by another stylesheet passes every unit test (docs/dogfood-log.md A1 to A3: Grid lost its columns,
+// overridden by another stylesheet passes every unit test (docs/archive/dogfood-log.md A1 to A3: Grid lost its columns,
 // Heading size md rendered at 34px instead of 18px, a selected segment's label vanished on hover). This script loads
 // the built docs site (apps/docs/dist, which bundles the full @monoline/css), renders the markup the React components
 // emit, reads getComputedStyle and compares it with the documented value, resolved from the tokens (so it holds in
@@ -205,7 +205,7 @@ try {
 
 // App CSS wins: the kit lives in @layer monoline.*, so the app's own unlayered `.card`, `.badge`, `.container`, `.toolbar`, `.row`,
 // `.section`, `.tag`, `.btn` rules must apply as written, wherever the app stylesheet sits (first or last in <head>) and
-// whatever its specificity (docs/dogfood-log.md C7). A test app is simulated: a <style> with those class names, then fresh elements.
+// whatever its specificity (docs/archive/dogfood-log.md C7). A test app is simulated: a <style> with those class names, then fresh elements.
 if (!dump) {
   const APP = '.card { padding: 0; border: 7px solid red; } .badge { padding: 13px; } .container { max-width: 333px; } .toolbar { border-width: 0; padding: 11px; } .row { display: block; gap: 0; } .section { padding: 17px; } .tag { padding: 19px; } .stack { gap: 23px; } .btn { height: 59px; }';
   const b2 = await openBrowser({dist});

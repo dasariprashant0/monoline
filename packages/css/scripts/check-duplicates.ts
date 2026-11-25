@@ -1,6 +1,6 @@
 // One source of truth per selector. Fails when the same selector (same media/supports/container context) is
 // defined in more than one stylesheet with a different value for the same property: in the bundle the later file
-// silently wins, which is how Grid lost its columns and Heading its size (docs/dogfood-log.md A1, A2).
+// silently wins, which is how Grid lost its columns and Heading its size (docs/archive/dogfood-log.md A1, A2).
 //
 //   node scripts/check-duplicates.ts            report and exit 1 on a conflict
 //   node scripts/check-duplicates.ts --all      also list repeats that agree (same value) or sit in one file

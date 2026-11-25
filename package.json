@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "npm run dev -w apps/docs",
-    "build": "npm run build -w @monoline/css && npm run build -w @monoline/react && npm run build -w apps/docs",
+    "build": "npm run build -w @monoline/css && npm run build -w @monoline/react && npm run build -w apps/docs && npm run build --if-present -w monoline -w @monoline/mcp",
     "test": "npm run test -w @monoline/react",
     "typecheck": "npm run typecheck -w @monoline/react && npm run typecheck -w apps/docs",
     "check": "npm run check -w @monoline/css && npm run check:docs -w @monoline/react && npm run check:registry && npm run typecheck && npm run typecheck:scripts && npm run test",
