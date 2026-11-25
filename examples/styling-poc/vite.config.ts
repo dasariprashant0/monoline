@@ -6,7 +6,7 @@ import {defineConfig} from 'vite';
 const p = (rel: string) => fileURLToPath(new URL(rel, import.meta.url));
 // scripts/measure.ts builds one page at a time (POC_PAGE) and, with POC_STYLING_ONLY, swaps the shared CSS
 // (Monoline's core.css and the app's own app.css) for an empty file so the CSS left is the approach's alone.
-const pages = process.env.POC_PAGE ? [process.env.POC_PAGE] : ['index', 'plain', 'modules', 've'];
+const pages = process.env.POC_PAGE ? [process.env.POC_PAGE] : ['index', 'plain', 'modules', 've', 'panda'];
 const empty = p('src/empty.css');
 
 export default defineConfig({

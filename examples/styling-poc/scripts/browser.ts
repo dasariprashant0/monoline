@@ -48,7 +48,7 @@ for (const page of pages) {
   );
   await check(
     'theme: <html data-theme=dark> repaints',
-    `document.documentElement.dataset.theme = 'dark'; await new Promise((r) => setTimeout(r, 400)); const b = $('solid'); const r = [cs(b).backgroundColor === resolve(document.body, 'var(--foreground)'), cs(b).backgroundColor]; document.documentElement.dataset.theme = 'warm'; return r;`,
+    `document.documentElement.dataset.theme = 'dark'; await new Promise((r) => setTimeout(r, 400)); const b = $('solid'); const r = [cs(b).backgroundColor === resolve(document.body, 'var(--foreground)'), cs(b).backgroundColor]; document.documentElement.dataset.theme = 'warm'; await new Promise((r) => setTimeout(r, 400)); return r;`,
   );
   await check(
     'theme: subtree midnight solid = subtree --foreground',
