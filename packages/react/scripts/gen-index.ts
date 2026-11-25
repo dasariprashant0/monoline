@@ -1,6 +1,6 @@
 // Writes src/index.ts: one `export *` per component/hook folder. Run by build, test and typecheck.
 // Never edit src/index.ts by hand; add a folder with an index.ts instead.
-import {readFileSync, writeFileSync} from 'node:fs';
+import {writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {pkgRoot, readMeta, units} from './lib.ts';
 

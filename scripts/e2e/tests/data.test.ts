@@ -326,7 +326,7 @@ test('data-grid: Space toggles the focused row in the selection example', async 
 });
 test('data-grid: the empty grid says so', async (p) => {
   await p.open('components/data-grid');
-  const ex = await p.example('Empty');
+  await p.example('Empty');
   assert(
     (await p.text('[data-e2e] [role=grid]'))!.trim().length > 0 ||
       (await p.text('[data-e2e] .cdoc-stage'))!.trim().length > 0,
@@ -428,7 +428,7 @@ test('carousel: Next and Previous scroll by slides; the track scrolls with the a
 });
 test('carousel: slides are labelled "n of N"', async (p) => {
   await p.open('components/carousel');
-  const ex = await p.example('Cards');
+  await p.example('Cards');
   eq(
     await p.eval(
       `[...document.querySelectorAll('[data-e2e] [aria-roledescription=slide]')].map(e => e.getAttribute('aria-label'))`,

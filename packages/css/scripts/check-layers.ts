@@ -16,8 +16,6 @@ const css = (code: string, label: string) => {
 /** Top-level rules of minified CSS; an @layer block is replaced by the rules inside it. */
 function rules(min: string) {
   const out: string[] = [];
-  let depth = 0,
-    start = 0;
   const walk = (s: string) => {
     let d = 0,
       from = 0;

@@ -3,7 +3,6 @@
 import {readFileSync, writeFileSync, readdirSync} from 'node:fs';
 const inv = JSON.parse(readFileSync(new URL('./inventories.json', import.meta.url)));
 const libs = ['shadcn', 'mui', 'antd', 'chakra', 'mantine', 'daisyui', 'headless', 'radix', 'base', 'heroui'];
-const fx = ['magic', 'aceternity'];
 // Map each library's slug to one canonical name.
 const alias = {
   'alert-dialog': 'alert-dialog',

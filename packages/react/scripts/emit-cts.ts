@@ -18,7 +18,7 @@ const walk = (d: string): string[] =>
 const rewrite = (file: string, ext: string) =>
   readFileSync(file, 'utf8').replace(
     /(\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)(['"])(\.{1,2}(?:\/[^'"]*)?)\2/g,
-    (m, pre: string, q: string, spec: string) => {
+    (_m, pre: string, q: string, spec: string) => {
       const target = join(dirname(file), spec);
       const next = existsSync(`${target}.d.ts`)
         ? `${spec}${ext}`

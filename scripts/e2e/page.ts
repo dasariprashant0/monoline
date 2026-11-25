@@ -114,7 +114,6 @@ export async function createPage(browser: Browser, base: string): Promise<Page> 
   await cdp('Page.enable');
   await cdp('Emulation.setFocusEmulationEnabled', {enabled: true});
   await cdp('Page.addScriptToEvaluateOnNewDocument', {source: PRELOAD});
-  let mods = 0;
   let aborted = false;
   let lastCall = '';
   // sleep throws once a test has timed out, so an orphaned test cannot keep driving the page during the next one
@@ -131,7 +130,6 @@ export async function createPage(browser: Browser, base: string): Promise<Page> 
       sleep,
       /** Navigate to a route and wait for the docs page heading. Options: width, height, dir, mobile, motion. */
       async open(path, {width = 1280, height = 800, dir = 'ltr', mobile = false, motion = false} = {}) {
-        mods = 0;
         errors.length = 0;
         await cdp('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: 1, mobile});
         await cdp('Emulation.setEmulatedMedia', {

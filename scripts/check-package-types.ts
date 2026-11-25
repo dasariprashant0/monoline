@@ -5,7 +5,6 @@
 //   node scripts/check-package-types.ts --project <dir>     check the copy installed in <dir>/node_modules (used by install-smoke)
 import {spawnSync} from 'node:child_process';
 import {existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
-import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 
 const root = resolve(new URL('..', import.meta.url).pathname);

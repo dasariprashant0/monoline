@@ -13,7 +13,7 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launchChrome, serveDist} from '../lib/cdp.ts';
 import {createPage} from '../e2e/page.ts';
-import {announce, domSubtree, focusedNode, fullTree, inScope, isInteractive, NAMED} from './ax.ts';
+import {domSubtree, focusedNode, fullTree, inScope, isInteractive, NAMED} from './ax.ts';
 import {components, pageChecks} from './expectations.ts';
 import {renderReport} from './report.ts';
 import type {Browser} from '../lib/cdp.ts';
@@ -291,7 +291,7 @@ for (const comp of list) {
       const scoped = inScope(nodes, scope);
       const focused = await focusedNode(cdp, nodes);
       const {findings, rows} = phase.custom
-        ? phase.custom({nodes, scoped, focused, scope, add: (kind, msg) => {}})
+        ? phase.custom({nodes, scoped, focused, scope, add: () => {}})
         : evaluate(phase, nodes, scoped, focused, scope);
       // Attributes Chrome's accessibility protocol does not surface as AX properties (aria-current, aria-sort): read from the DOM instead.
       for (const d of phase.dom ?? []) {

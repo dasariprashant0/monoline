@@ -95,7 +95,6 @@ export function extractDemos(source: string, fileName = 'x.demo.tsx') {
   const declOrder = [...decls.entries()]
     .map(([name, node]) => ({name, node}))
     .sort((a, b) => a.node.getStart(sf) - b.node.getStart(sf));
-  const declName = new Map(declOrder.map((d) => [d.node, d.name]));
 
   const out: Demo[] = [];
   for (const el of demosArray.elements) {

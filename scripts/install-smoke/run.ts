@@ -5,7 +5,7 @@
 //   node scripts/install-smoke/run.ts [--react 18|19] [--starter vite|next|astro|react-router]   (default: all)
 // Next.js App Router needs React 19, so that starter only runs against 19.
 import {spawnSync} from 'node:child_process';
-import {cpSync, mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, existsSync} from 'node:fs';
+import {cpSync, mkdtempSync, readFileSync, writeFileSync, rmSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync, existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync} from 'node:fs';
+import {mkdtempSync, existsSync, readFileSync, writeFileSync, readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {run} from '../dist/cli.js';

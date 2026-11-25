@@ -27,7 +27,7 @@ const probe = async (id: string, what: string, fn: () => Promise<Result>) => {
 
 await probe('F7a', 'context-menu: the demo trigger can take keyboard focus', async () => {
   await p.open('components/context-menu');
-  const ex = await p.example('Right click the box');
+  await p.example('Right click the box');
   const info = await p.eval(
     `(() => { const ex = document.querySelector('[data-e2e]'); const t = ex.querySelector('.cdoc-stage > *'); const focusable = t && (t.tabIndex >= 0); return {tag: t && t.tagName.toLowerCase(), tabIndex: t && t.tabIndex, role: t && t.getAttribute('role'), focusable: !!focusable}; })()`,
   );
@@ -104,7 +104,7 @@ await probe(
     });
     await p.sleep(200);
     const out: {route: string; outlineStyle: string; outlineWidth: string}[] = [];
-    for (const [route, ex, sel] of [
+    for (const [route, , sel] of [
       ['components/button', null, 'button'],
       ['components/checkbox', null, 'input[type=checkbox], [role=checkbox]'],
       ['components/input', null, 'input'],
