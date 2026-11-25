@@ -76,6 +76,10 @@ The same parser builds `@monoline/css/dist/tokens.json` and runs the contrast ch
 
 CI runs the build and then `git diff --exit-code packages/tokens/dist`, so a stale output fails the check.
 
+## Prototype: DTCG JSON as the source (not used by the build)
+
+`prototype/` holds the evidence for [ADR 0014](../../docs/decisions/0014-token-source-of-truth.md): `monoline.tokens.json` (the token CSS converted once to DTCG by `from-css.ts`) and `to-css.ts`, which generates the three CSS files from it. `test/prototype.test.ts` checks that the generated CSS has the same tokens, selectors and rules and prints the text diff. `npm run tokens` does not read it. If the CSS changes before the ADR is decided, rerun `node packages/tokens/prototype/from-css.ts`.
+
 ## Notes
 
 - The source has **8 accent presets** (orange, green, blue, violet, rose, teal, amber, slate). Orange is the default in `tokens.css`. The output has 8 too.
