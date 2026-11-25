@@ -37,52 +37,183 @@ export function cssBlocks(css: string) {
 const attrs = (selector: string) =>
   Object.fromEntries([...selector.matchAll(/\[data-(\w+)="([\w-]+)"\]/g)].map(([, k, v]) => [k, v]));
 
-// Sorts the CSS into {base, themes, accents, options}. accents[name] has `generic` (the bare
-// [data-accent] rule, which is the warm look) plus one object per theme that overrides it.
+// A selector list that holds :root and otherwise only bare attributes, e.g. `:root, [data-theme], [data-accent]`:
+// tokens declared there are re-declared on every themed element, so they belong to the base layer.
+const isBase = (selector: string) => {
+  const parts = selector.split(',').map((s) => s.trim());
+  return parts.includes(':root') && parts.every((p) => p === ':root' || /^\[data-[\w-]+\]$/.test(p));
+};
+
+// Every var( must be a plain var(--name). A fallback is refused: the token set is closed, so a fallback is either
+// dead or hides a missing token that the build should report.
+function checkRefs(where: string, name: string, value: string) {
+  for (const {index} of value.matchAll(/var\(/g)) {
+    const at = value.slice(index);
+    if (/^var\(--[\w-]+\)/.test(at)) continue;
+    const why = /^var\(\s*--[\w-]+\s*,/.test(at)
+      ? 'has a fallback, which would hide a missing token; reference the token alone'
+      : 'is not a var(--name) reference';
+    throw new Error(`${where}: ${name}: "${at.slice(0, 40)}" ${why}`);
+  }
+}
+
+// Adds a block's declarations to one layer. The same token twice in one layer (one block, or two blocks with the
+// same scope) is an error: the later one wins silently.
+function addDecls(layer: Decls, decls: [string, string][], where: string) {
+  for (const [name, value] of decls) {
+    if (name in layer) throw new Error(`${where}: ${name} is declared twice in this layer; keep one`);
+    checkRefs(where, name, value);
+    layer[name] = value;
+  }
+}
+
+// Sorts the CSS into {base, themes, accents, options} and validates it (see validate). accents[name] has `generic`
+// (the bare [data-accent] rule, which is the warm look) plus one object per theme that overrides it.
 export function parseSources({tokens, accents, options}: {tokens: string; accents: string; options: string}) {
   const src: Sources = {base: {}, themes: {}, accents: {}, options: {}};
   for (const {selector, decls} of cssBlocks(tokens)) {
     const theme = attrs(selector).theme;
-    if (theme) Object.assign((src.themes[theme] ??= {}), Object.fromEntries(decls));
-    else if (selector === ':root') Object.assign(src.base, Object.fromEntries(decls));
+    const where = `tokens.css ${selector}`;
+    if (theme) addDecls((src.themes[theme] ??= {}), decls, where);
+    else if (isBase(selector)) addDecls(src.base, decls, where);
     else throw new Error(`tokens.css: unexpected selector "${selector}"`);
   }
   for (const {selector, decls} of cssBlocks(accents)) {
     const {accent, theme = 'generic'} = attrs(selector);
     if (!accent) throw new Error(`accents.css: no data-accent in "${selector}"`);
-    (src.accents[accent] ??= {})[theme] = Object.fromEntries(decls);
+    addDecls(((src.accents[accent] ??= {})[theme] ??= {}), decls, `accents.css ${selector}`);
   }
   for (const {selector, decls} of cssBlocks(options)) {
     const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/); // descendant rules hold no custom properties
-    if (m) (src.options[m[1]] ??= {})[m[2]] = Object.fromEntries(decls);
+    if (m) addDecls(((src.options[m[1]] ??= {})[m[2]] ??= {}), decls, `options.css ${selector}`);
   }
+  validate(src);
   return src;
 }
 
-// Custom properties in effect for a theme and accent, the way the cascade applies them.
-export function themeEnv(src: Sources, theme: string, accent: string) {
+// The layers that apply for a theme, an accent ('' for none) and option values, in cascade order, with where each
+// comes from.
+function layers(src: Sources, theme: string, accent = '', opts: [string, string][] = []): [string, Decls][] {
   const a = src.accents[accent] ?? {};
-  return {...src.base, ...src.themes[theme], ...(a.generic ?? {}), ...(a[theme] ?? {})};
+  const all: [string, Decls | undefined][] = [
+    ['tokens.css :root', src.base],
+    [`tokens.css [data-theme="${theme}"]`, src.themes[theme]],
+    [`accents.css [data-accent="${accent}"]`, a.generic],
+    [`accents.css [data-accent="${accent}"][data-theme="${theme}"]`, a[theme]],
+    ...opts.map(([k, v]): [string, Decls | undefined] => [`options.css [data-${k}="${v}"]`, src.options[k]?.[v]]),
+  ];
+  return all.filter((l): l is [string, Decls] => !!l[1]);
+}
+const merge = (ls: [string, Decls][]): Decls => Object.assign({}, ...ls.map(([, d]) => d));
+
+// Custom properties in effect for a theme and accent, the way the cascade applies them.
+export const themeEnv = (src: Sources, theme: string, accent: string) => merge(layers(src, theme, accent));
+
+// Resolves every token in every combination of theme, accent (or none) and option values, so a missing reference
+// or a cycle fails the build with the file and token that hold it. 3 themes x 9 accents x 27 option sets today.
+function validate(src: Sources) {
+  const optionSets = Object.entries(src.options).reduce<[string, string][][]>(
+    (sets, [kind, values]) =>
+      sets.flatMap((s) => [s, ...Object.keys(values).map((v) => [...s, [kind, v] as [string, string]])]),
+    [[]],
+  );
+  const themes = Object.keys(src.themes);
+  for (const theme of themes.length ? themes : [''])
+    for (const accent of ['', ...Object.keys(src.accents)])
+      for (const opts of optionSets) {
+        const ls = layers(src, theme, accent, opts);
+        const env = merge(ls);
+        for (const name of Object.keys(env)) {
+          try {
+            resolve(`var(${name})`, env);
+          } catch (e) {
+            const owner = (e as Error).cause as string;
+            const where = ls.findLast(([, d]) => owner in d)?.[0] ?? '';
+            const ctx = [theme && `theme ${theme}`, accent && `accent ${accent}`, ...opts.map(([k, v]) => `${k} ${v}`)];
+            throw new Error(`${where}: ${(e as Error).message} (${ctx.filter(Boolean).join(', ')})`);
+          }
+        }
+      }
 }
 
-// Expands var(--x) against env. Everything else is left as written.
-export function resolve(value: string, env: Decls, depth = 0): string {
-  if (depth > 10) throw new Error(`reference cycle at ${value}`);
+// Expands var(--x) against env. Everything else is left as written. Throws on an undefined token or a cycle; the
+// error's `cause` is the token whose value holds the bad reference.
+export function resolve(value: string, env: Decls, stack: string[] = []): string {
   return value.replace(/var\((--[\w-]+)\)/g, (_, name: string) => {
-    if (!(name in env)) throw new Error(`undefined token ${name}`);
-    return resolve(env[name], env, depth + 1);
+    const owner = stack.at(-1) ?? name;
+    if (stack.includes(name))
+      throw new Error(`reference cycle ${[...stack.slice(stack.indexOf(name)), name].join(' -> ')}`, {cause: owner});
+    if (!(name in env)) throw new Error(`${owner} uses undefined token ${name}`, {cause: owner});
+    return resolve(env[name], env, [...stack, name]);
   });
 }
 
 const hex = (s: string) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
 // Resolved colour -> [r, g, b, a] in 0-255 and 0-1, or null when it is not a plain colour (gradients).
-export function toRgba(value: string) {
+// color-mix(in srgb, A p%, B) mixes premultiplied, as browsers do, so a mix with transparent keeps A's colour.
+export function toRgba(value: string): number[] | null {
   let m;
-  if ((m = value.match(/^color-mix\(in srgb, (#[0-9a-f]{6}) ([\d.]+)%, transparent\)$/i)))
-    return [...hex(m[1]), Number(m[2]) / 100];
-  if ((m = value.match(/^#[0-9a-f]{6}$/i))) return [...hex(value), 1];
+  if (value === 'transparent') return [0, 0, 0, 0];
+  if (/^#[0-9a-f]{6}$/i.test(value)) return [...hex(value), 1];
   if ((m = value.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/))) return [+m[1], +m[2], +m[3], +m[4]];
+  if ((m = value.match(/^color-mix\(in srgb, (.+) ([\d.]+)%, (.+)\)$/))) {
+    const [a, b, p] = [toRgba(m[1]), toRgba(m[3]), Number(m[2]) / 100];
+    if (!a || !b) return null;
+    const alpha = a[3] * p + b[3] * (1 - p);
+    if (!alpha) return [0, 0, 0, 0];
+    return [0, 1, 2].map((i) => (a[i] * a[3] * p + b[i] * b[3] * (1 - p)) / alpha).concat(alpha);
+  }
   return null;
+}
+
+// WCAG contrast of two resolved colours. A translucent foreground is laid over the (opaque) background first.
+export function contrast(fg: string, bg: string) {
+  const [f, b] = [toRgba(fg), toRgba(bg)];
+  if (!f || !b || b[3] !== 1) throw new Error(`contrast: ${fg} on ${bg} is not a colour on an opaque background`);
+  const lum = (c: number[]) => {
+    const [r, g, bl] = c.map((v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [x, y] = [lum(f.slice(0, 3).map((v, i) => v * f[3] + b[i] * (1 - f[3]))), lum(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+// The contrast rules for every theme x (no accent + each accent), and for prefers-contrast: more, whose overrides are
+// read from the `@media (prefers-contrast: more)` block of utilities.css. Returns the number of checks and failures.
+export function contrastChecks(src: Sources, utilitiesCss: string) {
+  const fails: string[] = [];
+  let count = 0;
+  const at = utilitiesCss.indexOf('@media (prefers-contrast: more)');
+  const more = Object.fromEntries(at < 0 ? [] : (cssBlocks(utilitiesCss.slice(at))[0]?.decls ?? []));
+  if (!more['--muted'] || !more['--border'])
+    fails.push('utilities.css: no --muted and --border in the @media (prefers-contrast: more) block');
+  for (const theme of Object.keys(src.themes)) {
+    const need = (label: string, env: Decls, fg: string, bg: string, min: number) => {
+      count++;
+      const [f, b] = [resolve(`var(${fg})`, env), resolve(`var(${bg})`, env)];
+      const r = contrast(f, b);
+      if (r < min) fails.push(`${label}: ${fg} on ${bg} is ${r.toFixed(2)}:1, needs ${min}:1 (${f} on ${b})`);
+    };
+    const env = themeEnv(src, theme, '');
+    for (const k of ['--foreground', '--muted', '--danger', '--warning', '--ok'])
+      need(theme, env, k, '--background', 4.5);
+    need(theme, env, '--surface-text', '--surface', 4.5);
+    // Code colours sit on the always-dark --surface.
+    for (const k of Object.keys(env).filter((n) => n.startsWith('--code-'))) need(theme, env, k, '--surface', 4.5);
+    for (const accent of ['', ...Object.keys(src.accents)]) {
+      const e = themeEnv(src, theme, accent);
+      const id = `${theme}/${accent || 'default'}`;
+      need(id, e, '--accent-text', '--background', 4.5);
+      need(id, e, '--accent', '--background', 3);
+      need(id, e, '--on-accent', '--accent', 4.5);
+    }
+    if (more['--muted'] && more['--border']) {
+      const e = {...env, ...more};
+      need(`${theme} more-contrast`, e, '--muted', '--background', 7);
+      need(`${theme} more-contrast`, e, '--border', '--background', 3);
+    }
+  }
+  return {count, fails};
 }
 
 // Resolved length -> px number, for px literals and calc(a + b) of them. Null for anything else (clamp, ch).
