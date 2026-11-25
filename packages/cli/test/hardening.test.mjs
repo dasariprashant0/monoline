@@ -81,7 +81,7 @@ test('add still refuses a file that really differs, and names only that file', a
   writeFileSync(comp(cwd, 'badge/badge.tsx'), 'edited\n');
   const r = await exec(['add', 'badge'], cwd);
   assert.equal(r.code, 1);
-  assert.match(r.err, /refusing to overwrite:\n  src\/components\/monoline\/badge\/badge\.tsx\nuse --overwrite/);
+  assert.match(r.err, /refusing to overwrite:\n {2}src\/components\/monoline\/badge\/badge\.tsx\nuse --overwrite/);
   assert.doesNotMatch(r.err, /cx\.ts|index\.ts/);
   assert.equal(readFileSync(comp(cwd, 'badge/badge.tsx'), 'utf8'), 'edited\n');
   assert.equal((await exec(['add', 'badge', '--overwrite'], cwd)).code, 0);

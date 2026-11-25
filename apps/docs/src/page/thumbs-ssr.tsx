@@ -16,7 +16,7 @@ export function renderThumbs(): Record<string, string> {
   for (const [file, mod] of Object.entries(files)) {
     const name = file.split('/').at(-2)!;
     const demo = mod.demos[PICK[name] ?? 0];
-    if (demo) out[name] = renderToStaticMarkup(<>{demo.render()}</>);
+    if (demo) out[name] = renderToStaticMarkup(demo.render());
   }
   return {...out, ...OVERRIDES};
 }

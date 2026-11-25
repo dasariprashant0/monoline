@@ -11,7 +11,7 @@ const SCOPE = 'typescriptreact,javascriptreact';
 export type Entry = {name: string; title: string; description?: string; import?: string; usage?: string};
 
 // VS Code snippet bodies are text with $ and \ as special characters; escape them.
-const escape = (s: string) => s.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
+const escapeBody = (s: string) => s.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
 
 // The main export named by the registry's import line: "import {Button} from ..." -> "Button".
 const mainName = (entry: Entry) => entry.import?.match(/\{\s*(\w+)/)?.[1];
@@ -43,7 +43,7 @@ export function snippetFor(entry: Entry) {
     prefix: `ml-${entry.name}`,
     scope: SCOPE,
     description: `${entry.title}: ${entry.description}`.trim(),
-    body: body.map(escape),
+    body: body.map(escapeBody),
   };
 }
 

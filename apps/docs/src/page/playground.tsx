@@ -78,7 +78,7 @@ function derive(rows: PropRow[], skip: string[] = []): Control[] {
       out.push({
         name: p.name,
         kind: 'number',
-        initial: def !== undefined && !isNaN(Number(def)) ? Number(def) : undefined,
+        initial: def !== undefined && !Number.isNaN(Number(def)) ? Number(def) : undefined,
         description: p.description,
       });
   }

@@ -35,7 +35,7 @@ describe.each(Object.entries(modules))('%s', (path, mod) => {
       vi.spyOn(console, 'error').mockImplementation((...a) => {
         errors.push(a.map(String).join(' ').slice(0, 200));
       });
-      const {container, unmount} = render(<>{demo.render()}</>);
+      const {container, unmount} = render(demo.render());
       expect(errors, path).toEqual([]);
       expect(await axe(container)).toHaveNoViolations();
       unmount();
