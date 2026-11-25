@@ -8,6 +8,7 @@ import {
   cssBlocks,
   figmaVariables,
   flatten,
+  nativeTokens,
   parseSources,
   tokensCss,
   typesDts,
@@ -134,4 +135,32 @@ test('a missing reference fails the build instead of writing a wrong value', () 
 
 test('build output matches a fresh build of the sources (dist is not stale)', () => {
   assert.equal(read('../dist/tokens.json'), JSON.stringify(buildTokens(src), null, 2) + '\n');
+});
+
+test('react native: colours per theme x accent resolved, lengths and calc as numbers, ms, bezier; the rest listed', () => {
+  const text = read('../dist/native.json');
+  assert.equal(text, JSON.stringify(nativeTokens(src), null, 2) + '\n');
+  const native = JSON.parse(text);
+  assert.deepEqual(Object.keys(native.colors), THEMES);
+  for (const t of THEMES) {
+    assert.deepEqual(Object.keys(native.colors[t]), Object.keys(json.accent));
+    for (const colours of Object.values<Record<string, string>>(native.colors[t]))
+      for (const [n, c] of Object.entries(colours))
+        assert.match(c, /^#[0-9A-F]{6}$|^rgba\(\d+, \d+, \d+, [\d.]+\)$/, n);
+  }
+  assert.equal(native.colors.warm.orange['ink-2'], 'rgba(22, 18, 14, 0.7)');
+  assert.equal(native.colors.midnight.green.accent, '#5FD6B2');
+  assert.equal(native.colors.dark.blue['surface-text'], 'rgba(240, 237, 231, 0.85)');
+  assert.equal(native.values['control-sm'], 36);
+  assert.equal(native.values['radius-lg'], 0);
+  assert.equal(native.values.fast, 120);
+  assert.deepEqual(native.values.ease, [0.76, 0, 0.24, 1]);
+  for (const n of ['--hatch', '--heading-1', '--font-body', '--measure', '--focus-ring', '--shadow-toast'])
+    assert.ok(native.$omitted.includes(n), n);
+  // Every token is either exported or listed as omitted.
+  const exported = new Set(
+    [...Object.keys(native.colors.warm.orange), ...Object.keys(native.values)].map((n) => `--${n}`),
+  );
+  for (const n of Object.keys({...src.base, ...src.themes.warm}))
+    assert.ok(exported.has(n) !== native.$omitted.includes(n), n);
 });

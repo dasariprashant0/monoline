@@ -389,6 +389,58 @@ export function figmaVariables(src: Sources) {
   return {$format: 'monoline-figma-variables', $skipped: [...skipped].sort(), collections};
 }
 
+// React Native values. Colours per theme x accent, resolved (color-mix included) to '#RRGGBB' or 'rgba(r, g, b, a)'.
+// Other tokens once, for the default options: px, bare numbers and calc() become numbers, durations become
+// milliseconds (Animated takes ms), cubic-bezier() becomes [x1, y1, x2, y2] for Easing.bezier. Anything else has no
+// React Native equivalent (clamp(), gradients, font stacks, ch, shadows, the focus ring) and is listed in $omitted.
+export function nativeTokens(src: Sources) {
+  const omitted = new Set<string>();
+  const isColour = (n: string) => ['color', 'code'].includes(classify(n).group);
+  const out = (c: number[]) =>
+    c[3] === 1
+      ? `#${c
+          .slice(0, 3)
+          .map((v) => Math.round(v).toString(16).padStart(2, '0'))
+          .join('')
+          .toUpperCase()}`
+      : `rgba(${c.slice(0, 3).map(Math.round).join(', ')}, ${+c[3].toFixed(3)})`;
+  const colors = Object.fromEntries(
+    THEMES.map((t) => [
+      t,
+      Object.fromEntries(
+        Object.keys(src.accents).map((a) => {
+          const env = themeEnv(src, t, a);
+          const pairs = Object.keys(env)
+            .filter(isColour)
+            .flatMap((n) => {
+              const c = toRgba(resolve(env[n], env));
+              if (!c) omitted.add(n);
+              return c ? [[n.slice(2), out(c)]] : [];
+            });
+          return [a, Object.fromEntries(pairs)];
+        }),
+      ),
+    ]),
+  );
+  const env = themeEnv(src, 'warm', '');
+  const values: Record<string, number | number[]> = {};
+  for (const n of Object.keys(env).filter((n) => !isColour(n))) {
+    const v = resolve(env[n], env);
+    const ms = v.match(/^([\d.]+)s$/);
+    const bezier = v.match(/^cubic-bezier\(([^)]+)\)$/);
+    const value = toPx(v) ?? (ms ? Math.round(Number(ms[1]) * 1000) : bezier ? bezier[1].split(',').map(Number) : null);
+    if (value === null) omitted.add(n);
+    else values[n.slice(2)] = value;
+  }
+  return {
+    $description:
+      'Monoline tokens for React Native, generated from packages/css/src by packages/tokens/scripts/build.ts. colors.<theme>.<accent>; values are px, ms, unitless numbers or bezier points.',
+    $omitted: [...omitted].sort(),
+    colors,
+    values,
+  };
+}
+
 // TypeScript types for the token names and themes.
 export function typesDts(json: TokensJson) {
   const leaves = (tree: Tree, group: string) => Object.keys(tree[group] ?? {});
