@@ -44,7 +44,8 @@ export function parseSources({tokens, accents, options}: {tokens: string; accent
   for (const {selector, decls} of cssBlocks(tokens)) {
     const theme = attrs(selector).theme;
     if (theme) Object.assign((src.themes[theme] ??= {}), Object.fromEntries(decls));
-    else if (selector === ':root') Object.assign(src.base, Object.fromEntries(decls));
+    // ':root, [data-theme], ...' re-declares derived tokens on scoped wrappers (ADR 0012); its values are base values.
+    else if (selector.split(',')[0] === ':root') Object.assign(src.base, Object.fromEntries(decls));
     else throw new Error(`tokens.css: unexpected selector "${selector}"`);
   }
   for (const {selector, decls} of cssBlocks(accents)) {
