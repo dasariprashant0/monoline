@@ -1,6 +1,6 @@
 # Roadmap: from a working kit to a library people choose
 
-Last updated 2026-11-24. Status is checked against this tree (measured 2026-11-24; npm status as of 2026-11-20). Detail on gaps and owners: `docs/IMPROVEMENT-PLAN.md`. Why we made big choices: `docs/decisions/`.
+Last updated 2026-11-24. Status is checked against this tree (measured 2026-11-24; npm status as of 2026-11-20). Current state, per-area verdicts and costs: [audit/2026-current-state.md](audit/2026-current-state.md). The work now runs as milestones M0 to M6 in [MISSION.md](MISSION.md#milestones). Why we made big choices: [decisions/](decisions/). Older plans and research logs: [archive/](archive/).
 
 ## Where we are
 
@@ -45,7 +45,7 @@ Skip on purpose: 3D, WebGL and glow effects; enterprise-only widgets (Transfer, 
 
 | Step | Status | Evidence |
 |---|---|---|
-| 1.1 API audit | done | `docs/api-audit.md`; prop-name aliases left out on purpose |
+| 1.1 API audit | done | `docs/archive/api-audit.md`; prop-name aliases left out on purpose |
 | 1.2 State attributes | partial | rule in `AGENTS.md`; `packages/react/src/api-consistency.test.tsx` covers some |
 | 1.3 Slot and class naming | partial | rule in `AGENTS.md`; not audited page by page |
 | 1.4 Token completeness | done, unreleased | `CHANGELOG.md` Unreleased; forced-colors and more-contrast tokens in `packages/css/src/utilities.css` (ea6b4e5). The `--bp-*` tokens are not used by any media query |
@@ -65,7 +65,7 @@ Open: tests against react-hook-form and TanStack Form (no test workspace).
 |---|---|---|
 | 3.1 Templates | done, no blog starter | `examples/{dashboard,auth-settings,landing}` |
 | 3.2 Blocks gallery | done | `apps/docs/src/site/Blocks.tsx` |
-| 3.3 MCP server | done | `packages/mcp`, `docs/mcp.md` |
+| 3.3 MCP server | done | `packages/mcp`, `packages/mcp/README.md` |
 | 3.4 Theme presets and builder | partial | `apps/docs/src/theme-builder.tsx`, `site/Themes.tsx` |
 | 3.5 Figma kit | partial | variables only: `packages/tokens/dist/figma-variables.json`. No component kit |
 | 3.6 Editor support | partial | `packages/vscode/snippets`; no props autocomplete |
@@ -74,7 +74,7 @@ Open: tests against react-hook-form and TanStack Form (no test workspace).
 ## Phase 4: earn trust
 
 - Manual screen-reader testing on the core 15 components: not started. Needs the owner; the script is in `docs/screen-readers.md`.
-- Benchmark page: `apps/docs/src/site/Compare.tsx` exists. The written benchmark is `docs/BENCHMARK.md`, the plan that follows from it `docs/STRATEGY.md`.
+- Benchmark page: `apps/docs/src/site/Compare.tsx` exists. The written benchmark (2026-11-20) is `docs/archive/BENCHMARK.md`.
 - Governance: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md` exist. No RFC process; decisions go in `docs/decisions/`.
 - Real users: no evidence yet. Dogfood first, then three outside projects.
 
@@ -87,6 +87,48 @@ Newer browser features are used behind detection with the old code as fallback (
 | CSS anchor positioning for floating layers | prototype, opt-in (`data-anchor="native"` on `<html>`); off by default because a Select near the viewport edge shrank instead of flipping | `nativeAnchor()` in `packages/react/src/components/popover/float.tsx` (e2eb539, 6d8ea26); applies collision padding at viewport edges and reports the flipped `data-side`. Tooltip, Popover, DropdownMenu and Select budgets were raised by 0.3, 0.3, 0.2 and 0.1 KB for it (dde5ece, 6d8ea26) |
 | Find in page for closed Accordion and Collapsible | done | `packages/react/src/utils/until-found.ts` (43f5096, ADR 0005) |
 | Scroll-driven animation, `@starting-style`, container queries, `interpolate-size` | not started | no uses in `packages/css/src` or `packages/react/src` |
+
+### Candidates, ranked by value
+
+Moved from STRATEGY §13 (archived). Status is the `modern-web-guidance` skill's Baseline wording, read 2026-11-20; re-check it before starting an item. ADR 0004 sets the rule: Widely available needs no fallback, anything newer is an enhancement behind detection with the current code as fallback, same props and `data-state`, tested in Chrome with the feature on and off, then `npm run size`.
+
+| # | Feature | Status (2026-11-20) | Replaces | Components | Effort |
+|---|---|---|---|---|---|
+| P1 | Popover API (`popover`, light dismiss, top layer) | Newly available; `popover="hint"` Limited | open state, outside click, Escape, z-index | Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Menubar, Select list, Toast | L |
+| P2 | CSS anchor positioning | Limited | flip and shift code in `float.tsx` | same as P1, plus the Tabs underline | L; prototype exists (table above, ADR 0006) |
+| P3 | Invoker commands (`command`, `commandfor`) | Newly available | click handlers that open dialogs, popovers, disclosures | Dialog, Drawer, AlertDialog triggers, Accordion, Collapsible | M |
+| P4 | `<dialog closedby>`, `overscroll-behavior` | Limited | outside-click script on the modal | Dialog, Drawer, AlertDialog | S |
+| P5 | Container queries (size) | Widely available | viewport media queries and `useMediaQuery` for layout | blocks, Sidebar, AppShell, DataTable cards, Stat grids | M |
+| P6 | `:has()`, `:user-valid` / `:user-invalid` | Widely available | JS that toggles parent classes; validate-after-interaction scripts | Field, Form, Input, Checkbox and Radio cards | S |
+| P7 | `color-scheme` + `light-dark()` | Widely / Newly available | `matchMedia` for an auto theme | tokens, ThemeProvider (two schemes only, so `data-theme="auto"` and native controls) | M |
+| P8 | `field-sizing: content` | Newly available | JS autosize | Textarea, Input, TagsInput | S |
+| P9 | `@starting-style` + `transition-behavior: allow-discrete` | Newly available; `display`/`overlay` transitions Limited | presence logic for enter and exit | Dialog, Drawer, Popover, Toast, Collapsible | M |
+| P10 | `<details name>`, `::details-content`, `interpolate-size` | Newly available; `interpolate-size` Limited | JS height measurement | Accordion, Collapsible, Tabs panels | M |
+| P11 | Same-document View Transitions | Newly available | hand-built cross-fades | docs navigation, Tabs, SortableList, Tour | M |
+| P12 | Scroll-driven animations | Newly available | `scrollHeight` handlers | ScrollProgress | S |
+| P13 | `ariaNotify()` | Newly available | hidden live-region nodes | Toast, Alert (keep `role="status"` as the base) | S |
+| P14 | `focusgroup` | Limited | Radix roving focus | Tabs, Toolbar, Menu, RadioGroup, ToggleGroup | L, later |
+| P15 | Customizable `<select>` | Limited | the own listbox | NativeSelect first | M, later |
+
+Order: P4, P6, P8, P12, P13 first (small, one PR each); then P5 and P7; then P3 and P1 together; P2 last of the large ones; P9 to P11 once a motion setting can switch them off. The source guides are in [GoogleChrome/modern-web-guidance-src](https://github.com/GoogleChrome/modern-web-guidance-src); per-feature links are in the archived STRATEGY §13.
+
+## 1.0 criteria
+
+Moved from STRATEGY §9 (archived). Do not call it 1.0 until every line is true.
+
+| # | Criterion | Check |
+|---|---|---|
+| 1 | No open High bug from any audit | `docs/a11y-report.md`, `docs/e2e-findings.md`, `docs/audit/` |
+| 2 | Human screen-reader results published for the 15 core components | [screen-readers.md](screen-readers.md) |
+| 3 | Every component has an accessibility-tree expectation | `npm run ax` report |
+| 4 | Migration notes for every breaking change since 0.4.0 | `CHANGELOG.md` |
+| 5 | Deprecation policy written and used at least once | [releasing.md](releasing.md) |
+| 6 | 10 public projects use it; 3 are not owned by the author | search and issues |
+| 7 | Size budgets met | `npm run size` |
+| 8 | A first-run CI job against the published packages, green for 30 days | CI history |
+| 9 | Agent evaluation passes (MISSION M5 agent usability test) | its report |
+
+Until 1.0: semver, a minor may change class names, every change listed in `CHANGELOG.md`. After 1.0: no breaking change inside a major; deprecations last at least two minors.
 
 ## Quality gates
 

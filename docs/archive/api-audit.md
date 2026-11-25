@@ -1,5 +1,7 @@
 # API audit
 
+> **Archived 2026-11-24.** The 2026-11-13 API audit; its fixes landed, and M3 of MISSION.md writes the API contract into AGENTS.md. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 Last updated 2026-11-13. Scope: the public props of every component in `packages/react/src/components/*/<name>.tsx` (114 components), checked against `AGENTS.md` and the conventions of shadcn/ui, Mantine, Base UI, Radix and Chakra (`docs/research/*.md`). The rule while fixing: add props, never rename or remove; the consistent name becomes primary and the old one stays as a deprecated alias with a test.
 
 Method: the props below were extracted from the `*Props` types with the TypeScript compiler (`interface`/`type` members, `extends` clauses), then each divergent family was read in source. Props that components inherit unchanged from the DOM or Radix (`disabled`, `className`, `id`, `onClick`) are not listed per component.

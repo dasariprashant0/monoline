@@ -1,5 +1,7 @@
 # Adoption: the first ten minutes
 
+> **Archived 2026-11-24.** A first-ten-minutes log against npm 0.4.0; the CLI, themeScript and install-box bugs in its table are fixed; the 375 px logo clipping was not re-checked. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 > **Historical (2026-11-20), against npm 0.4.0.** The CLI `TS2307` failure in rows 5-7 and the bug table was fixed by PR #23 (`add` now copies `utils/cx`, `utils/slot` and `utils/overlay`). For the current state read [ROADMAP.md](ROADMAP.md).
 
 
@@ -43,8 +45,8 @@ In the repo: `npm install`, `npm run typecheck`, `npm run build` (189 pages prer
 | Where | Problem | Evidence |
 |---|---|---|
 | `packages/cli`, `registry/` | `add` does not copy `utils/slot` or `utils/overlay`, so copied Button, Card and Dialog do not compile. Blocks the "own the code" promise and checklist minute 5-7 | TS2307 above; guide and README now warn about it |
-| `packages/react/src/components/theme-provider/theme-provider.tsx` | `themeScript` lives in a `'use client'` file, so a Next.js Server Component cannot call it. Move it to a file without the directive | Next build error above. The guide uses a client wrapper (`app/theme-init.tsx`) |
-| same file, JSDoc `@example` | Shows `<ThemeProvider defaultAccent="green">`; the prop is `accent` | `ThemeProviderProps extends Partial<Look>`; `accent="teal"` works in the build |
+| `packages/react/src/components/theme-provider/theme-provider.tsx` | **Fixed in 5a2bff8:** `themeScript` now lives in `theme-script.ts` without `'use client'`, and a test guards it. Was: `themeScript` lives in a `'use client'` file, so a Next.js Server Component cannot call it | Next build error above. The guide uses a client wrapper (`app/theme-init.tsx`) |
+| same file, JSDoc `@example` | **Fixed in 5a2bff8.** Was: shows `<ThemeProvider defaultAccent="green">`; the prop is `accent` | `ThemeProviderProps extends Partial<Look>`; `accent="teal"` works in the build |
 | `apps/docs/src/shell/home-board.tsx` `InstallBox` | The hero copies `npm i @monoline/react` only. Without `@monoline/css` there is no styling. WP6 added one sentence under it in `Home.tsx`; the box itself should offer both packages | the hero on the rebuilt site |
 | docs topbar at 375 px | The logo text is clipped ("MONOLIN") beside the search and theme buttons | screenshot `getting-started-mobile-375.jpg` |
 
@@ -71,7 +73,7 @@ Home page: master's redesign (Plain CSS and accessible React, install box, live 
 | 4 | Keyboard table and anatomy as fixed sections | Component page code, not WP6's files; the keyboard section already exists on the Button page |
 | 5 | Playground controls on every component | `page/playground.tsx`, not WP6's files |
 | 6 | Styling reference per page | Generated (`styling.generated.json` exists); component page code |
-| 7 (rest) | MCP server docs and a Skills file | `packages/mcp`, `docs/mcp.md`: WP5 |
+| 7 (rest) | MCP server docs and a Skills file | `packages/mcp`, `packages/mcp/README.md`: WP5 |
 | 8 | Theme presets gallery with export | WP4 (`theme-builder.tsx`); a Themes page already exists on master |
 | 9 (rest) | Migration guides, deprecation policy | Writing one before a breaking change exists would be guesswork; `docs/releasing.md` is WP5's |
 | 10 | Blocks gallery | Already on master (Blocks page) |

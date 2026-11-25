@@ -1,5 +1,7 @@
 # Benchmark: Monoline against 13 UI libraries
 
+> **Archived 2026-11-24.** A 2026-11-20 snapshot of 13 libraries; numbers are not kept current. Current state: [../audit/2026-current-state.md](../audit/2026-current-state.md); plan: [../ROADMAP.md](../ROADMAP.md). Relative links below still point to the old `docs/` location.
+
 > **Historical snapshot.** Numbers and the npm status were measured when it was written; for the current state read [ROADMAP.md](ROADMAP.md).
 
 
@@ -88,7 +90,7 @@ TypeScript: every library above ships types (u for Twigs and Aceternity); Monoli
 | 4 | **Keyboard table and anatomy** as fixed sections, generated from `meta.json` `a11y` | Radix, Headless UI | S | `apps/docs`, `meta.json` schema |
 | 5 | **Playground controls** (variant, size, state) above the first example | Mantine | M | `apps/docs/src/page/playground.tsx` (exists, widen to all components) |
 | 6 | **Styling reference per page**: class names, `data-*` states, tokens the component reads | Base UI, HeroUI, daisyUI, Ant | M | generate from CSS into docs and `meta.json` |
-| 7 | **MCP server and a Skills file**, with copyable prompts on the docs | shadcn MCP, Magic UI MCP | M | `packages/mcp`, `docs/mcp.md`, `llms.txt` |
+| 7 | **MCP server and a Skills file**, with copyable prompts on the docs | shadcn MCP, Magic UI MCP | M | `packages/mcp`, `packages/mcp/README.md`, `llms.txt` |
 | 8 | **Theme presets gallery** with export of CSS and JSON | HeroUI Theme Builder, daisyUI themes, shadcn themes | M | `apps/docs/src/theme-builder.tsx`, `packages/css/src/options.css` |
 | 9 | **Migration guides and deprecation policy** written before 1.0 | Chakra v2 to v3 pain (11-12 note), Mantine, Ant | S | `CHANGELOG.md`, `docs/releasing.md` |
 | 10 | **Blocks and templates gallery** with copy buttons | shadcn blocks | M | `apps/docs/src/site/Blocks.tsx`, `examples/` |

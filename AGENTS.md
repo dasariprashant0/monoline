@@ -9,11 +9,15 @@ Monoline is an open-source UI kit with two layers:
 | Layer | Package | What |
 |---|---|---|
 | Core | `packages/css` → `@monoline/css` | Plain CSS: tokens, 3 themes, 8 accents, look options (font, corners, density), base, one stylesheet per component. Built files are wrapped in cascade layers ([ADR 0003](docs/decisions/0003-css-cascade-layers.md)). Works with any framework or none. |
-| CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. |
+| CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. TypeScript, built to `dist/` with tsc. |
 | React | `packages/react` → `@monoline/react` | Accessible, typed React components that render the core's classes. Modals use native `<dialog>`, popovers and menus use one own floating layer ([ADR 0001](docs/decisions/0001-native-dialog-and-own-floating-layer.md)); roving focus and collections (tabs, accordion, slider and others) still come from Radix (`radix-ui`). |
+| MCP | `packages/mcp` → `@monoline/mcp` | MCP server over stdio that answers questions from the registry. No dependencies. TypeScript, built to `dist/` with tsc. |
+| Tokens | `packages/tokens` → `@monoline/tokens` | Generates `dist/` (JSON, CSS, `.d.ts`, Figma variables) from the core's token CSS. Private, not published yet. |
+| VS Code | `packages/vscode` | Snippets generated from `registry/`. Not a workspace (no `package.json`), not published. |
 | Docs | `apps/docs` | The documentation site. Discovers components automatically. |
 | Registry | `registry/`, `llms.txt`, `llms-full.txt` | Generated, machine-readable component list and source for AI tools. |
 | Decisions | `docs/decisions/` | Short ADRs. Read the one that covers your area before changing it. |
+| Plans | `docs/MISSION.md`, `docs/ROADMAP.md`, `docs/audit/` | The current milestones, the living roadmap, and the per-area audit they start from. Old plans are in `docs/archive/`. |
 
 Look and feel: monospace type, square edges, thin rules, one accent. Rules and token list: `DESIGN.md`. Comparable libraries for scope and API shape: shadcn/ui, Radix, Mantine, Chakra, Ant Design, daisyUI, Headless UI, Base UI, HeroUI, Magic UI. Take their component coverage and prop conventions; keep Monoline's look.
 
@@ -24,12 +28,24 @@ npm install --cache "$TMPDIR/npm-cache"   # once
 npm run dev                               # docs site on :5180, live components and CSS
 npm test                                  # vitest + axe for every component
 npm run typecheck                         # tsc for react + docs
-npm run check                             # css lint (contrast, raw colours, motion), doc comments, registry, typecheck, tests
+npm run check                             # css lint (contrast, raw colours, motion), doc comments, 'use client', registry, typecheck, tests
 npm run build                             # css dist, react dist, docs site
 npm run size                              # gzip budgets for JS and CSS; run after build
 npm run test:docs -w docs                 # docs scripts tests
 npm run registry                          # regenerate registry/ and llms*.txt
+npm run tokens                            # regenerate packages/tokens/dist
 ```
+
+The other root scripts (`test:cli`, `test:mcp`, `e2e`, `ax`, `install-smoke` and more) are listed in `package.json`.
+
+### Sandbox
+
+Agents often run in a sandbox (macOS Seatbelt in Claude Code). Most commands, `npm run build` included, work inside it. These do not:
+
+- `e2e`, `ax` and `test:css-browser` launch Chrome, which the sandbox blocks. Run them outside it.
+- `install-smoke` builds an Astro starter, which writes `~/Library/Preferences/astro`. Run it outside the sandbox.
+- `npx skills find` and other skills.sh calls return nothing unless `NODE_USE_ENV_PROXY=1` is set.
+- Pass `--cache "$TMPDIR/npm-cache"` to `npm install`; the default cache is outside the writable folders.
 
 ## Where things live
 
@@ -41,7 +57,9 @@ packages/react/src/components/<name>/     one folder per component (see recipe)
 packages/react/src/hooks/<name>/          one folder per hook, same shape
 packages/react/src/index.ts               GENERATED, gitignored
 apps/docs/                                docs site
-registry/, llms.txt, llms-full.txt        GENERATED, committed only by the maintainer
+registry/, llms.txt, llms-full.txt        GENERATED, committed (see "Generated files")
+packages/tokens/dist/                     GENERATED, committed
+packages/vscode/snippets/                 GENERATED, committed
 ```
 
 ## The component recipe
@@ -53,12 +71,12 @@ packages/react/src/components/<name>/
   <name>.tsx        the component(s)
   <name>.test.tsx   behaviour tests + one axe test
   <name>.demo.tsx   live examples:  export const demos: Demo[] = [{title, description?, render}]
-  meta.json         name, title, category, description, status, primitive?, css[], a11y[], keywords[]
+  meta.json         name, title, category, description, status, primitive?, uses?[], related?[], css[], a11y[], keywords[]
   index.ts          export {X} and its Props type; nothing else
 packages/css/src/components/<name>.css   styles, tokens only
 ```
 
-`meta.json` is validated by `npm run registry`. `name` equals the folder. `css` lists the stylesheets (in `packages/css/src/components/`) the component needs.
+`meta.json` is validated by `npm run registry`. `name` equals the folder. `css` lists the stylesheets (in `packages/css/src/components/`) the component needs. `uses` names the Monoline components it is built from and `related` names others worth seeing; both feed the registry's related list. Every component folder has all five files except `direction-provider`, which has no test yet.
 
 ### API conventions (follow these so every component feels the same)
 
@@ -102,6 +120,14 @@ WCAG 2.2 AA. For each component, `meta.json` `a11y` lists the keyboard and scree
 
 Vitest + Testing Library + `vitest-axe`. Test behaviour users see (roles, names, keyboard), not implementation. Cover: renders and default props, each variant class, controlled and uncontrolled use, keyboard operation, disabled, ref forwarding, `asChild` if supported, axe. Portal content (dialogs, menus) is found via `screen`, not `container`.
 
+Things that trip new tests:
+
+- Test files are type-checked with the react `tsconfig.json`, so an unused import (often `userEvent`) fails `npm run typecheck`, and `noUncheckedIndexedAccess` needs `fn.mock.calls[0]![0]`.
+- `packages/react/src/test/setup.ts` stubs `ResizeObserver`, `scrollIntoView`, pointer capture and `<dialog>` `showModal`/`close`/Escape for jsdom. `matchMedia`, `IntersectionObserver` and `scrollBy` are still missing: guard with `?.` in the component or stub them in the test.
+- Roles that surprise: items of a single-select `ToggleGroup` are `radio`s; `Menubar` triggers are `menuitem`s.
+- `getByText` also matches `sr-only` text; scope it with `{selector: ...}`.
+- jsdom prints `Not implemented: HTMLCanvasElement.prototype.getContext` during axe tests and `Not implemented: navigation`. Both are noise; the run still passes.
+
 ## Doc comments are required: `npm run check` enforces them
 
 Every prop in an exported `*Props` interface or type, every exported component and every exported hook needs a `/** ... */` comment. The docs site props tables and the AI registry are generated from these comments, so a missing one is a hole in the docs.
@@ -115,10 +141,23 @@ Every prop in an exported `*Props` interface or type, every exported component a
 Several agents may build at once, each in its own worktree. To avoid conflicts:
 
 1. Work only inside the folders and CSS files your task owns (named in your task). Do not edit another category's component or CSS files; open a note in your report instead.
-2. Never hand-edit or commit generated files: `packages/react/src/index.ts`, `registry/`, `llms.txt`, `llms-full.txt`, any `dist/`.
+2. Never hand-edit generated files (see "Generated files" below).
 3. Shared files (`tokens.css`, `base.css`, `accents.css`, `options.css`, `utilities.css`, `package.json`, `AGENTS.md`, `DESIGN.md`) belong to the `core` task. If you need a token, add it in your own CSS file as a component-scoped custom property (`--dialog-width`) and note it in your report.
 4. Commit early and small, on your own branch. Message style: `button: add loading state`.
 5. Finish with the Definition of done below, and report: what you built, what you could not finish, anything another task must change.
+
+### Generated files
+
+Regenerate them with their command and commit the output in the same PR as the change that caused it. CI regenerates and fails on any diff.
+
+| Files | Command | Committed | Checked in CI |
+|---|---|---|---|
+| `registry/`, `llms.txt`, `llms-full.txt` | `npm run registry` | yes | `ci.yml` diff step |
+| `packages/tokens/dist/` | `npm run tokens` | yes | `ci.yml` diff step |
+| `packages/vscode/snippets/` | `node packages/vscode/scripts/build.mjs`, after `npm run registry` | yes | no (its test runs nowhere yet) |
+| `packages/react/src/index.ts` and `styles.ts`, `apps/docs/src/**/*.generated.json`, `apps/docs/public/docs/`, `apps/docs/public/llms.txt`, any `dist/` except tokens | run by `test`, `typecheck`, `build`, `dev` | no, gitignored | n/a |
+
+On a merge conflict in a generated file, take either side and run its command again; never merge it by hand.
 
 ### Start from `origin/master`
 
@@ -132,7 +171,7 @@ Local `master` can fall behind silently. Before you branch, run `sh scripts/sync
 - [ ] `npm test`, `npm run typecheck` and `npm run check` pass.
 - [ ] Your demos render in `packages/react/src/all-demos.test.tsx` (axe, no console errors; it runs automatically).
 - [ ] The docs site shows every demo with no console errors (`npm run dev`, check the page).
-- [ ] Copy follows `DESIGN.md` §7 (verbs, plain words, no exclamation marks).
+- [ ] Copy follows `DESIGN.md` §7 (verbs, plain words, no exclamation marks). No private app, employer or customer names anywhere.
 - [ ] No new dependency, or the reason is in the report.
 
 ## Style of work
