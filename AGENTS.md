@@ -27,6 +27,7 @@ npm run typecheck                         # tsc for react + docs
 npm run check                             # css lint (contrast, raw colours, motion), doc comments, registry, typecheck, tests
 npm run build                             # css dist, react dist, docs site
 npm run size                              # gzip budgets for JS and CSS; run after build
+npm run typecheck:examples                # examples and the consumer type check, against dist; run after build
 npm run test:docs -w docs                 # docs scripts tests
 npm run registry                          # regenerate registry/ and llms*.txt
 ```
@@ -68,7 +69,7 @@ packages/css/src/components/<name>.css   styles, tokens only
 - Controlled and uncontrolled pairs follow one pattern: `value` / `defaultValue` / `onValueChange(value)`; `open` / `defaultOpen` / `onOpenChange(open)`; `checked` / `defaultChecked` / `onCheckedChange(checked)`. Pass Radix's props through where a component wraps Radix.
 - Compound components for anything with parts: `Dialog`, `DialogTrigger`, `DialogContent`, `DialogTitle`... exported as named exports (not `Dialog.Trigger`), so they tree-shake and read plainly.
 - State is exposed as `data-state="open|closed|checked|..."` and `data-disabled`, `data-invalid`, never class toggles that consumers must guess. CSS styles `[data-state=...]`.
-- Add props, never change or remove one. A new prop is optional. Name booleans positively.
+- Add props, never change or remove one. A new prop is optional, written `foo?: T | undefined` so consumers with `exactOptionalPropertyTypes` can forward their own optional props ([ADR 0009](docs/decisions/0009-exact-optional-property-types.md)). Name booleans positively.
 - No default exports in component files. No barrel imports across components: import from `../other-component`.
 - Server-safe: no `window` access during render. Add `'use client'` only where hooks or handlers are used (a file-top directive is fine in every interactive component).
 - No runtime CSS-in-JS, no Tailwind, no icon libraries. Icons are inline SVG with `currentColor`, `aria-hidden`, passed as `children` or props. If a component needs a built-in glyph (chevron, check), write a 10-line inline SVG in that component's folder.
