@@ -1005,7 +1005,7 @@ Status: stable | Category: forms | Related: autocomplete, checkbox, color-picker
 Import: import {Calendar} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- labels?: { previousMonth?: string; nextMonth?: string; } — Texts for the month arrows, for other languages. Defaults are English.
+- labels?: { previousMonth?: string | undefined; nextMonth?: string | undefined; } — Texts for the month arrows, for other languages. Defaults are English.
 - value?: Date | null — The selected date when controlled; `null` means none. Pair with `onValueChange`.
 - defaultValue?: Date | null = null — The initially selected date when uncontrolled. Default none.
 - onValueChange?: ((date: Date | null) => void) — Called with the date the user picks, or `null` when the user presses "Clear date" (only with `clearable`).
@@ -1914,7 +1914,7 @@ Import: import {FileUpload} from '@monoline/react'
 Props (name: type = default, ? means optional):
 - label?: ReactNode = 'Drop files here or choose' — The visible prompt, for example "Drop files here or choose".
 - onFilesChange?: ((files: File[]) => void) — Called with the full current list whenever it changes.
-- labels?: { list?: string; remove?: string; } — Texts for other languages. `list` names the file list, `remove` is the button word. Defaults "Selected files" and "Remove".
+- labels?: { list?: string | undefined; remove?: string | undefined; } — Texts for other languages. `list` names the file list, `remove` is the button word. Defaults "Selected files" and "Remove".
 
 Usage:
 ```tsx
@@ -2656,7 +2656,7 @@ Status: stable | Category: forms | Related: input, field
 Import: import {NumberInput} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- labels?: { decrease?: string; increase?: string; } — Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase".
+- labels?: { decrease?: string | undefined; increase?: string | undefined; } — Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase".
 - size?: "sm" | "md" | "lg" = 'md' — `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size.
 - invalid?: boolean — Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`.
 
@@ -2846,7 +2846,7 @@ Props (name: type = default, ? means optional):
 - pageCount: number — Total number of pages.
 - onPageChange?: ((page: number) => void) — Called with the new 1-based page number when the user picks a page or presses Prev or Next.
 - siblings?: number = 1 — How many numbers to show on each side of the current page.
-- labels?: { navigation?: string; previous?: string; next?: string; page?: (page: number) => string; } — Texts for other languages: the landmark name, the two buttons and each page button's name. Defaults are English.
+- labels?: { navigation?: string | undefined; previous?: string | undefined; next?: string | undefined; page?: ((page: number) => string) | undefined; } — Texts for other languages: the landmark name, the two buttons and each page button's name. Defaults are English.
 
 Usage:
 ```tsx
@@ -2876,7 +2876,7 @@ Status: stable | Category: forms | Related: input, field
 Import: import {PasswordInput} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- labels?: { show?: string; hide?: string; password?: string; } — Button text, for other languages. Defaults "Show", "Hide" and "password" (the last is read by screen readers only).
+- labels?: { show?: string | undefined; hide?: string | undefined; password?: string | undefined; } — Button text, for other languages. Defaults "Show", "Hide" and "password" (the last is read by screen readers only).
 
 Usage:
 ```tsx
@@ -3028,7 +3028,7 @@ Status: stable | Category: forms | Related: autocomplete, calendar, checkbox
 Import: import {RangeCalendar} from '@monoline/react'
 
 Props (name: type = default, ? means optional):
-- labels?: { previousMonth?: string; nextMonth?: string; } — Texts for the month arrows, for other languages. Defaults are English.
+- labels?: { previousMonth?: string | undefined; nextMonth?: string | undefined; } — Texts for the month arrows, for other languages. Defaults are English.
 - value?: DateRange — The selected range when controlled. Pair with `onValueChange`.
 - defaultValue?: DateRange = EMPTY — The initially selected range when uncontrolled. Default empty.
 - onValueChange?: ((range: DateRange) => void) — Called after every pick. The first pick gives `{start, end: null}`; the second completes the range.
@@ -3515,7 +3515,7 @@ Props (name: type = default, ? means optional):
 - defaultValue?: number | [number, number] — The starting value when uncontrolled: a number for one thumb or `[low, high]` for a range. Default 0.
 - onValueChange?: ((value: number[]) => void) — Called with an array holding the value of each thumb while the user drags or uses the keyboard.
 - aria-label: string — Accessible name of the slider. For a range, each thumb gets this name followed by "minimum" or "maximum" (see `labels`).
-- labels?: { minimum?: string; maximum?: string; } — Words added to the name of a range's two thumbs, for other languages. Defaults "minimum" and "maximum".
+- labels?: { minimum?: string | undefined; maximum?: string | undefined; } — Words added to the name of a range's two thumbs, for other languages. Defaults "minimum" and "maximum".
 
 Usage:
 ```tsx

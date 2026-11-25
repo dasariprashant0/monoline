@@ -68,7 +68,7 @@
     },
     {
       "path": "packages/react/src/components/spinner/spinner.tsx",
-      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface SpinnerProps extends HTMLAttributes<HTMLSpanElement> {\n  /** What is loading, read by screen readers. */\n  label?: string;\n}\n\n/** A small stepped spinner. It stops under reduced motion (base styles). */\nexport const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner({label = 'Loading', className, ...rest}, ref) {\n  return <span ref={ref} role=\"status\" aria-label={label} className={cx('spinner', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface SpinnerProps extends HTMLAttributes<HTMLSpanElement> {\n  /** What is loading, read by screen readers. */\n  label?: string | undefined;\n}\n\n/** A small stepped spinner. It stops under reduced motion (base styles). */\nexport const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner({label = 'Loading', className, ...rest}, ref) {\n  return <span ref={ref} role=\"status\" aria-label={label} className={cx('spinner', className)} {...rest} />;\n});\n"
     }
   ],
   "utils": []
