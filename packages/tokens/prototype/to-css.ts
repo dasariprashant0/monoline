@@ -7,7 +7,8 @@ import {cssName} from '../scripts/lib.ts';
 
 type Token = {$value: string; $description?: string};
 type Meta = {file: string; selector: string; css?: Record<string, string>};
-type Doc = Record<string, Record<string, unknown>> & {
+type Layer = Record<string, unknown> & {$description?: string; $extensions: {monoline: Meta}};
+type Doc = Record<string, unknown> & {
   $extensions: {monoline: {headers: Record<string, string>; rules: Record<string, string[]>}};
 };
 
@@ -16,9 +17,10 @@ export function toCss(doc: Doc) {
   const out: Record<string, string[]> = Object.fromEntries(
     Object.entries(headers).map(([f, h]) => [f, [`/* ${h} */`]]),
   );
-  for (const [key, layer] of Object.entries(doc)) {
+  for (const [key, value] of Object.entries(doc)) {
     if (key.startsWith('$')) continue;
-    const {file, selector, css = {}} = (layer.$extensions as {monoline: Meta}).monoline;
+    const layer = value as Layer;
+    const {file, selector, css = {}} = layer.$extensions.monoline;
     const lines = layer.$description ? [`/* ${layer.$description} */`] : [];
     lines.push(`${selector} {`);
     for (const [group, tokens] of Object.entries(layer)) {
