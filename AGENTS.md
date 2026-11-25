@@ -76,7 +76,7 @@ packages/react/src/components/<name>/
 packages/css/src/components/<name>.css   styles, tokens only
 ```
 
-`meta.json` is validated by `npm run registry`. `name` equals the folder. `css` lists the stylesheets (in `packages/css/src/components/`) the component needs. `uses` names the Monoline components it is built from and `related` names others worth seeing; both feed the registry's related list.
+`meta.json` is validated by `npm run registry`. `name` equals the folder. `css` lists the stylesheets (in `packages/css/src/components/`) the component needs. `uses` names the Monoline components it is built from and `related` names others worth seeing; both feed the registry's related list. Every component folder has all five files except `direction-provider`, which has no test yet.
 
 ### API conventions (follow these so every component feels the same)
 
