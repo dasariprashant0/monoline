@@ -5,9 +5,9 @@ export type BentoGridProps = HTMLAttributes<HTMLDivElement>;
 
 export interface BentoCardProps extends HTMLAttributes<HTMLDivElement> {
   /** Columns to span once the grid has room for them. Default 1. */
-  colSpan?: 1 | 2 | 3;
+  colSpan?: 1 | 2 | 3 | undefined;
   /** Rows to span. Default 1. */
-  rowSpan?: 1 | 2;
+  rowSpan?: 1 | 2 | undefined;
 }
 
 /** A responsive grid for an asymmetric set of cards: one column on phones, two on tablets, three on desktops. */

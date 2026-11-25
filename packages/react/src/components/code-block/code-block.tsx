@@ -7,13 +7,13 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ch
   /** The text to show and to copy. Rendered as text with coloured spans, never as HTML. */
   code: string;
   /** A file name (`button.tsx`) or label (`bash`) shown in the header. Also names the region and picks the language. */
-  title?: string;
+  title?: string | undefined;
   /** Syntax colouring: `tsx`, `ts`, `jsx`, `js`, `css`, `html`, `bash`, `json` or `text`. Default: guessed from `title`, else `text`. */
-  language?: Language;
+  language?: Language | undefined;
   /** Number each line. Use for longer listings, not one-line commands. */
-  lineNumbers?: boolean;
+  lineNumbers?: boolean | undefined;
   /** Hide the copy button. */
-  hideCopy?: boolean;
+  hideCopy?: boolean | undefined;
 }
 
 const CopyIcon = () => <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.25"><rect x="5.5" y="5.5" width="8" height="8" /><path d="M10.5 5.5v-3h-8v8h3" /></svg>;

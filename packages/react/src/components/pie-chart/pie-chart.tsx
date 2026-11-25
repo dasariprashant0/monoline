@@ -9,11 +9,11 @@ export interface PieChartProps extends Omit<HTMLAttributes<HTMLDivElement>, 'tit
   /** Slices: `[{label: 'Search', value: 40}]`. Negative values count as 0. */
   data: ChartDatum[];
   /** Hole size as a fraction of the radius, from 0 (pie) to just under 1. 0.6 makes a donut. Default 0. */
-  innerRadius?: number;
+  innerRadius?: number | undefined;
   /** Chart height in px. Default 240. */
-  height?: number;
+  height?: number | undefined;
   /** Format a value for the legend, tooltip and table. */
-  valueFormat?: (value: number) => string;
+  valueFormat?: ((value: number) => string) | undefined;
 }
 
 const pct = (f: number) => `${Math.round(f * 1000) / 10}%`;

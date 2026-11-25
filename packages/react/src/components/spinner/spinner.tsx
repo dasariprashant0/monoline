@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface SpinnerProps extends HTMLAttributes<HTMLSpanElement> {
   /** What is loading, read by screen readers. */
-  label?: string;
+  label?: string | undefined;
 }
 
 /** A small stepped spinner. It stops under reduced motion (base styles). */

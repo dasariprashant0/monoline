@@ -10,7 +10,7 @@ export interface DescriptionListProps extends Omit<HTMLAttributes<HTMLDListEleme
   /** The term and details pairs to show, in order. */
   items: DescriptionItem[];
   /** `stacked` puts each term above its value; `inline` puts them side by side. */
-  layout?: 'inline' | 'stacked';
+  layout?: 'inline' | 'stacked' | undefined;
 }
 
 /** A `dl` of term and details pairs, for facts such as an order summary or a profile. `layout` switches between side by side and stacked. */

@@ -12,10 +12,10 @@ let lastClosed = 0; // when any tooltip last closed: moving between tooltips sho
 /** Wrap your app (or a region) once. Sets the shared open delay (`delayDuration`, default 700 ms) and how long after one tooltip closes the next opens at once (`skipDelayDuration`, default 300 ms). */
 export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, children}: {
   /** Milliseconds to wait before a tooltip shows on hover. */
-  delayDuration?: number;
+  delayDuration?: number | undefined;
   /** Milliseconds after a tooltip closes during which the next one opens without delay. */
-  skipDelayDuration?: number;
-  children?: ReactNode;
+  skipDelayDuration?: number | undefined;
+  children?: ReactNode | undefined;
 }) {
   return <Shared.Provider value={{delayDuration, skipDelayDuration}}>{children}</Shared.Provider>;
 }
@@ -35,15 +35,15 @@ export interface TooltipProps {
   /** The trigger element. It receives aria-describedby when open. */
   children: ReactNode;
   /** Which side of the trigger the tooltip appears on: `top` (default), `right`, `bottom` or `left`. */
-  side?: 'top' | 'right' | 'bottom' | 'left';
+  side?: 'top' | 'right' | 'bottom' | 'left' | undefined;
   /** Milliseconds to wait before showing on hover. Defaults to the `TooltipProvider` value. */
-  delayDuration?: number;
+  delayDuration?: number | undefined;
   /** Whether the tooltip is open when controlled. Pair with `onOpenChange`. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Whether the tooltip starts open when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the new open state when the tooltip shows or hides. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 /**

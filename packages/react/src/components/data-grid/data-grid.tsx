@@ -10,20 +10,20 @@ export interface DataGridColumn<T> {
   /** Plain text: it is the column header and its accessible name. */
   header: string;
   /** Key of the row to show when `cell` is not given. */
-  field?: keyof T & string;
+  field?: keyof T & string | undefined;
   /** Custom cell content. */
-  cell?: (row: T, index: number) => ReactNode;
+  cell?: ((row: T, index: number) => ReactNode) | undefined;
   /** The value sorting compares. Defaults to `row[field]`. */
-  sortValue?: (row: T) => string | number | null | undefined;
+  sortValue?: ((row: T) => string | number | null | undefined) | undefined;
   /** Pixels as a number, or any CSS grid track (`'2fr'`). Default: flexible, at least 120px. */
-  width?: number | string;
-  sortable?: boolean;
-  align?: 'start' | 'end';
+  width?: number | string | undefined;
+  sortable?: boolean | undefined;
+  align?: 'start' | 'end' | undefined;
 }
 
 export interface DataGridSort { id: string; direction: 'asc' | 'desc' }
 
-type Name = {'aria-label': string; 'aria-labelledby'?: string} | {'aria-labelledby': string; 'aria-label'?: string};
+type Name = {'aria-label': string; 'aria-labelledby'?: string | undefined} | {'aria-labelledby': string; 'aria-label'?: string | undefined};
 
 export type DataGridProps<T> = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'aria-label' | 'aria-labelledby'> & Name & {
   /** The column definitions: id, header, how to read each cell, width and sortability. */
@@ -31,39 +31,39 @@ export type DataGridProps<T> = Omit<HTMLAttributes<HTMLDivElement>, 'children' |
   /** All the rows. Only the visible ones are rendered, so tens of thousands are fine. */
   rows: T[];
   /** Stable id per row, used for selection. Default: the row's position in `rows`. */
-  getRowId?: (row: T, index: number) => string;
+  getRowId?: ((row: T, index: number) => string) | undefined;
   /** Row height in px. Every row has the same height; that is what makes virtualising cheap. Default 36. */
-  rowHeight?: number;
+  rowHeight?: number | undefined;
   /** Height of the scrolling grid, header included. Default 400. */
-  height?: number | string;
+  height?: number | string | undefined;
   /** Extra rows rendered above and below the visible ones. Default 5. */
-  overscan?: number;
+  overscan?: number | undefined;
   /** Whether rows can be selected: `none` (default), `single` or `multiple`. */
-  selectionMode?: 'none' | 'single' | 'multiple';
+  selectionMode?: 'none' | 'single' | 'multiple' | undefined;
   /** Controlled selected row ids. Pair with `onSelectedIdsChange`. */
-  selectedIds?: string[];
+  selectedIds?: string[] | undefined;
   /** Initially selected row ids when uncontrolled. */
-  defaultSelectedIds?: string[];
+  defaultSelectedIds?: string[] | undefined;
   /** Called with the new list of selected row ids. */
-  onSelectedIdsChange?: (ids: string[]) => void;
+  onSelectedIdsChange?: ((ids: string[]) => void) | undefined;
   /** Controlled sort; `null` is unsorted. */
-  sort?: DataGridSort | null;
+  sort?: DataGridSort | null | undefined;
   /** Initial sort when uncontrolled; `null` is unsorted. */
-  defaultSort?: DataGridSort | null;
+  defaultSort?: DataGridSort | null | undefined;
   /** Called with the new sort, or `null` when sorting is cleared. */
-  onSortChange?: (sort: DataGridSort | null) => void;
+  onSortChange?: ((sort: DataGridSort | null) => void) | undefined;
   /** Do not sort in the grid: `rows` arrive already ordered (server-side sorting). */
-  manualSort?: boolean;
+  manualSort?: boolean | undefined;
   /** Shown when `rows` is empty. */
-  emptyState?: ReactNode;
+  emptyState?: ReactNode | undefined;
 };
 
 const collator = new Intl.Collator(undefined, {numeric: true});
 const cmp = (a: unknown, b: unknown) => (a == null ? (b == null ? 0 : 1) : b == null ? -1 : typeof a === 'number' && typeof b === 'number' ? a - b : collator.compare(String(a), String(b)));
 const MIN_COL = 120;
-const track = (c: {width?: number | string}) => (typeof c.width === 'number' ? `${c.width}px` : (c.width ?? `minmax(${MIN_COL}px, 1fr)`));
+const track = (c: {width?: number | string | undefined}) => (typeof c.width === 'number' ? `${c.width}px` : (c.width ?? `minmax(${MIN_COL}px, 1fr)`));
 
-function Chevron({dir}: {dir?: 'asc' | 'desc'}) {
+function Chevron({dir}: {dir?: 'asc' | 'desc' | undefined}) {
   return <svg className="data-grid-sort" data-direction={dir} viewBox="0 0 10 10" width="10" height="10" aria-hidden="true" focusable="false"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>;
 }
 
@@ -293,4 +293,4 @@ function DataGridInner<T>(
  * PageUp/PageDown move between cells; only visible rows are mounted.
  * @example <DataGrid aria-label="Orders" columns={columns} rows={rows} height={400} />
  */
-export const DataGrid = forwardRef(DataGridInner) as <T>(props: DataGridProps<T> & {ref?: Ref<HTMLDivElement>}) => ReactElement;
+export const DataGrid = forwardRef(DataGridInner) as <T>(props: DataGridProps<T> & {ref?: Ref<HTMLDivElement> | undefined}) => ReactElement;

@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** `accent` only for "new" or "now". */
-  variant?: 'outline' | 'solid' | 'accent';
+  variant?: 'outline' | 'solid' | 'accent' | undefined;
 }
 
 /** A short status word or count. Never rely on its colour alone: the text carries the meaning. */

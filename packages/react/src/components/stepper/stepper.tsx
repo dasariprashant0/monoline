@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface StepperStep {
   title: ReactNode;
-  description?: ReactNode;
+  description?: ReactNode | undefined;
 }
 
 export interface StepperProps extends HTMLAttributes<HTMLOListElement> {

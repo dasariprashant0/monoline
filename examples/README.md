@@ -1,12 +1,14 @@
 # Examples
 
-Three small apps that use Monoline the way a consumer would: `import '@monoline/css/core.css'` plus one CSS file per component, and `import {…} from '@monoline/react'`, built with Vite and React 19, type-checked against `packages/react/dist/index.d.ts` in strict mode. They exist to catch the problems unit tests cannot (cascade, layout, hover, overlays at 375px). What they found is in [../docs/dogfood-log.md](../docs/dogfood-log.md).
+Three small apps that use Monoline the way a consumer would: `import '@monoline/css/core.css'` plus one CSS file per component, and `import {…} from '@monoline/react'`, built with Vite and React 19, type-checked against `packages/react/dist/index.d.ts` in strict mode with `exactOptionalPropertyTypes`. They exist to catch the problems unit tests cannot (cascade, layout, hover, overlays at 375px). What they found is in [../docs/dogfood-log.md](../docs/dogfood-log.md).
 
 | App | What it shows |
 |---|---|
 | `dashboard` | `BlockDashboardShell`, `Stat`, `DataTable` with sorting and paging, `LineChart`, `BarChart`, `DatePicker`, `Command` (Ctrl or Cmd + K), `Dialog`, toasts, theme and accent menu |
 | `auth-settings` | sign-in and sign-up with validation (`Form`, `Field`, `PasswordInput`), `Tabs`, `Switch`, `Select`, `NativeSelect`, `FileUpload`, `AlertDialog` danger zone. Routes by hash: `#signin`, `#signup`, `#settings` |
 | `landing` | `BlockHero`, `BlockFeatureGrid`, `BlockPricing` with billing toggle, `BlockTestimonials`, `BlockCta`, `BlockFooter`, light and dark switch |
+
+`consumer-types/` is not an app: one type-only file that fails to compile if an optional prop of any exported component rejects an explicit `undefined` ([ADR 0009](../docs/decisions/0009-exact-optional-property-types.md)). `npm run typecheck:examples` checks it and the three apps.
 
 ## Starter
 

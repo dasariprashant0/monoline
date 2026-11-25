@@ -11,7 +11,7 @@ export const DialogClose = ModalClose;
 
 export interface DialogContentProps extends ModalContentProps {
   /** Shows a "Close" text button in the corner. Escape and the backdrop always close it. */
-  showClose?: boolean;
+  showClose?: boolean | undefined;
 }
 
 /** The dialog panel (a native `<dialog>` opened with `showModal()`, so focus is trapped and the page behind is inert). Include a DialogTitle (required for assistive tech) and ideally a DialogDescription. */

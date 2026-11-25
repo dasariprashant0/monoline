@@ -8,48 +8,48 @@ import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 /** One stop in a tour. */
 export interface TourStep {
   /** The element to highlight: a CSS selector, an element, or a function returning one. Leave out to show a centred card with no highlight. */
-  target?: string | HTMLElement | (() => HTMLElement | null);
+  target?: string | HTMLElement | (() => HTMLElement | null) | undefined;
   /** Heading of the step card. Also names the dialog. */
   title: ReactNode;
   /** Body text of the step card. */
-  content?: ReactNode;
+  content?: ReactNode | undefined;
   /** Preferred side of the target for the card: `top`, `bottom`, `start` or `end`. The card flips if there is no room. Default `bottom`. */
-  placement?: 'top' | 'bottom' | 'start' | 'end';
+  placement?: 'top' | 'bottom' | 'start' | 'end' | undefined;
 }
 
 /** Button and announcement text, for translation. */
 export interface TourLabels {
   /** Text of the next button. Default "Next". */
-  next?: string;
+  next?: string | undefined;
   /** Text of the back button. Default "Back". */
-  back?: string;
+  back?: string | undefined;
   /** Text of the skip button. Default "Skip tour". */
-  skip?: string;
+  skip?: string | undefined;
   /** Text of the next button on the last step. Default "Done". */
-  done?: string;
+  done?: string | undefined;
 }
 
 export interface TourProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'children'> {
   /** The steps, in order. */
   steps: TourStep[];
   /** Whether the tour is showing, when controlled. Pair with `onOpenChange`. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Whether the tour starts open when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with false when the tour ends: Skip, Escape or Done. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** The current step index when controlled. Pair with `onStepChange`. */
-  step?: number;
+  step?: number | undefined;
   /** The step to start on when uncontrolled. Default 0. */
-  defaultStep?: number;
+  defaultStep?: number | undefined;
   /** Called with the new index when the user moves between steps. */
-  onStepChange?: (step: number) => void;
+  onStepChange?: ((step: number) => void) | undefined;
   /** Called when the user finishes the last step (not when they skip or press Escape). */
-  onFinish?: () => void;
+  onFinish?: (() => void) | undefined;
   /** Extra space in px around the highlighted element. Default 6. */
-  spotlightPadding?: number;
+  spotlightPadding?: number | undefined;
   /** Replaces the button text. */
-  labels?: TourLabels;
+  labels?: TourLabels | undefined;
 }
 
 type Box = {top: number; left: number; width: number; height: number};

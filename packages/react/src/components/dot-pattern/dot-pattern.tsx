@@ -3,11 +3,11 @@ import {cx} from '../../utils/cx';
 
 export interface DotPatternProps extends Omit<SVGAttributes<SVGSVGElement>, 'children'> {
   /** Distance between dot centres, in px. Default 16. */
-  gap?: number;
+  gap?: number | undefined;
   /** Dot radius, in px. Default 1. */
-  radius?: number;
+  radius?: number | undefined;
   /** Fade the pattern out towards the edges. */
-  fade?: boolean;
+  fade?: boolean | undefined;
 }
 
 /** A decorative dot grid that fills its positioned parent. Colour comes from `currentColor` (default `--rule`). Always `aria-hidden`. */

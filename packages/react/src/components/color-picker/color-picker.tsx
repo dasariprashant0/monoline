@@ -17,19 +17,19 @@ function normalise(raw: string): string | null {
 
 export interface ColorPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
   /** The colour as "#rrggbb". */
-  value?: string;
+  value?: string | undefined;
   /** The initial colour as "#rrggbb" when uncontrolled. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the new colour as "#rrggbb" when the user picks a swatch or types a valid hex. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Form field name. A hidden input submits the colour as `#rrggbb`. */
-  name?: string;
+  name?: string | undefined;
   /** Preset swatches, each a CSS hex colour. Set from this prop, never from the stylesheet. */
-  colors?: string[];
+  colors?: string[] | undefined;
   /** Stops the user changing the colour. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Accessible name for the group. */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
 }
 
 /**

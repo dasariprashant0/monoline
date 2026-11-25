@@ -17,13 +17,13 @@ function usePopoverCtx(): Ctx {
 
 export interface PopoverProps {
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state when the user opens or dismisses it. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** The parts of the component: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** The root of a floating panel. Holds the open state (`open`, `defaultOpen`, `onOpenChange`); put a `PopoverTrigger` and `PopoverContent` inside. */
@@ -33,7 +33,7 @@ export function Popover({open, defaultOpen = false, onOpenChange, children}: Pop
   return <Context.Provider value={{open: isOpen, setOpen, contentId: useId(), trigger, anchor}}>{children}</Context.Provider>;
 }
 
-interface AsChild { /** Render your own element instead of the default; it receives the props and handlers. */ asChild?: boolean }
+interface AsChild { /** Render your own element instead of the default; it receives the props and handlers. */ asChild?: boolean | undefined }
 
 /** The element (usually a `Button`) that toggles the popover; use `asChild` to render your own element. */
 export const PopoverTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & AsChild>(function PopoverTrigger({asChild, onClick, ...rest}, ref) {
@@ -58,13 +58,13 @@ export const PopoverClose = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<H
 
 export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement>, Placement {
   /** Called when Escape is pressed; call `event.preventDefault()` to keep it open. */
-  onEscapeKeyDown?: (event: Event) => void;
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
   /** Called when a press or focus lands outside; call `event.preventDefault()` to keep it open. */
-  onInteractOutside?: (event: Event) => void;
+  onInteractOutside?: ((event: Event) => void) | undefined;
   /** Called after it opens, before focus moves in; `preventDefault()` keeps focus where it is or lets you move it yourself. */
-  onOpenAutoFocus?: (event: Event) => void;
+  onOpenAutoFocus?: ((event: Event) => void) | undefined;
   /** Called after it closes, before focus returns to the trigger; `preventDefault()` lets you move focus yourself. */
-  onCloseAutoFocus?: (event: Event) => void;
+  onCloseAutoFocus?: ((event: Event) => void) | undefined;
 }
 
 const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel({className, sideOffset = 8, align = 'start', side, onEscapeKeyDown, onInteractOutside, onOpenAutoFocus, onCloseAutoFocus, onKeyDown, ...rest}, forwarded) {

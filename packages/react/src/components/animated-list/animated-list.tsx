@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface AnimatedListProps extends HTMLAttributes<HTMLUListElement> {
   /** Milliseconds between one item entering and the next. Default 300. */
-  interval?: number;
+  interval?: number | undefined;
 }
 
 /**

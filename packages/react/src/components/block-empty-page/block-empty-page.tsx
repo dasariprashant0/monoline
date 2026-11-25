@@ -5,15 +5,15 @@ import {Text} from '../text';
 
 export interface BlockEmptyPageProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** A short code such as "404" or "Empty". Decorative. */
-  code?: ReactNode;
+  code?: ReactNode | undefined;
   /** The message headline, for example "Page not found". */
   title: ReactNode;
   /** Optional muted sentence explaining what happened or what to do next. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** The way out: a solid Button or link, and maybe a second. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
   /** Outline level of the title. A full-page empty state is usually the page's h1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** A full-page message: not found, nothing here yet, access denied. For a list or table with no rows use `EmptyState`. */

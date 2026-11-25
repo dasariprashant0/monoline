@@ -6,15 +6,15 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export interface BoxProps extends HTMLAttributes<HTMLDivElement> {
   /** Padding on all sides: a step on the spacing scale (1 = --s1 up to 9). */
-  padding?: Step;
+  padding?: Step | undefined;
   /** Horizontal padding (left and right) as a step 1 to 9 on the spacing scale; overrides `padding` on that axis. */
-  paddingX?: Step;
+  paddingX?: Step | undefined;
   /** Vertical padding (top and bottom) as a step 1 to 9 on the spacing scale; overrides `padding` on that axis. */
-  paddingY?: Step;
+  paddingY?: Step | undefined;
   /** A thin rule on every side (`true`) or on one side. */
-  border?: boolean | 'top' | 'right' | 'bottom' | 'left' | 'start' | 'end';
+  border?: boolean | 'top' | 'right' | 'bottom' | 'left' | 'start' | 'end' | undefined;
   /** Render the child (a `section`, `aside`, `li`) with the box styles. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 const v = (s: Step | undefined) => (s ? `var(--s${s})` : undefined);

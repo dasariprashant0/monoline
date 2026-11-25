@@ -4,19 +4,19 @@ import {cx} from '../../utils/cx';
 
 export interface FlexProps extends HTMLAttributes<HTMLDivElement> {
   /** Main axis: `row` (default), `column`, `row-reverse` or `column-reverse`. */
-  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse' | undefined;
   /** Lets children wrap onto new lines instead of shrinking. Default false. */
-  wrap?: boolean;
+  wrap?: boolean | undefined;
   /** Cross-axis alignment (`align-items`): `start`, `center`, `end`, `stretch` or `baseline`. */
-  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline';
+  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline' | undefined;
   /** Main-axis distribution (`justify-content`): `start`, `center`, `end`, `between` or `around`. */
-  justify?: 'start' | 'center' | 'end' | 'between' | 'around';
+  justify?: 'start' | 'center' | 'end' | 'between' | 'around' | undefined;
   /** Step on the spacing scale: 1 = --s1 up to 9. */
-  gap?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+  gap?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | undefined;
   /** `inline-flex` instead of `flex`. */
-  inline?: boolean;
+  inline?: boolean | undefined;
   /** Render the child element (a `ul`, `nav`, `section`) with the flex styles instead of a `div`. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /**

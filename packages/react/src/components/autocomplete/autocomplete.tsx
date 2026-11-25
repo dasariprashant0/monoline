@@ -7,15 +7,15 @@ export interface AutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputEle
   /** Suggestions shown while typing; matched by substring, case-insensitive. */
   suggestions: string[];
   /** The text in the field. */
-  value?: string;
+  value?: string | undefined;
   /** Initial text when the field is uncontrolled. Default empty. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the text on every change, and with the suggestion when one is picked. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /**

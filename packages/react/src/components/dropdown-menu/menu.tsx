@@ -18,9 +18,9 @@ const takeIntent = (): typeof intent => { const how = Date.now() - intentAt < 10
 export interface MenuCtx {
   open: boolean; setOpen: (o: boolean) => void; trigger: RefObject<HTMLElement | null>; triggerId: string; menuId: string;
   /** Element to position against when it is not the trigger (the pointer, for a context menu). */
-  anchor?: () => Element | null;
+  anchor?: (() => Element | null) | undefined;
   /** Menubar only: ArrowLeft/ArrowRight inside the panel moves to the neighbouring menu. */
-  step?: (dir: 1 | -1, from: Element | null) => void;
+  step?: ((dir: 1 | -1, from: Element | null) => void) | undefined;
 }
 /** Internal: open state, trigger and ids shared by a menu and its parts. */
 export const MenuContext = createContext<MenuCtx | null>(null);
@@ -33,17 +33,17 @@ export function useMenuCtx(): MenuCtx {
 
 export interface MenuProps {
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** The parts of the component: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** Internal: holds a menu's open state for DropdownMenu, ContextMenu and Menubar. */
-export function MenuRoot({open, defaultOpen = false, onOpenChange, children, extra}: MenuProps & {extra?: Partial<MenuCtx>}) {
+export function MenuRoot({open, defaultOpen = false, onOpenChange, children, extra}: MenuProps & {extra?: Partial<MenuCtx> | undefined}) {
   const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: onOpenChange});
   const trigger = useRef<HTMLElement | null>(null), id = useId();
   return <MenuContext.Provider value={{open: isOpen, setOpen, trigger, triggerId: id + 't', menuId: id + 'm', ...extra}}>{children}</MenuContext.Provider>;
@@ -51,9 +51,9 @@ export function MenuRoot({open, defaultOpen = false, onOpenChange, children, ext
 
 export interface MenuContentProps extends HTMLAttributes<HTMLDivElement>, Placement {
   /** Called when Escape is pressed; call `event.preventDefault()` to keep it open. */
-  onEscapeKeyDown?: (event: Event) => void;
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
   /** Called after it closes, before focus returns to the trigger; `preventDefault()` lets you move focus yourself. */
-  onCloseAutoFocus?: (event: Event) => void;
+  onCloseAutoFocus?: ((event: Event) => void) | undefined;
 }
 
 const ITEM = '[role^=menuitem]:not([aria-disabled=true])';
@@ -98,13 +98,13 @@ export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(function
 
 export interface MenuItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   /** Makes the item unselectable and skipped by the keyboard. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Called when the item is chosen by click, Enter or Space. Call `event.preventDefault()` to keep the menu open. */
-  onSelect?: (event: Event) => void;
+  onSelect?: ((event: Event) => void) | undefined;
 }
 
 /** Internal: one menu entry; `role` picks menuitem, menuitemcheckbox or menuitemradio. */
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: string}>(function MenuItem({role = 'menuitem', disabled, onSelect, onClick, onKeyDown, onPointerMove, onFocus, onBlur, ...rest}, ref) {
+export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: string | undefined}>(function MenuItem({role = 'menuitem', disabled, onSelect, onClick, onKeyDown, onPointerMove, onFocus, onBlur, ...rest}, ref) {
   const c = useMenuCtx();
   const choose = () => { const e = new Event('menu.itemSelect', {cancelable: true}); onSelect?.(e); if (!e.defaultPrevented) c.setOpen(false); };
   return (
@@ -121,9 +121,9 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: strin
 
 export interface MenuCheckboxItemProps extends MenuItemProps {
   /** Whether the entry is on. */
-  checked?: boolean | 'indeterminate';
+  checked?: boolean | 'indeterminate' | undefined;
   /** Called with the next state when the entry is chosen. */
-  onCheckedChange?: (checked: boolean) => void;
+  onCheckedChange?: ((checked: boolean) => void) | undefined;
 }
 /** Internal: a menu entry that toggles. */
 export const MenuCheckboxItem = forwardRef<HTMLDivElement, MenuCheckboxItemProps>(function MenuCheckboxItem({checked = false, onCheckedChange, onSelect, children, className, ...rest}, ref) {
@@ -134,12 +134,12 @@ export const MenuCheckboxItem = forwardRef<HTMLDivElement, MenuCheckboxItemProps
   );
 });
 
-const Radio = createContext<{value?: string; onValueChange?: (v: string) => void}>({});
+const Radio = createContext<{value?: string | undefined; onValueChange?: ((v: string) => void) | undefined}>({});
 export interface MenuRadioGroupProps extends HTMLAttributes<HTMLDivElement> {
   /** The chosen item's value. */
-  value?: string;
+  value?: string | undefined;
   /** Called with the value of the item the user chose. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
 }
 /** Internal: a set of radio entries sharing one value. */
 export const MenuRadioGroup = forwardRef<HTMLDivElement, MenuRadioGroupProps>(function MenuRadioGroup({value, onValueChange, ...rest}, ref) {

@@ -12,9 +12,9 @@ export interface TimelineItemProps extends Omit<HTMLAttributes<HTMLLIElement>, '
   /** What happened, shown as the entry's heading line. */
   title: ReactNode;
   /** Human text for when it happened, such as "2 days ago". */
-  time?: ReactNode;
+  time?: ReactNode | undefined;
   /** Machine-readable date for the time element. */
-  dateTime?: string;
+  dateTime?: string | undefined;
 }
 
 /** One event: a `title`, optional `time` and optional body text as children. */

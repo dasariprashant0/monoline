@@ -3,9 +3,9 @@ import {cx} from '../../utils/cx';
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   /** Shows a remove button and calls this when it is pressed. */
-  onRemove?: () => void;
+  onRemove?: (() => void) | undefined;
   /** Text used in the remove button's name: "Remove <label>". Defaults to the child text. */
-  label?: string;
+  label?: string | undefined;
 }
 
 /** A label for a category, filter or value. */

@@ -10,11 +10,11 @@ export interface DataTableColumn<T> {
   id: string;
   header: ReactNode;
   /** Value used for sorting and as the default cell text. Defaults to `row[id]`. */
-  accessor?: (row: T) => string | number | boolean | Date | null | undefined;
+  accessor?: ((row: T) => string | number | boolean | Date | null | undefined) | undefined;
   /** Custom cell content. Defaults to the accessor value as text. */
-  cell?: (row: T) => ReactNode;
-  sortable?: boolean;
-  align?: 'start' | 'end';
+  cell?: ((row: T) => ReactNode) | undefined;
+  sortable?: boolean | undefined;
+  align?: 'start' | 'end' | undefined;
 }
 
 export interface DataTableSort {
@@ -28,29 +28,29 @@ export interface DataTableProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, 
   /** The rows to show; each row's `id` field (or `getRowId`) must be unique. */
   data: T[];
   /** Stable id for a row. Defaults to `row.id`, then the index. */
-  getRowId?: (row: T, index: number) => string;
+  getRowId?: ((row: T, index: number) => string) | undefined;
   /** Names the table for assistive tech. */
   label: string;
   /** Sort state. Controlled with `sort` + `onSortChange`, or uncontrolled with `defaultSort`. `null` means unsorted. */
-  sort?: DataTableSort | null;
+  sort?: DataTableSort | null | undefined;
   /** The initial sort when uncontrolled, as `{id, direction}`. Default `null` (unsorted). */
-  defaultSort?: DataTableSort | null;
+  defaultSort?: DataTableSort | null | undefined;
   /** Called with the new sort (`null` when sorting is cleared) when the user clicks a sortable header. */
-  onSortChange?: (sort: DataTableSort | null) => void;
+  onSortChange?: ((sort: DataTableSort | null) => void) | undefined;
   /** Adds a checkbox column. Selected row ids: controlled with `selection` + `onSelectionChange`, or uncontrolled with `defaultSelection`. */
-  selectable?: boolean;
+  selectable?: boolean | undefined;
   /** Ids of the selected rows when controlled. Pair with `onSelectionChange` and `selectable`. */
-  selection?: string[];
+  selection?: string[] | undefined;
   /** Ids of the rows selected at first when uncontrolled. Default none. */
-  defaultSelection?: string[];
+  defaultSelection?: string[] | undefined;
   /** Called with the full list of selected row ids when the user checks or unchecks a row. */
-  onSelectionChange?: (ids: string[]) => void;
+  onSelectionChange?: ((ids: string[]) => void) | undefined;
   /** Rows per page. Omit to show every row. */
-  pageSize?: number;
+  pageSize?: number | undefined;
   /** Heading shown when there are no rows. Default "No results". */
-  emptyTitle?: ReactNode;
+  emptyTitle?: ReactNode | undefined;
   /** Optional sentence under the empty heading, for example how to add the first row. */
-  emptyDescription?: ReactNode;
+  emptyDescription?: ReactNode | undefined;
 }
 
 const cmp = (a: unknown, b: unknown) => {
@@ -62,7 +62,7 @@ const cmp = (a: unknown, b: unknown) => {
   return String(a).localeCompare(String(b), undefined, {numeric: true});
 };
 
-const Arrow = ({direction}: {direction?: 'asc' | 'desc'}) => (
+const Arrow = ({direction}: {direction?: 'asc' | 'desc' | undefined}) => (
   <svg className="data-table-sort" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" data-direction={direction}>
     <path d="M5 1.5v7M2 4.5l3-3 3 3" />
   </svg>
@@ -139,4 +139,4 @@ export function DataTableInner<T>(
 }
 
 /** A sortable, selectable, paginated table built from `columns` and `data`; see `DataTableInner` for behaviour. */
-export const DataTable = forwardRef(DataTableInner) as <T>(props: DataTableProps<T> & {ref?: React.Ref<HTMLDivElement>}) => ReturnType<typeof DataTableInner>;
+export const DataTable = forwardRef(DataTableInner) as <T>(props: DataTableProps<T> & {ref?: React.Ref<HTMLDivElement> | undefined}) => ReturnType<typeof DataTableInner>;

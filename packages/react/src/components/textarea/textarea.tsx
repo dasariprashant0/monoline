@@ -5,7 +5,7 @@ import {invalidAttrs, useFieldControl} from '../field';
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** A native multi-line text field. Inside a Field it is labelled and described automatically. */

@@ -11,26 +11,26 @@ export interface NotificationItem {
   /** One line saying what happened. */
   title: string;
   /** Optional detail under the title. */
-  description?: string;
+  description?: string | undefined;
   /** Optional time text such as "2 min ago". Format it yourself so it matches your locale. */
-  time?: string;
+  time?: string | undefined;
   /** True once the user has seen it. Unread items are bold, marked "Unread" for screen readers and counted in the badge. */
-  read?: boolean;
+  read?: boolean | undefined;
 }
 
 export interface NotificationCenterProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
   /** The notifications, newest first. You own this list: update it in the callbacks below. */
   notifications: NotificationItem[];
   /** Called with the id when the user marks one notification as read. Hides that item's "Mark read" button once `read` is true. */
-  onMarkRead?: (id: string) => void;
+  onMarkRead?: ((id: string) => void) | undefined;
   /** Called when the user chooses "Mark all read". The button is disabled when nothing is unread. */
-  onMarkAllRead?: () => void;
+  onMarkAllRead?: (() => void) | undefined;
   /** Called when the user chooses "Clear all". The button is disabled when the list is empty. */
-  onClear?: () => void;
+  onClear?: (() => void) | undefined;
   /** Name of the bell button and the panel. Default "Notifications". */
-  label?: string;
+  label?: string | undefined;
   /** Shown when there are no notifications. Default "You're all caught up." */
-  emptyText?: string;
+  emptyText?: string | undefined;
 }
 
 const Bell = () => <svg aria-hidden="true" viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor"><path d="M3.5 12.5h9l-1.2-1.8V7a3.3 3.3 0 0 0-6.6 0v3.7zM6.5 12.5a1.5 1.5 0 0 0 3 0" /></svg>;

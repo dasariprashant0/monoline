@@ -6,9 +6,9 @@ import {invalidAttrs, useFieldControl} from '../field';
 
 export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<typeof RadixCheckbox.Root>, 'children'> {
   /** Visible label. Without it, give the checkbox an `aria-label`. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
   /** Marks the checkbox as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 const Check = () => <svg className="checkbox-mark" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M1.5 5.5l2.5 2.5 4.5-5.5" /></svg>;

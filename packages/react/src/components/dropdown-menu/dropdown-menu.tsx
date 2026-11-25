@@ -20,7 +20,7 @@ export function DropdownMenu(props: MenuProps) { return <MenuRoot {...props} />;
 /** The button that opens the menu; use `asChild` to render your own element. Enter, Space and ArrowDown open it with the first item focused, ArrowUp with the last. */
 export const DropdownMenuTrigger = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Render your own element instead of a button; it receives the props and handlers. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }>(function DropdownMenuTrigger({asChild, onClick, onKeyDown, ...rest}, ref) {
   const c = useMenuCtx();
   const Comp = asChild ? Slot : 'button';
@@ -46,7 +46,7 @@ export const DropdownMenuContent = forwardRef<HTMLDivElement, MenuContentProps>(
 
 export interface DropdownMenuItemProps extends MenuItemProps {
   /** `danger` highlights in the danger colour. */
-  tone?: 'default' | 'danger';
+  tone?: 'default' | 'danger' | undefined;
 }
 /** One action in the menu; call `onSelect` when it is chosen. */
 export const DropdownMenuItem = forwardRef<HTMLDivElement, DropdownMenuItemProps>(function DropdownMenuItem({className, tone = 'default', ...rest}, ref) {

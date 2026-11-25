@@ -8,26 +8,26 @@ import {Tag} from '../tag';
 export interface MultiSelectOption {
   value: string;
   label: string;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface MultiSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** The choices, each with a `value`, a `label` and an optional `disabled`. The user filters them by typing part of the label. */
   options: MultiSelectOption[];
   /** The chosen option values when controlled. Pair with `onValueChange`. */
-  value?: string[];
+  value?: string[] | undefined;
   /** The initially chosen option values when uncontrolled. Default empty. */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /** Called with the full list of chosen values. */
-  onValueChange?: (value: string[]) => void;
+  onValueChange?: ((value: string[]) => void) | undefined;
   /** Form field name. A hidden input submits one entry per chosen `value`; the visible text box is not submitted. */
-  name?: string;
+  name?: string | undefined;
   /** Shown when nothing matches. */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /**

@@ -6,18 +6,18 @@ import {cx} from '../../utils/cx';
 export interface SegmentedOption {
   value: string;
   label: ReactNode;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface SegmentedControlProps extends Omit<ComponentPropsWithoutRef<typeof Radix.Root>, 'type' | 'value' | 'defaultValue' | 'onValueChange' | 'children' | 'dir'> {
   /** The segments to show, each with a `value`, a `label` and an optional `disabled`. */
   options: SegmentedOption[];
   /** The selected segment's `value` when controlled. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The segment selected at first when uncontrolled. Defaults to the first option. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the new segment's `value` when the user picks a different one. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Names the control, for example "View". */
   'aria-label': string;
 }

@@ -8,23 +8,23 @@ export interface OtpInputProps extends Omit<HTMLAttributes<HTMLDivElement>, 'def
   /** Names the group, for example "Verification code". */
   'aria-label': string;
   /** Number of boxes, which is the length of the code. Default 6. */
-  length?: number;
+  length?: number | undefined;
   /** The code typed so far when controlled. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The code typed at first when uncontrolled. Default empty. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the whole code (so far) every time a character is added or removed. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Called once when every box is filled. */
-  onComplete?: (value: string) => void;
+  onComplete?: ((value: string) => void) | undefined;
   /** Allow letters as well as digits. */
-  alphanumeric?: boolean;
+  alphanumeric?: boolean | undefined;
   /** Disables every box. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Form field name. A hidden input submits the whole code. */
-  name?: string;
+  name?: string | undefined;
   /** Marks the boxes as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** A row of single-character boxes. Controlled with `value` + `onValueChange`, or uncontrolled. */

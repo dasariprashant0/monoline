@@ -18,25 +18,25 @@ const Index = createContext(0);
 
 export interface ResizablePanelGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** `horizontal` puts panels side by side; `vertical` stacks them. Default `horizontal`. */
-  direction?: 'horizontal' | 'vertical';
+  direction?: 'horizontal' | 'vertical' | undefined;
   /** Percent a panel grows or shrinks per arrow-key press (PageUp/PageDown use double). Default 5. */
-  step?: number;
+  step?: number | undefined;
   /** Called with every panel's size in percent (they add up to 100) after each resize. */
-  onLayoutChange?: (sizes: number[]) => void;
+  onLayoutChange?: ((sizes: number[]) => void) | undefined;
   /** `ResizablePanel` and `ResizableHandle` elements, alternating, as direct children: panel, handle, panel... */
   children: ReactNode;
 }
 export interface ResizablePanelProps extends HTMLAttributes<HTMLDivElement> {
   /** Starting size in percent. Panels without one share what is left equally. */
-  defaultSize?: number;
+  defaultSize?: number | undefined;
   /** Smallest size in percent. Default 10. */
-  minSize?: number;
+  minSize?: number | undefined;
   /** Largest size in percent. Default 100. */
-  maxSize?: number;
+  maxSize?: number | undefined;
 }
 export interface ResizableHandleProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** Names the handle for screen readers. Default "Resize panels". */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(n, lo), hi);

@@ -10,20 +10,20 @@ export interface SortableItem {
   /** What the row shows. */
   label: ReactNode;
   /** Plain text used in the handle's name and the live announcements. Defaults to `label` when it is a string, otherwise the `id`. */
-  text?: string;
+  text?: string | undefined;
 }
 
 export interface SortableListProps extends Omit<HTMLAttributes<HTMLUListElement>, 'defaultValue' | 'onChange'> {
   /** Required: names the list. */
   'aria-label': string;
   /** The items in their current order when controlled. Pair with `onValueChange`. */
-  value?: SortableItem[];
+  value?: SortableItem[] | undefined;
   /** The items in their starting order when uncontrolled. */
-  defaultValue?: SortableItem[];
+  defaultValue?: SortableItem[] | undefined;
   /** Called with the new order when the user drops an item in a new place. Not called for a cancelled move or a drop where it started. */
-  onValueChange?: (items: SortableItem[]) => void;
+  onValueChange?: ((items: SortableItem[]) => void) | undefined;
   /** `vertical` (default) moves with ArrowUp and ArrowDown; `horizontal` lays the items in a row and moves with ArrowLeft and ArrowRight. */
-  orientation?: 'vertical' | 'horizontal';
+  orientation?: 'vertical' | 'horizontal' | undefined;
 }
 
 const nameOf = (i: SortableItem) => i.text ?? (typeof i.label === 'string' ? i.label : i.id);

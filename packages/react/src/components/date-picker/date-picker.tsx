@@ -9,27 +9,27 @@ import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface DatePickerProps extends Omit<CalendarProps, 'className' | 'aria-label'> {
   /** Text shown on the button while no date is chosen. Default "Pick a date". */
-  placeholder?: string;
+  placeholder?: string | undefined;
   /** Intl options for the text on the button. Default: medium date. */
-  format?: Intl.DateTimeFormatOptions;
+  format?: Intl.DateTimeFormatOptions | undefined;
   /** Controlled open state of the calendar popover. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Whether the popover starts open. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state when the popover opens or closes. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** Stops the user opening the calendar. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Form field name. A hidden input submits the date as `YYYY-MM-DD` (empty when none is chosen). */
-  name?: string;
+  name?: string | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
   /** Extra class name for the trigger button. */
-  className?: string;
+  className?: string | undefined;
   /** Names the control when it is not inside a Field. */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
 }
 
 /** On open, move focus to the day that can be tabbed to (the chosen date, else today), not the month arrows, as in the ARIA date-picker pattern. */

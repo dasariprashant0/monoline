@@ -9,15 +9,15 @@ export interface SparklineProps extends Omit<HTMLAttributes<HTMLSpanElement>, 't
   /** Values in order. Non-finite values count as 0. */
   data: number[];
   /** Names for the values, used in the screen reader table. Default: 1, 2, 3... */
-  labels?: string[];
+  labels?: string[] | undefined;
   /** Fill under the line. */
-  area?: boolean;
+  area?: boolean | undefined;
   /** Width in px. Default 96. */
-  width?: number;
+  width?: number | undefined;
   /** Height in px. Default 24. */
-  height?: number;
+  height?: number | undefined;
   /** Format a value for the screen reader table. */
-  valueFormat?: (value: number) => string;
+  valueFormat?: ((value: number) => string) | undefined;
 }
 
 /** A tiny inline trend: no axes, no tooltip, the last value marked. The full values are in a visually hidden table. */

@@ -3,11 +3,11 @@ import {useCallback, useRef, useState} from 'react';
 
 export interface UseControllableStateOptions<T> {
   /** When defined, the hook is controlled and `value` wins. */
-  value?: T;
+  value?: T | undefined;
   /** Starting value when uncontrolled. */
   defaultValue: T;
   /** Called with the new value when it differs from the current one. */
-  onChange?: (value: T) => void;
+  onChange?: ((value: T) => void) | undefined;
 }
 
 /**

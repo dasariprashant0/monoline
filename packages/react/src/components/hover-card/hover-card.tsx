@@ -17,17 +17,17 @@ function useHoverCardCtx(): Ctx {
 
 export interface HoverCardProps {
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** Milliseconds the pointer must rest on the trigger before the card opens. Default 700. */
-  openDelay?: number;
+  openDelay?: number | undefined;
   /** Milliseconds before the card closes after the pointer leaves the trigger and the card. Default 300. */
-  closeDelay?: number;
+  closeDelay?: number | undefined;
   /** The parts of the component: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** The root of a card that shows extra detail when its trigger is hovered or focused. Put a `HoverCardTrigger` and `HoverCardContent` inside. */
@@ -41,7 +41,7 @@ export function HoverCard({open, defaultOpen = false, onOpenChange, openDelay = 
 /** The element (usually a link) that shows the card on hover or focus; use `asChild` to render your own element. */
 export const HoverCardTrigger = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement> & {
   /** Render your own element instead of an anchor; it receives the props and handlers. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }>(function HoverCardTrigger({asChild, ...rest}, ref) {
   const c = useHoverCardCtx();
   const Comp = asChild ? Slot : 'a';

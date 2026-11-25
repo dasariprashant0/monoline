@@ -5,11 +5,11 @@ export type HotkeyHandler = (event: KeyboardEvent) => void;
 
 export interface UseHotkeysOptions {
   /** Set false to turn every binding off. Default true. */
-  enabled?: boolean;
+  enabled?: boolean | undefined;
   /** Also fire while focus is in a text field, select or contenteditable. Default false. */
-  allowInInputs?: boolean;
+  allowInInputs?: boolean | undefined;
   /** Call `preventDefault` on a matched key. Default true. */
-  preventDefault?: boolean;
+  preventDefault?: boolean | undefined;
 }
 
 interface Combo {

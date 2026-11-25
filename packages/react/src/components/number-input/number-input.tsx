@@ -5,11 +5,11 @@ import {invalidAttrs, useFieldControl} from '../field';
 
 export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /** Accessible names of the step buttons, for other languages. Defaults "Decrease" and "Increase". */
-  labels?: {decrease?: string; increase?: string};
+  labels?: {decrease?: string | undefined; increase?: string | undefined} | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** Native number input with step buttons. Use `min`, `max`, `step` like on any input. Works controlled or not. */

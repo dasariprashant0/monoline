@@ -4,13 +4,13 @@ import {cx} from '../../utils/cx';
 
 export interface AvatarProps extends Omit<ComponentPropsWithoutRef<typeof RadixAvatar.Root>, 'children'> {
   /** Image URL. If it fails or is missing, the initials show. */
-  src?: string;
+  src?: string | undefined;
   /** The person's name. Used as the image alt text and to make initials; required so it always has a name. */
   name: string;
   /** `md` (default), `sm` for dense rows or `lg`. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** `solid` (default) fills the circle; `line` draws only an outline. */
-  variant?: 'solid' | 'line';
+  variant?: 'solid' | 'line' | undefined;
 }
 
 const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('');

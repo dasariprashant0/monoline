@@ -19,7 +19,7 @@ interface SidebarState {
 }
 const StateCtx = createContext<SidebarState | null>(null);
 // Set by Sidebar so items know whether they sit in the drawer (never collapsed) and which links to render.
-const PartCtx = createContext<{inDrawer: boolean; label: string; renderLink?: RenderLink}>({inDrawer: false, label: 'Main'});
+const PartCtx = createContext<{inDrawer: boolean; label: string; renderLink?: RenderLink | undefined}>({inDrawer: false, label: 'Main'});
 
 /** The collapsed state and the mobile drawer state of the nearest `SidebarProvider`: `{collapsed, setCollapsed, toggle, mobileOpen, setMobileOpen}`. Throws outside a provider. Server rendering uses the initial state. */
 export function useSidebar(): SidebarState {
@@ -30,13 +30,13 @@ export function useSidebar(): SidebarState {
 
 export interface SidebarProviderProps {
   /** Whether the sidebar is collapsed to icons, when controlled. Pair with `onCollapsedChange`. */
-  collapsed?: boolean;
+  collapsed?: boolean | undefined;
   /** Whether the sidebar starts collapsed when uncontrolled. Default false. */
-  defaultCollapsed?: boolean;
+  defaultCollapsed?: boolean | undefined;
   /** Called with the new state when the user collapses or expands the sidebar. Save it here (for example in localStorage) and pass it back as `defaultCollapsed` or `collapsed` to persist the choice. */
-  onCollapsedChange?: (collapsed: boolean) => void;
+  onCollapsedChange?: ((collapsed: boolean) => void) | undefined;
   /** Your layout: a `Sidebar`, plus any `SidebarToggle` or `SidebarTrigger` anywhere below. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /**
@@ -59,11 +59,11 @@ export function SidebarProvider({collapsed, defaultCollapsed = false, onCollapse
 
 export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {
   /** Names the navigation landmark, in the sidebar and in the drawer. Default "Main". */
-  label?: string;
+  label?: string | undefined;
   /** Names the drawer on small screens (its dialog title). Default "Menu". */
-  drawerTitle?: ReactNode;
+  drawerTitle?: ReactNode | undefined;
   /** Renders each `SidebarItem` link, so a client router can handle the click. Default a plain `<a href>`. The returned element must forward its ref and spread extra props (collapsed tooltips need that). @example renderLink={({href, ...p}) => <NavLink to={href} {...p} />} */
-  renderLink?: RenderLink;
+  renderLink?: RenderLink | undefined;
   /** A `SidebarHeader`, `SidebarContent` and `SidebarFooter`. They render twice: in the sidebar (from 800px) and in the drawer (below 800px), so keep them free of fixed `id`s and local state. */
   children: ReactNode;
 }
@@ -118,7 +118,7 @@ export const SidebarContent = forwardRef<HTMLElement, HTMLAttributes<HTMLElement
 
 export interface SidebarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>, 'children'> {
   /** A heading for the group. Hidden visually (a rule shows instead) when the sidebar is collapsed, still read by screen readers. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
   /** `SidebarItem`s. */
   children: ReactNode;
 }
@@ -136,13 +136,13 @@ export const SidebarGroup = forwardRef<HTMLUListElement, SidebarGroupProps>(func
 
 export interface SidebarItemProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children'> {
   /** Where the link goes. Not needed with `asChild`. */
-  href?: string;
+  href?: string | undefined;
   /** An inline SVG with `currentColor`; hidden from screen readers. Shown alone when the sidebar is collapsed. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
   /** The current page: sets `aria-current="page"` and the active style. */
-  current?: boolean;
+  current?: boolean | undefined;
   /** Use the child (your router's link) as the anchor. Its text becomes the label. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
   /** The label. Visually hidden when collapsed and shown in a tooltip instead. */
   children: ReactNode;
 }
@@ -153,7 +153,7 @@ export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(funct
   const {inDrawer, renderLink} = useContext(PartCtx);
   const cls = cx('sidebar-item', className);
   const ariaCurrent = current ? ('page' as const) : undefined;
-  const child = asChild && isValidElement(children) ? (children as ReactElement<{children?: ReactNode}>) : null;
+  const child = asChild && isValidElement(children) ? (children as ReactElement<{children?: ReactNode | undefined}>) : null;
   const text = child ? child.props.children : children;
   const inner = <>{icon && <span className="sidebar-icon" aria-hidden="true">{icon}</span>}<span className="sidebar-label">{text}</span></>;
   let link: ReactElement;
@@ -167,18 +167,18 @@ const PanelIcon = () => <svg viewBox="0 0 16 16" width="16" height="16" fill="no
 
 export interface SidebarToggleProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'children'> {
   /** The button's accessible name. It reports expanded or collapsed through `aria-expanded`. Default "Toggle sidebar". */
-  label?: string;
+  label?: string | undefined;
 }
 
 /** A button that collapses and expands the sidebar. Shown from 800px up; on small screens use `SidebarTrigger`. */
-export const SidebarToggle = forwardRef<HTMLButtonElement, SidebarToggleProps>(function SidebarToggle({label = 'Toggle sidebar', className, onClick, ...rest}, ref) {
+export const SidebarToggle = forwardRef<HTMLButtonElement, SidebarToggleProps>(function SidebarToggle({label = 'Toggle sidebar', 'aria-label': ariaLabel, className, onClick, ...rest}, ref) {
   const s = useSidebar();
-  return <IconButton ref={ref} size="sm" aria-label={label} aria-expanded={!s.collapsed} className={cx('sidebar-toggle', className)} {...rest} onClick={(e) => { onClick?.(e); s.toggle(); }}><PanelIcon /></IconButton>;
+  return <IconButton ref={ref} size="sm" aria-label={ariaLabel ?? label} aria-expanded={!s.collapsed} className={cx('sidebar-toggle', className)} {...rest} onClick={(e) => { onClick?.(e); s.toggle(); }}><PanelIcon /></IconButton>;
 });
 
 export interface SidebarTriggerProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'children'> {
   /** The button text, which is also its name. Default "Menu". */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** The small-screen menu button: opens the sidebar in a drawer, and focus returns here on close. Hidden from 800px up. */

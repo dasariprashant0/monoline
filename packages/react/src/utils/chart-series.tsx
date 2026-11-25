@@ -7,22 +7,22 @@ export interface SeriesChartProps extends Omit<HTMLAttributes<HTMLDivElement>, '
   /** Accessible name and table caption. Required. */
   title: string;
   /** One series: `[{label: 'Mon', value: 3}]`. */
-  data?: ChartDatum[];
+  data?: ChartDatum[] | undefined;
   /** Several series: `[{name: 'Visits', values: [3, 5]}]`, with `labels` for the x positions. */
-  series?: ChartSeries[];
-  labels?: string[];
+  series?: ChartSeries[] | undefined;
+  labels?: string[] | undefined;
   /** Name of the single series when `data` is used. Default "Value". */
-  seriesName?: string;
+  seriesName?: string | undefined;
   /** `linear` joins points with straight lines; `step` holds each value until the next point. */
-  curve?: 'linear' | 'step';
+  curve?: 'linear' | 'step' | undefined;
   /** Chart height in px. Default 240. */
-  height?: number;
+  height?: number | undefined;
   /** Format a value for labels, tooltips and the table. */
-  valueFormat?: (value: number) => string;
+  valueFormat?: ((value: number) => string) | undefined;
 }
 
 /** Internal: the one chart body behind LineChart and AreaChart. */
-export const SeriesChart = forwardRef<HTMLDivElement, SeriesChartProps & {kind: 'line' | 'area'; stacked?: boolean; showPoints?: boolean}>(function SeriesChart(
+export const SeriesChart = forwardRef<HTMLDivElement, SeriesChartProps & {kind: 'line' | 'area'; stacked?: boolean | undefined; showPoints?: boolean | undefined}>(function SeriesChart(
   {kind, stacked = false, showPoints = false, title, data, series: seriesProp, labels: labelsProp, seriesName = 'Value', curve = 'linear', height = 240, valueFormat, ...rest}, ref) {
   const {labels, series} = normalize(data, seriesProp, labelsProp, seriesName);
   const n = labels.length, S = series.length;

@@ -4,7 +4,7 @@ import {cx} from '../../utils/cx';
 
 export interface ScrollProgressProps extends HTMLAttributes<HTMLDivElement> {
   /** Give the bar a name to expose it as a `progressbar` (reading progress). Without it the bar is decorative and `aria-hidden`. */
-  label?: string;
+  label?: string | undefined;
 }
 
 /** A thin bar fixed to the top of the window that fills as the page scrolls. Decorative unless you pass `label`. */

@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {
   /** `block` is a tall panel; `hatch` shows the hatch pattern. */
-  variant?: 'line' | 'block' | 'hatch';
+  variant?: 'line' | 'block' | 'hatch' | undefined;
 }
 
 /** A still placeholder for content that is loading. Hidden from assistive tech: announce loading elsewhere (a Spinner or aria-busy region). */

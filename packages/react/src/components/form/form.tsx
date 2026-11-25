@@ -11,13 +11,13 @@ export interface FormError {
 
 export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> {
   /** Called with the submit event. Combine with `preventDefault` when you handle the form in JS. */
-  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit?: ((event: FormEvent<HTMLFormElement>) => void) | undefined;
   /** Call `event.preventDefault()` before `onSubmit`, for forms handled in JS. Off by default so native posts still work. */
-  preventDefault?: boolean;
+  preventDefault?: boolean | undefined;
   /** Errors to list in a summary at the top of the form. Give each `Field` the same `name` and it shows its own message, so you pass each error once. A Field's own `error` prop still wins. */
-  errors?: FormError[];
+  errors?: FormError[] | undefined;
   /** Heading of the summary. Default "Fix these to continue". */
-  errorsTitle?: ReactNode;
+  errorsTitle?: ReactNode | undefined;
 }
 
 /**

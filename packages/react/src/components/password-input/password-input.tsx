@@ -4,7 +4,7 @@ import {Input, type InputProps} from '../input';
 
 export interface PasswordInputProps extends Omit<InputProps, 'type'> {
   /** Button text, for other languages. Defaults "Show", "Hide" and "password" (the last is read by screen readers only). */
-  labels?: {show?: string; hide?: string; password?: string};
+  labels?: {show?: string | undefined; hide?: string | undefined; password?: string | undefined} | undefined;
 }
 
 /** An Input that can reveal its text. Set `autoComplete="current-password"` or `"new-password"`. */

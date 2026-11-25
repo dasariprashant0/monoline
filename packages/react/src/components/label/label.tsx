@@ -4,7 +4,7 @@ import {cx} from '../../utils/cx';
 
 export interface LabelProps extends ComponentPropsWithoutRef<typeof RadixLabel.Root> {
   /** Adds a required marker. Pair with `required` on the control. */
-  required?: boolean;
+  required?: boolean | undefined;
 }
 
 /** A `<label>` styled as a Monoline label. Clicking it focuses the control it points to with `htmlFor`. */

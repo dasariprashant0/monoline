@@ -6,9 +6,9 @@ export interface RollingNumberProps extends Omit<HTMLAttributes<HTMLSpanElement>
   /** The number to show. When it changes, each digit rolls to its new value. */
   value: number;
   /** BCP 47 locale for the digits and separators, such as "de-DE". Default the browser's locale. */
-  locale?: string;
+  locale?: string | undefined;
   /** `Intl.NumberFormat` options, for example `{style: 'currency', currency: 'USD'}`. */
-  format?: Intl.NumberFormatOptions;
+  format?: Intl.NumberFormatOptions | undefined;
 }
 
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];

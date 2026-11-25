@@ -11,26 +11,26 @@ export interface NavbarLink {
   /** Where it goes. */
   href: string;
   /** The current page: sets `aria-current="page"`. */
-  current?: boolean;
+  current?: boolean | undefined;
 }
 
 export interface NavbarProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Your logo or name, at the start of the bar. */
-  brand?: ReactNode;
+  brand?: ReactNode | undefined;
   /** Primary links, shown in the bar from 800px and in a drawer opened by a menu button below that. Leave out when the bar only holds actions. */
-  links?: NavbarLink[];
+  links?: NavbarLink[] | undefined;
   /** Names the links' navigation landmark. Default "Main". */
-  linksLabel?: string;
+  linksLabel?: string | undefined;
   /** Renders each link, so a client router can handle the click. Default a plain `<a href>`. @example renderLink={({href, ...p}) => <NavLink to={href} {...p} />} */
-  renderLink?: RenderLink;
+  renderLink?: RenderLink | undefined;
   /** Goes before the brand: put a `SidebarTrigger` here when the bar sits above a `Sidebar`. */
-  leading?: ReactNode;
+  leading?: ReactNode | undefined;
   /** The end of the bar: search, a command palette button, an account menu. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
   /** Text of the button that opens the links drawer on small screens. Default "Menu". */
-  menuLabel?: string;
+  menuLabel?: string | undefined;
   /** Keeps the bar at the top while the page scrolls. Default false. `AppShell` already does this for its navbar. */
-  sticky?: boolean;
+  sticky?: boolean | undefined;
 }
 
 /**

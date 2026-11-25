@@ -13,34 +13,34 @@ export type PricingInterval = 'monthly' | 'yearly';
 
 export interface PricingTier {
   name: ReactNode;
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Shown as written, so include the currency: "$12", "Free", "Talk to us". */
   price: {monthly: ReactNode; yearly: ReactNode};
   features: ReactNode[];
   ctaLabel: ReactNode;
   /** Makes the call to action a link. Without it, it is a button; handle it with `onSelect`. */
-  href?: string;
+  href?: string | undefined;
   /** Marks the tier to pick. Adds a badge with `highlightLabel`. */
-  highlighted?: boolean;
+  highlighted?: boolean | undefined;
 }
 
 export interface BlockPricingProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'onSelect'> {
   /** Section heading shown above the tiers. */
   title: ReactNode;
   /** Optional muted line under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** The plans to compare, each with a name, monthly and yearly price, features and a call to action. */
   tiers: PricingTier[];
   /** Start on yearly billing. */
-  defaultInterval?: PricingInterval;
+  defaultInterval?: PricingInterval | undefined;
   /** Overrides for the built-in English texts (Monthly, Yearly, Billing period, Popular, / month, / year); use it to translate. */
-  labels?: Partial<{monthly: string; yearly: string; switcher: string; period: Record<PricingInterval, string>; highlight: string}>;
+  labels?: Partial<{monthly: string; yearly: string; switcher: string; period: Record<PricingInterval, string>; highlight: string}> | undefined;
   /** Renders a tier's link (the ones with `href`), so a client router can handle the click. Default a plain `<a href>`. */
-  renderLink?: RenderLink;
+  renderLink?: RenderLink | undefined;
   /** Called when a tier's button (one without `href`) is pressed. */
-  onSelect?: (tier: PricingTier, interval: PricingInterval) => void;
+  onSelect?: ((tier: PricingTier, interval: PricingInterval) => void) | undefined;
   /** Outline level of the section title, 1 to 5. Default 2; each tier name is one level lower. */
-  headingLevel?: 1 | 2 | 3 | 4 | 5;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | undefined;
 }
 
 /** Plan cards with a monthly or yearly switch. Prices are copy you pass in; the block does no maths. */

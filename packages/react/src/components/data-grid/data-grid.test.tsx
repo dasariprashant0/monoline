@@ -20,7 +20,7 @@ beforeAll(() => {
 });
 afterEach(() => vi.restoreAllMocks());
 
-const grid = (props: Partial<React.ComponentProps<typeof DataGrid<Row>>> = {}) => <DataGrid<Row> aria-label="Things" columns={cols} rows={small} rowHeight={20} height={200} getRowId={(r) => r.id} {...props} />;
+const grid = (props: Partial<Omit<React.ComponentProps<typeof DataGrid<Row>>, 'aria-label' | 'aria-labelledby'>> = {}) => <DataGrid<Row> aria-label="Things" columns={cols} rows={small} rowHeight={20} height={200} getRowId={(r) => r.id} {...props} />;
 const cell = (row: number, col: number) => document.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)!;
 
 describe('DataGrid', () => {

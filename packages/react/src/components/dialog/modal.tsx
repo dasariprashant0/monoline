@@ -19,15 +19,15 @@ function useModal(): Ctx {
 
 export interface ModalProps {
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state when the user opens or dismisses it. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** `false` opens it as a non-modal dialog: no backdrop, no focus trap, page stays interactive. Default true. */
-  modal?: boolean;
+  modal?: boolean | undefined;
   /** The parts of the dialog: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** Internal: holds the open state for Dialog, Drawer and AlertDialog (`open`, `defaultOpen`, `onOpenChange`, `modal`). */
@@ -41,7 +41,7 @@ export function Modal({open, defaultOpen = false, onOpenChange, modal = true, ch
 
 export interface ModalButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Render your own element instead of a button; it receives the props and the click handler. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** Internal: the opener behind DialogTrigger, DrawerTrigger and AlertDialogTrigger. */
@@ -60,15 +60,15 @@ export const ModalClose = forwardRef<HTMLButtonElement, ModalButtonProps>(functi
 
 export interface ModalContentProps extends Omit<DialogHTMLAttributes<HTMLDialogElement>, 'open'> {
   /** Called when Escape is pressed; call `event.preventDefault()` to keep it open. */
-  onEscapeKeyDown?: (event: Event) => void;
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
   /** Called when the backdrop is pressed; call `event.preventDefault()` to keep it open. */
-  onPointerDownOutside?: (event: Event) => void;
+  onPointerDownOutside?: ((event: Event) => void) | undefined;
   /** Called after it opens, before focus moves to the element marked `data-autofocus`; `preventDefault()` skips that move. */
-  onOpenAutoFocus?: (event: Event) => void;
+  onOpenAutoFocus?: ((event: Event) => void) | undefined;
   /** Called after it closes, before focus returns to the opener; `preventDefault()` lets you move focus yourself. */
-  onCloseAutoFocus?: (event: Event) => void;
+  onCloseAutoFocus?: ((event: Event) => void) | undefined;
   /** Whether pressing the backdrop closes it. Default true. */
-  dismissOnOutside?: boolean;
+  dismissOnOutside?: boolean | undefined;
 }
 
 

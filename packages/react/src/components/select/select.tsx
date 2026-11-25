@@ -9,7 +9,7 @@ import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 interface Ctx {
   open: boolean; setOpen: (o: boolean) => void; value: string; setValue: (v: string) => void;
-  trigger: RefObject<HTMLButtonElement | null>; triggerId: string; listId: string; disabled?: boolean;
+  trigger: RefObject<HTMLButtonElement | null>; triggerId: string; listId: string; disabled?: boolean | undefined;
   /** Item text by value, so the trigger can show the chosen item while the list is closed. */
   labels: Map<string, ReactNode>; label: (value: string, text: ReactNode) => void;
 }
@@ -24,23 +24,23 @@ const Group = createContext<string | undefined>(undefined);
 
 export interface SelectProps {
   /** Controlled value. An empty string shows the placeholder. */
-  value?: string;
+  value?: string | undefined;
   /** Initial value when uncontrolled. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the chosen item's value. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Controlled open state. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Initial open state when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the next open state. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** Disables the trigger. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Form field name; the value is submitted through a hidden input. */
-  name?: string;
+  name?: string | undefined;
   /** The parts of the component: a trigger and its content. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** The root of a custom single-choice dropdown. Use `value` and `onValueChange` (or `defaultValue`); put a `SelectTrigger` and `SelectContent` inside. For a plain list prefer `NativeSelect`. */
@@ -68,9 +68,9 @@ export const SelectGroup = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElem
 /** Shows the chosen item's text inside the `SelectTrigger`; `placeholder` appears while nothing is chosen. */
 export function SelectValue({placeholder, children}: {
   /** Text shown while no item is chosen. */
-  placeholder?: ReactNode;
+  placeholder?: ReactNode | undefined;
   /** Overrides the shown text. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }) {
   const c = useSelectCtx();
   return <span>{children ?? (c.value ? c.labels.get(c.value) : undefined) ?? placeholder}</span>;
@@ -78,9 +78,9 @@ export function SelectValue({placeholder, children}: {
 
 export interface SelectTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 /** The button that shows the chosen value. Inside a Field it is labelled and described automatically. */
 export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function SelectTrigger({className, size = 'md', invalid, children, id, onClick, onKeyDown, disabled, ...rest}, ref) {
@@ -100,7 +100,7 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(f
 
 export interface SelectContentProps extends HTMLAttributes<HTMLDivElement>, Placement {
   /** Accepted for compatibility with earlier versions; the list is always positioned against the trigger. */
-  position?: 'item-aligned' | 'popper';
+  position?: 'item-aligned' | 'popper' | undefined;
 }
 
 const OPTION = '[role=option]:not([aria-disabled=true])';
@@ -139,7 +139,7 @@ export interface SelectItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'o
   /** The value reported by `onValueChange` when this item is chosen. Must be non-empty. */
   value: string;
   /** Makes the item unselectable and skipped by the keyboard. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 /** One choice in the list; give it a `value` and the visible text as children. */
 export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem({className, children, value, disabled, onClick, onFocus, onBlur, onPointerMove, onKeyDown, ...rest}, ref) {

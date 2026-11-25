@@ -5,11 +5,11 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
   /** Short headline saying what is missing, for example "No projects yet". */
   title: ReactNode;
   /** Optional sentence explaining why it is empty or what to do next. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Optional inline SVG, `aria-hidden`. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
   /** The next step: a Button or link. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 /** Shown when a list, search or table has nothing to display. */

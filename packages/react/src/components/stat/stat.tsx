@@ -7,7 +7,7 @@ export interface StatProps extends HTMLAttributes<HTMLDListElement> {
   /** The metric itself, shown large. Include the unit or currency in the text. */
   value: ReactNode;
   /** A short note: a change, a period, a unit. */
-  note?: ReactNode;
+  note?: ReactNode | undefined;
 }
 
 /** A single metric. Group several in a grid. */

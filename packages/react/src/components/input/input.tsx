@@ -5,9 +5,9 @@ import {invalidAttrs, useFieldControl} from '../field';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button and the other form controls at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the control invalid (`aria-invalid`). A surrounding Field sets this from its `error`. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** A native text input. Inside a Field it picks up the id, description and invalid state automatically. */

@@ -5,7 +5,7 @@ import {setRefs} from '../../utils/overlay';
 
 export interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {
   /** Radius of the glow in px. Default 240. */
-  size?: number;
+  size?: number | undefined;
 }
 
 /**

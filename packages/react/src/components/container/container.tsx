@@ -4,9 +4,9 @@ import {cx} from '../../utils/cx';
 
 export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   /** `text` is a reading column, `page` the widest main column, `full` no limit. */
-  size?: 'text' | 'page' | 'full';
+  size?: 'text' | 'page' | 'full' | undefined;
   /** Render the child (a `main`, `section`) with the container styles. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** Centres content and limits its width. */
