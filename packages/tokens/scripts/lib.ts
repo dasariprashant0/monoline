@@ -231,7 +231,7 @@ const GROUPS: [string, RegExp][] = [
   ['zIndex', /^--z-/],
   ['control', /^--control-/],
   ['space', /^--s\d$/],
-  ['type', /^--(font|text|display|weight|leading)-/],
+  ['type', /^--(font|text|heading|display|weight|leading)-/],
   ['motion', /^--(ease|fast|base|slow)$/],
   ['layout', /^--(side|measure|content|window-pad|container-[\w]+|bp-[\w]+)$/],
   ['radius', /^--(radius(-sm|-md|-lg)?|round)$/],
@@ -245,7 +245,7 @@ export function classify(name: string) {
 }
 export const cssName = (group: string, leaf: string) => (PREFIX[group] ?? '--') + leaf;
 
-const typeOf = (group: string, value: string) => {
+export const typeOf = (group: string, value: string) => {
   if (group === 'color' || group === 'code') return /gradient/.test(value) ? {} : {$type: 'color'};
   return /^-?[\d.]+px$/.test(value) ? {$type: 'dimension'} : {};
 };
