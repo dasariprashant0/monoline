@@ -431,12 +431,13 @@ export function Upgrade() {
   const versions = SECTIONS.map((s) => s.version);
   const [from, setFrom] = useS(versions[1] ?? versions[0]!);
   const [to, setTo] = useS(versions[0]!);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: versions is rebuilt each render from the module constant SECTIONS, so it never changes.
   const picked = useMemo(() => {
     const a = versions.indexOf(from),
       b = versions.indexOf(to);
     if (b >= a) return [];
     return SECTIONS.slice(b, a); // newer than `from`, up to and including `to`
-  }, [from, to]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [from, to]);
   const text = picked.map((s) => `## ${s.version}\n\n${s.body}`).join('\n\n');
   return (
     <>

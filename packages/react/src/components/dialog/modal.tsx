@@ -164,6 +164,7 @@ const Panel = forwardRef<HTMLDialogElement, ModalContentProps>(function Panel(
   hooks.current = {onOpenAutoFocus, onCloseAutoFocus};
   const armed = useRef(false);
   // Mounted only while open, so this runs once per opening (and twice under StrictMode, which the cleanup survives).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once per opening (see above); c.modal cannot change while the content is mounted.
   useEffect(() => {
     const d = el.current!,
       prev = document.activeElement as HTMLElement | null;

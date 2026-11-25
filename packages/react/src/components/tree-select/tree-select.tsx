@@ -106,6 +106,7 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
   const index = rows.findIndex((r) => r.node.id === activeId);
   const cur = index >= 0 ? index : rows.findIndex((r) => !r.node.disabled);
   const rowId = (i: number) => `${listId}-${i}`;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the id helper only formats the stable listId; listing it would re-run on every render.
   useEffect(() => {
     if (open && cur >= 0) document.getElementById(rowId(cur))?.scrollIntoView?.({block: 'nearest'});
   }, [open, cur]);

@@ -115,7 +115,7 @@ export const Tour = forwardRef<HTMLDivElement, TourProps>(function Tour(
   // The card is portalled to <body>, so carry the surrounding text direction across.
   useIsoLayoutEffect(() => {
     if (isOpen && anchor.current) setDir(isRtl(anchor.current) ? 'rtl' : 'ltr');
-  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Remember where focus was; give it back when the tour closes.
   useEffect(() => {

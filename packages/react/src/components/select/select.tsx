@@ -200,6 +200,7 @@ const List = forwardRef<HTMLDivElement, SelectContentProps>(function List(
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once per opening; on close it focuses the trigger through its stable ref.
   useEffect(() => {
     const first =
       el.current!.querySelector<HTMLElement>('[aria-selected=true]') ?? el.current!.querySelector<HTMLElement>(OPTION);

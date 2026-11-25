@@ -64,6 +64,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Com
   const shown = text === null ? options : options.filter((o) => o.label.toLowerCase().includes(query));
   const optId = (i: number) => `${listId}-${i}`;
   // Arrow keys move through a list taller than its popup: keep the active option in view.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the id helper only formats the stable listId; listing it would re-run on every render.
   useEffect(() => {
     if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'});
   }, [open, active]);

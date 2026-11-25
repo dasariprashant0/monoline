@@ -34,6 +34,7 @@ describe('NumberTicker', () => {
   });
   it('formats with decimals or a custom function', () => {
     reduced(true);
+    // biome-ignore lint/suspicious/noApproximativeNumericConstant: an arbitrary value with more decimals than shown.
     const {container, rerender} = render(<NumberTicker value={3.14159} decimals={2} />);
     expect(container.querySelector('.sr-only')).toHaveTextContent('3.14');
     rerender(<NumberTicker value={5} format={(n) => `$${n}`} />);

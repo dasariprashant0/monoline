@@ -26,7 +26,7 @@ const DROP = new Set([
 
 /** True for http(s) and mailto links only. Whitespace and control characters are removed first, as browsers ignore them inside a scheme (`java\tscript:`). */
 export function isSafeUrl(url: string): boolean {
-  // eslint-disable-next-line no-control-regex
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: strips control characters before the scheme check, on purpose.
   const u = url.replace(/[\u0000- \u007f-\u009f]/g, '');
   return /^(https?:\/\/[^/?#]|mailto:.)/i.test(u);
 }

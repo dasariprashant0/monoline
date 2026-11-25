@@ -227,10 +227,11 @@ export function App() {
   const first = useRef(true);
   const headings = useHeadings(main, path);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: route is derived from path; update the meta only when the path changes.
   useEffect(() => {
     const {title, description} = pageMeta(route);
     setMeta(title, description);
-  }, [path]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [path]);
 
   // Demos and blocks render real <h1>s (a hero, a page header). The page keeps one: the others become level-2 headings for assistive tech.
   useEffect(() => {
@@ -287,6 +288,7 @@ export function App() {
               undefined
             }
           >
+            {/* biome-ignore lint/a11y/useValidAnchor: a real link to #main without JS; the handler also moves focus there. */}
             <a
               className="skip-link"
               href="#main"

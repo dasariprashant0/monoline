@@ -148,6 +148,7 @@ const Panel = forwardRef<HTMLDivElement, PopoverContentProps>(function Panel(
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once per opening; on close it focuses the trigger through its stable ref.
   useEffect(() => {
     const p = el.current!;
     if (!vetoed(hooks.current.onOpenAutoFocus, p)) (p.querySelector<HTMLElement>(TABBABLE) ?? p).focus();

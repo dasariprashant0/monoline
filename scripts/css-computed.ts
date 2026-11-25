@@ -30,6 +30,7 @@ if (!existsSync(join(dist, 'index.html'))) {
 }
 
 // Runs in the page. Returns {name: value} for everything the assertions below compare.
+// biome-ignore lint/complexity/noUselessStringRaw: browser JS source; String.raw keeps a future \n literal as written.
 const MEASURE = String.raw`(() => {
   document.getElementById('mlfx')?.remove();
   const host = document.createElement('div');

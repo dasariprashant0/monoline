@@ -130,6 +130,7 @@ export const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(function Cod
         </div>
       )}
       {!title && button}
+      {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label is set only together with role="group", when the code scrolls. */}
       <pre
         ref={pre}
         tabIndex={scrolls ? 0 : undefined}

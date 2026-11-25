@@ -55,6 +55,7 @@ describe('Marquee', () => {
   it('exposes interactive children to assistive tech only once (the copy is hidden)', () => {
     render(
       <Marquee>
+        {/* biome-ignore lint/a11y/noAmbiguousAnchorText: test fixture; the text does not matter. */}
         <a href="/a">Link</a>
       </Marquee>,
     );

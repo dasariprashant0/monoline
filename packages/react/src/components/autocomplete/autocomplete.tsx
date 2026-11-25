@@ -52,6 +52,7 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(func
   const shown = q ? suggestions.filter((s) => s.toLowerCase().includes(q) && s !== text) : [];
   const isOpen = open && shown.length > 0;
   const optId = (i: number) => `${listId}-${i}`;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the id helper only formats the stable listId; listing it would re-run on every render.
   useEffect(() => {
     if (isOpen && active >= 0) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'});
   }, [isOpen, active]);

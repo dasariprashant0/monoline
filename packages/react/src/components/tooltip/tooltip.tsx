@@ -152,6 +152,7 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivE
     useDismiss(c.open, [el, c.trigger], () => c.show(false));
     // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.
     // Not while the trigger has keyboard focus: Tab scrolls it into view and the hint must stay (e2e-findings F7). A click-focused trigger does not count: hovering it still closes on scroll.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: one scroll listener per mount; it reads the trigger and keyboard refs when it fires.
     useEffect(() => {
       const close = (e: Event) => {
         const t = c.trigger.current;

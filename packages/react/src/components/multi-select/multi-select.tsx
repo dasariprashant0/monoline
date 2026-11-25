@@ -67,6 +67,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(functi
   const query = text.trim().toLowerCase();
   const shown = options.filter((o) => o.label.toLowerCase().includes(query));
   const optId = (i: number) => `${listId}-${i}`;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the id helper only formats the stable listId; listing it would re-run on every render.
   useEffect(() => {
     if (open) document.getElementById(optId(active))?.scrollIntoView?.({block: 'nearest'});
   }, [open, active]);

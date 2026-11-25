@@ -379,6 +379,7 @@ function ComponentThumb({name}: {name: string}) {
   return (
     <svg className="ov-thumb" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
       <foreignObject width={W} height={H}>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: markup prerendered at build time from our own demos, shown inert. */}
         <div className="ov-stage" data-no-toc="" inert dangerouslySetInnerHTML={{__html: html[name] ?? ''}} />
       </foreignObject>
     </svg>

@@ -137,6 +137,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     refreshEmpty();
   }, [value, controlled, defaultValue]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refreshEmpty reads the editor ref only; a new emit for it would behave the same.
   const emit = useCallback(() => {
     const el = editorRef.current;
     if (!el) return;

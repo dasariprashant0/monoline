@@ -19,6 +19,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
 });
 
 const part = (name: string, tag: 'div' | 'h3' | 'p', cls: string) => {
+  // biome-ignore lint/correctness/noComponentHookFactories: runs once per part at module load, never during render.
   const C = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(function Part({className, ...rest}, ref) {
     const T = tag as 'div';
     return <T ref={ref as never} className={cx(cls, className)} {...rest} />;

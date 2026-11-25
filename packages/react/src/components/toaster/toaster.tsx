@@ -149,9 +149,10 @@ export function Toaster({
   const shown = open.slice(-limit);
   // Older toasts pushed out by newer ones are dismissed, not just hidden: otherwise they come back with a fresh timer.
   const over = open.length - shown.length;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run when the overflow count or the newest toast changes, not for every new array.
   useEffect(() => {
     open.slice(0, over).forEach((t) => dismiss(t.id));
-  }, [over, open[0]?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [over, open[0]?.id]);
   return (
     <ToastProvider duration={5000} swipeDirection={dir === 'rtl' ? 'left' : 'right'} label={label}>
       {shown.map((t) => (

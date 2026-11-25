@@ -6,6 +6,7 @@ import type {JSXElementConstructor} from 'react';
 
 /** Optional keys of T whose type, under exactOptionalPropertyTypes, does not accept `undefined`. */
 type RejectsUndefined<T> = {
+  // biome-ignore lint/complexity/noBannedTypes: `{} extends Pick<T, K>` is the standard test for an optional key.
   [K in keyof T]-?: {} extends Pick<T, K> ? (undefined extends Required<T>[K] ? never : K) : never;
 }[keyof T];
 // Components only: PascalCase exports (hooks and helpers such as `sanitizeHtml` are plain functions).

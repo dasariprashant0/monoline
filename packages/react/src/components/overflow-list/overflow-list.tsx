@@ -61,9 +61,11 @@ export const OverflowList = forwardRef<HTMLDivElement, OverflowListProps>(functi
     if (more.current) moreWidth.current = more.current.offsetWidth || moreWidth.current;
     const widths = Array.from(ul.children, (c) => (c as HTMLElement).offsetWidth);
     const gap = parseFloat(getComputedStyle(ul).columnGap) || 0;
+    // biome-ignore lint/suspicious/noFocusedTests: fit() is the layout helper in this file, not a focused test.
     setShown(fit(el.clientWidth, widths, gap, moreWidth.current));
   };
   useIsoLayoutEffect(measure, [items]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: measure reads refs only, so one observer for the life of the component is enough.
   useEffect(() => {
     if (!root.current || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(measure);

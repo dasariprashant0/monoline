@@ -114,6 +114,7 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel(
   // The unmount cleanup must call the latest `onCloseAutoFocus`, not the one from the first render.
   const closeFocus = useRef(onCloseAutoFocus);
   closeFocus.current = onCloseAutoFocus;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once per opening; on close it focuses the trigger through its stable ref.
   useEffect(() => {
     const p = el.current!,
       items = p.querySelectorAll<HTMLElement>(ITEM),

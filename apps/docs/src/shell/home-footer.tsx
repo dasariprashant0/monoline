@@ -126,6 +126,7 @@ export function Footer() {
           Copyright © 2026 Monoline contributors. MIT licence.{' '}
           <a href={href('docs/guides/accessibility-statement')}>Accessibility statement</a>
         </p>
+        {/* biome-ignore lint/a11y/useValidAnchor: a real link to #main without JS; the handler scrolls smoothly instead. */}
         <a
           className="foot-top"
           href="#main"
