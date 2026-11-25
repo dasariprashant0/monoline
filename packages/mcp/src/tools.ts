@@ -2,7 +2,11 @@
 import type {Registry} from './registry.js';
 import type {FileContent, IndexEntry, PropGroup, RegistryEntry} from './schema.js';
 
-const words = (s: string): string[] => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+const words = (s: string): string[] =>
+  s
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
 
 export interface Hit {
   c: IndexEntry;
@@ -19,7 +23,9 @@ export function rank(components: IndexEntry[], query: string): Hit[] {
   const phrase = q.join('-');
   const out: Hit[] = [];
   for (const c of components) {
-    const name = c.name.toLowerCase(), title = (c.title ?? '').toLowerCase(), desc = (c.description ?? '').toLowerCase();
+    const name = c.name.toLowerCase(),
+      title = (c.title ?? '').toLowerCase(),
+      desc = (c.description ?? '').toLowerCase();
     const kws = (c.keywords ?? []).map((k) => k.toLowerCase());
     const props = (c.propNames ?? []).map((p) => p.toLowerCase());
     let score = name === phrase ? 100 : 0;
@@ -48,7 +54,13 @@ export function propGroupsOf(c: RegistryEntry): PropGroup[] {
   if (Array.isArray(c.props)) return c.props;
   return propsSummary(c.source ?? []).map((g) => ({
     name: g.interface,
-    props: g.props.map((p) => ({name: p.name, type: p.type, optional: !p.required, default: null, description: p.doc ?? ''})),
+    props: g.props.map((p) => ({
+      name: p.name,
+      type: p.type,
+      optional: !p.required,
+      default: null,
+      description: p.doc ?? '',
+    })),
   }));
 }
 
@@ -67,19 +79,35 @@ export function propsSummary(files: FileContent[]): Array<{interface: string; pr
     const re = /export (?:interface (\w+Props)[^{]*|type (\w+Props)\s*=\s*[^{]*)\{/g;
     let m;
     while ((m = re.exec(f.content))) {
-      let depth = 1, i = re.lastIndex;
-      while (i < f.content.length && depth) { const ch = f.content[i++]; if (ch === '{') depth++; else if (ch === '}') depth--; }
+      let depth = 1,
+        i = re.lastIndex;
+      while (i < f.content.length && depth) {
+        const ch = f.content[i++];
+        if (ch === '{') depth++;
+        else if (ch === '}') depth--;
+      }
       const body = f.content.slice(re.lastIndex, i - 1);
       const props: SummaryProp[] = [];
-      let doc = '', d = 0;
+      let doc = '',
+        d = 0;
       for (const raw of body.split('\n')) {
         const line = raw.trim();
         if (d === 0) {
           const dm = /^\/\*\*\s*(.*?)\s*\*\/$/.exec(line);
-          if (dm) { doc = dm[1] ?? ''; continue; }
+          if (dm) {
+            doc = dm[1] ?? '';
+            continue;
+          }
           const pm = /^(?:readonly )?(['"]?[\w-]+['"]?)(\??):\s*(.*?);?$/.exec(line);
-          if (pm) { props.push({name: (pm[1] ?? '').replace(/['"]/g, ''), required: !pm[2], type: (pm[3] ?? '').replace(/;$/, ''), ...(doc && {doc})}); doc = ''; }
-          else if (line && !line.startsWith('*') && !line.startsWith('/*') && !line.startsWith('//')) doc = '';
+          if (pm) {
+            props.push({
+              name: (pm[1] ?? '').replace(/['"]/g, ''),
+              required: !pm[2],
+              type: (pm[3] ?? '').replace(/;$/, ''),
+              ...(doc && {doc}),
+            });
+            doc = '';
+          } else if (line && !line.startsWith('*') && !line.startsWith('/*') && !line.startsWith('//')) doc = '';
         }
         d += (line.match(/[{(]/g) ?? []).length - (line.match(/[})]/g) ?? []).length;
         if (d < 0) d = 0;
@@ -116,13 +144,19 @@ export async function installInfo(reg: Pick<Registry, 'component'>, wanted: stri
 
 // keyword -> components. First match order is the page order.
 const RULES: Array<[RegExp, string[]]> = [
-  [/landing|marketing|home ?page|hero|startup|saas|product page/, ['block-hero', 'block-feature-grid', 'block-testimonials', 'block-cta', 'block-footer']],
+  [
+    /landing|marketing|home ?page|hero|startup|saas|product page/,
+    ['block-hero', 'block-feature-grid', 'block-testimonials', 'block-cta', 'block-footer'],
+  ],
   [/pricing|plans?|subscription|tiers?/, ['block-pricing']],
   [/testimonial|review|quote|social proof/, ['block-testimonials']],
   [/footer/, ['block-footer']],
   [/log ?in|sign ?in|auth/, ['block-login']],
   [/sign ?up|register|registration|onboard/, ['block-signup']],
-  [/dashboard|admin|analytics|metrics|kpi|overview|stats?/, ['block-dashboard-shell', 'stat', 'card', 'line-chart', 'data-table']],
+  [
+    /dashboard|admin|analytics|metrics|kpi|overview|stats?/,
+    ['block-dashboard-shell', 'stat', 'card', 'line-chart', 'data-table'],
+  ],
   [/settings|preferences|account|profile/, ['block-settings-form', 'switch', 'field']],
   [/empty|no results|nothing here|404|not found/, ['block-empty-page', 'empty-state']],
   [/form|input|checkout|contact|survey/, ['form', 'field', 'input', 'button']],
@@ -144,7 +178,9 @@ const RULES: Array<[RegExp, string[]]> = [
 export function compose(description: string, all: Map<string, IndexEntry>) {
   const d = description.toLowerCase();
   const chosen = new Map<string, string>();
-  const add = (n: string, why: string) => { if (all.has(n) && !chosen.has(n)) chosen.set(n, why); };
+  const add = (n: string, why: string) => {
+    if (all.has(n) && !chosen.has(n)) chosen.set(n, why);
+  };
   add('container', 'page layout');
   for (const [re, list] of RULES) {
     const hit = re.exec(d);

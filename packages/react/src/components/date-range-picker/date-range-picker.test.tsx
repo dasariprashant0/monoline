@@ -28,7 +28,14 @@ describe('DateRangePicker', () => {
   it('accepts typed dates and rejects bad ones', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
-    render(<DateRangePicker aria-label="Stay" locale="en-US" defaultValue={{start, end: new Date(2026, 0, 20)}} onValueChange={fn} />);
+    render(
+      <DateRangePicker
+        aria-label="Stay"
+        locale="en-US"
+        defaultValue={{start, end: new Date(2026, 0, 20)}}
+        onValueChange={fn}
+      />,
+    );
     await user.click(screen.getByRole('button', {name: /^Stay: /}));
     const end = await screen.findByLabelText('End');
     await user.clear(end);
@@ -42,7 +49,14 @@ describe('DateRangePicker', () => {
   it('orders typed dates if start is after end', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
-    render(<DateRangePicker aria-label="Stay" locale="en-US" defaultValue={{start, end: new Date(2026, 0, 20)}} onValueChange={fn} />);
+    render(
+      <DateRangePicker
+        aria-label="Stay"
+        locale="en-US"
+        defaultValue={{start, end: new Date(2026, 0, 20)}}
+        onValueChange={fn}
+      />,
+    );
     await user.click(screen.getByRole('button', {name: /^Stay: /}));
     const s = await screen.findByLabelText('Start');
     await user.clear(s);
@@ -58,7 +72,11 @@ describe('DateRangePicker', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
   it('is labelled by a Field', () => {
-    render(<Field label="Stay"><DateRangePicker /></Field>);
+    render(
+      <Field label="Stay">
+        <DateRangePicker />
+      </Field>,
+    );
     expect(screen.getByLabelText('Stay')).toBeInTheDocument();
   });
   it('has no axe violations', async () => {

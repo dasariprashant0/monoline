@@ -4,8 +4,15 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {BarChart} from './bar-chart';
 
-const data = [{label: 'Mon', value: 3}, {label: 'Tue', value: 5}, {label: 'Wed', value: 0}];
-const series = [{name: 'A', values: [1, 2]}, {name: 'B', values: [3, 4]}];
+const data = [
+  {label: 'Mon', value: 3},
+  {label: 'Tue', value: 5},
+  {label: 'Wed', value: 0},
+];
+const series = [
+  {name: 'A', values: [1, 2]},
+  {name: 'B', values: [3, 4]},
+];
 
 describe('BarChart', () => {
   it('is an image named by title, with a table of every value', () => {
@@ -27,7 +34,9 @@ describe('BarChart', () => {
     expect(container.querySelector('.chart-legend')).toBeNull();
   });
   it('stacked and horizontal layouts keep one bar per value', () => {
-    const {container} = render(<BarChart title="x" labels={['a', 'b']} series={series} stacked orientation="horizontal" showValues />);
+    const {container} = render(
+      <BarChart title="x" labels={['a', 'b']} series={series} stacked orientation="horizontal" showValues />,
+    );
     expect(container.querySelectorAll('.chart-bar')).toHaveLength(4);
     expect(screen.getByText('4', {selector: 'text.chart-value'})).toBeInTheDocument();
   });
@@ -43,7 +52,18 @@ describe('BarChart', () => {
     expect(screen.getByRole('img', {name: 'Visits: no data'})).toBeInTheDocument();
   });
   it('handles one point, negatives, all zeros and huge numbers', () => {
-    for (const d of [[{label: 'a', value: 1}], [{label: 'a', value: -4}, {label: 'b', value: 2}], [{label: 'a', value: 0}, {label: 'b', value: 0}], [{label: 'a', value: 9e12}]]) {
+    for (const d of [
+      [{label: 'a', value: 1}],
+      [
+        {label: 'a', value: -4},
+        {label: 'b', value: 2},
+      ],
+      [
+        {label: 'a', value: 0},
+        {label: 'b', value: 0},
+      ],
+      [{label: 'a', value: 9e12}],
+    ]) {
       const {container, unmount} = render(<BarChart title="x" data={d} />);
       expect(container.innerHTML).not.toContain('NaN');
       expect(container.querySelectorAll('tbody tr')).toHaveLength(d.length);

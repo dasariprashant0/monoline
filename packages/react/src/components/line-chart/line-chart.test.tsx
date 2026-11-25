@@ -4,7 +4,10 @@ import {axe} from '../../test/axe';
 import {LineChart} from './line-chart';
 
 const labels = ['Mon', 'Tue', 'Wed'];
-const series = [{name: 'Visits', values: [3, 5, 4]}, {name: 'Signups', values: [1, 2, 1]}];
+const series = [
+  {name: 'Visits', values: [3, 5, 4]},
+  {name: 'Signups', values: [1, 2, 1]},
+];
 
 describe('LineChart', () => {
   it('names the image and lists every value in a table', () => {
@@ -25,7 +28,16 @@ describe('LineChart', () => {
     expect(container.querySelectorAll('.chart-point')).toHaveLength(6);
   });
   it('steps with H and V segments', () => {
-    const {container} = render(<LineChart title="x" data={[{label: 'a', value: 1}, {label: 'b', value: 3}]} curve="step" />);
+    const {container} = render(
+      <LineChart
+        title="x"
+        data={[
+          {label: 'a', value: 1},
+          {label: 'b', value: 3},
+        ]}
+        curve="step"
+      />,
+    );
     expect(container.querySelector('path.chart-line')?.getAttribute('d')).toMatch(/H.*V/);
   });
   it('always marks a single point, and shows No data when empty', () => {
@@ -36,7 +48,11 @@ describe('LineChart', () => {
     expect(screen.getByText('No data')).toBeInTheDocument();
   });
   it('copes with negatives, all zeros and huge numbers', () => {
-    for (const v of [[-3, 4, -1], [0, 0, 0], [1e12, 3e12, 2e12]]) {
+    for (const v of [
+      [-3, 4, -1],
+      [0, 0, 0],
+      [1e12, 3e12, 2e12],
+    ]) {
       const {container, unmount} = render(<LineChart title="x" labels={labels} series={[{name: 's', values: v}]} />);
       expect(container.innerHTML).not.toContain('NaN');
       unmount();

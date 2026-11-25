@@ -8,21 +8,31 @@ function Controls() {
   return (
     <div style={{display: 'grid', gap: 12}}>
       <ThemeSwitcher />
-      <p>Theme: {theme}{theme === 'system' ? ` (${resolvedTheme})` : ''}. Accent: {accent}. Density: {density}.</p>
+      <p>
+        Theme: {theme}
+        {theme === 'system' ? ` (${resolvedTheme})` : ''}. Accent: {accent}. Density: {density}.
+      </p>
       <div style={{display: 'flex', gap: 8}}>
-        <Button variant="line" onClick={() => setTheme(resolvedTheme === 'dark' ? 'warm' : 'dark')}>Toggle dark</Button>
-        <Button variant="line" onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}>Toggle compact</Button>
+        <Button variant="line" onClick={() => setTheme(resolvedTheme === 'dark' ? 'warm' : 'dark')}>
+          Toggle dark
+        </Button>
+        <Button variant="line" onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}>
+          Toggle compact
+        </Button>
       </div>
     </div>
   );
 }
 
-export const demos: Demo[] = [{
-  title: 'useTheme and ThemeSwitcher',
-  description: 'ThemeProvider writes data-theme, data-accent and the other options to <html> and saves them. On a server-rendered page also put <script dangerouslySetInnerHTML={{__html: themeScript()}} /> in <head>.',
-  render: () => (
-    <ThemeProvider storageKey="monoline-demo">
-      <Controls />
-    </ThemeProvider>
-  ),
-}];
+export const demos: Demo[] = [
+  {
+    title: 'useTheme and ThemeSwitcher',
+    description:
+      'ThemeProvider writes data-theme, data-accent and the other options to <html> and saves them. On a server-rendered page also put <script dangerouslySetInnerHTML={{__html: themeScript()}} /> in <head>.',
+    render: () => (
+      <ThemeProvider storageKey="monoline-demo">
+        <Controls />
+      </ThemeProvider>
+    ),
+  },
+];

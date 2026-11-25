@@ -36,7 +36,24 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'tit
  * (banner, navigation, main, complementary). Placed inside another page's `main` it drops its own main landmark and skip link. It owns the `SidebarProvider`, so a `SidebarToggle` or `SidebarTrigger` anywhere inside works.
  * @example <AppShell navbar={<Navbar brand="Acme" leading={<SidebarTrigger />} />} sidebar={<Sidebar>...</Sidebar>}><PageHeader title="Overview" /></AppShell>
  */
-export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell({navbar, sidebar, aside, asideLabel = 'Details', skipLinkLabel = 'Skip to main content', mainId, scroll = 'page', collapsed, defaultCollapsed, onCollapsedChange, children, className, ...rest}, ref) {
+export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
+  {
+    navbar,
+    sidebar,
+    aside,
+    asideLabel = 'Details',
+    skipLinkLabel = 'Skip to main content',
+    mainId,
+    scroll = 'page',
+    collapsed,
+    defaultCollapsed,
+    onCollapsedChange,
+    children,
+    className,
+    ...rest
+  },
+  ref,
+) {
   const generated = useId();
   const id = mainId ?? `main-${generated.replace(/:/g, '')}`;
   // Inside another page's <main> (a docs example, a preview frame) a second main landmark and skip link would be wrong: render a plain container instead.
@@ -46,11 +63,21 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
   return (
     <SidebarProvider collapsed={collapsed} defaultCollapsed={defaultCollapsed} onCollapsedChange={onCollapsedChange}>
       <div ref={ref} className={cx('app-shell', className)} data-scroll={scroll} {...rest}>
-        {!nested && <a className="skip-link" href={`#${id}`}>{skipLinkLabel}</a>}
+        {!nested && (
+          <a className="skip-link" href={`#${id}`}>
+            {skipLinkLabel}
+          </a>
+        )}
         {navbar && <div className="app-shell-navbar">{navbar}</div>}
         {sidebar}
-        <Main id={id} tabIndex={-1} className="app-shell-main">{children}</Main>
-        {aside && <aside aria-label={asideLabel} className="app-shell-aside">{aside}</aside>}
+        <Main id={id} tabIndex={-1} className="app-shell-main">
+          {children}
+        </Main>
+        {aside && (
+          <aside aria-label={asideLabel} className="app-shell-aside">
+            {aside}
+          </aside>
+        )}
       </div>
     </SidebarProvider>
   );

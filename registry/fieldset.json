@@ -58,7 +58,7 @@
   "source": [
     {
       "path": "packages/react/src/components/fieldset/fieldset.tsx",
-      "content": "import {forwardRef, type FieldsetHTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface FieldsetProps extends Omit<FieldsetHTMLAttributes<HTMLFieldSetElement>, 'title'> {\n  /** The group's name. Required so the fieldset always has an accessible name. */\n  legend: ReactNode;\n}\n\n/** A group of controls. Use it for radios, checkboxes or a block like \"Billing address\". */\nexport const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset({legend, className, children, ...rest}, ref) {\n  return (\n    <fieldset ref={ref} className={cx('fieldset', className)} {...rest}>\n      <legend className=\"fieldset-legend\">{legend}</legend>\n      {children}\n    </fieldset>\n  );\n});\n"
+      "content": "import {forwardRef, type FieldsetHTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface FieldsetProps extends Omit<FieldsetHTMLAttributes<HTMLFieldSetElement>, 'title'> {\n  /** The group's name. Required so the fieldset always has an accessible name. */\n  legend: ReactNode;\n}\n\n/** A group of controls. Use it for radios, checkboxes or a block like \"Billing address\". */\nexport const Fieldset = forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset(\n  {legend, className, children, ...rest},\n  ref,\n) {\n  return (\n    <fieldset ref={ref} className={cx('fieldset', className)} {...rest}>\n      <legend className=\"fieldset-legend\">{legend}</legend>\n      {children}\n    </fieldset>\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/fieldset/index.ts",

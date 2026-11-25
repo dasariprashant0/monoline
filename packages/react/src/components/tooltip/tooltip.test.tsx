@@ -5,7 +5,9 @@ import {Tooltip, TooltipProvider} from './tooltip';
 
 const ui = () => (
   <TooltipProvider delayDuration={0}>
-    <Tooltip content="Saved to notes"><button>Save</button></Tooltip>
+    <Tooltip content="Saved to notes">
+      <button>Save</button>
+    </Tooltip>
   </TooltipProvider>
 );
 
@@ -29,12 +31,16 @@ describe('Tooltip', () => {
     render(ui());
     await user.tab();
     await screen.findByRole('tooltip');
-    act(() => { fireEvent.scroll(document); });
+    act(() => {
+      fireEvent.scroll(document);
+    });
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
     (document.activeElement as HTMLElement).blur();
     await user.hover(screen.getByRole('button', {name: 'Save'}));
     await screen.findByRole('tooltip');
-    act(() => { fireEvent.scroll(document); });
+    act(() => {
+      fireEvent.scroll(document);
+    });
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
   it('closes on scroll when a hover opened it on a click-focused trigger', async () => {
@@ -46,7 +52,9 @@ describe('Tooltip', () => {
     await user.unhover(save);
     await user.hover(save);
     await screen.findByRole('tooltip');
-    act(() => { fireEvent.scroll(document); });
+    act(() => {
+      fireEvent.scroll(document);
+    });
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
   it('describes its trigger while open', async () => {

@@ -19,7 +19,8 @@ function need(label: string, a: string, b: string, min: number) {
 
 for (const [theme, base] of Object.entries(themes)) {
   const bg = base['--background'];
-  for (const k of ['--foreground', '--muted', '--danger', '--warning', '--ok']) need(`${theme} ${k} on background`, base[k], bg, 4.5);
+  for (const k of ['--foreground', '--muted', '--danger', '--warning', '--ok'])
+    need(`${theme} ${k} on background`, base[k], bg, 4.5);
   need(`${theme} surface-text on surface`, '#FFFFFF', base['--surface'], 4.5);
   for (const [accent, byTheme] of Object.entries({default: {[theme]: {}}, ...accents})) {
     const v: Record<string, string> = {...base, ...(byTheme[theme] || (theme === 'warm' ? byTheme.warm : {}) || {})};
@@ -32,12 +33,34 @@ for (const [theme, base] of Object.entries(themes)) {
 
 // prefers-contrast: more (tokens.css). Mirrors its colour-mix(in srgb) maths: --muted is 85% text colour, --border 55%.
 {
-  const mix = (a: string, b: string, p: number) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * p + parseInt(b.slice(i, i + 2), 16) * (1 - p)).toString(16).padStart(2, '0')).join('');
+  const mix = (a: string, b: string, p: number) =>
+    '#' +
+    [1, 3, 5]
+      .map((i) =>
+        Math.round(parseInt(a.slice(i, i + 2), 16) * p + parseInt(b.slice(i, i + 2), 16) * (1 - p))
+          .toString(16)
+          .padStart(2, '0'),
+      )
+      .join('');
   const tokens = read('src/utilities.css');
-  if (!/--muted:\s*color-mix\(in srgb, var\(--foreground\) 85%/.test(tokens) || !/--border:\s*color-mix\(in srgb, var\(--foreground\) 55%/.test(tokens)) fails.push('utilities.css: the prefers-contrast block changed; update the mixes in check.ts');
+  if (
+    !/--muted:\s*color-mix\(in srgb, var\(--foreground\) 85%/.test(tokens) ||
+    !/--border:\s*color-mix\(in srgb, var\(--foreground\) 55%/.test(tokens)
+  )
+    fails.push('utilities.css: the prefers-contrast block changed; update the mixes in check.ts');
   for (const [theme, base] of Object.entries(themes)) {
-    need(`${theme} more-contrast muted on background`, mix(base['--foreground'], base['--background'], 0.85), base['--background'], 7);
-    need(`${theme} more-contrast border on background`, mix(base['--foreground'], base['--background'], 0.55), base['--background'], 3);
+    need(
+      `${theme} more-contrast muted on background`,
+      mix(base['--foreground'], base['--background'], 0.85),
+      base['--background'],
+      7,
+    );
+    need(
+      `${theme} more-contrast border on background`,
+      mix(base['--foreground'], base['--background'], 0.55),
+      base['--background'],
+      3,
+    );
   }
 }
 
@@ -45,36 +68,63 @@ for (const [theme, base] of Object.entries(themes)) {
 {
   const tokens = read('src/tokens.css');
   const codeColours = [...tokens.matchAll(/--(code-[a-z]+):\s*(#[0-9A-Fa-f]{6})/g)];
-  for (const [theme, base] of Object.entries(themes)) for (const [, name, hex] of codeColours) need(`${theme} --${name} on surface`, hex, base['--surface'], 4.5);
+  for (const [theme, base] of Object.entries(themes))
+    for (const [, name, hex] of codeColours) need(`${theme} --${name} on surface`, hex, base['--surface'], 4.5);
 }
 
 // Tokens only: no raw hex in any stylesheet except tokens.css and accents.css.
-const linted = ['src/options.css', 'src/base.css', 'src/utilities.css', ...readdirSync(new URL('../src/components/', import.meta.url)).filter((f) => f.endsWith('.css')).map((f) => `src/components/${f}`)];
+const linted = [
+  'src/options.css',
+  'src/base.css',
+  'src/utilities.css',
+  ...readdirSync(new URL('../src/components/', import.meta.url))
+    .filter((f) => f.endsWith('.css'))
+    .map((f) => `src/components/${f}`),
+];
 for (const f of linted) {
-  const hits = read(f).replace(/\/\*[\s\S]*?\*\//g, '').match(/#[0-9a-fA-F]{3,8}\b(?![^(]*\))/g) || [];
+  const hits =
+    read(f)
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .match(/#[0-9a-fA-F]{3,8}\b(?![^(]*\))/g) || [];
   for (const h of hits) fails.push(`${f} uses a raw colour ${h}; add a token instead`);
 }
 
 // WCAG 2.5.8: the form error summary links are list items, not inline text, so each needs a 24px target.
 // (Found by axe in a real app: the links were 17px tall.)
 {
-  const rule = read('src/components/form.css').split('\n').find((l) => l.startsWith('.form-errors a {')) ?? '';
-  if (!/display:\s*inline-block/.test(rule) || !/padding-block:\s*var\(--s1\)/.test(rule)) fails.push('form.css: .form-errors a must be inline-block with padding-block: var(--s1) (24px target)');
+  const rule =
+    read('src/components/form.css')
+      .split('\n')
+      .find((l) => l.startsWith('.form-errors a {')) ?? '';
+  if (!/display:\s*inline-block/.test(rule) || !/padding-block:\s*var\(--s1\)/.test(rule))
+    fails.push('form.css: .form-errors a must be inline-block with padding-block: var(--s1) (24px target)');
 }
 
 // The legacy utility `.grid` comes later in the bundle and would override the Grid component's columns and gap.
-for (const l of read('src/components/grid.css').replace(/\/\*[\s\S]*?\*\//g, '').split('\n')) {
-  if (/^\.grid-(auto|fixed)\b/.test(l.trim())) fails.push(`grid.css: "${l.slice(0, 40)}" must be written .grid.grid-... so the legacy .grid utility cannot override it`);
+for (const l of read('src/components/grid.css')
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .split('\n')) {
+  if (/^\.grid-(auto|fixed)\b/.test(l.trim()))
+    fails.push(
+      `grid.css: "${l.slice(0, 40)}" must be written .grid.grid-... so the legacy .grid utility cannot override it`,
+    );
 }
 
 // A Stat without a note sits in a grid row next to Stats with one; it must not stretch and push its value down.
-if (!/^\.stat \{[^}]*align-content:\s*start/m.test(read('src/components/19-avatar.css'))) fails.push('19-avatar.css: .stat needs align-content: start so values line up across a row');
+if (!/^\.stat \{[^}]*align-content:\s*start/m.test(read('src/components/19-avatar.css')))
+  fails.push('19-avatar.css: .stat needs align-content: start so values line up across a row');
 
 // Hover must not restyle an "on" control: `.x:hover:not(:disabled)` (3 classes' worth) beats `.x[data-state="on"]` (2), so
 // hovering a selected segment/toggle/day made light text sit on a light fill. Found by hovering after a click in a real app.
-for (const [file, sel, on] of [['segmented-control.css', '.segment', 'data-state="on"'], ['slider.css', '.toggle', 'data-state="on"'], ['toolbar.css', '.toolbar-item', 'data-state="on"'], ['calendar.css', '.calendar-day', 'aria-pressed="true"']]) {
+for (const [file, sel, on] of [
+  ['segmented-control.css', '.segment', 'data-state="on"'],
+  ['slider.css', '.toggle', 'data-state="on"'],
+  ['toolbar.css', '.toolbar-item', 'data-state="on"'],
+  ['calendar.css', '.calendar-day', 'aria-pressed="true"'],
+]) {
   for (const l of read(`src/components/${file}`).split('\n')) {
-    if (l.startsWith(`${sel}:`) && l.includes(':hover') && !l.includes(`[${on}]`)) fails.push(`${file}: "${l.slice(0, 60)}" must exclude the selected state with :not([${on}])`);
+    if (l.startsWith(`${sel}:`) && l.includes(':hover') && !l.includes(`[${on}]`))
+      fails.push(`${file}: "${l.slice(0, 60)}" must exclude the selected state with :not([${on}])`);
   }
 }
 
@@ -82,11 +132,18 @@ for (const [file, sel, on] of [['segmented-control.css', '.segment', 'data-state
 // documented 18px, so every block sub-title was oversized. The component's rules must win by specificity.
 {
   const h = read('src/components/heading.css');
-  for (const s of ['md', 'sm']) if (!h.includes(`.heading.heading-${s} {`)) fails.push(`heading.css: write .heading.heading-${s} (two classes) so typography.css cannot override the documented size`);
+  for (const s of ['md', 'sm'])
+    if (!h.includes(`.heading.heading-${s} {`))
+      fails.push(
+        `heading.css: write .heading.heading-${s} (two classes) so typography.css cannot override the documented size`,
+      );
 }
 
 // One source of truth per selector: the same selector defined in two stylesheets with different values means the later one wins silently.
-for (const c of findDuplicates().conflicts) fails.push(`${c.sel} is defined in ${c.files.join(' and ')} with different ${c.props.map((p) => p.prop).join(', ')}; keep one (run node packages/css/scripts/check-duplicates.ts)`);
+for (const c of findDuplicates().conflicts)
+  fails.push(
+    `${c.sel} is defined in ${c.files.join(' and ')} with different ${c.props.map((p) => p.prop).join(', ')}; keep one (run node packages/css/scripts/check-duplicates.ts)`,
+  );
 
 // A hover (or active/selected) rule that gives a label the colour of its own fill makes the label vanish. The "hover rule out-ranks
 // the selected rule" version of this bug is caught by the lists above and by scripts/css-computed.ts (real pointer); this catches the direct one.
@@ -94,9 +151,15 @@ for (const f of linted) {
   for (const {sel, props} of parseRules(read(f))) {
     if (!/:(hover|active)|\[(aria-pressed|data-state)=/.test(sel)) continue;
     const bg = props.background ?? props['background-color'];
-    if (props.color && bg && props.color === bg) fails.push(`${f}: "${sel}" sets colour and background to the same value (${bg}); the label would vanish`);
+    if (props.color && bg && props.color === bg)
+      fails.push(`${f}: "${sel}" sets colour and background to the same value (${bg}); the label would vanish`);
   }
 }
 
-if (fails.length) { console.error(fails.map((f) => 'FAIL ' + f).join('\n')); process.exit(1); }
-console.log(`ok: ${n} contrast checks across ${Object.keys(themes).length} themes and ${Object.keys(accents).length + 1} accents; no raw colours in components.`);
+if (fails.length) {
+  console.error(fails.map((f) => 'FAIL ' + f).join('\n'));
+  process.exit(1);
+}
+console.log(
+  `ok: ${n} contrast checks across ${Object.keys(themes).length} themes and ${Object.keys(accents).length + 1} accents; no raw colours in components.`,
+);

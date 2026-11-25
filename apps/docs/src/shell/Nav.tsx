@@ -9,7 +9,9 @@ const ALL: Tab[] = ['start', 'components', 'icons', 'editor', 'tools'];
 
 export function Nav({tab, current}: {tab: Tab | undefined; current: string}) {
   const ref = useRef<HTMLElement>(null);
-  useEffect(() => { ref.current?.querySelector('[aria-current="page"]')?.scrollIntoView({block: 'nearest'}); }, [current]);
+  useEffect(() => {
+    ref.current?.querySelector('[aria-current="page"]')?.scrollIntoView({block: 'nearest'});
+  }, [current]);
   return (
     <nav ref={ref} aria-label="Documentation">
       {ALL.map((t) => (
@@ -17,7 +19,16 @@ export function Nav({tab, current}: {tab: Tab | undefined; current: string}) {
           {navGroups(t).map((g) => (
             <div key={g.title} className="nav-group">
               <p className="nav-head">{g.title}</p>
-              {g.items.map((i) => <a key={i.path} className="nav-item" href={href(i.path)} aria-current={i.path === current ? 'page' : undefined}>{i.title}</a>)}
+              {g.items.map((i) => (
+                <a
+                  key={i.path}
+                  className="nav-item"
+                  href={href(i.path)}
+                  aria-current={i.path === current ? 'page' : undefined}
+                >
+                  {i.title}
+                </a>
+              ))}
             </div>
           ))}
         </div>

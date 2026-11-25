@@ -15,8 +15,15 @@ const ssrOut = join(docsRoot, 'node_modules/.prerender');
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 rmSync(ssrOut, {recursive: true, force: true});
-await build({root: docsRoot, logLevel: 'warn', build: {ssr: 'src/entry-server.tsx', outDir: ssrOut, emptyOutDir: true, copyPublicDir: false}});
-const {render, routes} = await import(pathToFileURL(join(ssrOut, 'entry-server.js')).href) as {render: (path: string) => string; routes: {path: string; title: string; description: string}[]};
+await build({
+  root: docsRoot,
+  logLevel: 'warn',
+  build: {ssr: 'src/entry-server.tsx', outDir: ssrOut, emptyOutDir: true, copyPublicDir: false},
+});
+const {render, routes} = (await import(pathToFileURL(join(ssrOut, 'entry-server.js')).href)) as {
+  render: (path: string) => string;
+  routes: {path: string; title: string; description: string}[];
+};
 
 const template = readFileSync(join(dist, 'index.html'), 'utf8');
 if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no empty #root');
@@ -25,8 +32,12 @@ if (!template.includes('<div id="root"></div>')) throw new Error('prerender: dis
 const assets = readdirSync(join(dist, 'assets'));
 const homeCss = assets.find((f) => /^Home-.*\.css$/.test(f));
 const overviewCss = assets.find((f) => /^Overview-.*\.css$/.test(f)); // the Components overview is a lazy chunk too
-const fonts = ['dm-mono-400', 'dm-mono-500'].map((n) => assets.find((f) => f.startsWith(`${n}-`) && f.endsWith('.woff2'))).filter(Boolean);
-const fontTags = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" crossorigin href="${base}assets/${f}" />`);
+const fonts = ['dm-mono-400', 'dm-mono-500']
+  .map((n) => assets.find((f) => f.startsWith(`${n}-`) && f.endsWith('.woff2')))
+  .filter(Boolean);
+const fontTags = fonts.map(
+  (f) => `<link rel="preload" as="font" type="font/woff2" crossorigin href="${base}assets/${f}" />`,
+);
 const url = (path: string) => `${origin}${base}${path ? `${path}/` : ''}`;
 
 for (const r of routes) {
@@ -34,11 +45,22 @@ for (const r of routes) {
   const tags = [
     `<link rel="canonical" href="${url(path)}" />`,
     ...fontTags,
-    ...(path === 'docs/components' && overviewCss ? [`<link rel="stylesheet" crossorigin href="${base}assets/${overviewCss}" />`] : []),
+    ...(path === 'docs/components' && overviewCss
+      ? [`<link rel="stylesheet" crossorigin href="${base}assets/${overviewCss}" />`]
+      : []),
     ...(path === '' && homeCss ? [`<link rel="stylesheet" crossorigin href="${base}assets/${homeCss}" />`] : []),
-    `<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="Monoline" />`,
-    `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(description)}" />`, `<meta property="og:url" content="${url(path)}" />`,
-    `<meta property="og:image" content="${origin}${base}og.png" />`, `<meta property="og:image:width" content="1200" />`, `<meta property="og:image:height" content="630" />`, `<meta name="twitter:card" content="summary_large_image" />`, `<meta name="twitter:image" content="${origin}${base}og.png" />`, `<meta name="twitter:title" content="${esc(title)}" />`, `<meta name="twitter:description" content="${esc(description)}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:site_name" content="Monoline" />`,
+    `<meta property="og:title" content="${esc(title)}" />`,
+    `<meta property="og:description" content="${esc(description)}" />`,
+    `<meta property="og:url" content="${url(path)}" />`,
+    `<meta property="og:image" content="${origin}${base}og.png" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:image" content="${origin}${base}og.png" />`,
+    `<meta name="twitter:title" content="${esc(title)}" />`,
+    `<meta name="twitter:description" content="${esc(description)}" />`,
   ].join('\n  ');
   const html = template
     .replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`)
@@ -50,7 +72,13 @@ for (const r of routes) {
   writeFileSync(join(dir, 'index.html'), html);
 }
 
-writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${url(r.path)}</loc></url>`).join('\n')}\n</urlset>\n`);
-writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${origin}${base}sitemap.xml\n# Machine-readable docs for AI tools: ${origin}${base}llms.txt\n`);
+writeFileSync(
+  join(dist, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map((r) => `  <url><loc>${url(r.path)}</loc></url>`).join('\n')}\n</urlset>\n`,
+);
+writeFileSync(
+  join(dist, 'robots.txt'),
+  `User-agent: *\nAllow: /\n\nSitemap: ${origin}${base}sitemap.xml\n# Machine-readable docs for AI tools: ${origin}${base}llms.txt\n`,
+);
 rmSync(ssrOut, {recursive: true, force: true});
 console.log(`prerender: ${routes.length} pages, sitemap.xml, robots.txt (${origin}${base})`);

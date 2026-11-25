@@ -20,20 +20,40 @@ export const FormErrorsContext = createContext<Record<string, ReactNode> | null>
  * Spread them **after** the caller's own props and pass those props in: inside a Field the Field's `id` wins (the label points at it)
  * and the caller's `aria-describedby` is joined to the Field's hint and error ids. Outside a Field it returns an empty object, so controls work alone too.
  */
-export function useFieldControl(own: {'aria-describedby'?: string | undefined} = {}): {id?: string | undefined; 'aria-describedby'?: string | undefined; 'aria-invalid'?: true | undefined; 'data-invalid'?: '' | undefined; required?: true | undefined} {
+export function useFieldControl(own: {'aria-describedby'?: string | undefined} = {}): {
+  id?: string | undefined;
+  'aria-describedby'?: string | undefined;
+  'aria-invalid'?: true | undefined;
+  'data-invalid'?: '' | undefined;
+  required?: true | undefined;
+} {
   const ctx = useContext(FieldContext);
   if (!ctx) return {};
-  const f: {id?: string | undefined; 'aria-describedby'?: string | undefined; 'aria-invalid'?: true | undefined; 'data-invalid'?: '' | undefined; required?: true | undefined} = {id: ctx.id};
+  const f: {
+    id?: string | undefined;
+    'aria-describedby'?: string | undefined;
+    'aria-invalid'?: true | undefined;
+    'data-invalid'?: '' | undefined;
+    required?: true | undefined;
+  } = {id: ctx.id};
   const d = [ctx.describedBy, own['aria-describedby']].filter(Boolean).join(' ');
   if (d) f['aria-describedby'] = d;
-  if (ctx.invalid) { f['aria-invalid'] = true; f['data-invalid'] = ''; }
+  if (ctx.invalid) {
+    f['aria-invalid'] = true;
+    f['data-invalid'] = '';
+  }
   if (ctx.required) f.required = true;
   return f;
 }
 
 /** Hidden inputs that submit a custom control's value(s) with a native form: one per value, none without a `name`. */
 export function hiddenInputs(name: string | undefined, values: string | string[], disabled?: boolean): ReactNode {
-  return name && ([] as string[]).concat(values).map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />);
+  return (
+    name &&
+    ([] as string[])
+      .concat(values)
+      .map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />)
+  );
 }
 
 /** The id of the surrounding Field's label, or undefined outside a Field. For popups that need a name (`aria-labelledby`). */
@@ -69,7 +89,10 @@ export interface FieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'childr
  * @example <Field label="Email" hint="We never share it." error={err}><Input type="email" /></Field>
  * @example <Form errors={errors}><Field label="Email" name="email"><Input name="email" /></Field></Form>
  */
-export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field({label, hint, error: errorProp, name, required = false, className, children, ...rest}, ref) {
+export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
+  {label, hint, error: errorProp, name, required = false, className, children, ...rest},
+  ref,
+) {
   const base = useId();
   const formErrors = useContext(FormErrorsContext);
   const fromForm = errorProp === undefined && name !== undefined ? formErrors?.[name] : undefined;
@@ -78,12 +101,24 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field({labe
   const errorId = error ? `${base}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
   return (
-    <FieldContext.Provider value={{id: `${base}-control`, invalid: Boolean(error), required, describedBy, labelId: `${base}-label`}}>
+    <FieldContext.Provider
+      value={{id: `${base}-control`, invalid: Boolean(error), required, describedBy, labelId: `${base}-label`}}
+    >
       <div ref={ref} className={cx('field', className)} {...rest}>
-        <Label id={`${base}-label`} htmlFor={`${base}-control`} required={required}>{label}</Label>
+        <Label id={`${base}-label`} htmlFor={`${base}-control`} required={required}>
+          {label}
+        </Label>
         {children}
-        {hint && <span id={hintId} className="field-hint">{hint}</span>}
-        {error && <span id={errorId} className="field-error" role={fromForm ? undefined : 'alert'}>{error}</span>}
+        {hint && (
+          <span id={hintId} className="field-hint">
+            {hint}
+          </span>
+        )}
+        {error && (
+          <span id={errorId} className="field-error" role={fromForm ? undefined : 'alert'}>
+            {error}
+          </span>
+        )}
       </div>
     </FieldContext.Provider>
   );

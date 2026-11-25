@@ -8,7 +8,9 @@ function PopoverDemo() {
   const ref = useClickOutside<HTMLDivElement>(() => setOpen(false), open);
   return (
     <div>
-      <Button variant="line" aria-expanded={open} onClick={() => setOpen((o) => !o)}>Open panel</Button>
+      <Button variant="line" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        Open panel
+      </Button>
       {open && (
         <div ref={ref} role="group" aria-label="Panel">
           <p>Click anywhere outside this panel to close it.</p>

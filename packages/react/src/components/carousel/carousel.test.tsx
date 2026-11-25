@@ -3,7 +3,13 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Carousel} from './carousel';
 
-const ui = () => <Carousel aria-label="Projects"><div>One</div><div>Two</div><div>Three</div></Carousel>;
+const ui = () => (
+  <Carousel aria-label="Projects">
+    <div>One</div>
+    <div>Two</div>
+    <div>Three</div>
+  </Carousel>
+);
 
 describe('Carousel', () => {
   it('is a named carousel region of numbered slides', () => {
@@ -25,7 +31,12 @@ describe('Carousel', () => {
     expect(screen.getByLabelText('Projects slides')).toHaveAttribute('tabindex', '0');
   });
   it('names the scrollable track as a group', () => {
-    render(<Carousel aria-label="Featured"><p>A</p><p>B</p></Carousel>);
+    render(
+      <Carousel aria-label="Featured">
+        <p>A</p>
+        <p>B</p>
+      </Carousel>,
+    );
     expect(screen.getByRole('group', {name: 'Featured slides'})).toHaveAttribute('tabindex', '0');
   });
   it('has no axe violations', async () => {

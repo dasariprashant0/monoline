@@ -59,7 +59,7 @@
       ]
     }
   ],
-  "usage": "import {Breadcrumb} from '@monoline/react';\n\n<Breadcrumb\n  items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]}\n/>",
+  "usage": "import {Breadcrumb} from '@monoline/react';\n\n<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]} />",
   "dataAttributes": [
     {
       "name": "data-state",
@@ -86,7 +86,7 @@
   "source": [
     {
       "path": "packages/react/src/components/breadcrumb/breadcrumb.tsx",
-      "content": "import {forwardRef, type HTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface BreadcrumbItem {\n  label: ReactNode;\n  /** Omit on the current page. */\n  href?: string | undefined;\n}\nexport interface BreadcrumbProps extends Omit<HTMLAttributes<HTMLElement>, 'children'> {\n  /** The trail from the root to the current page; the last item is treated as the current page and is not a link. */\n  items: BreadcrumbItem[];\n  /** Name of the landmark. */\n  'aria-label'?: string | undefined;\n}\n\n/** Where you are in the site. The last item is the current page. */\nexport const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb({items, className, 'aria-label': label = 'Breadcrumb', ...rest}, ref) {\n  return (\n    <nav ref={ref} aria-label={label} className={className} {...rest}>\n      <ol className={cx('crumbs')}>\n        {items.map((item, i) => {\n          const last = i === items.length - 1;\n          return (\n            <li key={i} aria-current={last ? 'page' : undefined}>\n              {item.href && !last ? <a className=\"link\" href={item.href}>{item.label}</a> : item.label}\n            </li>\n          );\n        })}\n      </ol>\n    </nav>\n  );\n});\n"
+      "content": "import {forwardRef, type HTMLAttributes, type ReactNode} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface BreadcrumbItem {\n  label: ReactNode;\n  /** Omit on the current page. */\n  href?: string | undefined;\n}\nexport interface BreadcrumbProps extends Omit<HTMLAttributes<HTMLElement>, 'children'> {\n  /** The trail from the root to the current page; the last item is treated as the current page and is not a link. */\n  items: BreadcrumbItem[];\n  /** Name of the landmark. */\n  'aria-label'?: string | undefined;\n}\n\n/** Where you are in the site. The last item is the current page. */\nexport const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb(\n  {items, className, 'aria-label': label = 'Breadcrumb', ...rest},\n  ref,\n) {\n  return (\n    <nav ref={ref} aria-label={label} className={className} {...rest}>\n      <ol className={cx('crumbs')}>\n        {items.map((item, i) => {\n          const last = i === items.length - 1;\n          return (\n            <li key={i} aria-current={last ? 'page' : undefined}>\n              {item.href && !last ? (\n                <a className=\"link\" href={item.href}>\n                  {item.label}\n                </a>\n              ) : (\n                item.label\n              )}\n            </li>\n          );\n        })}\n      </ol>\n    </nav>\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/breadcrumb/index.ts",

@@ -16,7 +16,12 @@ describe('DotPattern', () => {
     expect(container.querySelector('circle')).toHaveAttribute('r', '2');
   });
   it('gives each instance its own pattern id', () => {
-    const {container} = render(<><DotPattern /><DotPattern /></>);
+    const {container} = render(
+      <>
+        <DotPattern />
+        <DotPattern />
+      </>,
+    );
     const ids = [...container.querySelectorAll('pattern')].map((p) => p.id);
     expect(new Set(ids).size).toBe(2);
   });

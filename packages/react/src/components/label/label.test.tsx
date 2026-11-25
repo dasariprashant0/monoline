@@ -6,7 +6,12 @@ import userEvent from '@testing-library/user-event';
 
 describe('Label', () => {
   it('names its control and focuses it on click', async () => {
-    render(<><Label htmlFor="x">Name</Label><input id="x" /></>);
+    render(
+      <>
+        <Label htmlFor="x">Name</Label>
+        <input id="x" />
+      </>,
+    );
     expect(screen.getByLabelText('Name')).toBe(screen.getByRole('textbox'));
   });
   it('shows the required marker class', () => {
@@ -19,13 +24,22 @@ describe('Label', () => {
   });
   it('renders a label element, forwards ref and merges className', () => {
     const ref = createRef<HTMLLabelElement>();
-    render(<Label ref={ref} className="mine" required>Name</Label>);
+    render(
+      <Label ref={ref} className="mine" required>
+        Name
+      </Label>,
+    );
     expect(ref.current!.tagName).toBe('LABEL');
     expect(ref.current).toHaveClass('label', 'field-required', 'mine');
   });
   it('works by wrapping the control too, and clicking the text focuses it', async () => {
     const user = userEvent.setup();
-    render(<Label>Wrapped<input /></Label>);
+    render(
+      <Label>
+        Wrapped
+        <input />
+      </Label>,
+    );
     await user.click(screen.getByText('Wrapped'));
     expect(screen.getByRole('textbox')).toHaveFocus();
   });
@@ -36,17 +50,30 @@ describe('Label', () => {
     expect(ev.defaultPrevented).toBe(true);
   });
   it('leaves interactive children alone on double click', () => {
-    render(<Label htmlFor="x"><button>Inner</button></Label>);
+    render(
+      <Label htmlFor="x">
+        <button>Inner</button>
+      </Label>,
+    );
     const ev = new MouseEvent('mousedown', {bubbles: true, cancelable: true, detail: 2});
     screen.getByRole('button').dispatchEvent(ev);
     expect(ev.defaultPrevented).toBe(false);
   });
   it('supports long and RTL text', () => {
-    render(<Label htmlFor="x" dir="rtl">{'الاسم '.repeat(200)}</Label>);
+    render(
+      <Label htmlFor="x" dir="rtl">
+        {'الاسم '.repeat(200)}
+      </Label>,
+    );
     expect(screen.getByText(/الاسم/)).toHaveAttribute('dir', 'rtl');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<><Label htmlFor="y">Name</Label><input id="y" /></>);
+    const {container} = render(
+      <>
+        <Label htmlFor="y">Name</Label>
+        <input id="y" />
+      </>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

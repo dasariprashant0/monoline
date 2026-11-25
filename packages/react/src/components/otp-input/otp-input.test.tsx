@@ -50,7 +50,8 @@ describe('OtpInput', () => {
 describe('OtpInput without gaps and from soft keyboards', () => {
   it('typing into a later empty box fills the first empty one, never padding with spaces', async () => {
     const user = userEvent.setup();
-    const change = vi.fn(), done = vi.fn();
+    const change = vi.fn(),
+      done = vi.fn();
     render(<OtpInput aria-label="Code" length={6} onValueChange={change} onComplete={done} />);
     await user.click(screen.getByLabelText('Digit 6 of 6'));
     await user.keyboard('5');

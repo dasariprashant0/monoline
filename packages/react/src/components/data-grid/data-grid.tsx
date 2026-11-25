@@ -1,5 +1,18 @@
 'use client';
-import {forwardRef, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type HTMLAttributes, type KeyboardEvent, type ReactElement, type ReactNode, type Ref} from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type ReactElement,
+  type ReactNode,
+  type Ref,
+} from 'react';
 import {cx} from '../../utils/cx';
 import {EmptyState} from '../empty-state';
 import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
@@ -10,7 +23,7 @@ export interface DataGridColumn<T> {
   /** Plain text: it is the column header and its accessible name. */
   header: string;
   /** Key of the row to show when `cell` is not given. */
-  field?: keyof T & string | undefined;
+  field?: (keyof T & string) | undefined;
   /** Custom cell content. */
   cell?: ((row: T, index: number) => ReactNode) | undefined;
   /** The value sorting compares. Defaults to `row[field]`. */
@@ -21,50 +34,78 @@ export interface DataGridColumn<T> {
   align?: 'start' | 'end' | undefined;
 }
 
-export interface DataGridSort { id: string; direction: 'asc' | 'desc' }
+export interface DataGridSort {
+  id: string;
+  direction: 'asc' | 'desc';
+}
 
-type Name = {'aria-label': string; 'aria-labelledby'?: string | undefined} | {'aria-labelledby': string; 'aria-label'?: string | undefined};
+type Name =
+  | {'aria-label': string; 'aria-labelledby'?: string | undefined}
+  | {'aria-labelledby': string; 'aria-label'?: string | undefined};
 
-export type DataGridProps<T> = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'aria-label' | 'aria-labelledby'> & Name & {
-  /** The column definitions: id, header, how to read each cell, width and sortability. */
-  columns: DataGridColumn<T>[];
-  /** All the rows. Only the visible ones are rendered, so tens of thousands are fine. */
-  rows: T[];
-  /** Stable id per row, used for selection. Default: the row's position in `rows`. */
-  getRowId?: ((row: T, index: number) => string) | undefined;
-  /** Row height in px. Every row has the same height; that is what makes virtualising cheap. Default 36. */
-  rowHeight?: number | undefined;
-  /** Height of the scrolling grid, header included. Default 400. */
-  height?: number | string | undefined;
-  /** Extra rows rendered above and below the visible ones. Default 5. */
-  overscan?: number | undefined;
-  /** Whether rows can be selected: `none` (default), `single` or `multiple`. */
-  selectionMode?: 'none' | 'single' | 'multiple' | undefined;
-  /** Controlled selected row ids. Pair with `onSelectedIdsChange`. */
-  selectedIds?: string[] | undefined;
-  /** Initially selected row ids when uncontrolled. */
-  defaultSelectedIds?: string[] | undefined;
-  /** Called with the new list of selected row ids. */
-  onSelectedIdsChange?: ((ids: string[]) => void) | undefined;
-  /** Controlled sort; `null` is unsorted. */
-  sort?: DataGridSort | null | undefined;
-  /** Initial sort when uncontrolled; `null` is unsorted. */
-  defaultSort?: DataGridSort | null | undefined;
-  /** Called with the new sort, or `null` when sorting is cleared. */
-  onSortChange?: ((sort: DataGridSort | null) => void) | undefined;
-  /** Do not sort in the grid: `rows` arrive already ordered (server-side sorting). */
-  manualSort?: boolean | undefined;
-  /** Shown when `rows` is empty. */
-  emptyState?: ReactNode | undefined;
-};
+export type DataGridProps<T> = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'aria-label' | 'aria-labelledby'> &
+  Name & {
+    /** The column definitions: id, header, how to read each cell, width and sortability. */
+    columns: DataGridColumn<T>[];
+    /** All the rows. Only the visible ones are rendered, so tens of thousands are fine. */
+    rows: T[];
+    /** Stable id per row, used for selection. Default: the row's position in `rows`. */
+    getRowId?: ((row: T, index: number) => string) | undefined;
+    /** Row height in px. Every row has the same height; that is what makes virtualising cheap. Default 36. */
+    rowHeight?: number | undefined;
+    /** Height of the scrolling grid, header included. Default 400. */
+    height?: number | string | undefined;
+    /** Extra rows rendered above and below the visible ones. Default 5. */
+    overscan?: number | undefined;
+    /** Whether rows can be selected: `none` (default), `single` or `multiple`. */
+    selectionMode?: 'none' | 'single' | 'multiple' | undefined;
+    /** Controlled selected row ids. Pair with `onSelectedIdsChange`. */
+    selectedIds?: string[] | undefined;
+    /** Initially selected row ids when uncontrolled. */
+    defaultSelectedIds?: string[] | undefined;
+    /** Called with the new list of selected row ids. */
+    onSelectedIdsChange?: ((ids: string[]) => void) | undefined;
+    /** Controlled sort; `null` is unsorted. */
+    sort?: DataGridSort | null | undefined;
+    /** Initial sort when uncontrolled; `null` is unsorted. */
+    defaultSort?: DataGridSort | null | undefined;
+    /** Called with the new sort, or `null` when sorting is cleared. */
+    onSortChange?: ((sort: DataGridSort | null) => void) | undefined;
+    /** Do not sort in the grid: `rows` arrive already ordered (server-side sorting). */
+    manualSort?: boolean | undefined;
+    /** Shown when `rows` is empty. */
+    emptyState?: ReactNode | undefined;
+  };
 
 const collator = new Intl.Collator(undefined, {numeric: true});
-const cmp = (a: unknown, b: unknown) => (a == null ? (b == null ? 0 : 1) : b == null ? -1 : typeof a === 'number' && typeof b === 'number' ? a - b : collator.compare(String(a), String(b)));
+const cmp = (a: unknown, b: unknown) =>
+  a == null
+    ? b == null
+      ? 0
+      : 1
+    : b == null
+      ? -1
+      : typeof a === 'number' && typeof b === 'number'
+        ? a - b
+        : collator.compare(String(a), String(b));
 const MIN_COL = 120;
-const track = (c: {width?: number | string | undefined}) => (typeof c.width === 'number' ? `${c.width}px` : (c.width ?? `minmax(${MIN_COL}px, 1fr)`));
+const track = (c: {width?: number | string | undefined}) =>
+  typeof c.width === 'number' ? `${c.width}px` : (c.width ?? `minmax(${MIN_COL}px, 1fr)`);
 
 function Chevron({dir}: {dir?: 'asc' | 'desc' | undefined}) {
-  return <svg className="data-grid-sort" data-direction={dir} viewBox="0 0 10 10" width="10" height="10" aria-hidden="true" focusable="false"><path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>;
+  return (
+    <svg
+      className="data-grid-sort"
+      data-direction={dir}
+      viewBox="0 0 10 10"
+      width="10"
+      height="10"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M2 6.5 5 3.5l3 3" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
 }
 
 /**
@@ -78,14 +119,39 @@ function Chevron({dir}: {dir?: 'asc' | 'desc' | undefined}) {
  * @example <DataGrid aria-label="Orders" columns={cols} rows={rows} height={480} getRowId={(r) => r.id} />
  */
 function DataGridInner<T>(
-  {columns, rows, getRowId, rowHeight = 36, height = 400, overscan = 5, selectionMode = 'none', selectedIds, defaultSelectedIds, onSelectedIdsChange, sort, defaultSort = null, onSortChange, manualSort, emptyState, className, style, onScroll, onKeyDown, ...rest}: DataGridProps<T>,
+  {
+    columns,
+    rows,
+    getRowId,
+    rowHeight = 36,
+    height = 400,
+    overscan = 5,
+    selectionMode = 'none',
+    selectedIds,
+    defaultSelectedIds,
+    onSelectedIdsChange,
+    sort,
+    defaultSort = null,
+    onSortChange,
+    manualSort,
+    emptyState,
+    className,
+    style,
+    onScroll,
+    onKeyDown,
+    ...rest
+  }: DataGridProps<T>,
   ref: Ref<HTMLDivElement>,
 ) {
   const gridRef = useRef<HTMLDivElement | null>(null);
-  const setRefs = useCallback((el: HTMLDivElement | null) => {
-    gridRef.current = el;
-    if (typeof ref === 'function') ref(el); else if (ref) (ref as {current: HTMLDivElement | null}).current = el;
-  }, [ref]);
+  const setRefs = useCallback(
+    (el: HTMLDivElement | null) => {
+      gridRef.current = el;
+      if (typeof ref === 'function') ref(el);
+      else if (ref) (ref as {current: HTMLDivElement | null}).current = el;
+    },
+    [ref],
+  );
   const fallbackH = typeof height === 'number' ? height : 400;
   const [scrollTop, setScrollTop] = useState(0);
   const [viewport, setViewport] = useState(fallbackH);
@@ -128,13 +194,19 @@ function DataGridInner<T>(
   const visible: number[] = [];
   for (let i = start; i < end; i++) visible.push(i);
   const keep = activeRow - 1; // the row holding the Tab stop stays mounted even when scrolled away
-  if (keep >= 0 && (keep < start || keep >= end)) { if (keep < start) visible.unshift(keep); else visible.push(keep); }
+  if (keep >= 0 && (keep < start || keep >= end)) {
+    if (keep < start) visible.unshift(keep);
+    else visible.push(keep);
+  }
 
   // After a keyboard move, focus the new cell once it is mounted.
   useEffect(() => {
     if (!wantFocus.current) return;
     const cell = gridRef.current?.querySelector<HTMLElement>(`[data-row="${activeRow}"][data-col="${activeCol}"]`);
-    if (cell) { wantFocus.current = false; cell.focus({preventScroll: true}); }
+    if (cell) {
+      wantFocus.current = false;
+      cell.focus({preventScroll: true});
+    }
   });
 
   const scrollTo = (top: number) => {
@@ -159,15 +231,30 @@ function DataGridInner<T>(
   };
 
   const toggleSort = (c: DataGridColumn<T>) => {
-    const next: DataGridSort | null = curSort?.id !== c.id ? {id: c.id, direction: 'asc'} : curSort.direction === 'asc' ? {id: c.id, direction: 'desc'} : null;
+    const next: DataGridSort | null =
+      curSort?.id !== c.id
+        ? {id: c.id, direction: 'asc'}
+        : curSort.direction === 'asc'
+          ? {id: c.id, direction: 'desc'}
+          : null;
     if (sort === undefined) setInnerSort(next);
     onSortChange?.(next);
   };
 
-  const rowId = (vi: number) => { const i = order[vi]!; return getRowId ? getRowId(rows[i]!, i) : String(i); };
+  const rowId = (vi: number) => {
+    const i = order[vi]!;
+    return getRowId ? getRowId(rows[i]!, i) : String(i);
+  };
   const toggleRow = (id: string) => {
     if (selectionMode === 'none') return;
-    const next = selectionMode === 'single' ? (selected.has(id) ? [] : [id]) : selected.has(id) ? [...selected].filter((x) => x !== id) : [...selected, id];
+    const next =
+      selectionMode === 'single'
+        ? selected.has(id)
+          ? []
+          : [id]
+        : selected.has(id)
+          ? [...selected].filter((x) => x !== id)
+          : [...selected, id];
     if (selectedIds === undefined) setInnerSel(next);
     onSelectedIdsChange?.(next);
   };
@@ -178,24 +265,48 @@ function DataGridInner<T>(
     if (e.defaultPrevented || !(e.target as HTMLElement).hasAttribute('data-col')) return;
     const page = Math.max(1, Math.floor(viewport / rowHeight) - 1);
     const {row, col} = {row: activeRow, col: activeCol};
-    const to = (r: number, c: number) => { e.preventDefault(); move(r, c); };
+    const to = (r: number, c: number) => {
+      e.preventDefault();
+      move(r, c);
+    };
     switch (e.key) {
-      case 'ArrowDown': return to(row + 1, col);
-      case 'ArrowUp': return to(row - 1, col);
-      case 'ArrowRight': return to(row, col + (isRtl(e.currentTarget) ? -1 : 1));
-      case 'ArrowLeft': return to(row, col + (isRtl(e.currentTarget) ? 1 : -1));
-      case 'PageDown': return to(row + page, col);
-      case 'PageUp': return to(row - page, col);
-      case 'Home': return to(e.ctrlKey || e.metaKey ? 0 : row, 0);
-      case 'End': return to(e.ctrlKey || e.metaKey ? n : row, nCols - 1);
+      case 'ArrowDown':
+        return to(row + 1, col);
+      case 'ArrowUp':
+        return to(row - 1, col);
+      case 'ArrowRight':
+        return to(row, col + (isRtl(e.currentTarget) ? -1 : 1));
+      case 'ArrowLeft':
+        return to(row, col + (isRtl(e.currentTarget) ? 1 : -1));
+      case 'PageDown':
+        return to(row + page, col);
+      case 'PageUp':
+        return to(row - page, col);
+      case 'Home':
+        return to(e.ctrlKey || e.metaKey ? 0 : row, 0);
+      case 'End':
+        return to(e.ctrlKey || e.metaKey ? n : row, nCols - 1);
       case ' ':
       case 'Enter':
-        if (row === 0) { e.preventDefault(); const c = columns[col]; if (c?.sortable) toggleSort(c); }
-        else if (e.key === ' ' && selectionMode !== 'none') { e.preventDefault(); toggleRow(rowId(row - 1)); }
+        if (row === 0) {
+          e.preventDefault();
+          const c = columns[col];
+          if (c?.sortable) toggleSort(c);
+        } else if (e.key === ' ' && selectionMode !== 'none') {
+          e.preventDefault();
+          toggleRow(rowId(row - 1));
+        }
     }
   };
 
-  const gridStyle = {height, overflow: 'auto', position: 'relative', '--data-grid-cols': columns.map(track).join(' '), '--data-grid-row': `${rowHeight}px`, ...style} as CSSProperties;
+  const gridStyle = {
+    height,
+    overflow: 'auto',
+    position: 'relative',
+    '--data-grid-cols': columns.map(track).join(' '),
+    '--data-grid-row': `${rowHeight}px`,
+    ...style,
+  } as CSSProperties;
   const minWidth = columns.reduce((s, c) => s + (typeof c.width === 'number' ? c.width : MIN_COL), 0);
   const inner: CSSProperties = {minInlineSize: minWidth};
 
@@ -208,7 +319,10 @@ function DataGridInner<T>(
       aria-rowcount={n + 1}
       aria-colcount={nCols}
       aria-multiselectable={selectionMode === 'multiple' || undefined}
-      onScroll={(e) => { setScrollTop(e.currentTarget.scrollTop); onScroll?.(e); }}
+      onScroll={(e) => {
+        setScrollTop(e.currentTarget.scrollTop);
+        onScroll?.(e);
+      }}
       onKeyDown={handleKey}
       {...rest}
     >
@@ -222,7 +336,9 @@ function DataGridInner<T>(
                 key={c.id}
                 role="columnheader"
                 aria-colindex={ci + 1}
-                aria-sort={c.sortable ? (dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none') : undefined}
+                aria-sort={
+                  c.sortable ? (dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none') : undefined
+                }
                 tabIndex={tab ? 0 : -1}
                 data-row={0}
                 data-col={ci}
@@ -239,10 +355,16 @@ function DataGridInner<T>(
           })}
         </div>
       </div>
-      <div role="rowgroup" className="data-grid-body" style={{...inner, blockSize: n === 0 ? undefined : n * rowHeight}}>
+      <div
+        role="rowgroup"
+        className="data-grid-body"
+        style={{...inner, blockSize: n === 0 ? undefined : n * rowHeight}}
+      >
         {n === 0 && (
           <div role="row" aria-rowindex={2} className="data-grid-row data-grid-empty-row">
-            <div role="gridcell" aria-colindex={1} aria-colspan={nCols || 1} className="data-grid-empty">{emptyState ?? <EmptyState title="No rows" />}</div>
+            <div role="gridcell" aria-colindex={1} aria-colspan={nCols || 1} className="data-grid-empty">
+              {emptyState ?? <EmptyState title="No rows" />}
+            </div>
           </div>
         )}
         {visible.map((vi) => {
@@ -274,7 +396,15 @@ function DataGridInner<T>(
                     data-align={c.align}
                     className="data-grid-cell"
                     onFocus={() => setActive({row: vi + 1, col: ci})}
-                    onClick={(e) => { if ((e.target as Element).closest('button, a[href], input, select, textarea, label, [role="button"], [role="link"], [contenteditable="true"]')) return; toggleRow(id); }}
+                    onClick={(e) => {
+                      if (
+                        (e.target as Element).closest(
+                          'button, a[href], input, select, textarea, label, [role="button"], [role="link"], [contenteditable="true"]',
+                        )
+                      )
+                        return;
+                      toggleRow(id);
+                    }}
                   >
                     <span className="data-grid-text">{content}</span>
                   </div>
@@ -293,4 +423,6 @@ function DataGridInner<T>(
  * PageUp/PageDown move between cells; only visible rows are mounted.
  * @example <DataGrid aria-label="Orders" columns={columns} rows={rows} height={400} />
  */
-export const DataGrid = forwardRef(DataGridInner) as <T>(props: DataGridProps<T> & {ref?: Ref<HTMLDivElement> | undefined}) => ReactElement;
+export const DataGrid = forwardRef(DataGridInner) as <T>(
+  props: DataGridProps<T> & {ref?: Ref<HTMLDivElement> | undefined},
+) => ReactElement;

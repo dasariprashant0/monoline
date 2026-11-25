@@ -1,5 +1,18 @@
 'use client';
-import {Children, createContext, forwardRef, isValidElement, useContext, useId, useRef, useState, type HTMLAttributes, type KeyboardEvent, type PointerEvent, type ReactNode} from 'react';
+import {
+  Children,
+  createContext,
+  forwardRef,
+  isValidElement,
+  useContext,
+  useId,
+  useRef,
+  useState,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react';
 import {cx} from '../../utils/cx';
 import {useIsRtl} from '../../utils/direction';
 import {setRefs} from '../../utils/overlay';
@@ -42,11 +55,16 @@ export interface ResizableHandleProps extends Omit<HTMLAttributes<HTMLDivElement
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(n, lo), hi);
 
 /** A row or column of panels separated by draggable, keyboard-operable handles. Put `ResizablePanel` and `ResizableHandle` as direct children, alternating. Sizes are percentages of the group. */
-export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGroupProps>(function ResizablePanelGroup({direction = 'horizontal', step = 5, onLayoutChange, className, children, ...rest}, ref) {
+export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGroupProps>(function ResizablePanelGroup(
+  {direction = 'horizontal', step = 5, onLayoutChange, className, children, ...rest},
+  ref,
+) {
   const base = useId();
   const root = useRef<HTMLDivElement>(null);
   const items = Children.toArray(children);
-  const panels = items.filter((c) => isValidElement<ResizablePanelProps>(c) && c.type === ResizablePanel) as React.ReactElement<ResizablePanelProps>[];
+  const panels = items.filter(
+    (c) => isValidElement<ResizablePanelProps>(c) && c.type === ResizablePanel,
+  ) as React.ReactElement<ResizablePanelProps>[];
   const limits = panels.map((p) => ({min: p.props.minSize ?? 10, max: p.props.maxSize ?? 100}));
   const fromDefaults = () => {
     const given = panels.reduce((a, p) => a + (p.props.defaultSize ?? 0), 0);
@@ -58,12 +76,16 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
   const live = sizes.length === panels.length ? sizes : fromDefaults();
 
   const resize = (h: number, from: number[], delta: number) => {
-    const a = from[h], b = from[h + 1], la = limits[h], lb = limits[h + 1];
+    const a = from[h],
+      b = from[h + 1],
+      la = limits[h],
+      lb = limits[h + 1];
     if (a === undefined || b === undefined || !la || !lb) return;
     const total = a + b;
     const na = clamp(a + delta, Math.max(la.min, total - lb.max), Math.min(la.max, total - lb.min));
     const next = from.slice();
-    next[h] = na; next[h + 1] = total - na;
+    next[h] = na;
+    next[h + 1] = total - na;
     if (next[h] === live[h]) return;
     setSizes(next);
     onLayoutChange?.(next);
@@ -72,10 +94,19 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
   let p = -1;
   return (
     <Group.Provider value={{direction, sizes: live, limits, base, step, resize, root}}>
-      <div ref={(el) => setRefs(el, root, ref)} className={cx('resizable', className)} data-direction={direction} {...rest}>
+      <div
+        ref={(el) => setRefs(el, root, ref)}
+        className={cx('resizable', className)}
+        data-direction={direction}
+        {...rest}
+      >
         {items.map((c, i) => {
           if (isValidElement(c) && c.type === ResizablePanel) p++;
-          return <Index.Provider key={isValidElement(c) && c.key !== null ? c.key : i} value={Math.max(p, 0)}>{c}</Index.Provider>;
+          return (
+            <Index.Provider key={isValidElement(c) && c.key !== null ? c.key : i} value={Math.max(p, 0)}>
+              {c}
+            </Index.Provider>
+          );
         })}
       </div>
     </Group.Provider>
@@ -83,15 +114,39 @@ export const ResizablePanelGroup = forwardRef<HTMLDivElement, ResizablePanelGrou
 });
 
 /** One resizable region. Its size is a percentage of the group; it scrolls when its content is larger. */
-export const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(function ResizablePanel({defaultSize: _d, minSize: _n, maxSize: _x, className, style, id, ...rest}, ref) {
+export const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(function ResizablePanel(
+  {defaultSize: _d, minSize: _n, maxSize: _x, className, style, id, ...rest},
+  ref,
+) {
   const g = useContext(Group);
   const i = useContext(Index);
   const size = g?.sizes[i] ?? 100;
-  return <div ref={ref} id={id ?? (g ? `${g.base}-${i}` : undefined)} className={cx('resizable-panel', className)} style={{flex: `${size} ${size} 0%`, ...style}} data-size={Math.round(size)} {...rest} />;
+  return (
+    <div
+      ref={ref}
+      id={id ?? (g ? `${g.base}-${i}` : undefined)}
+      className={cx('resizable-panel', className)}
+      style={{flex: `${size} ${size} 0%`, ...style}}
+      data-size={Math.round(size)}
+      {...rest}
+    />
+  );
 });
 
 /** The draggable divider between two panels. It is a separator you can focus: arrow keys resize, Home and End go to the limits. Drag with a pointer too. */
-export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(function ResizableHandle({className, onKeyDown, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, 'aria-label': label = 'Resize panels', ...rest}, ref) {
+export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(function ResizableHandle(
+  {
+    className,
+    onKeyDown,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerCancel,
+    'aria-label': label = 'Resize panels',
+    ...rest
+  },
+  ref,
+) {
   const g = useContext(Group);
   const i = useContext(Index); // index of the panel before this handle
   const isRtl = useIsRtl();
@@ -99,8 +154,10 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
   const start = useRef<{pos: number; from: number[]; span: number} | null>(null);
   if (!g) return null;
   const horizontal = g.direction === 'horizontal';
-  const here = g.sizes[i] ?? 0, after = g.sizes[i + 1] ?? 0;
-  const la = g.limits[i], lb = g.limits[i + 1];
+  const here = g.sizes[i] ?? 0,
+    after = g.sizes[i + 1] ?? 0;
+  const la = g.limits[i],
+    lb = g.limits[i + 1];
   const lo = la && lb ? Math.max(la.min, here + after - lb.max) : 0;
   const hi = la && lb ? Math.min(la.max, here + after - lb.min) : 100;
 
@@ -112,9 +169,11 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
     const shrink = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
     const k = e.key;
     let d: number | null = null;
-    if (k === grow) d = g.step; else if (k === shrink) d = -g.step;
+    if (k === grow) d = g.step;
+    else if (k === shrink) d = -g.step;
     else if (k === 'PageDown' || k === 'PageUp') d = (k === 'PageDown' ? 1 : -1) * g.step * 2;
-    else if (k === 'Home') d = lo - here; else if (k === 'End') d = hi - here;
+    else if (k === 'Home') d = lo - here;
+    else if (k === 'End') d = hi - here;
     if (d === null) return;
     e.preventDefault();
     g.resize(i, g.sizes, d);
@@ -123,7 +182,11 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
     onPointerDown?.(e);
     if (e.defaultPrevented || e.button !== 0) return;
     const r = g.root.current?.getBoundingClientRect();
-    start.current = {pos: horizontal ? e.clientX : e.clientY, from: g.sizes, span: (horizontal ? r?.width : r?.height) || 1};
+    start.current = {
+      pos: horizontal ? e.clientX : e.clientY,
+      from: g.sizes,
+      span: (horizontal ? r?.width : r?.height) || 1,
+    };
     e.currentTarget.setPointerCapture?.(e.pointerId);
     setDrag(true);
   };
@@ -134,7 +197,11 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
     const px = (horizontal ? e.clientX : e.clientY) - s.pos;
     g.resize(i, s.from, ((horizontal && isRtl(e.currentTarget) ? -px : px) / s.span) * 100);
   };
-  const end = (e: PointerEvent<HTMLDivElement>) => { start.current = null; setDrag(false); e.currentTarget.releasePointerCapture?.(e.pointerId); };
+  const end = (e: PointerEvent<HTMLDivElement>) => {
+    start.current = null;
+    setDrag(false);
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+  };
 
   return (
     <div
@@ -152,8 +219,14 @@ export const ResizableHandle = forwardRef<HTMLDivElement, ResizableHandleProps>(
       onKeyDown={keydown}
       onPointerDown={down}
       onPointerMove={move}
-      onPointerUp={(e) => { onPointerUp?.(e); end(e); }}
-      onPointerCancel={(e) => { onPointerCancel?.(e); end(e); }}
+      onPointerUp={(e) => {
+        onPointerUp?.(e);
+        end(e);
+      }}
+      onPointerCancel={(e) => {
+        onPointerCancel?.(e);
+        end(e);
+      }}
       {...rest}
     />
   );

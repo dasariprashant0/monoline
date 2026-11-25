@@ -81,7 +81,9 @@ export function bumpInternalRanges(pkg: Pkg, internalNames: string[], version: s
   for (const key of DEP_KEYS) {
     if (!pkg[key]) continue;
     out[key] = Object.fromEntries(
-      Object.entries(pkg[key]).map(([name, range]) => (internalNames.includes(name) ? [name, `^${version}`] : [name, range])),
+      Object.entries(pkg[key]).map(([name, range]) =>
+        internalNames.includes(name) ? [name, `^${version}`] : [name, range],
+      ),
     );
   }
   return out;
@@ -129,9 +131,9 @@ export function collectTargets(json: Pkg) {
 /** npm's publish step silently drops a bin path written with a leading "./", so the release must refuse it. */
 export function binProblems(json: Pkg) {
   const bins = typeof json.bin === 'string' ? [json.bin] : Object.values(json.bin ?? {});
-  return bins.filter((p) => typeof p === 'string' && p.startsWith('./')).map(
-    (p) => `bin path "${p}" starts with "./"; npm publish drops it. Write "${p.slice(2)}" instead`,
-  );
+  return bins
+    .filter((p) => typeof p === 'string' && p.startsWith('./'))
+    .map((p) => `bin path "${p}" starts with "./"; npm publish drops it. Write "${p.slice(2)}" instead`);
 }
 
 const TYPE_SECTION: Record<string, string> = {
@@ -205,7 +207,12 @@ export function extractSection(text: string, version: string) {
   const start = lines.findIndex((l) => l === `## ${version}` || l.startsWith(`## ${version} `));
   if (start === -1) return null;
   const next = lines.findIndex((l, i) => i > start && l.startsWith('## '));
-  return lines.slice(start + 1, next === -1 ? undefined : next).join('\n').trim() + '\n';
+  return (
+    lines
+      .slice(start + 1, next === -1 ? undefined : next)
+      .join('\n')
+      .trim() + '\n'
+  );
 }
 
 const FORBIDDEN_IN_TARBALL: [RegExp, string][] = [
@@ -291,7 +298,8 @@ type PackFile = {path: string; size: number};
 function packInfo(pkg: {dir: string}) {
   const r = run('npm', ['pack', '--dry-run', '--json'], pkg.dir);
   if (r.status !== 0) {
-    const first = r.stderr.split('\n').find((l) => l.trim() && !/^npm (warn|notice)/.test(l)) ?? 'npm pack --dry-run failed';
+    const first =
+      r.stderr.split('\n').find((l) => l.trim() && !/^npm (warn|notice)/.test(l)) ?? 'npm pack --dry-run failed';
     return {error: `npm pack --dry-run failed: ${first.replace(/^npm error\s*/, '').trim()}`};
   }
   try {
@@ -341,11 +349,13 @@ function runCheck({expect, list = true}: {expect?: string; list?: boolean} = {})
     const targets = collectTargets(j);
     for (const t of targets) {
       if (t.includes('*')) {
-        if (!existsSync(join(p.dir, t.split('*')[0]))) problems.push(`${label}: ${t} points at a folder that does not exist`);
+        if (!existsSync(join(p.dir, t.split('*')[0])))
+          problems.push(`${label}: ${t} points at a folder that does not exist`);
         continue;
       }
       if (!existsSync(join(p.dir, t))) {
-        const hint = t.startsWith('./dist/') && !existsSync(join(p.dir, 'dist')) ? ' (dist/ is missing: run npm run build)' : '';
+        const hint =
+          t.startsWith('./dist/') && !existsSync(join(p.dir, 'dist')) ? ' (dist/ is missing: run npm run build)' : '';
         problems.push(`${label}: ${t} does not exist${hint}`);
       }
     }
@@ -357,7 +367,8 @@ function runCheck({expect, list = true}: {expect?: string; list?: boolean} = {})
     } else {
       const paths = pack.files!.map((f) => f.path);
       for (const t of targets.filter((t) => !t.includes('*') && existsSync(join(p.dir, t)))) {
-        if (!paths.includes(t.slice(2))) problems.push(`${label}: ${t} exists but is not in the tarball (check "files")`);
+        if (!paths.includes(t.slice(2)))
+          problems.push(`${label}: ${t} exists but is not in the tarball (check "files")`);
       }
       problems.push(...tarballProblems(paths).map((m) => `${label}: ${m}`));
       console.log(
@@ -393,7 +404,10 @@ function bump(spec: string, {tag, allowDirty, date}: {tag: boolean; allowDirty: 
   const names = pkgs.map((p) => p.name);
   for (const p of pkgs) writeJson(p.file, bumpInternalRanges({...p.json, version: next}, names, next));
   // Starters depend on the published packages: keep their ranges on the new version.
-  for (const file of readdirSync(join(ROOT, 'examples/starters')).map((d) => join(ROOT, 'examples/starters', d, 'package.json')).filter(existsSync)) writeJson(file, bumpInternalRanges(readJson(file), names, next));
+  for (const file of readdirSync(join(ROOT, 'examples/starters'))
+    .map((d) => join(ROOT, 'examples/starters', d, 'package.json'))
+    .filter(existsSync))
+    writeJson(file, bumpInternalRanges(readJson(file), names, next));
   const rootFile = join(ROOT, 'package.json');
   writeJson(rootFile, {...readJson(rootFile), version: next});
   writeFileSync(changelogPath, prependChangelog(changelog, section));
@@ -426,7 +440,10 @@ function publish({dryRun, yes, provenance}: {dryRun: boolean; yes: boolean; prov
     const {version} = p.json;
     // npm view prints an error JSON on stdout for a 404, so only a successful exit means the version exists
     // the dry run checks too: npm refuses `publish --dry-run` over a version that already exists
-    const onNpm = (() => { const r = run('npm', ['view', `${name}@${version}`, 'version', '--json']); return r.status === 0 && r.stdout.trim() !== ''; })();
+    const onNpm = (() => {
+      const r = run('npm', ['view', `${name}@${version}`, 'version', '--json']);
+      return r.status === 0 && r.stdout.trim() !== '';
+    })();
     if (onNpm) {
       console.log(`${dryRun ? 'dry run: would skip' : 'skip'} ${name}@${version}: already on npm`);
       continue;
@@ -480,7 +497,11 @@ function main() {
       break;
     case 'version':
       if (!positional[0]) fail(`missing bump: patch, minor, major or x.y.z\n${USAGE}`);
-      bump(positional[0], {tag: Boolean(flags.tag), allowDirty: Boolean(flags['allow-dirty']), date: (flags.date as string | undefined) ?? new Date().toISOString().slice(0, 10)});
+      bump(positional[0], {
+        tag: Boolean(flags.tag),
+        allowDirty: Boolean(flags['allow-dirty']),
+        date: (flags.date as string | undefined) ?? new Date().toISOString().slice(0, 10),
+      });
       break;
     case 'publish':
       publish({dryRun: Boolean(flags['dry-run']), yes: Boolean(flags.yes), provenance: Boolean(flags.provenance)});

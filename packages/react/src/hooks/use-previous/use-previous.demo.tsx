@@ -8,8 +8,12 @@ function PreviousDemo() {
   const previous = usePrevious(value);
   return (
     <div>
-      <Button variant="line" onClick={() => setValue((v) => v + 1)}>Increase</Button>
-      <p>Now {value}, before {previous ?? 'nothing'}.</p>
+      <Button variant="line" onClick={() => setValue((v) => v + 1)}>
+        Increase
+      </Button>
+      <p>
+        Now {value}, before {previous ?? 'nothing'}.
+      </p>
     </div>
   );
 }

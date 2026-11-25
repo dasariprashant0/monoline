@@ -4,11 +4,29 @@ import type {TreeNode} from '../tree';
 import {TreeSelect} from './tree-select';
 
 const items: TreeNode[] = [
-  {id: 'eng', label: 'Engineering', children: [
-    {id: 'web', label: 'Web'},
-    {id: 'platform', label: 'Platform', children: [{id: 'infra', label: 'Infrastructure'}, {id: 'data', label: 'Data'}]},
-  ]},
-  {id: 'design', label: 'Design', children: [{id: 'brand', label: 'Brand'}, {id: 'product', label: 'Product design'}]},
+  {
+    id: 'eng',
+    label: 'Engineering',
+    children: [
+      {id: 'web', label: 'Web'},
+      {
+        id: 'platform',
+        label: 'Platform',
+        children: [
+          {id: 'infra', label: 'Infrastructure'},
+          {id: 'data', label: 'Data'},
+        ],
+      },
+    ],
+  },
+  {
+    id: 'design',
+    label: 'Design',
+    children: [
+      {id: 'brand', label: 'Brand'},
+      {id: 'product', label: 'Product design'},
+    ],
+  },
   {id: 'ops', label: 'Operations'},
 ];
 

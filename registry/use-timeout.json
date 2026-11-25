@@ -60,7 +60,7 @@
       ]
     }
   ],
-  "usage": "import {useState} from 'react';\nimport {Button, useTimeout} from '@monoline/react';\n\nfunction Demo() {\n  const [msg, setMsg] = useState('Idle');\n  const {start, clear} = useTimeout(() => setMsg('Done after one second'), 1000);\n  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Button onClick={() => { setMsg('Waiting'); start(); }}>Start</Button><Button variant=\"ghost\" onClick={() => { clear(); setMsg('Cancelled'); }}>Cancel</Button><output aria-live=\"polite\">{msg}</output></div>;\n}\n\n<Demo />",
+  "usage": "import {useState} from 'react';\nimport {Button, useTimeout} from '@monoline/react';\n\nfunction Demo() {\n  const [msg, setMsg] = useState('Idle');\n  const {start, clear} = useTimeout(() => setMsg('Done after one second'), 1000);\n  return (\n    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>\n      <Button\n        onClick={() => {\n          setMsg('Waiting');\n          start();\n        }}\n      >\n        Start\n      </Button>\n      <Button\n        variant=\"ghost\"\n        onClick={() => {\n          clear();\n          setMsg('Cancelled');\n        }}\n      >\n        Cancel\n      </Button>\n      <output aria-live=\"polite\">{msg}</output>\n    </div>\n  );\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},
@@ -75,7 +75,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-timeout/use-timeout.ts",
-      "content": "'use client';\nimport {useCallback, useEffect, useRef} from 'react';\n\n/**\n * `const {start, clear} = useTimeout(fn, 500)`. Calling `start` again restarts it. Cleared on unmount. The latest `fn` always runs.\n *\n * @param callback Runs when the timer fires. The latest version is used.\n * @param delay Milliseconds to wait.\n * @returns `start` (re)starts the timer and `clear` cancels it.\n */\nexport function useTimeout(callback: () => void, delay: number) {\n  const fn = useRef(callback);\n  const id = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);\n  useEffect(() => { fn.current = callback; });\n  const clear = useCallback(() => { clearTimeout(id.current); id.current = undefined; }, []);\n  const start = useCallback(() => { clear(); id.current = setTimeout(() => fn.current(), delay); }, [clear, delay]);\n  useEffect(() => clear, [clear]);\n  return {start, clear};\n}\n"
+      "content": "'use client';\nimport {useCallback, useEffect, useRef} from 'react';\n\n/**\n * `const {start, clear} = useTimeout(fn, 500)`. Calling `start` again restarts it. Cleared on unmount. The latest `fn` always runs.\n *\n * @param callback Runs when the timer fires. The latest version is used.\n * @param delay Milliseconds to wait.\n * @returns `start` (re)starts the timer and `clear` cancels it.\n */\nexport function useTimeout(callback: () => void, delay: number) {\n  const fn = useRef(callback);\n  const id = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);\n  useEffect(() => {\n    fn.current = callback;\n  });\n  const clear = useCallback(() => {\n    clearTimeout(id.current);\n    id.current = undefined;\n  }, []);\n  const start = useCallback(() => {\n    clear();\n    id.current = setTimeout(() => fn.current(), delay);\n  }, [clear, delay]);\n  useEffect(() => clear, [clear]);\n  return {start, clear};\n}\n"
     }
   ],
   "utils": []

@@ -6,7 +6,10 @@ import {Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger} fr
 const ui = (side?: 'left' | 'right') => (
   <Drawer>
     <DrawerTrigger>Open</DrawerTrigger>
-    <DrawerContent side={side}><DrawerTitle>Filters</DrawerTitle><DrawerDescription>Narrow the list.</DrawerDescription></DrawerContent>
+    <DrawerContent side={side}>
+      <DrawerTitle>Filters</DrawerTitle>
+      <DrawerDescription>Narrow the list.</DrawerDescription>
+    </DrawerContent>
   </Drawer>
 );
 

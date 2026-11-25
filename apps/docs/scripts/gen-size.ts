@@ -7,6 +7,10 @@ const root = new URL('../../../', import.meta.url);
 const out = new URL('../src/site/size.generated.json', import.meta.url);
 const r = spawnSync(process.execPath, [new URL('scripts/size.ts', root).pathname, '--json'], {encoding: 'utf8'});
 let report = {js: [], css: null};
-try { report = JSON.parse(r.stdout); } catch { console.warn('size: no report (build @monoline/react first); the Compare page will say sizes are unavailable'); }
+try {
+  report = JSON.parse(r.stdout);
+} catch {
+  console.warn('size: no report (build @monoline/react first); the Compare page will say sizes are unavailable');
+}
 writeFileSync(out, JSON.stringify(report, null, 1) + '\n');
 console.log(`size: ${report.js.length} JS cases${report.css ? ' and the CSS total' : ''} written`);

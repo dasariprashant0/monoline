@@ -11,7 +11,9 @@ export const DEFAULT_URL = `https://raw.githubusercontent.com/dasariprashant0/mo
 export const isUrl = (s: string): boolean => /^https?:\/\//.test(s);
 
 /** What `fetch` needs to return here; the global fetch's Response fits. */
-export type Fetch = (url: string) => Promise<{ok: boolean; status: number; statusText?: string; text(): Promise<string>}>;
+export type Fetch = (
+  url: string,
+) => Promise<{ok: boolean; status: number; statusText?: string; text(): Promise<string>}>;
 
 export interface ResolveOptions {
   flag?: string | undefined;
@@ -21,7 +23,10 @@ export interface ResolveOptions {
 }
 
 /** Pick the registry location: flag, env, ./registry, the repo this package lives in, else GitHub. `from` says which. */
-export function resolveRegistry({flag, env = process.env, cwd = process.cwd(), pkgDir}: ResolveOptions = {}): {location: string; from: 'flag' | 'env' | 'cwd' | 'repo' | 'default'} {
+export function resolveRegistry({flag, env = process.env, cwd = process.cwd(), pkgDir}: ResolveOptions = {}): {
+  location: string;
+  from: 'flag' | 'env' | 'cwd' | 'repo' | 'default';
+} {
   if (flag) return {location: flag, from: 'flag'};
   const fromEnv = env['MONOLINE_REGISTRY'];
   if (fromEnv) return {location: fromEnv, from: 'env'};
@@ -39,7 +44,13 @@ export interface Registry {
   llms(): Promise<string>;
 }
 
-export function createRegistry({location, fetch: doFetch = globalThis.fetch}: {location: string; fetch?: Fetch | undefined}): Registry {
+export function createRegistry({
+  location,
+  fetch: doFetch = globalThis.fetch,
+}: {
+  location: string;
+  fetch?: Fetch | undefined;
+}): Registry {
   const remote = isUrl(location);
   const base = remote ? location.replace(/\/$/, '') : resolve(location);
   const cache = new Map<string, string>();

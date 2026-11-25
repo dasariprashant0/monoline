@@ -20,7 +20,8 @@ function selectorText(css: string) {
 /** -> {classes: ['btn', 'btn-solid'], attributes: ['[data-state="open"]', '[aria-current]']}, each sorted and unique. */
 export function extractSelectors(css: string) {
   const sel = selectorText(blank(css));
-  const classes = new Set<string>(), attributes = new Set<string>();
+  const classes = new Set<string>(),
+    attributes = new Set<string>();
   for (const m of sel.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)) classes.add(m[1]);
   // Keep the attribute exactly as written, minus quotes' normalisation; only data-* and aria-* (and role) are public API.
   for (const m of sel.matchAll(/\[\s*((?:data|aria)-[\w-]+)\s*(?:([~|^$*]?=)\s*"?([^"\]\s]*)"?\s*)?\]/g)) {

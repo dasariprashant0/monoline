@@ -70,7 +70,7 @@
   "source": [
     {
       "path": "packages/react/src/components/button-group/button-group.tsx",
-      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {\n  /** Names the group for assistive tech, for example \"Text alignment\". */\n  'aria-label': string;\n}\n\n/** Buttons that act on the same thing, sharing borders. */\nexport const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function ButtonGroup({className, ...rest}, ref) {\n  return <div ref={ref} role=\"group\" className={cx('btn-group', className)} {...rest} />;\n});\n"
+      "content": "import {forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {\n  /** Names the group for assistive tech, for example \"Text alignment\". */\n  'aria-label': string;\n}\n\n/** Buttons that act on the same thing, sharing borders. */\nexport const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(function ButtonGroup(\n  {className, ...rest},\n  ref,\n) {\n  return <div ref={ref} role=\"group\" className={cx('btn-group', className)} {...rest} />;\n});\n"
     },
     {
       "path": "packages/react/src/components/button-group/index.ts",

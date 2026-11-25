@@ -14,7 +14,10 @@ export interface BreadcrumbProps extends Omit<HTMLAttributes<HTMLElement>, 'chil
 }
 
 /** Where you are in the site. The last item is the current page. */
-export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb({items, className, 'aria-label': label = 'Breadcrumb', ...rest}, ref) {
+export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb(
+  {items, className, 'aria-label': label = 'Breadcrumb', ...rest},
+  ref,
+) {
   return (
     <nav ref={ref} aria-label={label} className={className} {...rest}>
       <ol className={cx('crumbs')}>
@@ -22,7 +25,13 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Brea
           const last = i === items.length - 1;
           return (
             <li key={i} aria-current={last ? 'page' : undefined}>
-              {item.href && !last ? <a className="link" href={item.href}>{item.label}</a> : item.label}
+              {item.href && !last ? (
+                <a className="link" href={item.href}>
+                  {item.label}
+                </a>
+              ) : (
+                item.label
+              )}
             </li>
           );
         })}

@@ -14,8 +14,6 @@ export const demos: Demo[] = [
   },
   {
     title: 'Indeterminate',
-    render: () => (
-      <Checkbox label="Select all" checked="indeterminate" onCheckedChange={() => {}} />
-    ),
+    render: () => <Checkbox label="Select all" checked="indeterminate" onCheckedChange={() => {}} />,
   },
 ];

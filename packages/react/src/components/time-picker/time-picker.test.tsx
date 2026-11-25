@@ -36,12 +36,20 @@ describe('TimePicker', () => {
   it('is reachable by Tab and named by its Field', async () => {
     const {default: userEvent} = await import('@testing-library/user-event');
     const user = userEvent.setup();
-    render(<Field label="Start time"><TimePicker /></Field>);
+    render(
+      <Field label="Start time">
+        <TimePicker />
+      </Field>,
+    );
     await user.tab();
     expect(screen.getByLabelText('Start time')).toHaveFocus();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<Field label="Start time"><TimePicker defaultValue="09:30" /></Field>);
+    const {container} = render(
+      <Field label="Start time">
+        <TimePicker defaultValue="09:30" />
+      </Field>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

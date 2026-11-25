@@ -6,7 +6,11 @@ import {useIsRtl} from '../../utils/direction';
 import {useFieldControl, useFieldLabelId, hiddenInputs} from '../field';
 import type {TreeNode} from '../tree';
 
-export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'> {
+export interface TreeSelectProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    'value' | 'defaultValue' | 'onChange' | 'role' | 'size' | 'type'
+  > {
   /** The tree: top-level nodes, each with an `id`, a `label` and optional `children`. Same shape as `Tree`. */
   items: TreeNode[];
   /** Selected node ids when controlled. Always an array, also in single mode (zero or one id). Pair with `onValueChange`. */
@@ -25,7 +29,15 @@ export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputEleme
   invalid?: boolean | undefined;
 }
 
-interface Row {node: TreeNode; level: number; parent?: string | undefined; kids: boolean; open: boolean; pos: number; size: number}
+interface Row {
+  node: TreeNode;
+  level: number;
+  parent?: string | undefined;
+  kids: boolean;
+  open: boolean;
+  pos: number;
+  size: number;
+}
 
 const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label : n.id);
 
@@ -35,7 +47,25 @@ const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label
  * Typing filters the tree to matching nodes and their parents. Use `multiple` to pick several nodes.
  * @example <TreeSelect aria-label="Folder" items={folders} onValueChange={(ids) => setFolder(ids[0])} />
  */
-export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect({items, value, defaultValue = [], onValueChange, multiple = false, emptyText = 'No matches', invalid, name, className, onBlur, onClick, onFocus, onKeyDown, ...rest}, ref) {
+export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect(
+  {
+    items,
+    value,
+    defaultValue = [],
+    onValueChange,
+    multiple = false,
+    emptyText = 'No matches',
+    invalid,
+    name,
+    className,
+    onBlur,
+    onClick,
+    onFocus,
+    onKeyDown,
+    ...rest
+  },
+  ref,
+) {
   const labelId = useFieldLabelId();
   const f = useFieldControl(rest);
   const listId = useId();
@@ -61,23 +91,43 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
   walk(items, 1);
 
   const all: TreeNode[] = [];
-  const collect = (nodes: TreeNode[]) => nodes.forEach((n) => { all.push(n); if (n.children) collect(n.children); });
+  const collect = (nodes: TreeNode[]) =>
+    nodes.forEach((n) => {
+      all.push(n);
+      if (n.children) collect(n.children);
+    });
   collect(items);
-  const names = selected.map((id) => all.find((n) => n.id === id)).filter((n): n is TreeNode => !!n).map(textOf);
+  const names = selected
+    .map((id) => all.find((n) => n.id === id))
+    .filter((n): n is TreeNode => !!n)
+    .map(textOf);
   const summary = names.length > 2 ? `${names.length} selected` : names.join(', ');
 
   const index = rows.findIndex((r) => r.node.id === activeId);
   const cur = index >= 0 ? index : rows.findIndex((r) => !r.node.disabled);
   const rowId = (i: number) => `${listId}-${i}`;
-  useEffect(() => { if (open && cur >= 0) document.getElementById(rowId(cur))?.scrollIntoView?.({block: 'nearest'}); }, [open, cur]);
+  useEffect(() => {
+    if (open && cur >= 0) document.getElementById(rowId(cur))?.scrollIntoView?.({block: 'nearest'});
+  }, [open, cur]);
 
   const pick = (node: TreeNode) => {
     if (node.disabled) return;
-    if (multiple) setSelected(selected.includes(node.id) ? selected.filter((x) => x !== node.id) : [...selected, node.id]);
-    else { setSelected([node.id]); setText(null); setOpen(false); }
+    if (multiple)
+      setSelected(selected.includes(node.id) ? selected.filter((x) => x !== node.id) : [...selected, node.id]);
+    else {
+      setSelected([node.id]);
+      setText(null);
+      setOpen(false);
+    }
   };
   const toggle = (id: string) => setExpanded((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
-  const step = (dir: 1 | -1) => { for (let j = cur + dir; j >= 0 && j < rows.length; j += dir) if (!rows[j]!.node.disabled) { setActiveId(rows[j]!.node.id); return; } };
+  const step = (dir: 1 | -1) => {
+    for (let j = cur + dir; j >= 0 && j < rows.length; j += dir)
+      if (!rows[j]!.node.disabled) {
+        setActiveId(rows[j]!.node.id);
+        return;
+      }
+  };
 
   const keydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
@@ -85,16 +135,29 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
     const row = rows[cur];
     const rtl = isRtl(e.currentTarget);
     const key = rtl && e.key === 'ArrowRight' ? 'ArrowLeft' : rtl && e.key === 'ArrowLeft' ? 'ArrowRight' : e.key;
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!open) setOpen(true); else step(e.key === 'ArrowDown' ? 1 : -1); }
-    else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && row) { e.preventDefault(); pick(row.node); }
-    else if (e.key === 'Escape') { if (open) { e.preventDefault(); setOpen(false); } else if (text !== null) setText(null); }
-    else if (open && !q && row && key === 'ArrowRight') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!open) setOpen(true);
+      else step(e.key === 'ArrowDown' ? 1 : -1);
+    } else if (e.key === 'Enter' && !e.nativeEvent.isComposing && open && row) {
+      e.preventDefault();
+      pick(row.node);
+    } else if (e.key === 'Escape') {
+      if (open) {
+        e.preventDefault();
+        setOpen(false);
+      } else if (text !== null) setText(null);
+    } else if (open && !q && row && key === 'ArrowRight') {
       e.preventDefault();
       if (row.kids && !row.open) toggle(row.node.id);
-      else if (row.kids) { const child = rows[cur + 1]; if (child && !child.node.disabled) setActiveId(child.node.id); }
+      else if (row.kids) {
+        const child = rows[cur + 1];
+        if (child && !child.node.disabled) setActiveId(child.node.id);
+      }
     } else if (open && !q && row && key === 'ArrowLeft') {
       e.preventDefault();
-      if (row.open) toggle(row.node.id); else if (row.parent) setActiveId(row.parent);
+      if (row.open) toggle(row.node.id);
+      else if (row.parent) setActiveId(row.parent);
     }
   };
 
@@ -112,19 +175,44 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         aria-controls={open ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={open && cur >= 0 ? rowId(cur) : undefined}
-       
         {...(invalid ? {'aria-invalid': true as const} : {})}
         value={text ?? summary}
-        onChange={(e) => { setText(e.target.value); setOpen(true); setActiveId(undefined); }}
-        onFocus={(e) => { onFocus?.(e); setOpen(true); }}
-        onClick={(e) => { onClick?.(e); setOpen(true); }}
-        onBlur={(e) => { onBlur?.(e); setOpen(false); setText(null); }}
+        onChange={(e) => {
+          setText(e.target.value);
+          setOpen(true);
+          setActiveId(undefined);
+        }}
+        onFocus={(e) => {
+          onFocus?.(e);
+          setOpen(true);
+        }}
+        onClick={(e) => {
+          onClick?.(e);
+          setOpen(true);
+        }}
+        onBlur={(e) => {
+          onBlur?.(e);
+          setOpen(false);
+          setText(null);
+        }}
         onKeyDown={keydown}
-        {...rest} {...f}
+        {...rest}
+        {...f}
       />
       {open && (
-        <ul id={listId} role="tree" className="tree-select-list" aria-label={rest['aria-label']} aria-labelledby={rest['aria-label'] ? undefined : rest['aria-labelledby'] ?? labelId} aria-multiselectable={multiple || undefined}>
-          {rows.length === 0 && <li className="tree-select-empty" role="presentation">{emptyText}</li>}
+        <ul
+          id={listId}
+          role="tree"
+          className="tree-select-list"
+          aria-label={rest['aria-label']}
+          aria-labelledby={rest['aria-label'] ? undefined : (rest['aria-labelledby'] ?? labelId)}
+          aria-multiselectable={multiple || undefined}
+        >
+          {rows.length === 0 && (
+            <li className="tree-select-empty" role="presentation">
+              {emptyText}
+            </li>
+          )}
           {rows.map((r, i) => (
             <li
               key={r.node.id}
@@ -146,8 +234,15 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
               <span
                 className="tree-select-twisty"
                 aria-hidden="true"
-                onClick={(e) => { if (r.kids && !q) { e.stopPropagation(); toggle(r.node.id); } }}
-              >{r.kids ? (r.open ? '−' : '+') : ''}</span>
+                onClick={(e) => {
+                  if (r.kids && !q) {
+                    e.stopPropagation();
+                    toggle(r.node.id);
+                  }
+                }}
+              >
+                {r.kids ? (r.open ? '−' : '+') : ''}
+              </span>
               {r.node.label}
             </li>
           ))}

@@ -11,7 +11,9 @@ function blocks(css: string) {
   // any: replace() is used as a match iterator and its callbacks return nothing
   strip(css).replace(/([^{}]+)\{([^{}]*)\}/g, (_, sel: string, body: string): any => {
     const vars: Vars = {};
-    body.replace(/(--[\w-]+)\s*:\s*([^;]+);/g, (__, k: string, v: string): any => { vars[k] = v.trim(); });
+    body.replace(/(--[\w-]+)\s*:\s*([^;]+);/g, (__, k: string, v: string): any => {
+      vars[k] = v.trim();
+    });
     out.push({sel: sel.trim(), vars});
   });
   return out;
@@ -19,7 +21,9 @@ function blocks(css: string) {
 
 /** {base, themes: {warm, dark, midnight}, accents: {orange: {warm, dark, midnight}, ...}} */
 export function parseTokens() {
-  const themes: Record<string, Vars> = {}, base: Vars = {}, accents: Record<string, Record<string, Vars>> = {};
+  const themes: Record<string, Vars> = {},
+    base: Vars = {},
+    accents: Record<string, Record<string, Vars>> = {};
   for (const {sel, vars} of blocks(read('src/tokens.css'))) {
     const t = sel.match(/\[data-theme="(\w+)"\]/);
     if (t) themes[t[1]] = {...(themes[t[1]] || {}), ...vars};
@@ -36,7 +40,12 @@ export function parseTokens() {
 export const isColor = (v: string) => /^(#|rgba?\()/.test(v);
 
 const lum = (hex: string) => {
-  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  const c = [1, 3, 5]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 };
-export const contrast = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)]; return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+export const contrast = (a: string, b: string) => {
+  const [x, y] = [lum(a), lum(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};

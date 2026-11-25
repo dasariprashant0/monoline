@@ -5,12 +5,21 @@ import {createRef} from 'react';
 
 describe('Alert', () => {
   it('announces urgent tones with role=alert and others as status', () => {
-    render(<><Alert tone="danger" title="Bad" /><Alert tone="info" title="Fine" /></>);
+    render(
+      <>
+        <Alert tone="danger" title="Bad" />
+        <Alert tone="info" title="Fine" />
+      </>,
+    );
     expect(screen.getByRole('alert')).toHaveTextContent('Bad');
     expect(screen.getByRole('status')).toHaveTextContent('Fine');
   });
   it('renders the description and tone attribute', () => {
-    render(<Alert tone="warning" title="Careful">Details here</Alert>);
+    render(
+      <Alert tone="warning" title="Careful">
+        Details here
+      </Alert>,
+    );
     expect(screen.getByRole('alert')).toHaveAttribute('data-tone', 'warning');
     expect(screen.getByText('Details here')).toBeInTheDocument();
   });
@@ -45,12 +54,20 @@ describe('Alert', () => {
   });
   it('accepts rich titles and very long or RTL text', () => {
     const long = 'x'.repeat(5000);
-    render(<Alert tone="danger" title={<strong>مرحبا</strong>}>{long}</Alert>);
+    render(
+      <Alert tone="danger" title={<strong>مرحبا</strong>}>
+        {long}
+      </Alert>,
+    );
     expect(screen.getByText('مرحبا').tagName).toBe('STRONG');
     expect(screen.getByText(long)).toBeInTheDocument();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<Alert tone="success" title="Saved">ok</Alert>);
+    const {container} = render(
+      <Alert tone="success" title="Saved">
+        ok
+      </Alert>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

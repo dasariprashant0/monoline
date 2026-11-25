@@ -84,7 +84,17 @@ describe('SortableList', () => {
     // jsdom has no layout: each row is 20px tall, in DOM order.
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
       const i = Array.from(this.parentElement?.children ?? []).indexOf(this);
-      return {top: i * 20, bottom: i * 20 + 20, left: 0, right: 100, width: 100, height: 20, x: 0, y: i * 20, toJSON() {}} as DOMRect;
+      return {
+        top: i * 20,
+        bottom: i * 20 + 20,
+        left: 0,
+        right: 100,
+        width: 100,
+        height: 20,
+        x: 0,
+        y: i * 20,
+        toJSON() {},
+      } as DOMRect;
     });
     fireEvent.pointerDown(screen.getByRole('button', {name: 'Reorder Alpha'}), {button: 0, clientY: 10});
     expect(live()).toHaveTextContent('Picked up Alpha');

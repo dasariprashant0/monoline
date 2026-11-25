@@ -42,8 +42,15 @@ export function createProgram(files: string[]) {
 export function destructuringDefaults(sf: ts.SourceFile) {
   const map: Record<string, string> = {};
   const visit = (n: ts.Node) => {
-    if (ts.isBindingElement(n) && n.initializer && ts.isIdentifier(n.name) && n.parent && ts.isObjectBindingPattern(n.parent)) {
-      map[n.propertyName && ts.isIdentifier(n.propertyName) ? n.propertyName.text : n.name.text] = n.initializer.getText(sf);
+    if (
+      ts.isBindingElement(n) &&
+      n.initializer &&
+      ts.isIdentifier(n.name) &&
+      n.parent &&
+      ts.isObjectBindingPattern(n.parent)
+    ) {
+      map[n.propertyName && ts.isIdentifier(n.propertyName) ? n.propertyName.text : n.name.text] =
+        n.initializer.getText(sf);
     }
     ts.forEachChild(n, visit);
   };
@@ -62,25 +69,36 @@ export function propGroups(program: ts.Program, file: string, {pattern = COMPONE
   const defs = destructuringDefaults(sf);
   const groups: PropGroup[] = [];
   ts.forEachChild(sf, (node) => {
-    const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
-    if (!exported || !(ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) || !pattern.test(node.name.text)) return;
+    const exported = (ts.canHaveModifiers(node) ? (ts.getModifiers(node) ?? []) : []).some(
+      (m) => m.kind === ts.SyntaxKind.ExportKeyword,
+    );
+    if (
+      !exported ||
+      !(ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) ||
+      !pattern.test(node.name.text)
+    )
+      return;
     const type = checker.getTypeAtLocation(node.name);
     const all = checker.getPropertiesOfType(type);
-    const declaredIn = (test: (f: ts.SourceFile) => boolean) => all.filter((s) => (s.declarations ?? []).some((d) => test(d.getSourceFile())));
+    const declaredIn = (test: (f: ts.SourceFile) => boolean) =>
+      all.filter((s) => (s.declarations ?? []).some((d) => test(d.getSourceFile())));
     // A thin wrapper over a Radix part declares nothing itself: fall back to the props Radix documents.
     const own = declaredIn((f) => f === sf);
-    const props = (own.length ? own : declaredIn((f) => f.fileName.includes('/@radix-ui/')))
-      .map((s) => {
-        const decl = s.declarations![0]; // declaredIn kept only symbols with a declaration
-        const text = checker.typeToString(checker.getTypeOfSymbolAtLocation(s, decl), decl, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
-        return {
-          name: s.name,
-          type: text.replace(/ \| undefined$/, '').replace(/^\((.*)\) \| undefined$/, '$1'),
-          optional: !!(s.flags & ts.SymbolFlags.Optional),
-          default: defs[s.name] ?? null,
-          description: ts.displayPartsToString(s.getDocumentationComment(checker)).trim(),
-        };
-      });
+    const props = (own.length ? own : declaredIn((f) => f.fileName.includes('/@radix-ui/'))).map((s) => {
+      const decl = s.declarations![0]; // declaredIn kept only symbols with a declaration
+      const text = checker.typeToString(
+        checker.getTypeOfSymbolAtLocation(s, decl),
+        decl,
+        ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+      );
+      return {
+        name: s.name,
+        type: text.replace(/ \| undefined$/, '').replace(/^\((.*)\) \| undefined$/, '$1'),
+        optional: !!(s.flags & ts.SymbolFlags.Optional),
+        default: defs[s.name] ?? null,
+        description: ts.displayPartsToString(s.getDocumentationComment(checker)).trim(),
+      };
+    });
     if (props.length) groups.push({name: node.name.text, props});
   });
   if (!groups.length && pattern === HOOK_PROPS) groups.push(...hookSignature(checker, sf));
@@ -91,8 +109,11 @@ export function propGroups(program: ts.Program, file: string, {pattern = COMPONE
 function hookSignature(checker: ts.TypeChecker, sf: ts.SourceFile) {
   const out: PropGroup[] = [];
   ts.forEachChild(sf, (node) => {
-    const exported = (ts.canHaveModifiers(node) ? ts.getModifiers(node) ?? [] : []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
-    if (!exported || !ts.isFunctionDeclaration(node) || !node.name || !/^use[A-Z]/.test(node.name.text) || out.length) return;
+    const exported = (ts.canHaveModifiers(node) ? (ts.getModifiers(node) ?? []) : []).some(
+      (m) => m.kind === ts.SyntaxKind.ExportKeyword,
+    );
+    if (!exported || !ts.isFunctionDeclaration(node) || !node.name || !/^use[A-Z]/.test(node.name.text) || out.length)
+      return;
     const flags = ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
     const params = node.parameters.map((p) => {
       const name = p.name.getText(sf);
@@ -102,14 +123,29 @@ function hookSignature(checker: ts.TypeChecker, sf: ts.SourceFile) {
         type: checker.typeToString(checker.getTypeAtLocation(p), p, flags).replace(/ \| undefined$/, ''),
         optional: !!p.questionToken || !!p.initializer,
         default: p.initializer ? p.initializer.getText(sf) : null,
-        description: tag?.comment ? ts.getTextOfJSDocComment(tag.comment)?.trim() ?? '' : '',
+        description: tag?.comment ? (ts.getTextOfJSDocComment(tag.comment)?.trim() ?? '') : '',
       };
     });
     if (params.length) out.push({name: 'Parameters', props: params});
     const sig = checker.getSignatureFromDeclaration(node);
     const ret = sig && checker.typeToString(checker.getReturnTypeOfSignature(sig), node, flags);
-    const retTag = ts.getAllJSDocTags(node, (t): t is ts.JSDocTag => t.tagName.text === 'returns' || t.tagName.text === 'return')[0];
-    if (ret && ret !== 'void') out.push({name: 'Returns', props: [{name: 'return', type: ret, optional: false, default: null, description: retTag?.comment ? ts.getTextOfJSDocComment(retTag.comment)?.trim() ?? '' : ''}]});
+    const retTag = ts.getAllJSDocTags(
+      node,
+      (t): t is ts.JSDocTag => t.tagName.text === 'returns' || t.tagName.text === 'return',
+    )[0];
+    if (ret && ret !== 'void')
+      out.push({
+        name: 'Returns',
+        props: [
+          {
+            name: 'return',
+            type: ret,
+            optional: false,
+            default: null,
+            description: retTag?.comment ? (ts.getTextOfJSDocComment(retTag.comment)?.trim() ?? '') : '',
+          },
+        ],
+      });
   });
   return out;
 }

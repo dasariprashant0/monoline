@@ -3,8 +3,25 @@ import {createContext, useContext, useEffect, useLayoutEffect, useRef, useState}
 import {Button, Collapsible, CollapsibleContent, CollapsibleTrigger, SegmentedControl} from '@monoline/react';
 
 export const ACCENTS = ['orange', 'rose', 'amber', 'green', 'teal', 'blue', 'violet', 'slate'] as const;
-export const SWATCH: Record<string, string> = {orange: '#FF4500', rose: '#E11D48', amber: '#D97706', green: '#0E7A5F', teal: '#0F766E', blue: '#2563EB', violet: '#7C3AED', slate: '#334155'};
-const DEFAULTS = {theme: 'system', accent: 'orange', font: 'pair', radius: 'soft', density: 'comfortable', dir: 'ltr', tokens: ''};
+export const SWATCH: Record<string, string> = {
+  orange: '#FF4500',
+  rose: '#E11D48',
+  amber: '#D97706',
+  green: '#0E7A5F',
+  teal: '#0F766E',
+  blue: '#2563EB',
+  violet: '#7C3AED',
+  slate: '#334155',
+};
+const DEFAULTS = {
+  theme: 'system',
+  accent: 'orange',
+  font: 'pair',
+  radius: 'soft',
+  density: 'comfortable',
+  dir: 'ltr',
+  tokens: '',
+};
 export type Prefs = typeof DEFAULTS;
 type Set = (k: keyof Prefs, v: string) => void;
 /** Named accents plus the default setting (no `data-accent`), the way `npm run check` counts them. */
@@ -16,14 +33,28 @@ export const PrefsContext = createContext<readonly [Prefs, Set] | null>(null);
 export const usePrefsContext = () => useContext(PrefsContext)!;
 
 /** `tokens` holds token overrides as `--name:value;--other:value` (a preset's own tweaks). */
-export const parseTokens = (s: string): Array<[string, string]> => s.split(';').map((x) => x.split(/:(.*)/s).slice(0, 2).map((y) => y.trim()) as [string, string]).filter(([k, v]) => k.startsWith('--') && v);
+export const parseTokens = (s: string): Array<[string, string]> =>
+  s
+    .split(';')
+    .map(
+      (x) =>
+        x
+          .split(/:(.*)/s)
+          .slice(0, 2)
+          .map((y) => y.trim()) as [string, string],
+    )
+    .filter(([k, v]) => k.startsWith('--') && v);
 
 export function usePrefs() {
   // Starts from the defaults so the first client render matches the prerendered HTML; saved prefs load right after mount.
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
   const loaded = useRef(false);
   useLayoutEffect(() => {
-    try { setPrefs((p) => ({...p, ...JSON.parse(localStorage.getItem('monoline-prefs') ?? '{}')})); } catch { /* private mode or bad JSON */ }
+    try {
+      setPrefs((p) => ({...p, ...JSON.parse(localStorage.getItem('monoline-prefs') ?? '{}')}));
+    } catch {
+      /* private mode or bad JSON */
+    }
     loaded.current = true;
   }, []);
   useEffect(() => {
@@ -31,7 +62,10 @@ export function usePrefs() {
     const mq = matchMedia('(prefers-color-scheme: dark)');
     const apply = () => {
       root.dataset.theme = prefs.theme === 'system' ? (mq.matches ? 'dark' : 'warm') : prefs.theme;
-      root.dataset.accent = prefs.accent; root.dataset.font = prefs.font; root.dataset.radius = prefs.radius; root.dataset.density = prefs.density;
+      root.dataset.accent = prefs.accent;
+      root.dataset.font = prefs.font;
+      root.dataset.radius = prefs.radius;
+      root.dataset.density = prefs.density;
       root.dir = prefs.dir;
       const want = new Map(parseTokens(prefs.tokens));
       for (const k of [...root.style]) if (k.startsWith('--') && !want.has(k)) root.style.removeProperty(k);
@@ -39,7 +73,11 @@ export function usePrefs() {
     };
     apply();
     mq.addEventListener('change', apply);
-    try { if (loaded.current) localStorage.setItem('monoline-prefs', JSON.stringify(prefs)); } catch { /* private mode */ }
+    try {
+      if (loaded.current) localStorage.setItem('monoline-prefs', JSON.stringify(prefs));
+    } catch {
+      /* private mode */
+    }
     return () => mq.removeEventListener('change', apply);
   }, [prefs]);
   return [prefs, ((k, v) => setPrefs((p) => ({...p, [k]: v}))) as Set] as const;
@@ -49,16 +87,77 @@ function Customize({prefs, set}: {prefs: Prefs; set: Set}) {
   const opt = (values: string[]) => values.map((v) => ({value: v, label: v}));
   return (
     <div className="custom">
-      <div className="custom-row"><span className="label">Theme</span><SegmentedControl aria-label="Theme" value={prefs.theme} onValueChange={(v) => set('theme', v)} options={opt(['system', 'warm', 'dark', 'midnight'])} /></div>
-      <div className="custom-row"><span className="label">Accent</span>
+      <div className="custom-row">
+        <span className="label">Theme</span>
+        <SegmentedControl
+          aria-label="Theme"
+          value={prefs.theme}
+          onValueChange={(v) => set('theme', v)}
+          options={opt(['system', 'warm', 'dark', 'midnight'])}
+        />
+      </div>
+      <div className="custom-row">
+        <span className="label">Accent</span>
         <div className="swatches" role="radiogroup" aria-label="Accent">
-          {ACCENTS.map((a) => <button key={a} type="button" role="radio" aria-checked={prefs.accent === a} aria-label={a} title={a} className="swatch" style={{background: SWATCH[a]}} onClick={() => set('accent', a)} />)}
+          {ACCENTS.map((a) => (
+            <button
+              key={a}
+              type="button"
+              role="radio"
+              aria-checked={prefs.accent === a}
+              aria-label={a}
+              title={a}
+              className="swatch"
+              style={{background: SWATCH[a]}}
+              onClick={() => set('accent', a)}
+            />
+          ))}
         </div>
       </div>
-      <div className="custom-row"><span className="label">Font</span><SegmentedControl aria-label="Font" value={prefs.font} onValueChange={(v) => set('font', v)} options={[{value: 'pair', label: 'mono + sans'}, {value: 'mono', label: 'mono'}, {value: 'sans', label: 'sans'}, {value: 'serif', label: 'serif'}]} /></div>
-      <div className="custom-row"><span className="label">Corners</span><SegmentedControl aria-label="Corners" value={prefs.radius} onValueChange={(v) => set('radius', v)} options={opt(['square', 'soft', 'round'])} /></div>
-      <div className="custom-row"><span className="label">Density</span><SegmentedControl aria-label="Density" value={prefs.density} onValueChange={(v) => set('density', v)} options={opt(['compact', 'comfortable', 'spacious'])} /></div>
-      <div className="custom-row"><span className="label">Direction</span><SegmentedControl aria-label="Direction" value={prefs.dir} onValueChange={(v) => set('dir', v)} options={[{value: 'ltr', label: 'LTR'}, {value: 'rtl', label: 'RTL'}]} /></div>
+      <div className="custom-row">
+        <span className="label">Font</span>
+        <SegmentedControl
+          aria-label="Font"
+          value={prefs.font}
+          onValueChange={(v) => set('font', v)}
+          options={[
+            {value: 'pair', label: 'mono + sans'},
+            {value: 'mono', label: 'mono'},
+            {value: 'sans', label: 'sans'},
+            {value: 'serif', label: 'serif'},
+          ]}
+        />
+      </div>
+      <div className="custom-row">
+        <span className="label">Corners</span>
+        <SegmentedControl
+          aria-label="Corners"
+          value={prefs.radius}
+          onValueChange={(v) => set('radius', v)}
+          options={opt(['square', 'soft', 'round'])}
+        />
+      </div>
+      <div className="custom-row">
+        <span className="label">Density</span>
+        <SegmentedControl
+          aria-label="Density"
+          value={prefs.density}
+          onValueChange={(v) => set('density', v)}
+          options={opt(['compact', 'comfortable', 'spacious'])}
+        />
+      </div>
+      <div className="custom-row">
+        <span className="label">Direction</span>
+        <SegmentedControl
+          aria-label="Direction"
+          value={prefs.dir}
+          onValueChange={(v) => set('dir', v)}
+          options={[
+            {value: 'ltr', label: 'LTR'},
+            {value: 'rtl', label: 'RTL'},
+          ]}
+        />
+      </div>
     </div>
   );
 }
@@ -68,16 +167,48 @@ export function CustomisePanel({prefs, set}: {prefs: Prefs; set: Set}) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
-    const down = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); ref.current?.querySelector('button')?.focus(); } };
-    document.addEventListener('pointerdown', down); document.addEventListener('keydown', key);
-    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
+    const down = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        ref.current?.querySelector('button')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('keydown', key);
+    return () => {
+      document.removeEventListener('pointerdown', down);
+      document.removeEventListener('keydown', key);
+    };
   }, [open]);
   return (
     <div ref={ref} className="docs-custom">
       <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger asChild><Button variant="line" size="sm" className="docs-custom-btn" aria-label="Customise"><span className="docs-custom-text">Customise</span><svg className="docs-custom-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7" /><circle cx="10.5" cy="4.5" r="1.5" /><circle cx="5.5" cy="11.5" r="1.5" /></svg></Button></CollapsibleTrigger>
-        <CollapsibleContent className="docs-custom-panel"><Customize prefs={prefs} set={set} /></CollapsibleContent>
+        <CollapsibleTrigger asChild>
+          <Button variant="line" size="sm" className="docs-custom-btn" aria-label="Customise">
+            <span className="docs-custom-text">Customise</span>
+            <svg
+              className="docs-custom-icon"
+              viewBox="0 0 16 16"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7" />
+              <circle cx="10.5" cy="4.5" r="1.5" />
+              <circle cx="5.5" cy="11.5" r="1.5" />
+            </svg>
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="docs-custom-panel">
+          <Customize prefs={prefs} set={set} />
+        </CollapsibleContent>
       </Collapsible>
     </div>
   );

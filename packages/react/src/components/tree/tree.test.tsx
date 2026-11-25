@@ -5,7 +5,14 @@ import {axe} from '../../test/axe';
 import {Tree, type TreeNode} from './tree';
 
 const items: TreeNode[] = [
-  {id: 'src', label: 'src', children: [{id: 'a', label: 'alpha.ts'}, {id: 'b', label: 'beta.ts'}]},
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {id: 'a', label: 'alpha.ts'},
+      {id: 'b', label: 'beta.ts'},
+    ],
+  },
   {id: 'docs', label: 'docs', children: [{id: 'r', label: 'readme'}]},
   {id: 'pkg', label: 'package.json'},
 ];
@@ -24,9 +31,16 @@ describe('Tree', () => {
   });
   it('has a single tab stop (roving tabindex)', async () => {
     const user = userEvent.setup();
-    render(<><button type="button">before</button><Tree aria-label="Files" items={items} /><button type="button">after</button></>);
+    render(
+      <>
+        <button type="button">before</button>
+        <Tree aria-label="Files" items={items} />
+        <button type="button">after</button>
+      </>,
+    );
     expect(screen.getAllByRole('treeitem').filter((n) => n.tabIndex === 0)).toHaveLength(1);
-    await user.tab(); await user.tab();
+    await user.tab();
+    await user.tab();
     expect(screen.getByRole('treeitem', {name: /^src/})).toHaveFocus();
     await user.tab();
     expect(screen.getByRole('button', {name: 'after'})).toHaveFocus();
@@ -68,7 +82,15 @@ describe('Tree', () => {
     expect(item('package.json')).toHaveAttribute('aria-selected', 'true');
     await user.keyboard('{Home}{ }');
     expect(fn).toHaveBeenLastCalledWith('src');
-    function C() { const [v, setV] = useState('pkg'); return <><Tree aria-label="Ctl" items={items} value={v} onValueChange={setV} /><output>{v}</output></>; }
+    function C() {
+      const [v, setV] = useState('pkg');
+      return (
+        <>
+          <Tree aria-label="Ctl" items={items} value={v} onValueChange={setV} />
+          <output>{v}</output>
+        </>
+      );
+    }
     render(<C />);
     await user.click(screen.getAllByText('package.json')[1]!);
     await user.click(screen.getAllByText('docs')[1]!);

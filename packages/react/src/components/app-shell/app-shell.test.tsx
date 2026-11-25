@@ -8,7 +8,17 @@ import {Sidebar, SidebarContent, SidebarGroup, SidebarItem, SidebarToggle, Sideb
 const ui = (extra = {}) => (
   <AppShell
     navbar={<Navbar brand="Acme" leading={<SidebarTrigger />} actions={<SidebarToggle />} />}
-    sidebar={<Sidebar drawerTitle="Acme"><SidebarContent><SidebarGroup><SidebarItem href="/" current>Overview</SidebarItem></SidebarGroup></SidebarContent></Sidebar>}
+    sidebar={
+      <Sidebar drawerTitle="Acme">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarItem href="/" current>
+              Overview
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    }
     aside={<p>Activity</p>}
     {...extra}
   >
@@ -32,7 +42,11 @@ describe('AppShell', () => {
     expect(skip.getAttribute('href')).toBe(`#${screen.getByRole('main').id}`);
   });
   it('accepts mainId and omits optional regions', () => {
-    render(<AppShell mainId="content"><p>x</p></AppShell>);
+    render(
+      <AppShell mainId="content">
+        <p>x</p>
+      </AppShell>,
+    );
     expect(screen.getByRole('main')).toHaveAttribute('id', 'content');
     expect(screen.getByRole('link', {name: 'Skip to main content'})).toHaveAttribute('href', '#content');
     expect(screen.queryByRole('banner')).toBeNull();
@@ -53,14 +67,22 @@ describe('AppShell', () => {
   it('opens the sidebar in a drawer from the navbar trigger', async () => {
     render(ui());
     await userEvent.click(screen.getByRole('button', {name: 'Menu'}));
-    expect(within(screen.getByRole('dialog', {name: 'Acme'})).getByRole('link', {name: 'Overview'})).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('dialog', {name: 'Acme'})).getByRole('link', {name: 'Overview'}),
+    ).toBeInTheDocument();
   });
   it('has no axe violations', async () => {
     const {container} = render(ui());
     expect(await axe(container)).toHaveNoViolations();
   });
   it('inside another main it renders a plain container and no second skip link', () => {
-    render(<main><AppShell navbar={<span>Bar</span>}><p>Body</p></AppShell></main>);
+    render(
+      <main>
+        <AppShell navbar={<span>Bar</span>}>
+          <p>Body</p>
+        </AppShell>
+      </main>,
+    );
     expect(screen.getAllByRole('main')).toHaveLength(1);
     expect(screen.queryByRole('link', {name: /skip to main/i})).not.toBeInTheDocument();
   });

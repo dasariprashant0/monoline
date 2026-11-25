@@ -62,7 +62,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetLocalSt
     };
     window.addEventListener('storage', onStorage);
     window.addEventListener(LOCAL_EVENT, onLocal);
-    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener(LOCAL_EVENT, onLocal); };
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener(LOCAL_EVENT, onLocal);
+    };
   }, [key]);
 
   const set = useCallback<SetLocalStorageValue<T>>(
@@ -77,7 +80,8 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetLocalSt
       } catch {
         // Quota or blocked storage: the in-memory value still updates.
       }
-      if (raw !== undefined) window.dispatchEvent(new CustomEvent(LOCAL_EVENT, {detail: {key, raw, source: me.current}}));
+      if (raw !== undefined)
+        window.dispatchEvent(new CustomEvent(LOCAL_EVENT, {detail: {key, raw, source: me.current}}));
     },
     [key],
   );

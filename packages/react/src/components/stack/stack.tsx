@@ -15,7 +15,10 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** A flex container. Use it instead of one-off margins. */
-export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack({direction = 'column', gap = 3, align, justify, wrap, className, style, ...rest}, ref) {
+export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
+  {direction = 'column', gap = 3, align, justify, wrap, className, style, ...rest},
+  ref,
+) {
   return (
     <div
       ref={ref}

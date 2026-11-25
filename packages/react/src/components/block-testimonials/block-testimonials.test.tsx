@@ -34,7 +34,9 @@ describe('BlockTestimonials', () => {
     expect(container.querySelector('.block-testimonial-role')).toBeNull();
   });
   it('hides avatars from assistive tech and renders them only when given', () => {
-    const {container} = render(<BlockTestimonials title="T" items={[{...items[0]!, avatar: <img alt="Ada" src="a.png" />}, items[1]!]} />);
+    const {container} = render(
+      <BlockTestimonials title="T" items={[{...items[0]!, avatar: <img alt="Ada" src="a.png" />}, items[1]!]} />,
+    );
     const avatars = container.querySelectorAll('.block-testimonial-avatar');
     expect(avatars).toHaveLength(1);
     expect(avatars[0]).toHaveAttribute('aria-hidden', 'true');

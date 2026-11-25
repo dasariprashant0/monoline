@@ -16,7 +16,15 @@ describe('BlockHero', () => {
     expect(screen.getByRole('heading', {level: 2})).toBeInTheDocument();
   });
   it('renders actions and media, and the alignment', () => {
-    render(<BlockHero title="T" align="center" actions={<Button>Start</Button>} media={<img alt="Preview" src="x.png" />} data-testid="h" />);
+    render(
+      <BlockHero
+        title="T"
+        align="center"
+        actions={<Button>Start</Button>}
+        media={<img alt="Preview" src="x.png" />}
+        data-testid="h"
+      />,
+    );
     expect(screen.getByRole('button', {name: 'Start'})).toBeInTheDocument();
     expect(screen.getByRole('img', {name: 'Preview'})).toBeInTheDocument();
     expect(screen.getByTestId('h')).toHaveAttribute('data-align', 'center');
@@ -32,7 +40,8 @@ describe('BlockHero', () => {
   });
   it('omits eyebrow, description, actions and media when not given', () => {
     const {container} = render(<BlockHero title="T" />);
-    for (const c of ['.block-hero-eyebrow', '.block-hero-description', '.block-hero-actions', '.block-hero-media']) expect(container.querySelector(c)).toBeNull();
+    for (const c of ['.block-hero-eyebrow', '.block-hero-description', '.block-hero-actions', '.block-hero-media'])
+      expect(container.querySelector(c)).toBeNull();
   });
   it('renders the eyebrow outside the heading so it does not pollute the name', () => {
     render(<BlockHero eyebrow="New" title="Ship faster" />);
@@ -46,7 +55,12 @@ describe('BlockHero', () => {
     expect(screen.getByRole('heading', {level: 2})).toBeInTheDocument();
   });
   it('gives two heroes on one page distinct accessible names', () => {
-    render(<><BlockHero title="A" headingLevel={2} /><BlockHero title="B" headingLevel={2} /></>);
+    render(
+      <>
+        <BlockHero title="A" headingLevel={2} />
+        <BlockHero title="B" headingLevel={2} />
+      </>,
+    );
     expect(screen.getByRole('region', {name: 'A'})).toBeInTheDocument();
     expect(screen.getByRole('region', {name: 'B'})).toBeInTheDocument();
   });
@@ -61,7 +75,9 @@ describe('BlockHero', () => {
     expect(screen.getByRole('heading', {level: 1})).toHaveTextContent('שלום');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<BlockHero title="Ship faster" description="Plain words." actions={<Button variant="solid">Start</Button>} />);
+    const {container} = render(
+      <BlockHero title="Ship faster" description="Plain words." actions={<Button variant="solid">Start</Button>} />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

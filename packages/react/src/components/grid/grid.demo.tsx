@@ -7,7 +7,9 @@ export const demos: Demo[] = [
     title: 'Three columns',
     render: () => (
       <Grid columns={3}>
-        {['One', 'Two', 'Three'].map((n) => <Card key={n}>{n}</Card>)}
+        {['One', 'Two', 'Three'].map((n) => (
+          <Card key={n}>{n}</Card>
+        ))}
       </Grid>
     ),
   },
@@ -15,7 +17,9 @@ export const demos: Demo[] = [
     title: 'Auto-fit',
     render: () => (
       <Grid minColumn="10rem">
-        {['A', 'B', 'C', 'D'].map((n) => <Card key={n}>{n}</Card>)}
+        {['A', 'B', 'C', 'D'].map((n) => (
+          <Card key={n}>{n}</Card>
+        ))}
       </Grid>
     ),
   },

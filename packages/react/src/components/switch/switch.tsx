@@ -12,12 +12,29 @@ export interface SwitchProps extends Omit<ComponentPropsWithoutRef<typeof RadixS
 }
 
 /** An on/off setting that applies at once. Use a Checkbox for a choice you submit later. */
-export const Switch = forwardRef<ElementRef<typeof RadixSwitch.Root>, SwitchProps>(function Switch({label, invalid, className, id, ...rest}, ref) {
+export const Switch = forwardRef<ElementRef<typeof RadixSwitch.Root>, SwitchProps>(function Switch(
+  {label, invalid, className, id, ...rest},
+  ref,
+) {
   const f = useFieldControl();
   const sw = (
-    <RadixSwitch.Root ref={ref} id={id ?? f.id} className={cx('sw', className)} {...invalidAttrs(invalid || Boolean(f['aria-invalid']))} aria-describedby={f['aria-describedby']} {...rest}>
+    <RadixSwitch.Root
+      ref={ref}
+      id={id ?? f.id}
+      className={cx('sw', className)}
+      {...invalidAttrs(invalid || Boolean(f['aria-invalid']))}
+      aria-describedby={f['aria-describedby']}
+      {...rest}
+    >
       <RadixSwitch.Thumb className="sw-thumb" />
     </RadixSwitch.Root>
   );
-  return label ? <label className="choice" style={{alignItems: 'center'}}>{sw}<span>{label}</span></label> : sw;
+  return label ? (
+    <label className="choice" style={{alignItems: 'center'}}>
+      {sw}
+      <span>{label}</span>
+    </label>
+  ) : (
+    sw
+  );
 });

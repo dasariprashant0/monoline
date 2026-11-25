@@ -16,8 +16,12 @@ export const demos: Demo[] = [
             <p>Rewrote the headline and the plan table.</p>
           </CardContent>
           <CardFooter>
-            <Button variant="solid" size="sm">Open</Button>
-            <Button variant="line" size="sm">Share</Button>
+            <Button variant="solid" size="sm">
+              Open
+            </Button>
+            <Button variant="line" size="sm">
+              Share
+            </Button>
           </CardFooter>
         </Card>
       </div>

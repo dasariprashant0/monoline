@@ -7,14 +7,26 @@ import {createServer} from 'vite';
 import {docsRoot} from './lib/load.ts';
 
 /** Static markup, safe to paste 130 times into one page: no ids or references to them, nothing focusable or navigable. */
-export const clean = (html: string) => html
-  .replace(/<(\/?)a(?=[\s>])/g, '<$1span') // the card is itself a link, and the HTML parser cannot nest one <a> in another
-  .replace(/<(script|style)\b[\s\S]*?<\/\1>/g, '')
-  .replace(/\s(?:id|for|name|form|href|tabindex|autofocus|accesskey|aria-(?:labelledby|describedby|controls|owns|activedescendant|details|errormessage|flowto)|popovertarget|list)="[^"]*"/g, '')
-  .replace(/\s(?:autofocus|autoplay)(?=[\s>])/g, '')
-  .replace(/<(img|video|iframe|source)\b[^>]*>/g, (m) => (/<img\b/.test(m) ? m.replace(/\s(?:srcset|sizes)="[^"]*"/g, '').replace(/\sloading="[^"]*"/g, '') : ''));
+export const clean = (html: string) =>
+  html
+    .replace(/<(\/?)a(?=[\s>])/g, '<$1span') // the card is itself a link, and the HTML parser cannot nest one <a> in another
+    .replace(/<(script|style)\b[\s\S]*?<\/\1>/g, '')
+    .replace(
+      /\s(?:id|for|name|form|href|tabindex|autofocus|accesskey|aria-(?:labelledby|describedby|controls|owns|activedescendant|details|errormessage|flowto)|popovertarget|list)="[^"]*"/g,
+      '',
+    )
+    .replace(/\s(?:autofocus|autoplay)(?=[\s>])/g, '')
+    .replace(/<(img|video|iframe|source)\b[^>]*>/g, (m) =>
+      /<img\b/.test(m) ? m.replace(/\s(?:srcset|sizes)="[^"]*"/g, '').replace(/\sloading="[^"]*"/g, '') : '',
+    );
 
-const server = await createServer({root: docsRoot, configFile: join(docsRoot, 'vite.config.ts'), server: {middlewareMode: true, hmr: false, watch: null}, appType: 'custom', logLevel: 'error'});
+const server = await createServer({
+  root: docsRoot,
+  configFile: join(docsRoot, 'vite.config.ts'),
+  server: {middlewareMode: true, hmr: false, watch: null},
+  appType: 'custom',
+  logLevel: 'error',
+});
 try {
   const {renderThumbs} = await server.ssrLoadModule('/src/page/thumbs-ssr.tsx');
   const html: Record<string, string> = renderThumbs();
@@ -25,4 +37,7 @@ try {
   writeFileSync(file, JSON.stringify(out) + '\n');
   const bytes = Object.values(out).reduce((n, h) => n + h.length, 0);
   console.log(`thumbs: ${Object.keys(out).length} components, ${(bytes / 1024).toFixed(0)} KB of markup`);
-} finally { await server.close(); process.exit(0); } // the CSS plugin's watcher would keep the process alive
+} finally {
+  await server.close();
+  process.exit(0);
+} // the CSS plugin's watcher would keep the process alive

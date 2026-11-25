@@ -6,10 +6,11 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = fileURLToPath(new URL('../src/', import.meta.url));
-const walk = (d: string): string[] => readdirSync(d).flatMap((n) => {
-  const p = join(d, n);
-  return statSync(p).isDirectory() ? walk(p) : p.endsWith('.css') ? [p] : [];
-});
+const walk = (d: string): string[] =>
+  readdirSync(d).flatMap((n) => {
+    const p = join(d, n);
+    return statSync(p).isDirectory() ? walk(p) : p.endsWith('.css') ? [p] : [];
+  });
 const PHYSICAL = [
   /(?<![\w-])(margin|padding)-(left|right)\s*:/,
   /(?<![\w-])border-(left|right)(-width|-color|-style)?\s*:/,
@@ -27,8 +28,14 @@ for (const file of walk(root)) {
   const text = readFileSync(file, 'utf8').replace(/\/\*(?!\s*physical:)[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
   text.split('\n').forEach((line, i) => {
     if (/\/\*\s*physical:\s*\S/.test(line)) return;
-    if (PHYSICAL.some((re) => re.test(line))) bad.push(`FAIL ${file.slice(root.length)}:${i + 1} physical property; use start/end or add /* physical: reason */: ${line.trim().slice(0, 80)}`);
+    if (PHYSICAL.some((re) => re.test(line)))
+      bad.push(
+        `FAIL ${file.slice(root.length)}:${i + 1} physical property; use start/end or add /* physical: reason */: ${line.trim().slice(0, 80)}`,
+      );
   });
 }
-if (bad.length) { console.error(bad.join('\n')); process.exit(1); }
+if (bad.length) {
+  console.error(bad.join('\n'));
+  process.exit(1);
+}
 console.log(`ok: no unmarked physical properties in ${files} stylesheets.`);

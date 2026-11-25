@@ -57,7 +57,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-document-title/use-document-title.ts",
-      "content": "'use client';\nimport {useEffect} from 'react';\n\n/**\n * Sets `document.title` while mounted and restores the previous title on unmount. Does nothing on the server.\n *\n * @param title The text to show in the browser tab.\n */\nexport function useDocumentTitle(title: string): void {\n  useEffect(() => {\n    const prev = document.title;\n    document.title = title;\n    return () => { document.title = prev; };\n  }, [title]);\n}\n"
+      "content": "'use client';\nimport {useEffect} from 'react';\n\n/**\n * Sets `document.title` while mounted and restores the previous title on unmount. Does nothing on the server.\n *\n * @param title The text to show in the browser tab.\n */\nexport function useDocumentTitle(title: string): void {\n  useEffect(() => {\n    const prev = document.title;\n    document.title = title;\n    return () => {\n      document.title = prev;\n    };\n  }, [title]);\n}\n"
     }
   ],
   "utils": []

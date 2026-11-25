@@ -3,7 +3,14 @@ import {useScrollSpy} from './use-scroll-spy';
 
 function Probe() {
   const active = useScrollSpy(['one', 'two', 'three'], 0);
-  return <div><section id="one" /><section id="two" /><section id="three" /><output>{active ?? 'none'}</output></div>;
+  return (
+    <div>
+      <section id="one" />
+      <section id="two" />
+      <section id="three" />
+      <output>{active ?? 'none'}</output>
+    </div>
+  );
 }
 
 const tops: Record<string, number> = {one: 100, two: 400, three: 800};
@@ -22,9 +29,15 @@ describe('useScrollSpy', () => {
   });
   it('reports the last section scrolled past on scroll', () => {
     render(<Probe />);
-    tops.one = -50; tops.two = -10; tops.three = 300;
-    act(() => { window.dispatchEvent(new Event('scroll')); });
+    tops.one = -50;
+    tops.two = -10;
+    tops.three = 300;
+    act(() => {
+      window.dispatchEvent(new Event('scroll'));
+    });
     expect(screen.getByText('two')).toBeInTheDocument();
-    tops.one = 100; tops.two = 400; tops.three = 800;
+    tops.one = 100;
+    tops.two = 400;
+    tops.three = 800;
   });
 });

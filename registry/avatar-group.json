@@ -56,7 +56,7 @@
       ]
     }
   ],
-  "usage": "import {Avatar, AvatarGroup} from '@monoline/react';\n\n<AvatarGroup aria-label=\"Project members\" max={3}>\n  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => <Avatar key={n} name={n} />)}\n</AvatarGroup>",
+  "usage": "import {Avatar, AvatarGroup} from '@monoline/react';\n\n<AvatarGroup aria-label=\"Project members\" max={3}>\n  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => (\n    <Avatar key={n} name={n} />\n  ))}\n</AvatarGroup>",
   "dataAttributes": [],
   "classes": [
     "avatar",
@@ -73,7 +73,7 @@
   "source": [
     {
       "path": "packages/react/src/components/avatar-group/avatar-group.tsx",
-      "content": "import {Children, forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {\n  /** Names the group, for example \"Project members\". */\n  'aria-label': string;\n  /** Show at most this many avatars, then \"+N\". */\n  max?: number | undefined;\n}\n\n/** A row of overlapping Avatars. */\nexport const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(function AvatarGroup({max = 4, className, children, ...rest}, ref) {\n  const items = Children.toArray(children);\n  const shown = items.slice(0, max);\n  const extra = items.length - shown.length;\n  return (\n    <div ref={ref} role=\"group\" className={cx('avatar-group', className)} {...rest}>\n      {shown}\n      {extra > 0 && <span className=\"avatar avatar-line\">+{extra}</span>}\n    </div>\n  );\n});\n"
+      "content": "import {Children, forwardRef, type HTMLAttributes} from 'react';\nimport {cx} from '../../utils/cx';\n\nexport interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {\n  /** Names the group, for example \"Project members\". */\n  'aria-label': string;\n  /** Show at most this many avatars, then \"+N\". */\n  max?: number | undefined;\n}\n\n/** A row of overlapping Avatars. */\nexport const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(function AvatarGroup(\n  {max = 4, className, children, ...rest},\n  ref,\n) {\n  const items = Children.toArray(children);\n  const shown = items.slice(0, max);\n  const extra = items.length - shown.length;\n  return (\n    <div ref={ref} role=\"group\" className={cx('avatar-group', className)} {...rest}>\n      {shown}\n      {extra > 0 && <span className=\"avatar avatar-line\">+{extra}</span>}\n    </div>\n  );\n});\n"
     },
     {
       "path": "packages/react/src/components/avatar-group/index.ts",

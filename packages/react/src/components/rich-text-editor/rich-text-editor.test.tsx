@@ -7,11 +7,14 @@ import {RichTextEditor, sanitizeHtml} from './rich-text-editor';
 
 describe('sanitizeHtml', () => {
   it('keeps the allowlist', () => {
-    const html = '<h2>T</h2><p>a <strong>b</strong> <em>c</em> <u>d</u><br></p><ul><li>x</li></ul><ol><li>y</li></ol><blockquote>q</blockquote>';
+    const html =
+      '<h2>T</h2><p>a <strong>b</strong> <em>c</em> <u>d</u><br></p><ul><li>x</li></ul><ol><li>y</li></ol><blockquote>q</blockquote>';
     expect(sanitizeHtml(html)).toBe(html);
   });
   it('keeps safe links and adds rel', () => {
-    expect(sanitizeHtml('<a href="https://a.com/x?y=1&amp;z=2" target="_blank" onclick="x()">go</a>')).toBe('<a href="https://a.com/x?y=1&amp;z=2" rel="noopener noreferrer">go</a>');
+    expect(sanitizeHtml('<a href="https://a.com/x?y=1&amp;z=2" target="_blank" onclick="x()">go</a>')).toBe(
+      '<a href="https://a.com/x?y=1&amp;z=2" rel="noopener noreferrer">go</a>',
+    );
     expect(sanitizeHtml('<a href="mailto:a@b.co">m</a>')).toContain('href="mailto:a@b.co"');
   });
   it.each([
@@ -35,9 +38,13 @@ describe('sanitizeHtml', () => {
     ['math/mXSS', '<math><mtext><table><mglyph><style><img src=x onerror=alert(1)>', ''],
     ['form and input', '<form action="/x"><input name="a" value="b"><button>go</button></form>', 'go'],
     ['class and id', '<p class="x" id="y" data-x="1">hi</p>', '<p>hi</p>'],
-  ])('%s', (_n, input, out) => { expect(sanitizeHtml(input)).toBe(out); });
+  ])('%s', (_n, input, out) => {
+    expect(sanitizeHtml(input)).toBe(out);
+  });
   it('renames b, i, div and h1', () => {
-    expect(sanitizeHtml('<h1>t</h1><div>a <b>b</b> <i>c</i></div>')).toBe('<h2>t</h2><p>a <strong>b</strong> <em>c</em></p>');
+    expect(sanitizeHtml('<h1>t</h1><div>a <b>b</b> <i>c</i></div>')).toBe(
+      '<h2>t</h2><p>a <strong>b</strong> <em>c</em></p>',
+    );
   });
   it('escapes text so it cannot reopen a tag', () => {
     expect(sanitizeHtml('1 &lt; 2 &amp;&amp; &lt;script&gt;')).toBe('1 &lt; 2 &amp;&amp; &lt;script&gt;');
@@ -46,12 +53,18 @@ describe('sanitizeHtml', () => {
     const once = sanitizeHtml('<p onclick=x><a href="https://a.com">a</a><script>1</script></p>');
     expect(sanitizeHtml(once)).toBe(once);
   });
-  it('handles empty input', () => { expect(sanitizeHtml('')).toBe(''); });
+  it('handles empty input', () => {
+    expect(sanitizeHtml('')).toBe('');
+  });
 });
 
 describe('execFormat adapter', () => {
-  afterEach(() => { delete (document as {execCommand?: unknown}).execCommand; });
-  it('returns false where execCommand is missing', () => { expect(execFormat('bold')).toBe(false); });
+  afterEach(() => {
+    delete (document as {execCommand?: unknown}).execCommand;
+  });
+  it('returns false where execCommand is missing', () => {
+    expect(execFormat('bold')).toBe(false);
+  });
   it('forwards command and value', () => {
     const spy = vi.fn(() => true);
     document.execCommand = spy;
@@ -59,15 +72,23 @@ describe('execFormat adapter', () => {
     expect(spy).toHaveBeenCalledWith('formatBlock', false, '<h2>');
   });
   it('returns false when it throws', () => {
-    document.execCommand = () => { throw new Error('nope'); };
+    document.execCommand = () => {
+      throw new Error('nope');
+    };
     expect(execFormat('bold')).toBe(false);
   });
 });
 
 describe('RichTextEditor', () => {
   let exec: ReturnType<typeof vi.fn>;
-  const stub = () => { exec = vi.fn(() => true); document.execCommand = exec as never; };
-  afterEach(() => { delete (document as {execCommand?: unknown}).execCommand; delete (document as {queryCommandState?: unknown}).queryCommandState; });
+  const stub = () => {
+    exec = vi.fn(() => true);
+    document.execCommand = exec as never;
+  };
+  afterEach(() => {
+    delete (document as {execCommand?: unknown}).execCommand;
+    delete (document as {queryCommandState?: unknown}).queryCommandState;
+  });
   const editor = () => screen.getByRole('textbox', {name: 'Notes'});
 
   it('renders a labelled multiline textbox and a named toolbar', () => {
@@ -98,7 +119,18 @@ describe('RichTextEditor', () => {
     stub();
     const user = userEvent.setup();
     render(<RichTextEditor aria-label="Notes" />);
-    for (const [name, cmd, arg] of [['Bold', 'bold'], ['Italic', 'italic'], ['Underline', 'underline'], ['Bulleted list', 'insertUnorderedList'], ['Numbered list', 'insertOrderedList'], ['Heading 2', 'formatBlock', '<h2>'], ['Heading 3', 'formatBlock', '<h3>'], ['Quote', 'formatBlock', '<blockquote>'], ['Undo', 'undo'], ['Redo', 'redo']] as const) {
+    for (const [name, cmd, arg] of [
+      ['Bold', 'bold'],
+      ['Italic', 'italic'],
+      ['Underline', 'underline'],
+      ['Bulleted list', 'insertUnorderedList'],
+      ['Numbered list', 'insertOrderedList'],
+      ['Heading 2', 'formatBlock', '<h2>'],
+      ['Heading 3', 'formatBlock', '<h3>'],
+      ['Quote', 'formatBlock', '<blockquote>'],
+      ['Undo', 'undo'],
+      ['Redo', 'redo'],
+    ] as const) {
       exec.mockClear();
       await user.click(screen.getByRole('button', {name}));
       expect(exec).toHaveBeenCalledWith(cmd, false, arg);

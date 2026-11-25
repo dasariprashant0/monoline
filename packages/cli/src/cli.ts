@@ -56,7 +56,10 @@ async function load(base: string, name: string): Promise<unknown> {
     const res = await fetch(url);
     if (!res.ok) {
       // Until a version is released its tag does not exist, so a CLI run from the repo lands here.
-      const hint = res.status === 404 && base === DEFAULT_REGISTRY ? `. No registry is tagged v${VERSION} yet: pass --registry <folder|url>` : '';
+      const hint =
+        res.status === 404 && base === DEFAULT_REGISTRY
+          ? `. No registry is tagged v${VERSION} yet: pass --registry <folder|url>`
+          : '';
       throw new Error(`${url}: ${`${res.status} ${res.statusText}`.trim()}${hint}`);
     }
     return res.json();
@@ -75,7 +78,8 @@ function readConfig(file: string): {components?: string; styles?: string; regist
   } catch (e) {
     throw new Error(`monoline.json is not valid JSON (${message(e)})`);
   }
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new Error('monoline.json must be an object, like {"components": "src/components/monoline"}');
+  if (typeof v !== 'object' || v === null || Array.isArray(v))
+    throw new Error('monoline.json must be an object, like {"components": "src/components/monoline"}');
   const cfg = v as Record<string, unknown>;
   for (const k of ['components', 'styles', 'registry']) {
     if (cfg[k] !== undefined && typeof cfg[k] !== 'string') throw new Error(`monoline.json "${k}" must be a string`);
@@ -84,16 +88,24 @@ function readConfig(file: string): {components?: string; styles?: string; regist
 }
 
 // '../../utils/cx' and '../../hooks/x' live elsewhere in the repo; here everything is a sibling folder.
-const fixImports = (src: string): string => src.replace(/'\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g, `'../utils/$1'`).replace(/'\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g, `'../$1'`);
+const fixImports = (src: string): string =>
+  src
+    .replace(/'\.\.\/\.\.\/utils\/([a-z0-9-]+)'/g, `'../utils/$1'`)
+    .replace(/'\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g, `'../$1'`);
 const siblingNames = (src: string): string[] =>
-  [...src.matchAll(/from '\.\.\/([a-z0-9-]+)'/g), ...src.matchAll(/from '\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g)].flatMap((m) => m[1] ?? []);
-const styleBundle = (c: RegistryEntry): string => `@layer monoline.components {\n${c.css.map((s) => s.content.trim()).join('\n\n')}\n}\n`;
+  [...src.matchAll(/from '\.\.\/([a-z0-9-]+)'/g), ...src.matchAll(/from '\.\.\/\.\.\/hooks\/([a-z0-9-]+)'/g)].flatMap(
+    (m) => m[1] ?? [],
+  );
+const styleBundle = (c: RegistryEntry): string =>
+  `@layer monoline.components {\n${c.css.map((s) => s.content.trim()).join('\n\n')}\n}\n`;
 const usesCx = (c: RegistryEntry): boolean =>
-  c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx')) || (c.utils ?? []).some((u) => u.content.includes("'./cx'"));
+  c.source.some((s) => basename(s.path) !== 'meta.json' && s.content.includes('/utils/cx')) ||
+  (c.utils ?? []).some((u) => u.content.includes("'./cx'"));
 
 // Files one component writes, paths relative to the project root. The shared utils/cx.ts is added by the caller.
 function componentFiles(c: RegistryEntry, compDir: string, styleDir: string): File[] {
-  const files = c.source.filter((s) => basename(s.path) !== 'meta.json')
+  const files = c.source
+    .filter((s) => basename(s.path) !== 'meta.json')
     .map((s) => ({path: join(compDir, c.name, basename(s.path)), content: fixImports(s.content)}));
   // Shared helpers (slot, overlay, chart...) the registry lists for this component; they sit in utils/ next to cx.ts.
   for (const u of c.utils ?? []) files.push({path: join(compDir, 'utils', basename(u.path)), content: u.content});
@@ -106,7 +118,10 @@ const cxFile = (compDir: string): File => ({path: join(compDir, 'utils', 'cx.ts'
 /** Every file a set of components writes, cx.ts included when one needs it, each path once. */
 function filesFor(items: Iterable<RegistryEntry>, compDir: string, styleDir: string): File[] {
   const list = [...items];
-  const files = [...list.flatMap((c) => componentFiles(c, compDir, styleDir)), ...(list.some(usesCx) ? [cxFile(compDir)] : [])];
+  const files = [
+    ...list.flatMap((c) => componentFiles(c, compDir, styleDir)),
+    ...(list.some(usesCx) ? [cxFile(compDir)] : []),
+  ];
   const seen = new Set<string>();
   return files.filter((f) => !seen.has(f.path) && seen.add(f.path));
 }
@@ -144,18 +159,25 @@ function editScript(a: string[], b: string[]): Op[] {
   while (pre < a.length && pre < b.length && a[pre] === b[pre]) pre++;
   let suf = 0;
   while (suf < a.length - pre && suf < b.length - pre && a[a.length - 1 - suf] === b[b.length - 1 - suf]) suf++;
-  const A = a.slice(pre, a.length - suf), B = b.slice(pre, b.length - suf);
-  const n = A.length, m = B.length, w = m + 1;
+  const A = a.slice(pre, a.length - suf),
+    B = b.slice(pre, b.length - suf);
+  const n = A.length,
+    m = B.length,
+    w = m + 1;
   const L = new Uint32Array((n + 1) * w);
   const at = (i: number, j: number) => L[i * w + j] ?? 0;
-  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) {
-    L[i * w + j] = A[i] === B[j] ? at(i + 1, j + 1) + 1 : Math.max(at(i + 1, j), at(i, j + 1));
-  }
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--) {
+      L[i * w + j] = A[i] === B[j] ? at(i + 1, j + 1) + 1 : Math.max(at(i + 1, j), at(i, j + 1));
+    }
   const ops: Op[] = a.slice(0, pre).map((l) => [' ', l]);
-  let i = 0, j = 0;
+  let i = 0,
+    j = 0;
   while (i < n && j < m) {
-    if (A[i] === B[j]) { ops.push([' ', A[i++] ?? '']); j++; }
-    else if (at(i + 1, j) >= at(i, j + 1)) ops.push(['-', A[i++] ?? '']);
+    if (A[i] === B[j]) {
+      ops.push([' ', A[i++] ?? '']);
+      j++;
+    } else if (at(i + 1, j) >= at(i, j + 1)) ops.push(['-', A[i++] ?? '']);
     else ops.push(['+', B[j++] ?? '']);
   }
   while (i < n) ops.push(['-', A[i++] ?? '']);
@@ -180,7 +202,8 @@ const askInTerminal = async (question: string): Promise<boolean> => {
   return /^y(es)?$/i.test(answer.trim());
 };
 
-const row = (c: RegistryIndex['components'][number]) => `${c.name.padEnd(22)}${c.category.padEnd(14)}${c.status.padEnd(8)}${c.description}`;
+const row = (c: RegistryIndex['components'][number]) =>
+  `${c.name.padEnd(22)}${c.category.padEnd(14)}${c.status.padEnd(8)}${c.description}`;
 
 export interface RunOptions {
   out?: ((line: string) => void) | undefined;
@@ -188,20 +211,38 @@ export interface RunOptions {
   confirm?: ((question: string) => Promise<boolean>) | undefined;
 }
 
-export async function run(argv: string[], {out = console.log, err = console.error, confirm = askInTerminal}: RunOptions = {}): Promise<number> {
+export async function run(
+  argv: string[],
+  {out = console.log, err = console.error, confirm = askInTerminal}: RunOptions = {},
+): Promise<number> {
   let parsed;
   try {
-    parsed = parseArgs({args: argv, allowPositionals: true, options: {
-      registry: {type: 'string'}, dir: {type: 'string'}, styles: {type: 'string'}, category: {type: 'string'}, cwd: {type: 'string'},
-      overwrite: {type: 'boolean'}, yes: {type: 'boolean'}, backup: {type: 'boolean'}, all: {type: 'boolean'},
-      'dry-run': {type: 'boolean'}, help: {type: 'boolean', short: 'h'},
-    }});
+    parsed = parseArgs({
+      args: argv,
+      allowPositionals: true,
+      options: {
+        registry: {type: 'string'},
+        dir: {type: 'string'},
+        styles: {type: 'string'},
+        category: {type: 'string'},
+        cwd: {type: 'string'},
+        overwrite: {type: 'boolean'},
+        yes: {type: 'boolean'},
+        backup: {type: 'boolean'},
+        all: {type: 'boolean'},
+        'dry-run': {type: 'boolean'},
+        help: {type: 'boolean', short: 'h'},
+      },
+    });
   } catch (e) {
     err(message(e));
     return 1;
   }
-  const {values: o, positionals: [cmd, ...names]} = parsed;
-  if (!cmd || o.help || cmd === 'help') return out(HELP), 0;
+  const {
+    values: o,
+    positionals: [cmd, ...names],
+  } = parsed;
+  if (!cmd || o.help || cmd === 'help') return (out(HELP), 0);
   const cwd = resolve(o.cwd ?? process.cwd());
   const cfgFile = join(cwd, 'monoline.json');
   try {
@@ -213,7 +254,11 @@ export async function run(argv: string[], {out = console.log, err = console.erro
     const loadComponent = async (name: string): Promise<RegistryEntry> => {
       if (!NAME.test(name)) throw new Error(`invalid component name "${name}" (lowercase letters, digits and hyphens)`);
       let json: unknown;
-      try { json = await load(registry, name); } catch (e) { throw new Error(`unknown component "${name}" (${message(e)})`); }
+      try {
+        json = await load(registry, name);
+      } catch (e) {
+        throw new Error(`unknown component "${name}" (${message(e)})`);
+      }
       return asEntry(json, `${name}.json`);
     };
     // The named components plus every component they import, in the order found.
@@ -234,7 +279,9 @@ export async function run(argv: string[], {out = console.log, err = console.erro
       const body = JSON.stringify({components: compDir, styles: styleDir}, null, 2) + '\n';
       if (o['dry-run']) out(`would write monoline.json\n${body}`);
       else writeFileSync(cfgFile, body), out('wrote monoline.json');
-      out(`\nInstall the tokens, then import them once in your app entry:\n  npm i @monoline/css\n  import '@monoline/css/core.css';   // tokens, base, utilities, accents, options; import it before the component CSS\n(or the whole kit: import '@monoline/css';)\nEach added component prints its own CSS import.`);
+      out(
+        `\nInstall the tokens, then import them once in your app entry:\n  npm i @monoline/css\n  import '@monoline/css/core.css';   // tokens, base, utilities, accents, options; import it before the component CSS\n(or the whole kit: import '@monoline/css';)\nEach added component prints its own CSS import.`,
+      );
       return 0;
     }
     if (cmd === 'list') {
@@ -250,7 +297,11 @@ export async function run(argv: string[], {out = console.log, err = console.erro
       const scored = components.flatMap((c) => {
         const hay = [c.name, c.title, c.category, c.description, ...(c.keywords ?? [])].join(' ').toLowerCase();
         if (!words.every((w) => hay.includes(w))) return [];
-        const score = (c.name === query ? 100 : 0) + (c.name.includes(query) ? 20 : 0) + (c.title.toLowerCase().includes(query) ? 10 : 0) + ((c.keywords ?? []).some((k) => k.toLowerCase().includes(query)) ? 5 : 0);
+        const score =
+          (c.name === query ? 100 : 0) +
+          (c.name.includes(query) ? 20 : 0) +
+          (c.title.toLowerCase().includes(query) ? 10 : 0) +
+          ((c.keywords ?? []).some((k) => k.toLowerCase().includes(query)) ? 5 : 0);
         return [{c, score}];
       });
       if (!scored.length) {
@@ -263,7 +314,9 @@ export async function run(argv: string[], {out = console.log, err = console.erro
     if (cmd === 'info') {
       if (!names[0]) throw new Error('usage: monoline info <name>');
       const c = await loadComponent(names[0]);
-      out(`${c.title} (${c.name}) [${c.category}, ${c.status}]\n${c.description}\nimport: ${c.import}\nprimitive: ${c.primitive ?? 'none'}\ncss: ${c.css.map((f) => basename(f.path)).join(', ')} (copied as one ${c.name}.css)\na11y:\n${(c.a11y ?? []).map((a) => `  - ${a}`).join('\n')}`);
+      out(
+        `${c.title} (${c.name}) [${c.category}, ${c.status}]\n${c.description}\nimport: ${c.import}\nprimitive: ${c.primitive ?? 'none'}\ncss: ${c.css.map((f) => basename(f.path)).join(', ')} (copied as one ${c.name}.css)\na11y:\n${(c.a11y ?? []).map((a) => `  - ${a}`).join('\n')}`,
+      );
       return 0;
     }
     if (cmd === 'diff' || cmd === 'update') {
@@ -272,7 +325,8 @@ export async function run(argv: string[], {out = console.log, err = console.erro
       for (const name of names) {
         const items = await withSiblings([name]);
         const c = items.get(name) as RegistryEntry;
-        if (compare(cwd, componentFiles(c, compDir, styleDir)).every((f) => f.current === null)) throw new Error(`${name} is not in the project (run: monoline add ${name})`);
+        if (compare(cwd, componentFiles(c, compDir, styleDir)).every((f) => f.current === null))
+          throw new Error(`${name} is not in the project (run: monoline add ${name})`);
         // Components it now imports that the project does not have yet come along, as `add` would bring them.
         const missing = [...items.values()].filter((s) => s !== c && !existsSync(join(cwd, compDir, s.name)));
         const files = compare(cwd, filesFor([c, ...missing], compDir, styleDir));
@@ -280,14 +334,28 @@ export async function run(argv: string[], {out = console.log, err = console.erro
         const folder = join(compDir, name);
         const listed = new Set(files.map((f) => f.path));
         const dropped = existsSync(join(cwd, folder))
-          ? readdirSync(join(cwd, folder)).map((f) => join(folder, f)).filter((p) => !listed.has(p) && !p.endsWith('.orig') && statSync(join(cwd, p)).isFile())
+          ? readdirSync(join(cwd, folder))
+              .map((f) => join(folder, f))
+              .filter((p) => !listed.has(p) && !p.endsWith('.orig') && statSync(join(cwd, p)).isFile())
           : [];
         for (const p of dropped) out(`${p} is no longer in the registry; not deleted`);
         const changed = files.filter((f) => f.changed);
-        if (!changed.length) { out(`${name}: same as the registry`); continue; }
-        for (const f of changed) out(unifiedDiff(f.current ?? '', f.content, `${f.path} (project)`, `${f.path} (registry)`).replace(/\n$/, ''));
-        if (cmd === 'diff') { code = 1; continue; }
-        if (o['dry-run']) { out(`would update ${changed.length} file(s) for ${name}`); continue; }
+        if (!changed.length) {
+          out(`${name}: same as the registry`);
+          continue;
+        }
+        for (const f of changed)
+          out(
+            unifiedDiff(f.current ?? '', f.content, `${f.path} (project)`, `${f.path} (registry)`).replace(/\n$/, ''),
+          );
+        if (cmd === 'diff') {
+          code = 1;
+          continue;
+        }
+        if (o['dry-run']) {
+          out(`would update ${changed.length} file(s) for ${name}`);
+          continue;
+        }
         if (!o.yes && !(await confirm(`Replace ${changed.length} file(s) for ${name} with the registry version?`))) {
           out(`${name}: not updated`);
           code = 1;
@@ -298,7 +366,9 @@ export async function run(argv: string[], {out = console.log, err = console.erro
           mkdirSync(dirname(abs), {recursive: true});
           if (o.backup && f.current !== null) writeFileSync(`${abs}.orig`, f.current);
           writeFileSync(abs, f.content);
-          out(`${f.current === null ? 'added' : 'updated'} ${f.path}${o.backup && f.current !== null ? ` (old copy: ${f.path}.orig)` : ''}`);
+          out(
+            `${f.current === null ? 'added' : 'updated'} ${f.path}${o.backup && f.current !== null ? ` (old copy: ${f.path}.orig)` : ''}`,
+          );
         }
       }
       return code;
@@ -307,8 +377,14 @@ export async function run(argv: string[], {out = console.log, err = console.erro
 
     // Explicit names, every component (--all) and every component in a category (--category).
     if (o.all) names.push(...(await loadIndex()).components.map((c) => c.name));
-    if (o.category) names.push(...(await loadIndex()).components.filter((c) => c.category === o.category).map((c) => c.name));
-    if (!names.length) throw new Error(o.category ? `no components in category "${o.category}"` : 'usage: monoline add <name...> (or --all, --category <x>)');
+    if (o.category)
+      names.push(...(await loadIndex()).components.filter((c) => c.category === o.category).map((c) => c.name));
+    if (!names.length)
+      throw new Error(
+        o.category
+          ? `no components in category "${o.category}"`
+          : 'usage: monoline add <name...> (or --all, --category <x>)',
+      );
 
     const items = await withSiblings(names);
     const deps: Record<string, string> = {};
@@ -317,9 +393,15 @@ export async function run(argv: string[], {out = console.log, err = console.erro
 
     // A file that is already there with the same bytes (cx.ts shared by two components) is fine; a different one is not.
     const clash = files.filter((f) => f.current !== null && f.changed);
-    if (clash.length && !o.overwrite) throw new Error(`refusing to overwrite:\n${clash.map((f) => `  ${f.path}`).join('\n')}\nuse --overwrite to replace them`);
+    if (clash.length && !o.overwrite)
+      throw new Error(
+        `refusing to overwrite:\n${clash.map((f) => `  ${f.path}`).join('\n')}\nuse --overwrite to replace them`,
+      );
     for (const f of files) {
-      if (!f.changed) { out(`same ${f.path}`); continue; }
+      if (!f.changed) {
+        out(`same ${f.path}`);
+        continue;
+      }
       out(`${o['dry-run'] ? 'would write' : 'write'} ${f.path}`);
       if (o['dry-run']) continue;
       const abs = join(cwd, f.path);
@@ -327,9 +409,16 @@ export async function run(argv: string[], {out = console.log, err = console.erro
       writeFileSync(abs, f.content);
     }
     const css = files.filter((f) => f.path.endsWith('.css'));
-    if (css.length) out(`\nImport the styles once (paths from the project root; adjust to your entry file):\n${css.map((f) => `  import './${f.path}';`).join('\n')}`);
+    if (css.length)
+      out(
+        `\nImport the styles once (paths from the project root; adjust to your entry file):\n${css.map((f) => `  import './${f.path}';`).join('\n')}`,
+      );
     const pkgs = Object.entries(deps).map(([k, v]) => `${k}@"${v}"`);
-    out(pkgs.length ? `\nInstall dependencies (and react >= 18):\n  npm i ${pkgs.join(' ')}` : '\nNo npm packages to install besides react >= 18.');
+    out(
+      pkgs.length
+        ? `\nInstall dependencies (and react >= 18):\n  npm i ${pkgs.join(' ')}`
+        : '\nNo npm packages to install besides react >= 18.',
+    );
     return 0;
   } catch (e) {
     err(`monoline: ${message(e)}`);

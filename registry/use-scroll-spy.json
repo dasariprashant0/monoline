@@ -60,7 +60,7 @@
       ]
     }
   ],
-  "usage": "import {useScrollSpy} from '@monoline/react';\n\nfunction Demo() {\n  const active = useScrollSpy(['intro', 'usage'], 0);\n  return <p>Active section: <output>{active ?? 'none yet'}</output>. Add elements with these ids to your page and scroll.</p>;\n}\n\n<Demo />",
+  "usage": "import {useScrollSpy} from '@monoline/react';\n\nfunction Demo() {\n  const active = useScrollSpy(['intro', 'usage'], 0);\n  return (\n    <p>\n      Active section: <output>{active ?? 'none yet'}</output>. Add elements with these ids to your page and scroll.\n    </p>\n  );\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},
@@ -75,7 +75,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-scroll-spy/use-scroll-spy.ts",
-      "content": "'use client';\nimport {useEffect, useState} from 'react';\n\n/**\n * Pass the element ids in page order. Returns the id of the last one scrolled past `offset` pixels from the top.\n *\n * @param ids Element ids in page order.\n * @param offset Pixels from the top of the viewport at which a section counts as reached. Default `80`.\n * @returns The id of the active section, or `null` before the first.\n */\nexport function useScrollSpy(ids: readonly string[], offset = 80): string | null {\n  const [active, setActive] = useState<string | null>(null);\n  const key = ids.join('|');\n  useEffect(() => {\n    const list = key ? key.split('|') : [];\n    const update = () => {\n      let current: string | null = null;\n      for (const id of list) {\n        const el = document.getElementById(id);\n        if (el && el.getBoundingClientRect().top - offset <= 0) current = id;\n      }\n      setActive(current);\n    };\n    update();\n    window.addEventListener('scroll', update, {passive: true});\n    window.addEventListener('resize', update);\n    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };\n  }, [key, offset]);\n  return active;\n}\n"
+      "content": "'use client';\nimport {useEffect, useState} from 'react';\n\n/**\n * Pass the element ids in page order. Returns the id of the last one scrolled past `offset` pixels from the top.\n *\n * @param ids Element ids in page order.\n * @param offset Pixels from the top of the viewport at which a section counts as reached. Default `80`.\n * @returns The id of the active section, or `null` before the first.\n */\nexport function useScrollSpy(ids: readonly string[], offset = 80): string | null {\n  const [active, setActive] = useState<string | null>(null);\n  const key = ids.join('|');\n  useEffect(() => {\n    const list = key ? key.split('|') : [];\n    const update = () => {\n      let current: string | null = null;\n      for (const id of list) {\n        const el = document.getElementById(id);\n        if (el && el.getBoundingClientRect().top - offset <= 0) current = id;\n      }\n      setActive(current);\n    };\n    update();\n    window.addEventListener('scroll', update, {passive: true});\n    window.addEventListener('resize', update);\n    return () => {\n      window.removeEventListener('scroll', update);\n      window.removeEventListener('resize', update);\n    };\n  }, [key, offset]);\n  return active;\n}\n"
     }
   ],
   "utils": []

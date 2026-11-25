@@ -44,7 +44,30 @@ const parse = (s: string): Date | null => {
 };
 
 /** Pick a date range from a popover. It holds two typed fields (YYYY-MM-DD) and a range calendar that stay in sync. Value is `{start, end}`. Same `value` / `defaultValue` / `onValueChange` as RangeCalendar. */
-export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker({value, defaultValue, onValueChange, placeholder = 'Pick dates', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, name, invalid, className, 'aria-label': label, min, max, isDateDisabled, ...cal}, ref) {
+export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(function DateRangePicker(
+  {
+    value,
+    defaultValue,
+    onValueChange,
+    placeholder = 'Pick dates',
+    format = {dateStyle: 'medium'},
+    locale,
+    size = 'md',
+    open: openProp,
+    defaultOpen = false,
+    onOpenChange,
+    disabled,
+    name,
+    invalid,
+    className,
+    'aria-label': label,
+    min,
+    max,
+    isDateDisabled,
+    ...cal
+  },
+  ref,
+) {
   const f = useFieldControl();
   const errId = useId();
   const [inner, setInner] = useState<DateRange>(defaultValue ?? {start: null, end: null});
@@ -56,13 +79,28 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
   useEffect(() => setTyped({start: toText(current.start), end: toText(current.end)}), [current.start, current.end]);
   const [bad, setBad] = useState<'start' | 'end' | null>(null);
 
-  const commit = (r: DateRange) => { if (value === undefined) setInner(r); onValueChange?.(r); };
-  const allowed = (d: Date) => !((min && d < new Date(min.getFullYear(), min.getMonth(), min.getDate())) || (max && d > max) || isDateDisabled?.(d));
+  const commit = (r: DateRange) => {
+    if (value === undefined) setInner(r);
+    onValueChange?.(r);
+  };
+  const allowed = (d: Date) =>
+    !(
+      (min && d < new Date(min.getFullYear(), min.getMonth(), min.getDate())) ||
+      (max && d > max) ||
+      isDateDisabled?.(d)
+    );
   const apply = (which: 'start' | 'end') => {
     const raw = typed[which];
-    if (raw.trim() === '') { setBad(null); commit({...current, [which]: null}); return; }
+    if (raw.trim() === '') {
+      setBad(null);
+      commit({...current, [which]: null});
+      return;
+    }
     const d = parse(raw);
-    if (!d || !allowed(d)) { setBad(which); return; }
+    if (!d || !allowed(d)) {
+      setBad(which);
+      return;
+    }
     setBad(null);
     const next = {...current, [which]: d};
     commit(next.start && next.end && next.start > next.end ? {start: next.end, end: next.start} : next);
@@ -81,29 +119,67 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
         aria-describedby={bad === which ? errId : undefined}
         onChange={(e) => setTyped({...typed, [which]: e.target.value})}
         onBlur={() => apply(which)}
-        onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); apply(which); } }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            apply(which);
+          }
+        }}
       />
     </label>
   );
 
   return (
     <>
-    {name && <>{hiddenInputs(`${name}-start`, toText(current.start), disabled)}{hiddenInputs(`${name}-end`, toText(current.end), disabled)}</>}
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} aria-invalid={invalid || f['aria-invalid']} data-empty={!current.start || undefined}>
-          {text || placeholder}
-        </button>
-      </PopoverTrigger>
-              <PopoverContent className="date-popover date-range-popover" sideOffset={6} align="start" aria-label="Choose a date range">
+      {name && (
+        <>
+          {hiddenInputs(`${name}-start`, toText(current.start), disabled)}
+          {hiddenInputs(`${name}-end`, toText(current.end), disabled)}
+        </>
+      )}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            ref={ref}
+            type="button"
+            disabled={disabled}
+            className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)}
+            {...f}
+            aria-label={label ? `${label}: ${text || placeholder}` : undefined}
+            aria-invalid={invalid || f['aria-invalid']}
+            data-empty={!current.start || undefined}
+          >
+            {text || placeholder}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="date-popover date-range-popover"
+          sideOffset={6}
+          align="start"
+          aria-label="Choose a date range"
+        >
           <div className="date-range-fields">
             {field('start', 'Start')}
             {field('end', 'End')}
           </div>
-          <p id={errId} className="date-range-error" role="alert">{bad ? 'Enter a date as YYYY-MM-DD that can be picked.' : ''}</p>
-          <RangeCalendar value={current} locale={locale} min={min} max={max} isDateDisabled={isDateDisabled} {...cal} onValueChange={(r) => { commit(r); setBad(null); if (r.start && r.end) setOpen(false); }} />
+          <p id={errId} className="date-range-error" role="alert">
+            {bad ? 'Enter a date as YYYY-MM-DD that can be picked.' : ''}
+          </p>
+          <RangeCalendar
+            value={current}
+            locale={locale}
+            min={min}
+            max={max}
+            isDateDisabled={isDateDisabled}
+            {...cal}
+            onValueChange={(r) => {
+              commit(r);
+              setBad(null);
+              if (r.start && r.end) setOpen(false);
+            }}
+          />
         </PopoverContent>
-          </Popover>
+      </Popover>
     </>
   );
 });

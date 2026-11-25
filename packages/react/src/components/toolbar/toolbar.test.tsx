@@ -3,7 +3,14 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {Toolbar, ToolbarButton, ToolbarSeparator} from './toolbar';
 
-const ui = () => <Toolbar aria-label="Format"><ToolbarButton>Bold</ToolbarButton><ToolbarButton>Italic</ToolbarButton><ToolbarSeparator /><ToolbarButton>Link</ToolbarButton></Toolbar>;
+const ui = () => (
+  <Toolbar aria-label="Format">
+    <ToolbarButton>Bold</ToolbarButton>
+    <ToolbarButton>Italic</ToolbarButton>
+    <ToolbarSeparator />
+    <ToolbarButton>Link</ToolbarButton>
+  </Toolbar>
+);
 
 describe('Toolbar', () => {
   it('is a named toolbar with buttons', () => {
@@ -13,7 +20,13 @@ describe('Toolbar', () => {
   });
   it('uses one tab stop and arrow keys', async () => {
     const user = userEvent.setup();
-    render(<><button>before</button>{ui()}<button>after</button></>);
+    render(
+      <>
+        <button>before</button>
+        {ui()}
+        <button>after</button>
+      </>,
+    );
     await user.tab();
     await user.tab();
     expect(screen.getByRole('button', {name: 'Bold'})).toHaveFocus();

@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.6.9/schema.json",
   // Formatter and linter for JS/TS only (ADR 0011). CSS has its own checks (npm run check -w @monoline/css);
   // JSON, Markdown and YAML stay hand-written. Generated files are excluded here or by .gitignore.
-  "vcs": {"enabled": true, "clientKind": "git", "useIgnoreFile": true},
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "includes": [
       "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
@@ -12,7 +12,7 @@
     ]
   },
   // Matches the existing code: single quotes, semicolons, {a} without spaces, 120 columns (where comments wrap).
-  "formatter": {"indentStyle": "space", "indentWidth": 2, "lineWidth": 120},
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 120 },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
@@ -24,7 +24,7 @@
     }
   },
   // No import sorting: import order is meaningful (CSS side-effect imports) and hand-kept.
-  "assist": {"enabled": false},
+  "assist": { "enabled": false },
   "linter": {
     "rules": {
       "preset": "recommended",
@@ -70,7 +70,7 @@
       },
       "correctness": {
         // Effects that list a value only to re-run when it changes (route, open state) are intended.
-        "useExhaustiveDependencies": {"level": "error", "options": {"reportUnnecessaryDependencies": false}}
+        "useExhaustiveDependencies": { "level": "error", "options": { "reportUnnecessaryDependencies": false } }
       }
     }
   },
@@ -78,16 +78,18 @@
     {
       // Tests render bare <button>s outside forms and define small components inside test cases.
       "includes": ["**/*.test.tsx"],
-      "linter": {"rules": {"a11y": {"useButtonType": "off"}, "correctness": {"noComponentHookFactories": "off"}}}
+      "linter": {
+        "rules": { "a11y": { "useButtonType": "off" }, "correctness": { "noComponentHookFactories": "off" } }
+      }
     },
     {
       // ES5 script for CSS-only users, loaded with a classic <script>: keeps function expressions, var and 'use strict'.
       "includes": ["packages/css/js/monoline.js"],
       "linter": {
         "rules": {
-          "complexity": {"useArrowFunction": "off"},
-          "correctness": {"noInnerDeclarations": "off", "noUnusedVariables": "off"},
-          "suspicious": {"noRedundantUseStrict": "off"}
+          "complexity": { "useArrowFunction": "off" },
+          "correctness": { "noInnerDeclarations": "off", "noUnusedVariables": "off" },
+          "suspicious": { "noRedundantUseStrict": "off" }
         }
       }
     }

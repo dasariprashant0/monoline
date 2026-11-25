@@ -18,7 +18,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * @example <Button variant="line" onClick={save}>Save</Button>
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {variant = 'solid', size = 'md', loading = false, asChild = false, className, children, disabled, type, onClick, ...rest},
+  {
+    variant = 'solid',
+    size = 'md',
+    loading = false,
+    asChild = false,
+    className,
+    children,
+    disabled,
+    type,
+    onClick,
+    ...rest
+  },
   ref,
 ) {
   const Comp = asChild ? Slot : 'button';
@@ -38,7 +49,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       onClick={blocked ? (e: React.MouseEvent) => e.preventDefault() : onClick}
       {...rest}
     >
-      {asChild ? children : (
+      {asChild ? (
+        children
+      ) : (
         <>
           {loading && <span className="spinner" aria-hidden="true" />}
           {children}

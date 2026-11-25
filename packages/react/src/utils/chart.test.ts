@@ -1,4 +1,16 @@
-import {arcPath, extent, maxOf, minOf, formatCompact, linearScale, niceTicks, normalize, pieArcs, polyline, stack} from './chart';
+import {
+  arcPath,
+  extent,
+  maxOf,
+  minOf,
+  formatCompact,
+  linearScale,
+  niceTicks,
+  normalize,
+  pieArcs,
+  polyline,
+  stack,
+} from './chart';
 
 describe('niceTicks', () => {
   it('rounds 0..97 to 0, 20, ..., 100', () => {
@@ -33,14 +45,43 @@ describe('linearScale', () => {
 
 describe('stack', () => {
   it('stacks positives up and negatives down, separately', () => {
-    const s = stack([[2, -1], [3, -2], [-4, 5]]);
-    expect(s[0]).toEqual([{lo: 0, hi: 2}, {lo: -1, hi: 0}]);
-    expect(s[1]).toEqual([{lo: 2, hi: 5}, {lo: -3, hi: -1}]);
-    expect(s[2]).toEqual([{lo: -4, hi: 0}, {lo: 0, hi: 5}]);
+    const s = stack([
+      [2, -1],
+      [3, -2],
+      [-4, 5],
+    ]);
+    expect(s[0]).toEqual([
+      {lo: 0, hi: 2},
+      {lo: -1, hi: 0},
+    ]);
+    expect(s[1]).toEqual([
+      {lo: 2, hi: 5},
+      {lo: -3, hi: -1},
+    ]);
+    expect(s[2]).toEqual([
+      {lo: -4, hi: 0},
+      {lo: 0, hi: 5},
+    ]);
   });
   it('extent includes 0 and the stacked total', () => {
-    expect(extent([[2, 3], [4, 1]], true)).toEqual({min: 0, max: 6});
-    expect(extent([[2, 3], [4, 1]], false)).toEqual({min: 0, max: 4});
+    expect(
+      extent(
+        [
+          [2, 3],
+          [4, 1],
+        ],
+        true,
+      ),
+    ).toEqual({min: 0, max: 6});
+    expect(
+      extent(
+        [
+          [2, 3],
+          [4, 1],
+        ],
+        false,
+      ),
+    ).toEqual({min: 0, max: 4});
     expect(extent([[-2], [-3]], true)).toEqual({min: -5, max: 0});
   });
 });
@@ -65,8 +106,26 @@ describe('pieArcs', () => {
 
 describe('normalize', () => {
   it('reads data, pads short series and drops non-finite values', () => {
-    expect(normalize([{label: 'a', value: NaN}, {label: 'b', value: 2}], undefined, undefined, 'V')).toEqual({labels: ['a', 'b'], series: [{name: 'V', values: [0, 2]}]});
-    const n = normalize(undefined, [{name: 'x', values: [1]}, {name: 'y', values: [1, 2, 3]}], ['p'], 'V');
+    expect(
+      normalize(
+        [
+          {label: 'a', value: NaN},
+          {label: 'b', value: 2},
+        ],
+        undefined,
+        undefined,
+        'V',
+      ),
+    ).toEqual({labels: ['a', 'b'], series: [{name: 'V', values: [0, 2]}]});
+    const n = normalize(
+      undefined,
+      [
+        {name: 'x', values: [1]},
+        {name: 'y', values: [1, 2, 3]},
+      ],
+      ['p'],
+      'V',
+    );
     expect(n.labels).toEqual(['p', '2', '3']);
     expect(n.series[0]!.values).toEqual([1, 0, 0]);
   });

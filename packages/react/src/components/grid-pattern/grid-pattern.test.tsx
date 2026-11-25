@@ -16,7 +16,12 @@ describe('GridPattern', () => {
     expect(container.querySelector('path')).toHaveAttribute('stroke', 'currentColor');
   });
   it('gives each instance its own pattern id', () => {
-    const {container} = render(<><GridPattern /><GridPattern /></>);
+    const {container} = render(
+      <>
+        <GridPattern />
+        <GridPattern />
+      </>,
+    );
     const ids = [...container.querySelectorAll('pattern')].map((p) => p.id);
     expect(new Set(ids).size).toBe(2);
   });

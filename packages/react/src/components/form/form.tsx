@@ -1,5 +1,14 @@
 'use client';
-import {forwardRef, useCallback, useMemo, useRef, type FormEvent, type FormHTMLAttributes, type HTMLAttributes, type ReactNode} from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+  type FormEvent,
+  type FormHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react';
 import {cx} from '../../utils/cx';
 import {FormErrorsContext} from '../field/field';
 
@@ -26,13 +35,19 @@ export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'on
  * Pass each error once, in `errors`; a `Field` with the matching `name` shows it inline.
  * Build the fields with `Field` and end the form with `FormActions`.
  */
-export const Form = forwardRef<HTMLFormElement, FormProps>(function Form({onSubmit, preventDefault, errors, errorsTitle = 'Fix these to continue', className, children, ...rest}, ref) {
+export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
+  {onSubmit, preventDefault, errors, errorsTitle = 'Fix these to continue', className, children, ...rest},
+  ref,
+) {
   const inner = useRef<HTMLFormElement | null>(null);
-  const setRef = useCallback((el: HTMLFormElement | null) => {
-    inner.current = el;
-    if (typeof ref === 'function') ref(el);
-    else if (ref) ref.current = el;
-  }, [ref]);
+  const setRef = useCallback(
+    (el: HTMLFormElement | null) => {
+      inner.current = el;
+      if (typeof ref === 'function') ref(el);
+      else if (ref) ref.current = el;
+    },
+    [ref],
+  );
   const byName = useMemo(() => Object.fromEntries((errors ?? []).map((e) => [e.name, e.message])), [errors]);
   const focusField = (name: string) => {
     const el = inner.current?.elements.namedItem(name);
@@ -42,7 +57,10 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form({onSubm
     <form
       ref={setRef}
       className={cx('form', className)}
-      onSubmit={(e) => { if (preventDefault) e.preventDefault(); onSubmit?.(e); }}
+      onSubmit={(e) => {
+        if (preventDefault) e.preventDefault();
+        onSubmit?.(e);
+      }}
       {...rest}
     >
       {errors && errors.length > 0 && (
@@ -51,7 +69,15 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form({onSubm
           <ul>
             {errors.map((err) => (
               <li key={err.name}>
-                <a href={`#${err.name}`} onClick={(e) => { e.preventDefault(); focusField(err.name); }}>{err.message}</a>
+                <a
+                  href={`#${err.name}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    focusField(err.name);
+                  }}
+                >
+                  {err.message}
+                </a>
               </li>
             ))}
           </ul>
@@ -63,6 +89,9 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form({onSubm
 });
 
 /** The footer row with the submit and cancel buttons. One solid Button per form. */
-export const FormActions = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function FormActions({className, ...rest}, ref) {
+export const FormActions = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function FormActions(
+  {className, ...rest},
+  ref,
+) {
   return <div ref={ref} className={cx('form-actions', className)} {...rest} />;
 });

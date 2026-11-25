@@ -10,12 +10,25 @@ export interface ScrollAreaProps extends ComponentPropsWithoutRef<typeof Radix.R
 }
 
 /** Give it a height or width; content that overflows scrolls. */
-export const ScrollArea = forwardRef<ElementRef<typeof Radix.Root>, ScrollAreaProps>(function ScrollArea({orientation = 'vertical', viewportProps, className, children, ...rest}, ref) {
+export const ScrollArea = forwardRef<ElementRef<typeof Radix.Root>, ScrollAreaProps>(function ScrollArea(
+  {orientation = 'vertical', viewportProps, className, children, ...rest},
+  ref,
+) {
   return (
     <Radix.Root ref={ref} className={cx('scroll-area', className)} {...rest}>
-      <Radix.Viewport tabIndex={0} className="scroll-viewport" {...viewportProps}>{children}</Radix.Viewport>
-      {orientation !== 'horizontal' && <Radix.Scrollbar orientation="vertical" className="scroll-bar"><Radix.Thumb className="scroll-thumb" /></Radix.Scrollbar>}
-      {orientation !== 'vertical' && <Radix.Scrollbar orientation="horizontal" className="scroll-bar"><Radix.Thumb className="scroll-thumb" /></Radix.Scrollbar>}
+      <Radix.Viewport tabIndex={0} className="scroll-viewport" {...viewportProps}>
+        {children}
+      </Radix.Viewport>
+      {orientation !== 'horizontal' && (
+        <Radix.Scrollbar orientation="vertical" className="scroll-bar">
+          <Radix.Thumb className="scroll-thumb" />
+        </Radix.Scrollbar>
+      )}
+      {orientation !== 'vertical' && (
+        <Radix.Scrollbar orientation="horizontal" className="scroll-bar">
+          <Radix.Thumb className="scroll-thumb" />
+        </Radix.Scrollbar>
+      )}
     </Radix.Root>
   );
 });

@@ -21,29 +21,59 @@ export interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'value' 
   onCopied?: ((value: string) => void) | undefined;
 }
 
-const Copy = () => <svg aria-hidden="true" viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor"><rect x="5.5" y="5.5" width="8" height="8" /><path d="M10.5 5.5v-3h-8v8h3" /></svg>;
-const Check = () => <svg aria-hidden="true" viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor"><path d="M2.5 8.5l3.5 3.5 7.5-8" /></svg>;
+const Copy = () => (
+  <svg aria-hidden="true" viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor">
+    <rect x="5.5" y="5.5" width="8" height="8" />
+    <path d="M10.5 5.5v-3h-8v8h3" />
+  </svg>
+);
+const Check = () => (
+  <svg aria-hidden="true" viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor">
+    <path d="M2.5 8.5l3.5 3.5 7.5-8" />
+  </svg>
+);
 
 /**
  * A button that copies `value` to the clipboard, swaps to a check or "Copied" for two seconds and announces the result in a polite live region.
  * @example <CopyButton value="npm i @monoline/react" />
  */
-export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(function CopyButton({value, children, label = 'Copy', copiedLabel = 'Copied', failedLabel = 'Copy failed', timeout, onCopied, onClick, ...rest}, ref) {
+export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(function CopyButton(
+  {
+    value,
+    children,
+    label = 'Copy',
+    copiedLabel = 'Copied',
+    failedLabel = 'Copy failed',
+    timeout,
+    onCopied,
+    onClick,
+    ...rest
+  },
+  ref,
+) {
   const {copied, error, copy} = useClipboard({timeout});
   const press = async (e: React.MouseEvent<HTMLButtonElement>) => {
     onClick?.(e);
     if (e.defaultPrevented) return;
     if (await copy(value)) onCopied?.(value);
   };
-  const status = <span role="status" className="sr-only">{copied ? copiedLabel : error ? failedLabel : ''}</span>;
+  const status = (
+    <span role="status" className="sr-only">
+      {copied ? copiedLabel : error ? failedLabel : ''}
+    </span>
+  );
   return children === undefined ? (
     <>
-      <IconButton ref={ref} aria-label={label} data-copied={copied || undefined} onClick={press} {...rest}>{copied ? <Check /> : <Copy />}</IconButton>
+      <IconButton ref={ref} aria-label={label} data-copied={copied || undefined} onClick={press} {...rest}>
+        {copied ? <Check /> : <Copy />}
+      </IconButton>
       {status}
     </>
   ) : (
     <>
-      <Button ref={ref} variant="line" data-copied={copied || undefined} onClick={press} {...rest}>{copied ? copiedLabel : children}</Button>
+      <Button ref={ref} variant="line" data-copied={copied || undefined} onClick={press} {...rest}>
+        {copied ? copiedLabel : children}
+      </Button>
       {status}
     </>
   );

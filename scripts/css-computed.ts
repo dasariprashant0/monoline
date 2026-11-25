@@ -18,10 +18,16 @@ import {openBrowser} from './lib/browser.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
-const opt = (n: string, d: string) => { const i = args.indexOf(`--${n}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
+const opt = (n: string, d: string) => {
+  const i = args.indexOf(`--${n}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : d;
+};
 const THEMES = opt('themes', 'warm,dark,midnight').split(',');
 const dist = join(root, 'apps/docs/dist');
-if (!existsSync(join(dist, 'index.html'))) { console.error('Build the docs first: npm run build -w apps/docs'); process.exit(2); }
+if (!existsSync(join(dist, 'index.html'))) {
+  console.error('Build the docs first: npm run build -w apps/docs');
+  process.exit(2);
+}
 
 // Runs in the page. Returns {name: value} for everything the assertions below compare.
 const MEASURE = String.raw`(() => {
@@ -117,88 +123,141 @@ const dump = args.includes('--dump');
 try {
   await b.setViewport(1280, 800);
   await b.navigate(b.base);
-  for (const theme of THEMES) for (const font of ['default', 'sans', 'serif']) {
-    await b.evaluate(`(() => { const r = document.documentElement; r.dataset.theme = ${JSON.stringify(theme)}; ${font === 'default' ? 'delete r.dataset.font' : `r.dataset.font = ${JSON.stringify(font)}`}; })()`);
-    const m = await b.evaluate(MEASURE);
-    if (dump) { if (theme === THEMES[0] && font === 'default') console.log(JSON.stringify(m, null, 1)); continue; }
-    const where = `[${theme}${font === 'default' ? '' : ', font=' + font}]`;
-    const ok = (name: string, cond: boolean, detail: string) => { n++; if (!cond) fails.push(`${where} ${name}: ${detail}`); };
-    const eq = (name: string, a: unknown, e: unknown) => ok(name, a === e, `got ${a}, expected ${e}`);
-    const near = (name: string, a: number, e: number) => ok(name, Math.abs(a - e) < 0.6, `got ${a}, expected ${e}`);
-    // Form controls line up in a row.
-    near('Button md height = Input md height', m['height:btn'], m['height:input']);
-    near('Select md height = Input md height', m['height:select'], m['height:input']);
-    near('Button sm height = Input sm height', m['height:btn-sm'], m['height:input-sm']);
-    ok('sm controls are shorter than md', m['height:btn-sm'] < m['height:btn'] && m['height:input-sm'] < m['height:input'], `${m['height:btn-sm']} vs ${m['height:btn']}`);
-    eq('Input font family = Textarea font family', m['font:textarea'], m['font:input']);
-    eq('Button font family = Input font family', m['font:btn'], m['font:input']);
-    eq('Select font family = Input font family', m['font:select'], m['font:input']);
-    ok('Textarea is taller than an Input', m['textarea:height'] > m['height:input'] * 2, `${m['textarea:height']}`);
-    eq('Solid button background = --foreground', m['btn-solid:bg'], m['tok:foreground']);
-    eq('Solid button text = --background', m['btn-solid:color'], m['tok:background']);
-    // Typography: sizes follow the scale; one casing rule.
-    near('Heading md = --text-lg', m['h:md:size'], m['tok:text-lg']);
-    near('Heading sm = --text-base', m['h:sm:size'], m['tok:text-base']);
-    ok('Heading sizes strictly descend display > xl > lg > md > sm', m['h:display:size'] > m['h:xl:size'] && m['h:xl:size'] > m['h:lg:size'] && m['h:lg:size'] > m['h:md:size'] && m['h:md:size'] > m['h:sm:size'], ['display', 'xl', 'lg', 'md', 'sm'].map((k) => m[`h:${k}:size`]).join(' > '));
-    ok('Heading display (the h1 default) is capped at 44px', m['h:display:size'] <= 44.01, `${m['h:display:size']}px`);
-    for (const k of ['display', 'xl', 'lg', 'md', 'sm']) eq(`Heading ${k} is sentence case`, m[`h:${k}:transform`], 'none');
-    eq('Dialog title is sentence case', m['dialog-title:transform'], 'none');
-    eq('.display page title is uppercase unless the look is sans or serif', m['page-title:transform'], font === 'default' ? 'uppercase' : 'none');
-    near('Text md size = --text-base', m['text:size'], m['tok:text-base']);
-    near('Text sm size = --text-sm', m['text-sm:size'], m['tok:text-sm']);
-    eq('Text muted colour = --muted', m['text-sm:color'], m['tok:muted']);
-    eq('Text has no margin', m['text:margin'], '0px');
-    // Layout primitives.
-    eq('Stack is a flex column', `${m['stack:display']} ${m['stack:dir']}`, 'flex column');
-    near('Stack gap follows --stack-gap', parseFloat(m['stack:gap']), m['tok:s5']);
-    near('Stack default gap = --s3', parseFloat(m['stack-default:gap']), m['tok:s3']);
-    eq('Stack row direction', m['stack-row:dir'], 'row');
-    near('Container text max-width = --measure + 2 x --s5', parseFloat(m['container-text:max']), m['tok:measure'] + 2 * m['tok:s5']);
-    near('Container page max-width = --content + 2 x --s5', parseFloat(m['container-page:max']), m['tok:content'] + 2 * m['tok:s5']);
-    eq('Container full has no max-width', m['container-full:max'], 'none');
-    for (const k of ['page', 'text']) eq(`Container ${k} is centred`, m[`container-${k}:ml`], m[`container-${k}:mr`]);
-    // Components.
-    near('Card padding = --s5', parseFloat(m['card:padTop']), m['tok:s5']);
-    eq('Empty state text is centred', `${m['empty:align']} ${m['empty:justify']}`, 'center center');
-    near('Empty state gap = --s3', parseFloat(m['empty:gap']), m['tok:s3']);
-    eq('Empty state has a dashed frame', m['empty:border'], 'dashed');
-    eq('Empty state has no 14vh top margin (legacy rule)', m['empty:mt'], '0px');
-    eq('Code block background = --surface', m['code:bg'], m['tok:surface']);
-    eq('Code block text = --surface-text', m['code:color'], m['tok:surface-text']);
-    eq('Code block panel has no padding of its own (the pre has it)', m['code:pad'], '0px');
-    eq('Code block has no inset shadow', m['code:shadow'], 'none');
-    eq('Code block border is 1px', m['code:border'], '1px');
-    near('Code block pre padding = --s4', parseFloat(m['code:pre-padding']), m['tok:s4']);
-    eq('Badge solid text is on its fill', m['badge-solid:color'] !== m['badge-solid:bg'], true);
-    near('Alert padding-top = --s3', parseFloat(m['alert:padTop']), m['tok:s3']);
-    eq('Dialog content has a surface background', m['dialog:bg'] !== 'rgba(0, 0, 0, 0)', true);
-    ok('Dialog content has a border', m['dialog:border'] !== '0px', m['dialog:border']);
-    ok('Selected tab is distinguishable from an unselected one', m['tab-on:color'] !== m['tab-off:color'] || m['tab-on:bb'] !== m['tab-off:bb'] || m['tab-on:bbc'] !== m['tab-off:bbc'], 'same colour and underline');
-    // Default rhythm: bare siblings in a Card, Dialog or prose do not touch.
-    for (const k of ['flow:card-text', 'flow:card-button', 'flow:dialog-field']) near(`${k} = --s4`, parseFloat(m[k]), m['tok:s4']);
-    near('A Heading after a block gets 1.5 steps (Card)', parseFloat(m['flow:card-text-heading']), 0); // first child: none
-    eq('Buttons side by side get no top margin', m['flow:card-button2'], '0px');
-    eq('The first child gets no top margin', m['flow:dialog-first'], '0px');
-    near('Text after Text in prose = --s4', parseFloat(m['flow:prose-text']), m['tok:s4']);
-    // Date picker: one border (the popover's), not two.
-    eq('Date popover keeps its own border', m['datepop:border'], '1px');
-    eq('Date popover has no padding', m['datepop:pad'], '0px');
-    eq('Calendar inside the date popover has no second border', m['datecal:border'], '0px');
-    // Charts: bars are a light fill with an outline.
-    ok('Chart bar fill is lighter than solid', m['bar:fillOpacity'] < 0.7, `fill-opacity ${m['bar:fillOpacity']}`);
-    eq('Table collapses borders', m['table:collapse'], 'collapse');
-    eq('Numeric table header aligns to the end', m['table:num-align'] === 'right' || m['table:num-align'] === 'end', true);
-    // Hover: the pointer sits over each control; its label must not take the colour of its own background.
-    if (font === 'default') for (const id of HOVER) {
-      const r = await b.evaluate(`(() => { const e = document.querySelector('#mlfx #' + ${JSON.stringify(id)}); e.scrollIntoView({block: 'center'}); const r = e.getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()`);
-      await b.cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: r.x, y: r.y});
-      await new Promise((res) => setTimeout(res, 100));
-      const h = await b.evaluate(`(() => { const e = document.querySelector('#mlfx #' + ${JSON.stringify(id)}); const s = getComputedStyle(e); return {hover: e.matches(':hover'), color: s.color, bg: s.backgroundColor}; })()`);
-      ok(`hover: #${id} is hovered in the test`, h.hover, 'pointer is not over the element');
-      ok(`hover: #${id} label differs from its background`, h.color !== h.bg, `both ${h.color}`);
-      await b.cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: 0, y: 0});
+  for (const theme of THEMES)
+    for (const font of ['default', 'sans', 'serif']) {
+      await b.evaluate(
+        `(() => { const r = document.documentElement; r.dataset.theme = ${JSON.stringify(theme)}; ${font === 'default' ? 'delete r.dataset.font' : `r.dataset.font = ${JSON.stringify(font)}`}; })()`,
+      );
+      const m = await b.evaluate(MEASURE);
+      if (dump) {
+        if (theme === THEMES[0] && font === 'default') console.log(JSON.stringify(m, null, 1));
+        continue;
+      }
+      const where = `[${theme}${font === 'default' ? '' : ', font=' + font}]`;
+      const ok = (name: string, cond: boolean, detail: string) => {
+        n++;
+        if (!cond) fails.push(`${where} ${name}: ${detail}`);
+      };
+      const eq = (name: string, a: unknown, e: unknown) => ok(name, a === e, `got ${a}, expected ${e}`);
+      const near = (name: string, a: number, e: number) => ok(name, Math.abs(a - e) < 0.6, `got ${a}, expected ${e}`);
+      // Form controls line up in a row.
+      near('Button md height = Input md height', m['height:btn'], m['height:input']);
+      near('Select md height = Input md height', m['height:select'], m['height:input']);
+      near('Button sm height = Input sm height', m['height:btn-sm'], m['height:input-sm']);
+      ok(
+        'sm controls are shorter than md',
+        m['height:btn-sm'] < m['height:btn'] && m['height:input-sm'] < m['height:input'],
+        `${m['height:btn-sm']} vs ${m['height:btn']}`,
+      );
+      eq('Input font family = Textarea font family', m['font:textarea'], m['font:input']);
+      eq('Button font family = Input font family', m['font:btn'], m['font:input']);
+      eq('Select font family = Input font family', m['font:select'], m['font:input']);
+      ok('Textarea is taller than an Input', m['textarea:height'] > m['height:input'] * 2, `${m['textarea:height']}`);
+      eq('Solid button background = --foreground', m['btn-solid:bg'], m['tok:foreground']);
+      eq('Solid button text = --background', m['btn-solid:color'], m['tok:background']);
+      // Typography: sizes follow the scale; one casing rule.
+      near('Heading md = --text-lg', m['h:md:size'], m['tok:text-lg']);
+      near('Heading sm = --text-base', m['h:sm:size'], m['tok:text-base']);
+      ok(
+        'Heading sizes strictly descend display > xl > lg > md > sm',
+        m['h:display:size'] > m['h:xl:size'] &&
+          m['h:xl:size'] > m['h:lg:size'] &&
+          m['h:lg:size'] > m['h:md:size'] &&
+          m['h:md:size'] > m['h:sm:size'],
+        ['display', 'xl', 'lg', 'md', 'sm'].map((k) => m[`h:${k}:size`]).join(' > '),
+      );
+      ok(
+        'Heading display (the h1 default) is capped at 44px',
+        m['h:display:size'] <= 44.01,
+        `${m['h:display:size']}px`,
+      );
+      for (const k of ['display', 'xl', 'lg', 'md', 'sm'])
+        eq(`Heading ${k} is sentence case`, m[`h:${k}:transform`], 'none');
+      eq('Dialog title is sentence case', m['dialog-title:transform'], 'none');
+      eq(
+        '.display page title is uppercase unless the look is sans or serif',
+        m['page-title:transform'],
+        font === 'default' ? 'uppercase' : 'none',
+      );
+      near('Text md size = --text-base', m['text:size'], m['tok:text-base']);
+      near('Text sm size = --text-sm', m['text-sm:size'], m['tok:text-sm']);
+      eq('Text muted colour = --muted', m['text-sm:color'], m['tok:muted']);
+      eq('Text has no margin', m['text:margin'], '0px');
+      // Layout primitives.
+      eq('Stack is a flex column', `${m['stack:display']} ${m['stack:dir']}`, 'flex column');
+      near('Stack gap follows --stack-gap', parseFloat(m['stack:gap']), m['tok:s5']);
+      near('Stack default gap = --s3', parseFloat(m['stack-default:gap']), m['tok:s3']);
+      eq('Stack row direction', m['stack-row:dir'], 'row');
+      near(
+        'Container text max-width = --measure + 2 x --s5',
+        parseFloat(m['container-text:max']),
+        m['tok:measure'] + 2 * m['tok:s5'],
+      );
+      near(
+        'Container page max-width = --content + 2 x --s5',
+        parseFloat(m['container-page:max']),
+        m['tok:content'] + 2 * m['tok:s5'],
+      );
+      eq('Container full has no max-width', m['container-full:max'], 'none');
+      for (const k of ['page', 'text']) eq(`Container ${k} is centred`, m[`container-${k}:ml`], m[`container-${k}:mr`]);
+      // Components.
+      near('Card padding = --s5', parseFloat(m['card:padTop']), m['tok:s5']);
+      eq('Empty state text is centred', `${m['empty:align']} ${m['empty:justify']}`, 'center center');
+      near('Empty state gap = --s3', parseFloat(m['empty:gap']), m['tok:s3']);
+      eq('Empty state has a dashed frame', m['empty:border'], 'dashed');
+      eq('Empty state has no 14vh top margin (legacy rule)', m['empty:mt'], '0px');
+      eq('Code block background = --surface', m['code:bg'], m['tok:surface']);
+      eq('Code block text = --surface-text', m['code:color'], m['tok:surface-text']);
+      eq('Code block panel has no padding of its own (the pre has it)', m['code:pad'], '0px');
+      eq('Code block has no inset shadow', m['code:shadow'], 'none');
+      eq('Code block border is 1px', m['code:border'], '1px');
+      near('Code block pre padding = --s4', parseFloat(m['code:pre-padding']), m['tok:s4']);
+      eq('Badge solid text is on its fill', m['badge-solid:color'] !== m['badge-solid:bg'], true);
+      near('Alert padding-top = --s3', parseFloat(m['alert:padTop']), m['tok:s3']);
+      eq('Dialog content has a surface background', m['dialog:bg'] !== 'rgba(0, 0, 0, 0)', true);
+      ok('Dialog content has a border', m['dialog:border'] !== '0px', m['dialog:border']);
+      ok(
+        'Selected tab is distinguishable from an unselected one',
+        m['tab-on:color'] !== m['tab-off:color'] ||
+          m['tab-on:bb'] !== m['tab-off:bb'] ||
+          m['tab-on:bbc'] !== m['tab-off:bbc'],
+        'same colour and underline',
+      );
+      // Default rhythm: bare siblings in a Card, Dialog or prose do not touch.
+      for (const k of ['flow:card-text', 'flow:card-button', 'flow:dialog-field'])
+        near(`${k} = --s4`, parseFloat(m[k]), m['tok:s4']);
+      near('A Heading after a block gets 1.5 steps (Card)', parseFloat(m['flow:card-text-heading']), 0); // first child: none
+      eq('Buttons side by side get no top margin', m['flow:card-button2'], '0px');
+      eq('The first child gets no top margin', m['flow:dialog-first'], '0px');
+      near('Text after Text in prose = --s4', parseFloat(m['flow:prose-text']), m['tok:s4']);
+      // Date picker: one border (the popover's), not two.
+      eq('Date popover keeps its own border', m['datepop:border'], '1px');
+      eq('Date popover has no padding', m['datepop:pad'], '0px');
+      eq('Calendar inside the date popover has no second border', m['datecal:border'], '0px');
+      // Charts: bars are a light fill with an outline.
+      ok('Chart bar fill is lighter than solid', m['bar:fillOpacity'] < 0.7, `fill-opacity ${m['bar:fillOpacity']}`);
+      eq('Table collapses borders', m['table:collapse'], 'collapse');
+      eq(
+        'Numeric table header aligns to the end',
+        m['table:num-align'] === 'right' || m['table:num-align'] === 'end',
+        true,
+      );
+      // Hover: the pointer sits over each control; its label must not take the colour of its own background.
+      if (font === 'default')
+        for (const id of HOVER) {
+          const r = await b.evaluate(
+            `(() => { const e = document.querySelector('#mlfx #' + ${JSON.stringify(id)}); e.scrollIntoView({block: 'center'}); const r = e.getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()`,
+          );
+          await b.cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: r.x, y: r.y});
+          await new Promise((res) => setTimeout(res, 100));
+          const h = await b.evaluate(
+            `(() => { const e = document.querySelector('#mlfx #' + ${JSON.stringify(id)}); const s = getComputedStyle(e); return {hover: e.matches(':hover'), color: s.color, bg: s.backgroundColor}; })()`,
+          );
+          ok(`hover: #${id} is hovered in the test`, h.hover, 'pointer is not over the element');
+          ok(`hover: #${id} label differs from its background`, h.color !== h.bg, `both ${h.color}`);
+          await b.cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: 0, y: 0});
+        }
     }
-  }
 } finally {
   b.close();
 }
@@ -207,7 +266,8 @@ try {
 // `.section`, `.tag`, `.btn` rules must apply as written, wherever the app stylesheet sits (first or last in <head>) and
 // whatever its specificity (docs/archive/dogfood-log.md C7). A test app is simulated: a <style> with those class names, then fresh elements.
 if (!dump) {
-  const APP = '.card { padding: 0; border: 7px solid red; } .badge { padding: 13px; } .container { max-width: 333px; } .toolbar { border-width: 0; padding: 11px; } .row { display: block; gap: 0; } .section { padding: 17px; } .tag { padding: 19px; } .stack { gap: 23px; } .btn { height: 59px; }';
+  const APP =
+    '.card { padding: 0; border: 7px solid red; } .badge { padding: 13px; } .container { max-width: 333px; } .toolbar { border-width: 0; padding: 11px; } .row { display: block; gap: 0; } .section { padding: 17px; } .tag { padding: 19px; } .stack { gap: 23px; } .btn { height: 59px; }';
   const b2 = await openBrowser({dist});
   try {
     await b2.setViewport(1280, 800);
@@ -223,21 +283,48 @@ if (!dump) {
         const c = (sel, p) => getComputedStyle(h.querySelector(sel))[p];
         return {card: c('.card', 'paddingTop') + '/' + c('.card', 'borderTopWidth'), badge: c('.badge', 'paddingTop'), container: c('.container', 'maxWidth'), toolbar: c('.toolbar', 'paddingTop') + '/' + c('.toolbar', 'borderTopWidth'), row: c('.row', 'display'), section: c('.section', 'paddingTop'), tag: c('.tag', 'paddingTop'), stack: c('.stack', 'rowGap'), btn: c('.btn', 'height')};
       })()`);
-      const exp = {card: '0px/7px', badge: '13px', container: '333px', toolbar: '11px/0px', row: 'block', section: '17px', tag: '19px', stack: '23px', btn: '59px'};
-      for (const [k, v] of Object.entries(exp)) { n++; if (m[k] !== v) fails.push(`[app css ${where} in <head>] the app's own .${k === 'row' ? 'row' : k} rule must win: got ${m[k]}, expected ${v}`); }
+      const exp = {
+        card: '0px/7px',
+        badge: '13px',
+        container: '333px',
+        toolbar: '11px/0px',
+        row: 'block',
+        section: '17px',
+        tag: '19px',
+        stack: '23px',
+        btn: '59px',
+      };
+      for (const [k, v] of Object.entries(exp)) {
+        n++;
+        if (m[k] !== v)
+          fails.push(
+            `[app css ${where} in <head>] the app's own .${k === 'row' ? 'row' : k} rule must win: got ${m[k]}, expected ${v}`,
+          );
+      }
     }
-  } finally { b2.close(); }
+  } finally {
+    b2.close();
+  }
 }
 if (!dump) {
   // The heading scale must keep its order on a phone too (h1 and h2 used to be 28px both at 375px).
   const b3 = await openBrowser({dist});
   try {
-    await b3.setViewport(375, 800); await b3.navigate(b3.base);
-    const m = await b3.evaluate(MEASURE); n++;
+    await b3.setViewport(375, 800);
+    await b3.navigate(b3.base);
+    const m = await b3.evaluate(MEASURE);
+    n++;
     const z = ['display', 'xl', 'lg', 'md', 'sm'].map((k) => m['h:' + k + ':size']);
-    if (!z.every((v, i) => i === 0 || z[i - 1] > v)) fails.push(`[375px] heading sizes must strictly descend display > xl > lg > md > sm, got ${z.join(', ')}`);
-  } finally { b3.close(); }
+    if (!z.every((v, i) => i === 0 || z[i - 1] > v))
+      fails.push(`[375px] heading sizes must strictly descend display > xl > lg > md > sm, got ${z.join(', ')}`);
+  } finally {
+    b3.close();
+  }
 }
 if (dump) process.exit(0);
-if (fails.length) { console.error(fails.map((f) => 'FAIL ' + f).join('\n')); console.error(`${fails.length} of ${n} computed-style checks failed`); process.exit(1); }
+if (fails.length) {
+  console.error(fails.map((f) => 'FAIL ' + f).join('\n'));
+  console.error(`${fails.length} of ${n} computed-style checks failed`);
+  process.exit(1);
+}
 console.log(`ok: ${n} computed-style checks across ${THEMES.length} themes and 3 font looks`);

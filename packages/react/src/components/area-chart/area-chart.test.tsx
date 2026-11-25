@@ -4,7 +4,10 @@ import {axe} from '../../test/axe';
 import {AreaChart} from './area-chart';
 
 const labels = ['Jan', 'Feb', 'Mar'];
-const series = [{name: 'Search', values: [3, 5, 4]}, {name: 'Email', values: [1, 2, 1]}];
+const series = [
+  {name: 'Search', values: [3, 5, 4]},
+  {name: 'Email', values: [1, 2, 1]},
+];
 
 describe('AreaChart', () => {
   it('names the image, fills each series and lists every value', () => {
@@ -21,14 +24,34 @@ describe('AreaChart', () => {
     expect(container.querySelector('.chart-tip')).toHaveTextContent('4');
   });
   it('stacked areas use the running total for the axis', () => {
-    const {container} = render(<AreaChart title="x" stacked labels={['a']} series={[{name: 'p', values: [60]}, {name: 'q', values: [60]}]} />);
+    const {container} = render(
+      <AreaChart
+        title="x"
+        stacked
+        labels={['a']}
+        series={[
+          {name: 'p', values: [60]},
+          {name: 'q', values: [60]},
+        ]}
+      />,
+    );
     const ticks = Array.from(container.querySelectorAll('text.chart-tick')).map((t) => t.textContent);
     expect(ticks).toContain('150');
   });
   it('handles empty, single, negative and zero data', () => {
     const {container, rerender} = render(<AreaChart title="x" data={[]} />);
     expect(screen.getByText('No data')).toBeInTheDocument();
-    for (const d of [[{label: 'a', value: 1}], [{label: 'a', value: -2}, {label: 'b', value: 3}], [{label: 'a', value: 0}, {label: 'b', value: 0}]]) {
+    for (const d of [
+      [{label: 'a', value: 1}],
+      [
+        {label: 'a', value: -2},
+        {label: 'b', value: 3},
+      ],
+      [
+        {label: 'a', value: 0},
+        {label: 'b', value: 0},
+      ],
+    ]) {
       rerender(<AreaChart title="x" data={d} curve="step" />);
       expect(container.innerHTML).not.toContain('NaN');
     }

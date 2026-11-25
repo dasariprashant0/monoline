@@ -11,8 +11,13 @@ const registry = resolve(import.meta.dirname, '../../../registry');
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const tmp = () => mkdtempSync(join(tmpdir(), 'monoline-fix-'));
 const exec = async (args, cwd, reg = registry) => {
-  const lines = [], errs = [];
-  const code = await run([...args, '--registry', reg, '--cwd', cwd], {out: (s) => lines.push(s), err: (s) => errs.push(s), confirm: async () => true});
+  const lines = [],
+    errs = [];
+  const code = await run([...args, '--registry', reg, '--cwd', cwd], {
+    out: (s) => lines.push(s),
+    err: (s) => errs.push(s),
+    confirm: async () => true,
+  });
   return {code, out: lines.join('\n'), err: errs.join('\n')};
 };
 const comp = (cwd, p) => join(cwd, 'src/components/monoline', p);
@@ -31,11 +36,16 @@ test('the default registry is the git tag of this package version, not master', 
   assert.equal(DEFAULT_REGISTRY, `https://raw.githubusercontent.com/dasariprashant0/monoline/v${pkg.version}/registry`);
   const seen = [];
   const real = globalThis.fetch;
-  globalThis.fetch = async (url) => (seen.push(String(url)), new Response(JSON.stringify({name: '@monoline/react', version: pkg.version, components: []})));
+  globalThis.fetch = async (url) => (
+    seen.push(String(url)),
+    new Response(JSON.stringify({name: '@monoline/react', version: pkg.version, components: []}))
+  );
   try {
     const code = await run(['list', '--cwd', tmp()], {out: () => {}, err: () => {}});
     assert.equal(code, 0);
-  } finally { globalThis.fetch = real; }
+  } finally {
+    globalThis.fetch = real;
+  }
   assert.deepEqual(seen, [`${DEFAULT_REGISTRY}/index.json`]);
 });
 
@@ -45,8 +55,15 @@ test('a 404 from the default registry says how to pick another one', async () =>
   globalThis.fetch = async () => new Response('', {status: 404});
   try {
     assert.equal(await run(['list', '--cwd', tmp()], {out: () => {}, err: (s) => errs.push(s)}), 1);
-  } finally { globalThis.fetch = real; }
-  assert.match(errs.join('\n'), new RegExp(`index\\.json: 404\\. No registry is tagged v${pkg.version.replace(/\./g, '\\.')} yet: pass --registry <folder\\|url>`));
+  } finally {
+    globalThis.fetch = real;
+  }
+  assert.match(
+    errs.join('\n'),
+    new RegExp(
+      `index\\.json: 404\\. No registry is tagged v${pkg.version.replace(/\./g, '\\.')} yet: pass --registry <folder\\|url>`,
+    ),
+  );
 });
 
 test('add accepts shared files that are already byte-identical (button, then badge)', async () => {
@@ -72,7 +89,12 @@ test('add still refuses a file that really differs, and names only that file', a
 });
 
 test('component names are checked: a path fails cleanly instead of reading another file', async () => {
-  for (const args of [['info', '../package'], ['add', '../x'], ['diff', 'Button'], ['update', 'a/b']]) {
+  for (const args of [
+    ['info', '../package'],
+    ['add', '../x'],
+    ['diff', 'Button'],
+    ['update', 'a/b'],
+  ]) {
     const r = await exec(args, tmp());
     assert.equal(r.code, 1, args.join(' '));
     assert.match(r.err, /^monoline: invalid component name "/, args.join(' '));
@@ -104,7 +126,9 @@ test('update adds a sibling and a util the component newly needs', async () => {
   assert.ok(!existsSync(comp(cwd, 'badge')));
   reg.edit('button', (c) => ({
     ...c,
-    source: c.source.map((s) => s.path.endsWith('button.tsx') ? {...s, content: `import {Badge} from '../badge';\n${s.content}`} : s),
+    source: c.source.map((s) =>
+      s.path.endsWith('button.tsx') ? {...s, content: `import {Badge} from '../badge';\n${s.content}`} : s,
+    ),
     utils: [...c.utils, {path: 'packages/react/src/utils/extra.ts', content: 'export const extra = 1;\n'}],
   }));
   const r = await exec(['update', 'button', '--yes'], cwd, reg.dir);

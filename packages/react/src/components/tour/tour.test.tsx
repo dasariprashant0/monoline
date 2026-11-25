@@ -43,7 +43,8 @@ describe('Tour', () => {
   });
   it('finishes on the last step and calls onFinish', async () => {
     const user = userEvent.setup();
-    const done = vi.fn(), change = vi.fn();
+    const done = vi.fn(),
+      change = vi.fn();
     render(page({defaultStep: 2, onFinish: done, onOpenChange: change}));
     await user.click(screen.getByRole('button', {name: 'Done'}));
     expect(done).toHaveBeenCalled();
@@ -92,7 +93,13 @@ describe('Tour', () => {
     const user = userEvent.setup();
     function App() {
       const [open, setOpen] = useState(false);
-      return <><button onClick={() => setOpen(true)}>Start</button><button id="a">A</button><Tour steps={steps} open={open} onOpenChange={setOpen} /></>;
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>Start</button>
+          <button id="a">A</button>
+          <Tour steps={steps} open={open} onOpenChange={setOpen} />
+        </>
+      );
     }
     render(<App />);
     const start = screen.getByRole('button', {name: 'Start'});

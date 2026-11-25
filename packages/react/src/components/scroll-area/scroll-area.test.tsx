@@ -6,19 +6,31 @@ import userEvent from '@testing-library/user-event';
 
 describe('ScrollArea', () => {
   it('renders children in a focusable viewport', () => {
-    render(<ScrollArea style={{height: 40}} viewportProps={{'aria-label': 'Log'}}><p>line</p></ScrollArea>);
+    render(
+      <ScrollArea style={{height: 40}} viewportProps={{'aria-label': 'Log'}}>
+        <p>line</p>
+      </ScrollArea>,
+    );
     const vp = screen.getByLabelText('Log');
     expect(vp).toHaveAttribute('tabindex', '0');
     expect(vp).toHaveTextContent('line');
   });
   it('forwards ref and className', () => {
     const ref = {current: null as HTMLDivElement | null};
-    render(<ScrollArea ref={ref} className="x">a</ScrollArea>);
+    render(
+      <ScrollArea ref={ref} className="x">
+        a
+      </ScrollArea>,
+    );
     expect(ref.current).toHaveClass('scroll-area', 'x');
   });
   it('puts the content in a keyboard-focusable viewport', async () => {
     const user = userEvent.setup();
-    render(<ScrollArea><p>Long content</p></ScrollArea>);
+    render(
+      <ScrollArea>
+        <p>Long content</p>
+      </ScrollArea>,
+    );
     await user.tab();
     expect(screen.getByText('Long content').closest('.scroll-viewport')).toHaveFocus();
   });
@@ -30,20 +42,32 @@ describe('ScrollArea', () => {
   });
   it('uses a plain root with the base class, merges className and spreads props', () => {
     const ref = createRef<HTMLDivElement>();
-    render(<ScrollArea ref={ref} className="mine" data-testid="r" style={{height: 100}}>x</ScrollArea>);
+    render(
+      <ScrollArea ref={ref} className="mine" data-testid="r" style={{height: 100}}>
+        x
+      </ScrollArea>,
+    );
     expect(ref.current).toBe(screen.getByTestId('r'));
     expect(ref.current).toHaveClass('scroll-area', 'mine');
     expect(ref.current!.style.height).toBe('100px');
   });
   it('renders content in the DOM even when it overflows or is empty', () => {
-    render(<ScrollArea><div style={{height: 5000}}>tall</div></ScrollArea>);
+    render(
+      <ScrollArea>
+        <div style={{height: 5000}}>tall</div>
+      </ScrollArea>,
+    );
     expect(screen.getByText('tall')).toBeInTheDocument();
     render(<ScrollArea viewportProps={{'data-testid': 'vp'} as never} />);
     expect(screen.getByTestId('vp')).toHaveTextContent('');
   });
   it('scrollbars only mount when content overflows (Radix type=hover default) and accept each orientation without crashing', () => {
     for (const orientation of ['vertical', 'horizontal', 'both'] as const) {
-      const {unmount} = render(<ScrollArea orientation={orientation} type="always">x</ScrollArea>);
+      const {unmount} = render(
+        <ScrollArea orientation={orientation} type="always">
+          x
+        </ScrollArea>,
+      );
       const bars = document.querySelectorAll('.scroll-bar');
       expect(bars.length).toBe(orientation === 'both' ? 2 : 1);
       const dirs = [...bars].map((b) => b.getAttribute('data-orientation'));
@@ -53,7 +77,11 @@ describe('ScrollArea', () => {
     }
   });
   it('has no axe violations', async () => {
-    const {container} = render(<ScrollArea viewportProps={{'aria-label': 'Log'}}><p>line</p></ScrollArea>);
+    const {container} = render(
+      <ScrollArea viewportProps={{'aria-label': 'Log'}}>
+        <p>line</p>
+      </ScrollArea>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

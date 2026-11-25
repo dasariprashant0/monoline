@@ -29,7 +29,10 @@ export interface BlockFooterProps extends HTMLAttributes<HTMLElement> {
 }
 
 /** A site footer: brand, link columns and small print. Renders a `footer` (the page's contentinfo landmark). */
-export const BlockFooter = forwardRef<HTMLElement, BlockFooterProps>(function BlockFooter({brand, description, columns, renderLink, legal, headingLevel = 2, className, ...rest}, ref) {
+export const BlockFooter = forwardRef<HTMLElement, BlockFooterProps>(function BlockFooter(
+  {brand, description, columns, renderLink, legal, headingLevel = 2, className, ...rest},
+  ref,
+) {
   const H = `h${headingLevel}` as 'h2';
   return (
     <footer ref={ref} className={cx('block-footer', className)} {...rest}>
@@ -46,7 +49,15 @@ export const BlockFooter = forwardRef<HTMLElement, BlockFooterProps>(function Bl
               <nav key={col.title} aria-label={col.title} className="block-footer-col">
                 <H className="block-footer-heading">{col.title}</H>
                 <ul role="list">
-                  {col.links.map((l) => <li key={l.href + String(l.label)}>{renderLink ? <Link asChild>{renderLink({href: l.href, children: l.label})}</Link> : <Link href={l.href}>{l.label}</Link>}</li>)}
+                  {col.links.map((l) => (
+                    <li key={l.href + String(l.label)}>
+                      {renderLink ? (
+                        <Link asChild>{renderLink({href: l.href, children: l.label})}</Link>
+                      ) : (
+                        <Link href={l.href}>{l.label}</Link>
+                      )}
+                    </li>
+                  ))}
                 </ul>
               </nav>
             ))}

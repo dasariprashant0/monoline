@@ -11,7 +11,10 @@ export interface StatProps extends HTMLAttributes<HTMLDListElement> {
 }
 
 /** A single metric. Group several in a grid. */
-export const Stat = forwardRef<HTMLDListElement, StatProps>(function Stat({label, value, note, className, ...rest}, ref) {
+export const Stat = forwardRef<HTMLDListElement, StatProps>(function Stat(
+  {label, value, note, className, ...rest},
+  ref,
+) {
   return (
     <dl ref={ref} className={cx('stat', className)} {...rest}>
       <dt className="label">{label}</dt>

@@ -5,7 +5,13 @@ import {createRef} from 'react';
 
 describe('Badge', () => {
   it('renders text with variant classes', () => {
-    render(<><Badge>draft</Badge><Badge variant="solid">12</Badge><Badge variant="accent">new</Badge></>);
+    render(
+      <>
+        <Badge>draft</Badge>
+        <Badge variant="solid">12</Badge>
+        <Badge variant="accent">new</Badge>
+      </>,
+    );
     expect(screen.getByText('draft')).toHaveClass('badge');
     expect(screen.getByText('12')).toHaveClass('badge-solid');
     expect(screen.getByText('new')).toHaveClass('badge-accent');
@@ -24,20 +30,35 @@ describe('Badge', () => {
   });
   it('is a span, forwards ref, merges className and spreads props', () => {
     const ref = createRef<HTMLSpanElement>();
-    render(<Badge ref={ref} className="mine" title="t" data-k="v">x</Badge>);
+    render(
+      <Badge ref={ref} className="mine" title="t" data-k="v">
+        x
+      </Badge>,
+    );
     expect(ref.current!.tagName).toBe('SPAN');
     expect(ref.current).toHaveClass('badge', 'mine');
     expect(ref.current).toHaveAttribute('title', 't');
     expect(ref.current).toHaveAttribute('data-k', 'v');
   });
   it('renders zero, negative and huge counts as text', () => {
-    render(<><Badge>{0}</Badge><Badge>{-3}</Badge><Badge>{'9'.repeat(30)}</Badge></>);
+    render(
+      <>
+        <Badge>{0}</Badge>
+        <Badge>{-3}</Badge>
+        <Badge>{'9'.repeat(30)}</Badge>
+      </>,
+    );
     expect(screen.getByText('0')).toBeInTheDocument();
     expect(screen.getByText('-3')).toBeInTheDocument();
     expect(screen.getByText('9'.repeat(30))).toBeInTheDocument();
   });
   it('renders empty and RTL content without breaking', () => {
-    const {container} = render(<><Badge /><Badge dir="rtl">جديد</Badge></>);
+    const {container} = render(
+      <>
+        <Badge />
+        <Badge dir="rtl">جديد</Badge>
+      </>,
+    );
     expect(container.querySelectorAll('.badge')).toHaveLength(2);
     expect(screen.getByText('جديد')).toHaveAttribute('dir', 'rtl');
   });

@@ -13,7 +13,9 @@ describe('RollingNumber', () => {
   });
   it('points each digit column at its digit', () => {
     const {container} = render(<RollingNumber value={907} locale="en-US" />);
-    const cols = [...container.querySelectorAll<HTMLElement>('.rolling-number-digit')].map((d) => d.style.getPropertyValue('--digit'));
+    const cols = [...container.querySelectorAll<HTMLElement>('.rolling-number-digit')].map((d) =>
+      d.style.getPropertyValue('--digit'),
+    );
     expect(cols).toEqual(['9', '0', '7']);
   });
   it('rolls: the same column element gets a new digit on change', () => {
@@ -21,10 +23,14 @@ describe('RollingNumber', () => {
     const last = container.querySelectorAll('.rolling-number-digit')[1];
     rerender(<RollingNumber value={29} locale="en-US" />);
     expect(container.querySelectorAll('.rolling-number-digit')[1]).toBe(last);
-    expect(container.querySelectorAll<HTMLElement>('.rolling-number-digit')[0]!.style.getPropertyValue('--digit')).toBe('2');
+    expect(container.querySelectorAll<HTMLElement>('.rolling-number-digit')[0]!.style.getPropertyValue('--digit')).toBe(
+      '2',
+    );
   });
   it('formats currency and keeps symbols as plain characters', () => {
-    const {container} = render(<RollingNumber value={5} locale="en-US" format={{style: 'currency', currency: 'USD'}} />);
+    const {container} = render(
+      <RollingNumber value={5} locale="en-US" format={{style: 'currency', currency: 'USD'}} />,
+    );
     expect(container.querySelector('.rolling-number-char')).toHaveTextContent('$');
   });
   it('forwards the ref and merges className', () => {

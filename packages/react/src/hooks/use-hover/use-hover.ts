@@ -11,11 +11,26 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [RefCallback<T>
   const node = useRef<T | null>(null);
   const on = useCallback(() => setHovered(true), []);
   const off = useCallback(() => setHovered(false), []);
-  const ref = useCallback<RefCallback<T>>((el) => {
-    if (node.current) { node.current.removeEventListener('mouseenter', on); node.current.removeEventListener('mouseleave', off); }
-    node.current = el;
-    if (el) { el.addEventListener('mouseenter', on); el.addEventListener('mouseleave', off); }
-  }, [on, off]);
-  useEffect(() => () => { node.current?.removeEventListener('mouseenter', on); node.current?.removeEventListener('mouseleave', off); }, [on, off]);
+  const ref = useCallback<RefCallback<T>>(
+    (el) => {
+      if (node.current) {
+        node.current.removeEventListener('mouseenter', on);
+        node.current.removeEventListener('mouseleave', off);
+      }
+      node.current = el;
+      if (el) {
+        el.addEventListener('mouseenter', on);
+        el.addEventListener('mouseleave', off);
+      }
+    },
+    [on, off],
+  );
+  useEffect(
+    () => () => {
+      node.current?.removeEventListener('mouseenter', on);
+      node.current?.removeEventListener('mouseleave', off);
+    },
+    [on, off],
+  );
   return [ref, hovered];
 }

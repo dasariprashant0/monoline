@@ -65,7 +65,11 @@ describe('Autocomplete', () => {
   });
   it('has no axe violations', async () => {
     const user = userEvent.setup();
-    const {container} = render(<Field label="City"><Autocomplete suggestions={suggestions} /></Field>);
+    const {container} = render(
+      <Field label="City">
+        <Autocomplete suggestions={suggestions} />
+      </Field>,
+    );
     await user.type(screen.getByRole('combobox', {name: 'City'}), 'b');
     expect(await axe(container)).toHaveNoViolations();
   });

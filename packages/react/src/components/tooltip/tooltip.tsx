@@ -1,5 +1,14 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useRef, type HTMLAttributes, type ReactNode} from 'react';
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react';
 import {Slot} from '../../utils/slot';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
@@ -10,7 +19,11 @@ const Shared = createContext({delayDuration: 700, skipDelayDuration: 300});
 let lastClosed = 0; // when any tooltip last closed: moving between tooltips shows the next one at once
 
 /** Wrap your app (or a region) once. Sets the shared open delay (`delayDuration`, default 700 ms) and how long after one tooltip closes the next opens at once (`skipDelayDuration`, default 300 ms). */
-export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, children}: {
+export function TooltipProvider({
+  delayDuration = 700,
+  skipDelayDuration = 300,
+  children,
+}: {
   /** Milliseconds to wait before a tooltip shows on hover. */
   delayDuration?: number | undefined;
   /** Milliseconds after a tooltip closes during which the next one opens without delay. */
@@ -20,7 +33,13 @@ export function TooltipProvider({delayDuration = 700, skipDelayDuration = 300, c
   return <Shared.Provider value={{delayDuration, skipDelayDuration}}>{children}</Shared.Provider>;
 }
 
-interface Ctx { open: boolean; show: (open: boolean, delay?: number) => void; id: string; trigger: React.RefObject<HTMLElement | null>; kbd: React.RefObject<boolean> }
+interface Ctx {
+  open: boolean;
+  show: (open: boolean, delay?: number) => void;
+  id: string;
+  trigger: React.RefObject<HTMLElement | null>;
+  kbd: React.RefObject<boolean>;
+}
 const Context = createContext<Ctx | null>(null);
 /** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
 function useTooltipCtx(): Ctx {
@@ -50,40 +69,117 @@ export interface TooltipProps {
  * Hint text on hover and keyboard focus. Escape dismisses it.
  * @example <Tooltip content="Saved to ~/Notes"><Button>Save</Button></Tooltip>
  */
-export function Tooltip({content, children, side = 'top', delayDuration, open, defaultOpen = false, onOpenChange}: TooltipProps) {
-  const shared = useContext(Shared), hydrated = useHydrated();
-  const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: (o) => { if (!o) lastClosed = Date.now(); onOpenChange?.(o); }});
+export function Tooltip({
+  content,
+  children,
+  side = 'top',
+  delayDuration,
+  open,
+  defaultOpen = false,
+  onOpenChange,
+}: TooltipProps) {
+  const shared = useContext(Shared),
+    hydrated = useHydrated();
+  const [isOpen, setOpen] = useControllableState({
+    value: open,
+    defaultValue: defaultOpen,
+    onChange: (o) => {
+      if (!o) lastClosed = Date.now();
+      onOpenChange?.(o);
+    },
+  });
   const show = useHoverIntent(setOpen);
-  const trigger = useRef<HTMLElement | null>(null), pressed = useRef(false), kbd = useRef(false), moved = useRef(false), id = useId();
-  const delay = Date.now() - lastClosed < shared.skipDelayDuration ? 0 : delayDuration ?? shared.delayDuration;
+  const trigger = useRef<HTMLElement | null>(null),
+    pressed = useRef(false),
+    kbd = useRef(false),
+    moved = useRef(false),
+    id = useId();
+  const delay = Date.now() - lastClosed < shared.skipDelayDuration ? 0 : (delayDuration ?? shared.delayDuration);
   return (
     <Context.Provider value={{open: isOpen, show, id, trigger, kbd}}>
       <Slot
         ref={trigger}
         aria-describedby={isOpen ? id : undefined}
         data-state={isOpen ? 'open' : 'closed'}
-        onPointerMove={(e: React.PointerEvent) => { if (e.pointerType !== 'touch' && !moved.current) { moved.current = true; show(true, delay); } }} /* a real move, not a layout shift under a resting pointer */
-        onPointerLeave={() => { moved.current = false; show(false, 100); }}
-        onPointerDown={() => { pressed.current = true; kbd.current = false; const done = () => { pressed.current = false; document.removeEventListener('pointerup', done); document.removeEventListener('pointercancel', done); }; document.addEventListener('pointerup', done); document.addEventListener('pointercancel', done); show(false); }}
-        onFocus={() => { if (!pressed.current) { kbd.current = true; show(true); } }}
-        onBlur={() => { kbd.current = false; show(false); }}
-      >{children}</Slot>
+        onPointerMove={(e: React.PointerEvent) => {
+          if (e.pointerType !== 'touch' && !moved.current) {
+            moved.current = true;
+            show(true, delay);
+          }
+        }} /* a real move, not a layout shift under a resting pointer */
+        onPointerLeave={() => {
+          moved.current = false;
+          show(false, 100);
+        }}
+        onPointerDown={() => {
+          pressed.current = true;
+          kbd.current = false;
+          const done = () => {
+            pressed.current = false;
+            document.removeEventListener('pointerup', done);
+            document.removeEventListener('pointercancel', done);
+          };
+          document.addEventListener('pointerup', done);
+          document.addEventListener('pointercancel', done);
+          show(false);
+        }}
+        onFocus={() => {
+          if (!pressed.current) {
+            kbd.current = true;
+            show(true);
+          }
+        }}
+        onBlur={() => {
+          kbd.current = false;
+          show(false);
+        }}
+      >
+        {children}
+      </Slot>
       {isOpen && hydrated && <TooltipContent side={side}>{content}</TooltipContent>}
     </Context.Provider>
   );
 }
 
 /** The floating tooltip box. `Tooltip` renders one for you; it works only inside a `Tooltip`. */
-export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(function TooltipContent({className, sideOffset = 6, side = 'top', onPointerEnter, onPointerLeave, ...rest}, forwarded) {
-  const c = useTooltipCtx();
-  const el = useRef<HTMLDivElement | null>(null);
-  useDismiss(c.open, [el, c.trigger], () => c.show(false));
-  // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.
-  // Not while the trigger has keyboard focus: Tab scrolls it into view and the hint must stay (e2e-findings F7). A click-focused trigger does not count: hovering it still closes on scroll.
-  useEffect(() => {
-    const close = (e: Event) => { const t = c.trigger.current; if (t && !(c.kbd.current && document.activeElement === t) && (e.target as Node).contains?.(t)) c.show(false); };
-    addEventListener('scroll', close, true);
-    return () => removeEventListener('scroll', close, true);
-  }, []);
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => c.trigger.current} side={side} sideOffset={sideOffset} role="tooltip" id={c.id} data-state="open" className={cx('tooltip', className)} {...rest} onPointerEnter={(e) => { onPointerEnter?.(e); c.show(true); }} onPointerLeave={(e) => { onPointerLeave?.(e); c.show(false, 100); }} />;
-});
+export const TooltipContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Placement>(
+  function TooltipContent(
+    {className, sideOffset = 6, side = 'top', onPointerEnter, onPointerLeave, ...rest},
+    forwarded,
+  ) {
+    const c = useTooltipCtx();
+    const el = useRef<HTMLDivElement | null>(null);
+    useDismiss(c.open, [el, c.trigger], () => c.show(false));
+    // scrolling the page (or any scroller around the trigger) moves the trigger away from the pointer: close, like a hint should.
+    // Not while the trigger has keyboard focus: Tab scrolls it into view and the hint must stay (e2e-findings F7). A click-focused trigger does not count: hovering it still closes on scroll.
+    useEffect(() => {
+      const close = (e: Event) => {
+        const t = c.trigger.current;
+        if (t && !(c.kbd.current && document.activeElement === t) && (e.target as Node).contains?.(t)) c.show(false);
+      };
+      addEventListener('scroll', close, true);
+      return () => removeEventListener('scroll', close, true);
+    }, []);
+    return (
+      <Floating
+        ref={(n) => setRefs(n, el, forwarded)}
+        anchor={() => c.trigger.current}
+        side={side}
+        sideOffset={sideOffset}
+        role="tooltip"
+        id={c.id}
+        data-state="open"
+        className={cx('tooltip', className)}
+        {...rest}
+        onPointerEnter={(e) => {
+          onPointerEnter?.(e);
+          c.show(true);
+        }}
+        onPointerLeave={(e) => {
+          onPointerLeave?.(e);
+          c.show(false, 100);
+        }}
+      />
+    );
+  },
+);

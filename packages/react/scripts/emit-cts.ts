@@ -8,18 +8,27 @@ import {dirname, join, relative} from 'node:path';
 import {pkgRoot} from './lib.ts';
 
 const dist = join(pkgRoot, 'dist');
-const walk = (d: string): string[] => readdirSync(d).flatMap((n) => {
-  const p = join(d, n);
-  return n === 'cjs' ? [] : statSync(p).isDirectory() ? walk(p) : p.endsWith('.d.ts') ? [p] : [];
-});
+const walk = (d: string): string[] =>
+  readdirSync(d).flatMap((n) => {
+    const p = join(d, n);
+    return n === 'cjs' ? [] : statSync(p).isDirectory() ? walk(p) : p.endsWith('.d.ts') ? [p] : [];
+  });
 
 // Rewrites each relative specifier to an explicit one ending in `ext` ('.js' or '.cjs').
-const rewrite = (file: string, ext: string) => readFileSync(file, 'utf8').replace(/(\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)(['"])(\.{1,2}(?:\/[^'"]*)?)\2/g, (m, pre: string, q: string, spec: string) => {
-  const target = join(dirname(file), spec);
-  const next = existsSync(`${target}.d.ts`) ? `${spec}${ext}` : existsSync(join(target, 'index.d.ts')) ? `${spec.replace(/\/$/, '')}/index${ext}` : null;
-  if (!next) throw new Error(`${relative(pkgRoot, file)}: cannot resolve ${spec}`);
-  return `${pre}${q}${next}${q}`;
-});
+const rewrite = (file: string, ext: string) =>
+  readFileSync(file, 'utf8').replace(
+    /(\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)(['"])(\.{1,2}(?:\/[^'"]*)?)\2/g,
+    (m, pre: string, q: string, spec: string) => {
+      const target = join(dirname(file), spec);
+      const next = existsSync(`${target}.d.ts`)
+        ? `${spec}${ext}`
+        : existsSync(join(target, 'index.d.ts'))
+          ? `${spec.replace(/\/$/, '')}/index${ext}`
+          : null;
+      if (!next) throw new Error(`${relative(pkgRoot, file)}: cannot resolve ${spec}`);
+      return `${pre}${q}${next}${q}`;
+    },
+  );
 
 let count = 0;
 const files = walk(dist);

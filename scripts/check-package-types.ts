@@ -13,7 +13,10 @@ const i = process.argv.indexOf('--project');
 let dir = i > 0 ? resolve(process.argv[i + 1]) : null;
 const temp = !dir;
 if (temp) {
-  if (!existsSync(join(root, 'packages/react/dist/cjs/index.d.cts'))) { console.error('check-package-types: no dist/cjs/index.d.cts (run npm run build, or the CJS types are not emitted)'); process.exit(1); }
+  if (!existsSync(join(root, 'packages/react/dist/cjs/index.d.cts'))) {
+    console.error('check-package-types: no dist/cjs/index.d.cts (run npm run build, or the CJS types are not emitted)');
+    process.exit(1);
+  }
   // Inside the repo so `react` and its types resolve from the root node_modules.
   dir = mkdtempSync(join(root, 'node_modules', '.monoline-types-'));
   mkdirSync(join(dir, 'node_modules', '@monoline'), {recursive: true});
@@ -27,10 +30,38 @@ const bad: ButtonProps = {variant: 42};
 export {ok, bad};
 `;
 // dir is set by here (from --project or the temp branch above); TS cannot follow that through `temp`.
-writeFileSync(join(dir!, 'cjs.cts'), body(`import type {ButtonProps} from '@monoline/react';\nimport monoline = require('@monoline/react');\nvoid monoline.Button;`));
+writeFileSync(
+  join(dir!, 'cjs.cts'),
+  body(
+    `import type {ButtonProps} from '@monoline/react';\nimport monoline = require('@monoline/react');\nvoid monoline.Button;`,
+  ),
+);
 writeFileSync(join(dir!, 'esm.mts'), body(`import {Button, type ButtonProps} from '@monoline/react';\nvoid Button;`));
-writeFileSync(join(dir!, 'tsconfig.json'), JSON.stringify({compilerOptions: {module: 'node16', moduleResolution: 'node16', target: 'ES2022', strict: true, noEmit: true, skipLibCheck: true, jsx: 'react-jsx', types: []}, files: ['cjs.cts', 'esm.mts']}, null, 2));
+writeFileSync(
+  join(dir!, 'tsconfig.json'),
+  JSON.stringify(
+    {
+      compilerOptions: {
+        module: 'node16',
+        moduleResolution: 'node16',
+        target: 'ES2022',
+        strict: true,
+        noEmit: true,
+        skipLibCheck: true,
+        jsx: 'react-jsx',
+        types: [],
+      },
+      files: ['cjs.cts', 'esm.mts'],
+    },
+    null,
+    2,
+  ),
+);
 const r = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', dir!], {encoding: 'utf8'});
 if (temp) rmSync(dir!, {recursive: true, force: true});
-if (r.status !== 0) { process.stderr.write(`${r.stdout}${r.stderr}`); console.error('check-package-types: FAIL'); process.exit(1); }
+if (r.status !== 0) {
+  process.stderr.write(`${r.stdout}${r.stderr}`);
+  console.error('check-package-types: FAIL');
+  process.exit(1);
+}
 console.log('check-package-types: ok (node16 CJS and ESM both resolve real types)');

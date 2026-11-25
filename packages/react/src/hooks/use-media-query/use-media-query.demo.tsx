@@ -6,4 +6,6 @@ function WidthDemo() {
   return <p>{wide ? 'Viewport is 40rem or wider.' : 'Viewport is narrower than 40rem.'}</p>;
 }
 
-export const demos: Demo[] = [{title: 'Viewport width', description: 'Resize the window to see it change.', render: () => <WidthDemo />}];
+export const demos: Demo[] = [
+  {title: 'Viewport width', description: 'Resize the window to see it change.', render: () => <WidthDemo />},
+];

@@ -95,7 +95,10 @@ describe('useLocalStorage', () => {
   });
   it('applies two functional updates in one handler', () => {
     const {result} = renderHook(() => useLocalStorage('k-two', 0));
-    act(() => { result.current[1]((n) => n + 1); result.current[1]((n) => n + 1); });
+    act(() => {
+      result.current[1]((n) => n + 1);
+      result.current[1]((n) => n + 1);
+    });
     expect(result.current[0]).toBe(2);
   });
   it('keeps two hooks on the same key in sync inside one tab', () => {

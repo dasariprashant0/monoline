@@ -8,7 +8,16 @@ type Fields<T> = {status?: 'pending' | 'fulfilled' | 'rejected'; value?: T; reas
 export function track<T>(p: Promise<T>): Tracked<T> {
   const t = p as Promise<T> & Fields<T>;
   t.status = 'pending';
-  p.then((v) => { t.status = 'fulfilled'; t.value = v; }, (e) => { t.status = 'rejected'; t.reason = e; });
+  p.then(
+    (v) => {
+      t.status = 'fulfilled';
+      t.value = v;
+    },
+    (e) => {
+      t.status = 'rejected';
+      t.reason = e;
+    },
+  );
   return p;
 }
 

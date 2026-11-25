@@ -3,7 +3,11 @@ import {useHover} from './use-hover';
 
 function Probe() {
   const [ref, hovered] = useHover<HTMLDivElement>();
-  return <div ref={ref} data-testid="box">{hovered ? 'over' : 'out'}</div>;
+  return (
+    <div ref={ref} data-testid="box">
+      {hovered ? 'over' : 'out'}
+    </div>
+  );
 }
 
 describe('useHover', () => {

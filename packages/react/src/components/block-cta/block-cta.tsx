@@ -16,14 +16,19 @@ export interface BlockCtaProps extends Omit<HTMLAttributes<HTMLElement>, 'title'
 }
 
 /** A closing call to action: one sentence, one next step. */
-export const BlockCta = forwardRef<HTMLElement, BlockCtaProps>(function BlockCta({title, description, actions, headingLevel = 2, className, ...rest}, ref) {
+export const BlockCta = forwardRef<HTMLElement, BlockCtaProps>(function BlockCta(
+  {title, description, actions, headingLevel = 2, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <section ref={ref} className={cx('block-cta', className)} aria-labelledby={id} {...rest}>
       <Container>
         <div className="block-cta-box">
           <div className="block-cta-copy">
-            <Heading id={id} level={headingLevel}>{title}</Heading>
+            <Heading id={id} level={headingLevel}>
+              {title}
+            </Heading>
             {description && <Text tone="muted">{description}</Text>}
           </div>
           <div className="block-cta-actions">{actions}</div>

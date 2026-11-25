@@ -35,7 +35,7 @@
     "text"
   ],
   "props": [],
-  "usage": "import {Kbd} from '@monoline/react';\n\n<p>Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.</p>",
+  "usage": "import {Kbd} from '@monoline/react';\n\n<p>\n  Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.\n</p>",
   "dataAttributes": [],
   "classes": [
     "swatch",

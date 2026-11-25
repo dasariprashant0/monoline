@@ -10,7 +10,10 @@ for (const {meta} of discover()) {
   const files: Styling[] = [];
   for (const file of meta.css ?? []) {
     const path = join(cssDir, file);
-    if (!existsSync(path)) { console.warn(`styling: ${meta.name}: ${file} not found`); continue; }
+    if (!existsSync(path)) {
+      console.warn(`styling: ${meta.name}: ${file} not found`);
+      continue;
+    }
     files.push({file, ...extractSelectors(readFileSync(path, 'utf8'))});
   }
   if (files.length) result[meta.name] = files;

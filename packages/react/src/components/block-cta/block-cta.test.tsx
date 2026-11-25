@@ -6,7 +6,9 @@ import {createRef} from 'react';
 
 describe('BlockCta', () => {
   it('renders title, description and actions in a named region', () => {
-    render(<BlockCta title="Ready?" description="Start in a minute." actions={<Button variant="solid">Start</Button>} />);
+    render(
+      <BlockCta title="Ready?" description="Start in a minute." actions={<Button variant="solid">Start</Button>} />,
+    );
     expect(screen.getByRole('region', {name: 'Ready?'})).toBeInTheDocument();
     expect(screen.getByRole('heading', {level: 2})).toBeInTheDocument();
     expect(screen.getByText('Start in a minute.')).toBeInTheDocument();
@@ -31,12 +33,27 @@ describe('BlockCta', () => {
     }
   });
   it('labels the region with the heading id, even with several on a page', () => {
-    render(<><BlockCta title="One" actions="a" /><BlockCta title="Two" actions="b" /></>);
+    render(
+      <>
+        <BlockCta title="One" actions="a" />
+        <BlockCta title="Two" actions="b" />
+      </>,
+    );
     expect(screen.getByRole('region', {name: 'One'})).toBeInTheDocument();
     expect(screen.getByRole('region', {name: 'Two'})).toBeInTheDocument();
   });
   it('renders several actions and keeps them in the actions slot', () => {
-    render(<BlockCta title="T" actions={<><Button>A</Button><Button>B</Button></>} />);
+    render(
+      <BlockCta
+        title="T"
+        actions={
+          <>
+            <Button>A</Button>
+            <Button>B</Button>
+          </>
+        }
+      />,
+    );
     const slot = screen.getByRole('button', {name: 'A'}).parentElement!;
     expect(slot).toHaveClass('block-cta-actions');
     expect(slot.querySelectorAll('button')).toHaveLength(2);

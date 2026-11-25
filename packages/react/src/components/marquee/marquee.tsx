@@ -14,13 +14,35 @@ export interface MarqueeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** Children scroll left (or right with `reverse`). Keep the items short. */
-export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee({duration = 30, reverse, pauseOnHover = true, pausable = true, className, style, children, ...rest}, ref) {
+export const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee(
+  {duration = 30, reverse, pauseOnHover = true, pausable = true, className, style, children, ...rest},
+  ref,
+) {
   const [paused, setPaused] = useState(false);
   return (
-    <div ref={ref} data-paused={paused || undefined} className={cx('marquee', reverse && 'marquee-reverse', pauseOnHover && 'marquee-pause', pausable && 'marquee-controlled', className)} style={{'--marquee-duration': `${duration}s`, ...style} as CSSProperties} {...rest}>
-      {pausable && <button type="button" className="marquee-toggle" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? 'Play' : 'Pause'}<span className="sr-only"> scrolling</span></button>}
+    <div
+      ref={ref}
+      data-paused={paused || undefined}
+      className={cx(
+        'marquee',
+        reverse && 'marquee-reverse',
+        pauseOnHover && 'marquee-pause',
+        pausable && 'marquee-controlled',
+        className,
+      )}
+      style={{'--marquee-duration': `${duration}s`, ...style} as CSSProperties}
+      {...rest}
+    >
+      {pausable && (
+        <button type="button" className="marquee-toggle" aria-pressed={paused} onClick={() => setPaused(!paused)}>
+          {paused ? 'Play' : 'Pause'}
+          <span className="sr-only"> scrolling</span>
+        </button>
+      )}
       <div className="marquee-track">{children}</div>
-      <div className="marquee-track" aria-hidden="true">{children}</div>
+      <div className="marquee-track" aria-hidden="true">
+        {children}
+      </div>
     </div>
   );
 });

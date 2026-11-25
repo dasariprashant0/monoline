@@ -4,7 +4,10 @@ import {axe} from '../../test/axe';
 import {Navbar} from './navbar';
 import type {RenderLink} from '../link';
 
-const links = [{label: 'Docs', href: '/docs', current: true}, {label: 'Pricing', href: '/pricing'}];
+const links = [
+  {label: 'Docs', href: '/docs', current: true},
+  {label: 'Pricing', href: '/pricing'},
+];
 
 describe('Navbar', () => {
   it('is a banner with a named navigation, brand and actions', () => {
@@ -44,7 +47,19 @@ describe('Navbar', () => {
   });
   it('hands links to renderLink and forwards the ref', async () => {
     const go = vi.fn();
-    const renderLink: RenderLink = ({href, children, ...p}) => <a {...p} href={href} data-router onClick={(e) => { e.preventDefault(); go(href); }}>{children}</a>;
+    const renderLink: RenderLink = ({href, children, ...p}) => (
+      <a
+        {...p}
+        href={href}
+        data-router
+        onClick={(e) => {
+          e.preventDefault();
+          go(href);
+        }}
+      >
+        {children}
+      </a>
+    );
     const ref = {current: null as HTMLElement | null};
     render(<Navbar ref={ref} links={links} renderLink={renderLink} linksLabel="Primary" />);
     const link = within(screen.getByRole('navigation', {name: 'Primary'})).getByRole('link', {name: 'Pricing'});

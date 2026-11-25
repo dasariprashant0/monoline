@@ -4,11 +4,18 @@ import {axe} from '../../test/axe';
 import {BlockDashboardShell} from './block-dashboard-shell';
 import type {RenderLink} from '../link';
 
-const nav = [{label: 'Overview', href: '/', current: true}, {label: 'Reports', href: '#reports'}];
+const nav = [
+  {label: 'Overview', href: '/', current: true},
+  {label: 'Reports', href: '#reports'},
+];
 
 describe('BlockDashboardShell', () => {
   it('renders the sidebar navigation, top bar and main content', () => {
-    render(<BlockDashboardShell brand="Brand" nav={nav} topbar={<span>Ada</span>}><h1>Overview</h1></BlockDashboardShell>);
+    render(
+      <BlockDashboardShell brand="Brand" nav={nav} topbar={<span>Ada</span>}>
+        <h1>Overview</h1>
+      </BlockDashboardShell>,
+    );
     const sidebar = screen.getByRole('navigation', {name: 'Main'});
     expect(within(sidebar).getByRole('link', {name: 'Overview'})).toHaveAttribute('aria-current', 'page');
     expect(within(sidebar).getByRole('link', {name: 'Reports'})).not.toHaveAttribute('aria-current');
@@ -16,7 +23,11 @@ describe('BlockDashboardShell', () => {
     expect(screen.getByText('Ada')).toBeInTheDocument();
   });
   it('opens the same navigation in a drawer from the menu button, and closes on Escape', async () => {
-    render(<BlockDashboardShell brand="Brand" nav={nav}>x</BlockDashboardShell>);
+    render(
+      <BlockDashboardShell brand="Brand" nav={nav}>
+        x
+      </BlockDashboardShell>,
+    );
     await userEvent.click(screen.getByRole('button', {name: 'Menu'}));
     const dialog = screen.getByRole('dialog', {name: 'Brand'});
     expect(within(dialog).getByRole('link', {name: 'Reports'})).toBeInTheDocument();
@@ -32,25 +43,51 @@ describe('BlockDashboardShell', () => {
   });
   it('uses custom labels and forwards ref', () => {
     const ref = {current: null as HTMLDivElement | null};
-    render(<BlockDashboardShell ref={ref} nav={nav} navLabel="Primary" menuLabel="Navigation">x</BlockDashboardShell>);
+    render(
+      <BlockDashboardShell ref={ref} nav={nav} navLabel="Primary" menuLabel="Navigation">
+        x
+      </BlockDashboardShell>,
+    );
     expect(screen.getByRole('navigation', {name: 'Primary'})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: 'Navigation'})).toBeInTheDocument();
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
   it('has no axe violations, closed and open', async () => {
-    const {container} = render(<BlockDashboardShell brand="Brand" nav={nav} topbar={<span>Ada</span>}><h1>Overview</h1></BlockDashboardShell>);
+    const {container} = render(
+      <BlockDashboardShell brand="Brand" nav={nav} topbar={<span>Ada</span>}>
+        <h1>Overview</h1>
+      </BlockDashboardShell>,
+    );
     expect(await axe(container)).toHaveNoViolations();
     await userEvent.click(screen.getByRole('button', {name: 'Menu'}));
     expect(await axe(screen.getByRole('dialog'))).toHaveNoViolations(); // the page behind is inert in a browser; jsdom does not model it
   });
   it('hands links to renderLink so a client router can take over', async () => {
     const go = vi.fn();
-    const renderLink: RenderLink = ({href, children, ...p}) => <a {...p} href={href} data-router onClick={(e) => { e.preventDefault(); go(href); }}>{children}</a>;
-    render(<BlockDashboardShell nav={nav} renderLink={renderLink}>x</BlockDashboardShell>);
+    const renderLink: RenderLink = ({href, children, ...p}) => (
+      <a
+        {...p}
+        href={href}
+        data-router
+        onClick={(e) => {
+          e.preventDefault();
+          go(href);
+        }}
+      >
+        {children}
+      </a>
+    );
+    render(
+      <BlockDashboardShell nav={nav} renderLink={renderLink}>
+        x
+      </BlockDashboardShell>,
+    );
     const link = within(screen.getByRole('navigation', {name: 'Main'})).getByRole('link', {name: 'Reports'});
     expect(link).toHaveAttribute('data-router');
     expect(link).toHaveClass('block-shell-link');
-    expect(within(screen.getByRole('navigation', {name: 'Main'})).getByRole('link', {name: 'Overview'})).toHaveAttribute('aria-current', 'page');
+    expect(
+      within(screen.getByRole('navigation', {name: 'Main'})).getByRole('link', {name: 'Overview'}),
+    ).toHaveAttribute('aria-current', 'page');
     await userEvent.click(link);
     expect(go).toHaveBeenCalledWith('#reports');
   });

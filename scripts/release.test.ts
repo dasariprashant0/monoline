@@ -88,7 +88,10 @@ test('collectTargets reads exports (nested), main, types and bin, and skips non-
 });
 
 test('collectTargets accepts bin and main written without "./" and returns one normalised path each', () => {
-  assert.deepEqual(collectTargets({bin: 'bin/monoline.mjs', main: 'dist/index.js'}).sort(), ['./bin/monoline.mjs', './dist/index.js']);
+  assert.deepEqual(collectTargets({bin: 'bin/monoline.mjs', main: 'dist/index.js'}).sort(), [
+    './bin/monoline.mjs',
+    './dist/index.js',
+  ]);
 });
 
 test('binProblems flags a leading "./" in bin, which npm publish drops', () => {
@@ -99,16 +102,25 @@ test('binProblems flags a leading "./" in bin, which npm publish drops', () => {
 
 test('parseCommit reads conventional commits, the repo style and breaking markers', () => {
   assert.deepEqual(parseCommit({subject: 'feat(css): add accent teal'}), {
-    section: 'Added', scope: 'css', text: 'add accent teal', breaking: false,
+    section: 'Added',
+    scope: 'css',
+    text: 'add accent teal',
+    breaking: false,
   });
   assert.equal(parseCommit({subject: 'fix!: drop the old class names'}).breaking, true);
   assert.equal(parseCommit({subject: 'x', body: 'BREAKING CHANGE: renamed'}).text, 'x');
   assert.equal(parseCommit({subject: 'x', body: 'BREAKING CHANGE: renamed'}).breaking, true);
   assert.deepEqual(parseCommit({subject: 'button: add loading state'}), {
-    section: 'Changed', scope: 'button', text: 'add loading state', breaking: false,
+    section: 'Changed',
+    scope: 'button',
+    text: 'add loading state',
+    breaking: false,
   });
   assert.deepEqual(parseCommit({subject: 'Build one file per module'}), {
-    section: 'Changed', scope: null, text: 'Build one file per module', breaking: false,
+    section: 'Changed',
+    scope: null,
+    text: 'Build one file per module',
+    breaking: false,
   });
 });
 
@@ -162,12 +174,30 @@ test('tarballProblems flags tests, demos and configs, and requires README, LICEN
   assert.deepEqual(tarballProblems(clean), []);
 
   const dirty = [
-    'LICENSE', 'README.md', 'package.json', 'dist/index.js',
-    'src/button/button.test.tsx', 'src/button/button.demo.tsx', 'src/test/setup.ts',
-    'src/vitest.d.ts', 'scripts/build.mjs', 'vite.config.ts', 'tsconfig.json', '.npmignore',
+    'LICENSE',
+    'README.md',
+    'package.json',
+    'dist/index.js',
+    'src/button/button.test.tsx',
+    'src/button/button.demo.tsx',
+    'src/test/setup.ts',
+    'src/vitest.d.ts',
+    'scripts/build.mjs',
+    'vite.config.ts',
+    'tsconfig.json',
+    '.npmignore',
   ];
   const problems = tarballProblems(dirty).join('\n');
-  for (const needle of ['button.test.tsx', 'button.demo.tsx', 'src/test/setup.ts', 'vitest.d.ts', 'scripts/build.mjs', 'vite.config.ts', 'tsconfig.json', '.npmignore']) {
+  for (const needle of [
+    'button.test.tsx',
+    'button.demo.tsx',
+    'src/test/setup.ts',
+    'vitest.d.ts',
+    'scripts/build.mjs',
+    'vite.config.ts',
+    'tsconfig.json',
+    '.npmignore',
+  ]) {
     assert.match(problems, new RegExp(needle.replace(/[.]/g, '\\.')), needle);
   }
 

@@ -6,7 +6,10 @@ import {readFileSync, writeFileSync, readdirSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 
 const major = process.argv[2];
-if (!/^\d+$/.test(major ?? '')) { console.error('usage: use-react.ts <major>'); process.exit(2); }
+if (!/^\d+$/.test(major ?? '')) {
+  console.error('usage: use-react.ts <major>');
+  process.exit(2);
+}
 const root = new URL('../..', import.meta.url).pathname;
 const NAMES = ['react', 'react-dom', '@types/react', '@types/react-dom'];
 let changed = 0;
@@ -16,7 +19,11 @@ for (const group of ['packages', 'apps']) {
     if (!existsSync(file)) continue;
     const pkg = JSON.parse(readFileSync(file, 'utf8'));
     for (const field of ['dependencies', 'devDependencies']) {
-      for (const n of NAMES) if (pkg[field]?.[n]) { pkg[field][n] = `^${major}`; changed++; }
+      for (const n of NAMES)
+        if (pkg[field]?.[n]) {
+          pkg[field][n] = `^${major}`;
+          changed++;
+        }
     }
     writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`);
   }

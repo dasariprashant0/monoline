@@ -9,7 +9,13 @@ export function signIn(v: {email: string; password: string}): Errors<'email' | '
   return e;
 }
 
-export function signUp(v: {name: string; email: string; password: string; confirm: string; terms: boolean}): Errors<'name' | 'email' | 'password' | 'confirm' | 'terms'> {
+export function signUp(v: {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+  terms: boolean;
+}): Errors<'name' | 'email' | 'password' | 'confirm' | 'terms'> {
   const e = signIn(v) as Errors<'name' | 'email' | 'password' | 'confirm' | 'terms'>;
   if (!v.name.trim()) e.name = 'Enter your name.';
   if (v.password && v.password.length < 8) e.password = 'Use at least 8 characters.';

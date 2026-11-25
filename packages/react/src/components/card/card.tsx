@@ -10,7 +10,10 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** A bordered group for one thing you can pick up or open. Prefer rules and space over cards for everything else. */
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card({interactive, asChild, className, ...rest}, ref) {
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  {interactive, asChild, className, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'div';
   return <Comp ref={ref} className={cx('card', interactive && 'card-hover', className)} {...rest} />;
 });

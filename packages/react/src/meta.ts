@@ -3,8 +3,17 @@
  * The docs site, the registry and `llms.txt` are generated from it.
  */
 export type Category =
-  | 'layout' | 'typography' | 'buttons' | 'forms' | 'data-display'
-  | 'feedback' | 'overlays' | 'navigation' | 'effects' | 'blocks' | 'hooks';
+  | 'layout'
+  | 'typography'
+  | 'buttons'
+  | 'forms'
+  | 'data-display'
+  | 'feedback'
+  | 'overlays'
+  | 'navigation'
+  | 'effects'
+  | 'blocks'
+  | 'hooks';
 
 export interface ComponentMeta {
   /** kebab-case, equals the folder name: `dropdown-menu` */

@@ -1,7 +1,11 @@
 import type {Demo} from '../../demo';
 import {BlockFeatureGrid} from './block-feature-grid';
 
-const dot = <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor"><rect x="3" y="3" width="14" height="14" /></svg>;
+const dot = (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+    <rect x="3" y="3" width="14" height="14" />
+  </svg>
+);
 const features = [
   {title: 'Plain CSS', description: 'Works with any framework, or none.', icon: dot},
   {title: 'Accessible', description: 'Keyboard and screen reader behaviour is tested.', icon: dot},
@@ -15,17 +19,11 @@ export const demos: Demo[] = [
   {
     title: 'Three columns',
     render: () => (
-      <BlockFeatureGrid
-        title="Why Monoline"
-        description="Fewer parts, clearer pages."
-        features={features}
-      />
+      <BlockFeatureGrid title="Why Monoline" description="Fewer parts, clearer pages." features={features} />
     ),
   },
   {
     title: 'Two columns',
-    render: () => (
-      <BlockFeatureGrid title="Principles" columns={2} features={features.slice(0, 4)} />
-    ),
+    render: () => <BlockFeatureGrid title="Principles" columns={2} features={features.slice(0, 4)} />,
   },
 ];

@@ -3,9 +3,17 @@ import {axe} from '../../test/axe';
 import {Typewriter} from './typewriter';
 
 function reduced(on: boolean) {
-  window.matchMedia = ((q: string) => ({matches: on, media: q, addEventListener() {}, removeEventListener() {}})) as unknown as typeof window.matchMedia;
+  window.matchMedia = ((q: string) => ({
+    matches: on,
+    media: q,
+    addEventListener() {},
+    removeEventListener() {},
+  })) as unknown as typeof window.matchMedia;
 }
-afterEach(() => { delete (window as {matchMedia?: unknown}).matchMedia; vi.useRealTimers(); });
+afterEach(() => {
+  delete (window as {matchMedia?: unknown}).matchMedia;
+  vi.useRealTimers();
+});
 
 const visible = (c: HTMLElement) => c.querySelector('[aria-hidden="true"]')!;
 
@@ -19,9 +27,13 @@ describe('Typewriter', () => {
     const onComplete = vi.fn();
     const {container} = render(<Typewriter text="Hey" speed={10} onComplete={onComplete} />);
     expect(visible(container)).toHaveTextContent('');
-    act(() => { vi.advanceTimersByTime(10); });
+    act(() => {
+      vi.advanceTimersByTime(10);
+    });
     expect(visible(container)).toHaveTextContent('H');
-    act(() => { vi.advanceTimersByTime(20); });
+    act(() => {
+      vi.advanceTimersByTime(20);
+    });
     expect(visible(container)).toHaveTextContent('Hey');
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
@@ -38,55 +50,83 @@ describe('Typewriter', () => {
     expect(container.querySelector('.typewriter-caret')).toBeNull();
   });
   describe('over time', () => {
-    beforeEach(() => { vi.useFakeTimers(); reduced(false); });
+    beforeEach(() => {
+      vi.useFakeTimers();
+      reduced(false);
+    });
     it('types at the given speed, one character per tick, starting empty', () => {
       const {container} = render(<Typewriter text="abc" speed={50} />);
       expect(visible(container)).toHaveTextContent('');
-      act(() => { vi.advanceTimersByTime(49); });
+      act(() => {
+        vi.advanceTimersByTime(49);
+      });
       expect(visible(container)).toHaveTextContent('');
-      act(() => { vi.advanceTimersByTime(1); });
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
       expect(visible(container)).toHaveTextContent('a');
-      act(() => { vi.advanceTimersByTime(50); });
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
       expect(visible(container)).toHaveTextContent('ab');
-      act(() => { vi.advanceTimersByTime(50); });
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
       expect(visible(container)).toHaveTextContent('abc');
     });
     it('waits `delay` before the first character', () => {
       const {container} = render(<Typewriter text="ab" speed={10} delay={200} />);
-      act(() => { vi.advanceTimersByTime(199); });
+      act(() => {
+        vi.advanceTimersByTime(199);
+      });
       expect(visible(container)).toHaveTextContent('');
-      act(() => { vi.advanceTimersByTime(1); });
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
       expect(visible(container)).toHaveTextContent('a');
-      act(() => { vi.advanceTimersByTime(10); });
+      act(() => {
+        vi.advanceTimersByTime(10);
+      });
       expect(visible(container)).toHaveTextContent('ab');
     });
     it('calls onComplete exactly once and does not tick after finishing', () => {
       const onComplete = vi.fn();
       render(<Typewriter text="hi" speed={10} onComplete={onComplete} />);
-      act(() => { vi.advanceTimersByTime(1000); });
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
       expect(onComplete).toHaveBeenCalledTimes(1);
       expect(vi.getTimerCount()).toBe(0);
     });
     it('does not call onComplete before the last character', () => {
       const onComplete = vi.fn();
       render(<Typewriter text="hello" speed={10} onComplete={onComplete} />);
-      act(() => { vi.advanceTimersByTime(30); });
+      act(() => {
+        vi.advanceTimersByTime(30);
+      });
       expect(onComplete).not.toHaveBeenCalled();
     });
     it('uses the latest onComplete without restarting the typing', () => {
-      const a = vi.fn(); const b = vi.fn();
+      const a = vi.fn();
+      const b = vi.fn();
       const {rerender, container} = render(<Typewriter text="abc" speed={10} onComplete={a} />);
-      act(() => { vi.advanceTimersByTime(10); });
+      act(() => {
+        vi.advanceTimersByTime(10);
+      });
       rerender(<Typewriter text="abc" speed={10} onComplete={b} />);
       expect(visible(container)).toHaveTextContent('a');
-      act(() => { vi.advanceTimersByTime(100); });
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
       expect(a).not.toHaveBeenCalled();
       expect(b).toHaveBeenCalledTimes(1);
     });
     it('clears its timer on unmount', () => {
       const onComplete = vi.fn();
       const {unmount} = render(<Typewriter text="long text here" speed={10} onComplete={onComplete} />);
-      act(() => { vi.advanceTimersByTime(20); });
+      act(() => {
+        vi.advanceTimersByTime(20);
+      });
       unmount();
       expect(vi.getTimerCount()).toBe(0);
       vi.advanceTimersByTime(1000);
@@ -94,38 +134,62 @@ describe('Typewriter', () => {
     });
     it('restarts from empty when the text changes', () => {
       const {container, rerender} = render(<Typewriter text="first" speed={10} />);
-      act(() => { vi.advanceTimersByTime(100); });
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
       expect(visible(container)).toHaveTextContent('first');
       rerender(<Typewriter text="second" speed={10} />);
       expect(visible(container)).toHaveTextContent('');
-      act(() => { vi.advanceTimersByTime(100); });
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
       expect(visible(container)).toHaveTextContent('second');
     });
     it('keeps the sr-only copy complete at every frame', () => {
       const {container} = render(<Typewriter text="abc" speed={10} />);
-      act(() => { vi.advanceTimersByTime(10); });
+      act(() => {
+        vi.advanceTimersByTime(10);
+      });
       expect(container.querySelector('.sr-only')).toHaveTextContent('abc');
     });
     it('empty text types nothing and completes', () => {
       const onComplete = vi.fn();
       const {container} = render(<Typewriter text="" speed={10} onComplete={onComplete} />);
-      act(() => { vi.advanceTimersByTime(50); });
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
       expect(visible(container)).toHaveTextContent('');
       expect(onComplete).toHaveBeenCalledTimes(1);
     });
     it('never splits an emoji into a lone surrogate while typing', () => {
       const {container} = render(<Typewriter text="a😀b" speed={10} />);
       const seen: string[] = [];
-      for (let i = 0; i < 5; i++) { act(() => { vi.advanceTimersByTime(10); }); seen.push(visible(container).textContent!); }
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          vi.advanceTimersByTime(10);
+        });
+        seen.push(visible(container).textContent!);
+      }
       expect(seen).toEqual(['a', 'a😀', 'a😀b', 'a😀b', 'a😀b']);
     });
     it('reduced motion changing while mounted jumps to the full text', () => {
       let listener: ((e: {matches: boolean}) => void) | undefined;
-      window.matchMedia = ((q: string) => ({matches: false, media: q, addEventListener: (_: string, l: typeof listener) => { listener = l; }, removeEventListener() {}})) as unknown as typeof window.matchMedia;
+      window.matchMedia = ((q: string) => ({
+        matches: false,
+        media: q,
+        addEventListener: (_: string, l: typeof listener) => {
+          listener = l;
+        },
+        removeEventListener() {},
+      })) as unknown as typeof window.matchMedia;
       const {container} = render(<Typewriter text="hello" speed={100} />);
-      act(() => { vi.advanceTimersByTime(100); });
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
       expect(visible(container)).toHaveTextContent('h');
-      act(() => { listener!({matches: true}); });
+      act(() => {
+        listener!({matches: true});
+      });
       expect(visible(container)).toHaveTextContent('hello');
       expect(vi.getTimerCount()).toBe(0);
     });

@@ -35,7 +35,14 @@ const tokens = {
   $description: `Monoline ${pkg.version} design tokens, generated from src/tokens.css and src/accents.css.`,
   base: map(base),
   theme: Object.fromEntries(Object.entries(themes).map(([t, v]) => [t, map(v)])),
-  accent: Object.fromEntries(Object.entries(accents).map(([a, byTheme]) => [a, Object.fromEntries(Object.entries(byTheme).map(([t, v]) => [t, map(v)]))])),
+  accent: Object.fromEntries(
+    Object.entries(accents).map(([a, byTheme]) => [
+      a,
+      Object.fromEntries(Object.entries(byTheme).map(([t, v]) => [t, map(v)])),
+    ]),
+  ),
 };
 writeFileSync(new URL('tokens.json', out), JSON.stringify(tokens, null, 2) + '\n');
-console.log(`built dist/monoline.css ${(b.all.length / 1024).toFixed(1)} KB (${b.order.length} component files), min ${(min.length / 1024).toFixed(1)} KB; core.css; ${Object.keys(b.components).length} component bundles`);
+console.log(
+  `built dist/monoline.css ${(b.all.length / 1024).toFixed(1)} KB (${b.order.length} component files), min ${(min.length / 1024).toFixed(1)} KB; core.css; ${Object.keys(b.components).length} component bundles`,
+);

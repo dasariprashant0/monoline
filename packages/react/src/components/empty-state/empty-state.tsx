@@ -13,10 +13,17 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
 }
 
 /** Shown when a list, search or table has nothing to display. */
-export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function EmptyState({title, description, icon, children, className, ...rest}, ref) {
+export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function EmptyState(
+  {title, description, icon, children, className, ...rest},
+  ref,
+) {
   return (
     <div ref={ref} className={cx('empty', className)} {...rest}>
-      {icon && <div className="empty-icon" aria-hidden="true">{icon}</div>}
+      {icon && (
+        <div className="empty-icon" aria-hidden="true">
+          {icon}
+        </div>
+      )}
       {title !== '' && title != null && title !== false && <h3 className="empty-title">{title}</h3>}
       {description && <p className="empty-description">{description}</p>}
       {children && <div className="empty-actions">{children}</div>}

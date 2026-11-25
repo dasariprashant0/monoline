@@ -20,10 +20,24 @@ function Article() {
 }
 
 export const demos: Demo[] = [
-  {title: 'From the page headings', description: 'Pass a ref to the element that holds the headings. Only headings with an id are listed.', render: () => <Article />},
+  {
+    title: 'From the page headings',
+    description: 'Pass a ref to the element that holds the headings. Only headings with an id are listed.',
+    render: () => <Article />,
+  },
   {
     title: 'From data',
     description: 'Pass `items` when you already know the headings. `heading={null}` hides the visible title.',
-    render: () => <Toc items={[{id: 'toc-demo-intro', text: 'Introduction'}, {id: 'toc-demo-install', text: 'Install', level: 3}, {id: 'toc-demo-usage', text: 'Usage'}]} heading={null} aria-label="Sections" />,
+    render: () => (
+      <Toc
+        items={[
+          {id: 'toc-demo-intro', text: 'Introduction'},
+          {id: 'toc-demo-install', text: 'Install', level: 3},
+          {id: 'toc-demo-usage', text: 'Usage'},
+        ]}
+        heading={null}
+        aria-label="Sections"
+      />
+    ),
   },
 ];

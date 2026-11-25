@@ -14,11 +14,17 @@ export interface DescriptionListProps extends Omit<HTMLAttributes<HTMLDListEleme
 }
 
 /** A `dl` of term and details pairs, for facts such as an order summary or a profile. `layout` switches between side by side and stacked. */
-export const DescriptionList = forwardRef<HTMLDListElement, DescriptionListProps>(function DescriptionList({items, layout = 'inline', className, ...rest}, ref) {
+export const DescriptionList = forwardRef<HTMLDListElement, DescriptionListProps>(function DescriptionList(
+  {items, layout = 'inline', className, ...rest},
+  ref,
+) {
   return (
     <dl ref={ref} className={cx('dlist', layout === 'stacked' && 'dlist-stacked', className)} {...rest}>
       {items.map((it, i) => (
-        <div key={i} className="dlist-row"><dt>{it.term}</dt><dd>{it.details}</dd></div>
+        <div key={i} className="dlist-row">
+          <dt>{it.term}</dt>
+          <dd>{it.details}</dd>
+        </div>
       ))}
     </dl>
   );

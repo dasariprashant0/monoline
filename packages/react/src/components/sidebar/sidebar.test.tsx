@@ -2,22 +2,49 @@ import {fireEvent, render, screen, within} from '@testing-library/react';
 import {createRef} from 'react';
 import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
-import {Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarItem, SidebarProvider, SidebarToggle, SidebarTrigger, useSidebar} from './sidebar';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarToggle,
+  SidebarTrigger,
+  useSidebar,
+} from './sidebar';
 import {DirectionProvider} from '../direction-provider';
 import type {RenderLink} from '../link';
 
 const Icon = () => <svg viewBox="0 0 16 16" width="16" height="16" />;
-const ui = (props: {collapsed?: boolean; defaultCollapsed?: boolean; onCollapsedChange?: (c: boolean) => void; renderLink?: RenderLink} = {}) => (
-  <SidebarProvider collapsed={props.collapsed} defaultCollapsed={props.defaultCollapsed} onCollapsedChange={props.onCollapsedChange}>
+const ui = (
+  props: {
+    collapsed?: boolean;
+    defaultCollapsed?: boolean;
+    onCollapsedChange?: (c: boolean) => void;
+    renderLink?: RenderLink;
+  } = {},
+) => (
+  <SidebarProvider
+    collapsed={props.collapsed}
+    defaultCollapsed={props.defaultCollapsed}
+    onCollapsedChange={props.onCollapsedChange}
+  >
     <SidebarTrigger />
     <SidebarToggle />
     <Sidebar drawerTitle="Acme" renderLink={props.renderLink}>
       <SidebarHeader>Acme</SidebarHeader>
       <SidebarContent>
         <SidebarGroup label="Workspace">
-          <SidebarItem href="/" icon={<Icon />} current>Overview</SidebarItem>
-          <SidebarItem href="/reports" icon={<Icon />}>Reports</SidebarItem>
-          <SidebarItem href="/team" icon={<Icon />}>Team</SidebarItem>
+          <SidebarItem href="/" icon={<Icon />} current>
+            Overview
+          </SidebarItem>
+          <SidebarItem href="/reports" icon={<Icon />}>
+            Reports
+          </SidebarItem>
+          <SidebarItem href="/team" icon={<Icon />}>
+            Team
+          </SidebarItem>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
@@ -34,7 +61,10 @@ describe('Sidebar', () => {
   });
   it('hides the icon from screen readers', () => {
     render(ui());
-    expect(screen.getByRole('link', {name: 'Overview'}).querySelector('.sidebar-icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByRole('link', {name: 'Overview'}).querySelector('.sidebar-icon')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
   });
   it('toggles collapsed state and reports it', async () => {
     const onChange = vi.fn();
@@ -56,7 +86,9 @@ describe('Sidebar', () => {
   });
   it('shows a tooltip with the label on focus when collapsed', async () => {
     render(ui({defaultCollapsed: true}));
-    await userEvent.tab(); await userEvent.tab(); await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
     expect(screen.getByRole('link', {name: 'Overview'})).toHaveFocus();
     expect(await screen.findByRole('tooltip')).toHaveTextContent('Overview');
   });
@@ -92,7 +124,19 @@ describe('Sidebar', () => {
   });
   it('hands links to renderLink', async () => {
     const go = vi.fn();
-    const renderLink: RenderLink = ({href, children, ...p}) => <a {...p} href={href} data-router onClick={(e) => { e.preventDefault(); go(href); }}>{children}</a>;
+    const renderLink: RenderLink = ({href, children, ...p}) => (
+      <a
+        {...p}
+        href={href}
+        data-router
+        onClick={(e) => {
+          e.preventDefault();
+          go(href);
+        }}
+      >
+        {children}
+      </a>
+    );
     render(ui({renderLink}));
     const link = screen.getByRole('link', {name: 'Reports'});
     expect(link).toHaveAttribute('data-router');
@@ -102,7 +146,21 @@ describe('Sidebar', () => {
     expect(go).toHaveBeenCalledWith('/reports');
   });
   it('supports asChild with a router link', () => {
-    render(<SidebarProvider><Sidebar><SidebarContent><SidebarGroup><SidebarItem asChild current icon={<Icon />}><a href="/x" data-router>Inbox</a></SidebarItem></SidebarGroup></SidebarContent></Sidebar></SidebarProvider>);
+    render(
+      <SidebarProvider>
+        <Sidebar>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarItem asChild current icon={<Icon />}>
+                <a href="/x" data-router>
+                  Inbox
+                </a>
+              </SidebarItem>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>,
+    );
     const link = screen.getByRole('link', {name: 'Inbox'});
     expect(link).toHaveAttribute('data-router');
     expect(link).toHaveAttribute('aria-current', 'page');
@@ -111,12 +169,27 @@ describe('Sidebar', () => {
   it('exposes the state through useSidebar and forwards the ref', () => {
     const ref = {current: null as HTMLDivElement | null};
     const Probe = () => <span>{useSidebar().collapsed ? 'collapsed' : 'expanded'}</span>;
-    render(<SidebarProvider defaultCollapsed><Probe /><Sidebar ref={ref}><SidebarContent><SidebarGroup><SidebarItem href="/">A</SidebarItem></SidebarGroup></SidebarContent></Sidebar></SidebarProvider>);
+    render(
+      <SidebarProvider defaultCollapsed>
+        <Probe />
+        <Sidebar ref={ref}>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarItem href="/">A</SidebarItem>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>,
+    );
     expect(screen.getByText('collapsed')).toBeInTheDocument();
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
   it('keeps arrow keys the same in right-to-left (up and down are vertical)', async () => {
-    render(<div dir="rtl"><DirectionProvider dir="rtl">{ui()}</DirectionProvider></div>);
+    render(
+      <div dir="rtl">
+        <DirectionProvider dir="rtl">{ui()}</DirectionProvider>
+      </div>,
+    );
     screen.getByRole('link', {name: 'Overview'}).focus();
     await userEvent.keyboard('{ArrowDown}');
     expect(screen.getByRole('link', {name: 'Reports'})).toHaveFocus();
@@ -136,11 +209,27 @@ describe('Sidebar', () => {
 
 describe('SidebarItem with renderLink', () => {
   it('passes the item props and ref through to the rendered link', () => {
-    const click = vi.fn(), ref = createRef<HTMLAnchorElement>();
+    const click = vi.fn(),
+      ref = createRef<HTMLAnchorElement>();
     render(
       <SidebarProvider>
         <Sidebar renderLink={({href, ...p}) => <a data-router href={href} {...p} />}>
-          <SidebarContent><SidebarGroup><SidebarItem ref={ref} href="/x" id="mine" data-x="1" onClick={(e) => { e.preventDefault(); click(); }}>X</SidebarItem></SidebarGroup></SidebarContent>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarItem
+                ref={ref}
+                href="/x"
+                id="mine"
+                data-x="1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  click();
+                }}
+              >
+                X
+              </SidebarItem>
+            </SidebarGroup>
+          </SidebarContent>
         </Sidebar>
       </SidebarProvider>,
     );

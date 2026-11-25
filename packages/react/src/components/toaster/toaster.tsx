@@ -40,7 +40,12 @@ let items: Item[] = [];
 const listeners = new Set<() => void>();
 let seq = 0;
 const emit = () => listeners.forEach((l) => l());
-const subscribe = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
+const subscribe = (l: () => void) => {
+  listeners.add(l);
+  return () => {
+    listeners.delete(l);
+  };
+};
 const snapshot = () => items;
 
 function show(kind: ToastKind, message: ReactNode, opts: ToastOptions = {}): string | number {
@@ -98,10 +103,17 @@ export const toast: ToastFn = Object.assign(
         const cur = items.find((i) => i.id === id);
         if (!cur || !cur.open) return;
         let message: ReactNode;
-        try { message = typeof m === 'function' ? (m as (a: unknown) => ReactNode)(a) : m; } catch { message = kind === 'error' ? 'Something went wrong' : 'Done'; }
+        try {
+          message = typeof m === 'function' ? (m as (a: unknown) => ReactNode)(a) : m;
+        } catch {
+          message = kind === 'error' ? 'Something went wrong' : 'Done';
+        }
         show(kind, message, {...options, id});
       };
-      promise.then((v) => settle('success', messages.success, v), (e) => settle('error', messages.error, e));
+      promise.then(
+        (v) => settle('success', messages.success, v),
+        (e) => settle('error', messages.error, e),
+      );
       return promise;
     },
     dismiss,
@@ -124,7 +136,12 @@ export interface ToasterProps {
  * hovering or focusing a toast pauses its timer. Errors are announced assertively, everything else politely.
  * @example <Toaster limit={3} />
  */
-export function Toaster({limit = 3, position = 'end', label = 'Notifications', dismissLabel = 'Dismiss'}: ToasterProps) {
+export function Toaster({
+  limit = 3,
+  position = 'end',
+  label = 'Notifications',
+  dismissLabel = 'Dismiss',
+}: ToasterProps) {
   const all = useSyncExternalStore(subscribe, snapshot, snapshot);
   const dir = useDirection();
   // Only the newest `limit` open toasts are rendered; older ones are dismissed.
@@ -132,7 +149,9 @@ export function Toaster({limit = 3, position = 'end', label = 'Notifications', d
   const shown = open.slice(-limit);
   // Older toasts pushed out by newer ones are dismissed, not just hidden: otherwise they come back with a fresh timer.
   const over = open.length - shown.length;
-  useEffect(() => { open.slice(0, over).forEach((t) => dismiss(t.id)); }, [over, open[0]?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    open.slice(0, over).forEach((t) => dismiss(t.id));
+  }, [over, open[0]?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <ToastProvider duration={5000} swipeDirection={dir === 'rtl' ? 'left' : 'right'} label={label}>
       {shown.map((t) => (
@@ -143,11 +162,17 @@ export function Toaster({limit = 3, position = 'end', label = 'Notifications', d
           type={t.kind === 'error' ? 'foreground' : 'background'}
           duration={t.duration ?? (t.kind === 'error' ? 8000 : undefined)}
           open={t.open}
-          onOpenChange={(o) => { if (!o) dismiss(t.id); }}
+          onOpenChange={(o) => {
+            if (!o) dismiss(t.id);
+          }}
         >
           <ToastTitle>{t.message}</ToastTitle>
           {t.description && <ToastDescription>{t.description}</ToastDescription>}
-          {t.action && <ToastAction altText={t.action.label} onClick={t.action.onClick}>{t.action.label}</ToastAction>}
+          {t.action && (
+            <ToastAction altText={t.action.label} onClick={t.action.onClick}>
+              {t.action.label}
+            </ToastAction>
+          )}
           <ToastClose>{dismissLabel}</ToastClose>
         </Toast>
       ))}

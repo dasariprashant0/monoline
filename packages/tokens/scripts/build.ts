@@ -12,7 +12,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const source = (file: string) => readFileSync(join(here, '../../css/src', file), 'utf8');
 const dist = join(here, '../dist');
 
-const src = parseSources({tokens: source('tokens.css'), accents: source('accents.css'), options: source('options.css')});
+const src = parseSources({
+  tokens: source('tokens.css'),
+  accents: source('accents.css'),
+  options: source('options.css'),
+});
 const json = buildTokens(src);
 const files = {
   'tokens.json': JSON.stringify(json, null, 2) + '\n',
@@ -22,4 +26,8 @@ const files = {
 };
 mkdirSync(dist, {recursive: true});
 for (const [name, text] of Object.entries(files)) writeFileSync(join(dist, name), text);
-console.log(`tokens: wrote ${Object.keys(files).map((f) => `dist/${f}`).join(', ')}`);
+console.log(
+  `tokens: wrote ${Object.keys(files)
+    .map((f) => `dist/${f}`)
+    .join(', ')}`,
+);

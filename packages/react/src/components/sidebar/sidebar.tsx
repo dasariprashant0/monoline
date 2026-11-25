@@ -1,5 +1,20 @@
 'use client';
-import {cloneElement, createContext, forwardRef, isValidElement, useContext, useEffect, useId, useMemo, type AnchorHTMLAttributes, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactElement, type ReactNode} from 'react';
+import {
+  cloneElement,
+  createContext,
+  forwardRef,
+  isValidElement,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  type AnchorHTMLAttributes,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import {Slot} from 'radix-ui';
 import {cx} from '../../utils/cx';
 import {useControllableState} from '../../hooks/use-controllable-state';
@@ -19,7 +34,10 @@ interface SidebarState {
 }
 const StateCtx = createContext<SidebarState | null>(null);
 // Set by Sidebar so items know whether they sit in the drawer (never collapsed) and which links to render.
-const PartCtx = createContext<{inDrawer: boolean; label: string; renderLink?: RenderLink | undefined}>({inDrawer: false, label: 'Main'});
+const PartCtx = createContext<{inDrawer: boolean; label: string; renderLink?: RenderLink | undefined}>({
+  inDrawer: false,
+  label: 'Main',
+});
 
 /** The collapsed state and the mobile drawer state of the nearest `SidebarProvider`: `{collapsed, setCollapsed, toggle, mobileOpen, setMobileOpen}`. Throws outside a provider. Server rendering uses the initial state. */
 export function useSidebar(): SidebarState {
@@ -43,16 +61,32 @@ export interface SidebarProviderProps {
  * Holds the sidebar's collapsed state and the small-screen drawer state, so a `SidebarToggle` in the top bar can control a `Sidebar` elsewhere in the tree. `AppShell` includes one.
  * @example <SidebarProvider defaultCollapsed><Sidebar>...</Sidebar></SidebarProvider>
  */
-export function SidebarProvider({collapsed, defaultCollapsed = false, onCollapsedChange, children}: SidebarProviderProps) {
-  const [isCollapsed, setCollapsed] = useControllableState({value: collapsed, defaultValue: defaultCollapsed, onChange: onCollapsedChange});
+export function SidebarProvider({
+  collapsed,
+  defaultCollapsed = false,
+  onCollapsedChange,
+  children,
+}: SidebarProviderProps) {
+  const [isCollapsed, setCollapsed] = useControllableState({
+    value: collapsed,
+    defaultValue: defaultCollapsed,
+    onChange: onCollapsedChange,
+  });
   const [mobileOpen, setMobileOpen] = useControllableState({defaultValue: false});
   const wide = useMediaQuery('(min-width: 800px)');
-  useEffect(() => { if (wide) setMobileOpen(false); }, [wide, setMobileOpen]); // a drawer left open must not outlive the small layout
+  useEffect(() => {
+    if (wide) setMobileOpen(false);
+  }, [wide, setMobileOpen]); // a drawer left open must not outlive the small layout
   // One object while nothing changed, so consumers of `useSidebar` do not re-render with every provider render.
-  const state = useMemo(() => ({collapsed: isCollapsed, setCollapsed, toggle: () => setCollapsed(!isCollapsed), mobileOpen, setMobileOpen}), [isCollapsed, setCollapsed, mobileOpen, setMobileOpen]);
+  const state = useMemo(
+    () => ({collapsed: isCollapsed, setCollapsed, toggle: () => setCollapsed(!isCollapsed), mobileOpen, setMobileOpen}),
+    [isCollapsed, setCollapsed, mobileOpen, setMobileOpen],
+  );
   return (
     <StateCtx.Provider value={state}>
-      <Drawer open={mobileOpen} onOpenChange={setMobileOpen}>{children}</Drawer>
+      <Drawer open={mobileOpen} onOpenChange={setMobileOpen}>
+        {children}
+      </Drawer>
     </StateCtx.Provider>
   );
 }
@@ -72,9 +106,14 @@ export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {
  * A navigation column that collapses to icons. Below 800px it is hidden and the same content opens in a left `Drawer` from a `SidebarTrigger`.
  * Must be inside a `SidebarProvider`.
  */
-export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar({label = 'Main', drawerTitle = 'Menu', renderLink, children, className, ...rest}, ref) {
+export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar(
+  {label = 'Main', drawerTitle = 'Menu', renderLink, children, className, ...rest},
+  ref,
+) {
   const s = useSidebar();
-  const close = (e: MouseEvent) => { if ((e.target as HTMLElement).closest('a')) s.setMobileOpen(false); };
+  const close = (e: MouseEvent) => {
+    if ((e.target as HTMLElement).closest('a')) s.setMobileOpen(false);
+  };
   return (
     <TooltipProvider delayDuration={300}>
       <div ref={ref} className={cx('sidebar', className)} data-collapsed={s.collapsed || undefined} {...rest}>
@@ -91,17 +130,26 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
 });
 
 /** The top of the sidebar: brand and a `SidebarToggle`. Not shown in the small-screen drawer, whose title is the `Sidebar`'s `drawerTitle`. Read `useSidebar().collapsed` to show only the icon when collapsed. */
-export const SidebarHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function SidebarHeader({className, ...rest}, ref) {
+export const SidebarHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function SidebarHeader(
+  {className, ...rest},
+  ref,
+) {
   return <div ref={ref} className={cx('sidebar-header', className)} {...rest} />;
 });
 
 /** The bottom of the sidebar: put a `SidebarGroup` of account, settings or help links in it. Stays at the bottom when the groups are short. */
-export const SidebarFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function SidebarFooter({className, ...rest}, ref) {
+export const SidebarFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function SidebarFooter(
+  {className, ...rest},
+  ref,
+) {
   return <div ref={ref} className={cx('sidebar-footer', className)} {...rest} />;
 });
 
 /** The navigation landmark holding the groups. ArrowUp, ArrowDown, Home and End move focus between items (Tab still works). */
-export const SidebarContent = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(function SidebarContent({className, ...rest}, ref) {
+export const SidebarContent = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(function SidebarContent(
+  {className, ...rest},
+  ref,
+) {
   const {label} = useContext(PartCtx);
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     rest.onKeyDown?.(e);
@@ -110,10 +158,17 @@ export const SidebarContent = forwardRef<HTMLElement, HTMLAttributes<HTMLElement
     const i = items.indexOf(document.activeElement as HTMLElement);
     if (i < 0) return;
     e.preventDefault();
-    const to = e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1 : Math.min(items.length - 1, Math.max(0, i + (e.key === 'ArrowDown' ? 1 : -1)));
+    const to =
+      e.key === 'Home'
+        ? 0
+        : e.key === 'End'
+          ? items.length - 1
+          : Math.min(items.length - 1, Math.max(0, i + (e.key === 'ArrowDown' ? 1 : -1)));
     items[to]?.focus();
   };
-  return <nav ref={ref} aria-label={label} className={cx('sidebar-content', className)} {...rest} onKeyDown={onKeyDown} />;
+  return (
+    <nav ref={ref} aria-label={label} className={cx('sidebar-content', className)} {...rest} onKeyDown={onKeyDown} />
+  );
 });
 
 export interface SidebarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -124,12 +179,21 @@ export interface SidebarGroupProps extends Omit<HTMLAttributes<HTMLUListElement>
 }
 
 /** A labelled list of items. */
-export const SidebarGroup = forwardRef<HTMLUListElement, SidebarGroupProps>(function SidebarGroup({label, children, className, ...rest}, ref) {
+export const SidebarGroup = forwardRef<HTMLUListElement, SidebarGroupProps>(function SidebarGroup(
+  {label, children, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <div className="sidebar-group">
-      {label && <div id={id} className="sidebar-group-label">{label}</div>}
-      <ul ref={ref} aria-labelledby={label ? id : undefined} className={cx('sidebar-list', className)} {...rest}>{children}</ul>
+      {label && (
+        <div id={id} className="sidebar-group-label">
+          {label}
+        </div>
+      )}
+      <ul ref={ref} aria-labelledby={label ? id : undefined} className={cx('sidebar-list', className)} {...rest}>
+        {children}
+      </ul>
     </div>
   );
 });
@@ -148,22 +212,76 @@ export interface SidebarItemProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEl
 }
 
 /** One link in the sidebar. Put it in a `SidebarGroup`. Use `asChild` or the `Sidebar`'s `renderLink` for a client router. */
-export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(function SidebarItem({href, icon, current, asChild, children, className, ...rest}, ref) {
+export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(function SidebarItem(
+  {href, icon, current, asChild, children, className, ...rest},
+  ref,
+) {
   const {collapsed} = useSidebar();
   const {inDrawer, renderLink} = useContext(PartCtx);
   const cls = cx('sidebar-item', className);
   const ariaCurrent = current ? ('page' as const) : undefined;
-  const child = asChild && isValidElement(children) ? (children as ReactElement<{children?: ReactNode | undefined}>) : null;
+  const child =
+    asChild && isValidElement(children) ? (children as ReactElement<{children?: ReactNode | undefined}>) : null;
   const text = child ? child.props.children : children;
-  const inner = <>{icon && <span className="sidebar-icon" aria-hidden="true">{icon}</span>}<span className="sidebar-label">{text}</span></>;
+  const inner = (
+    <>
+      {icon && (
+        <span className="sidebar-icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      <span className="sidebar-label">{text}</span>
+    </>
+  );
   let link: ReactElement;
-  if (child) link = <Slot.Root ref={ref} className={cls} aria-current={ariaCurrent} {...rest}>{cloneElement(child, undefined, inner)}</Slot.Root>;
-  else if (renderLink && href !== undefined) link = renderLink({...rest, ...(ref ? {ref} : {}), href, className: cls, 'aria-current': ariaCurrent, children: inner}) as ReactElement;
-  else link = <a ref={ref} href={href} className={cls} aria-current={ariaCurrent} {...rest}>{inner}</a>;
-  return <li>{collapsed && !inDrawer ? <Tooltip content={text} side="right">{link}</Tooltip> : link}</li>;
+  if (child)
+    link = (
+      <Slot.Root ref={ref} className={cls} aria-current={ariaCurrent} {...rest}>
+        {cloneElement(child, undefined, inner)}
+      </Slot.Root>
+    );
+  else if (renderLink && href !== undefined)
+    link = renderLink({
+      ...rest,
+      ...(ref ? {ref} : {}),
+      href,
+      className: cls,
+      'aria-current': ariaCurrent,
+      children: inner,
+    }) as ReactElement;
+  else
+    link = (
+      <a ref={ref} href={href} className={cls} aria-current={ariaCurrent} {...rest}>
+        {inner}
+      </a>
+    );
+  return (
+    <li>
+      {collapsed && !inDrawer ? (
+        <Tooltip content={text} side="right">
+          {link}
+        </Tooltip>
+      ) : (
+        link
+      )}
+    </li>
+  );
 });
 
-const PanelIcon = () => <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="2" y="3" width="12" height="10" /><path d="M6 3v10" /></svg>;
+const PanelIcon = () => (
+  <svg
+    viewBox="0 0 16 16"
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    aria-hidden="true"
+  >
+    <rect x="2" y="3" width="12" height="10" />
+    <path d="M6 3v10" />
+  </svg>
+);
 
 export interface SidebarToggleProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'children'> {
   /** The button's accessible name. It reports expanded or collapsed through `aria-expanded`. Default "Toggle sidebar". */
@@ -171,9 +289,27 @@ export interface SidebarToggleProps extends Omit<HTMLAttributes<HTMLButtonElemen
 }
 
 /** A button that collapses and expands the sidebar. Shown from 800px up; on small screens use `SidebarTrigger`. */
-export const SidebarToggle = forwardRef<HTMLButtonElement, SidebarToggleProps>(function SidebarToggle({label = 'Toggle sidebar', 'aria-label': ariaLabel, className, onClick, ...rest}, ref) {
+export const SidebarToggle = forwardRef<HTMLButtonElement, SidebarToggleProps>(function SidebarToggle(
+  {label = 'Toggle sidebar', 'aria-label': ariaLabel, className, onClick, ...rest},
+  ref,
+) {
   const s = useSidebar();
-  return <IconButton ref={ref} size="sm" aria-label={ariaLabel ?? label} aria-expanded={!s.collapsed} className={cx('sidebar-toggle', className)} {...rest} onClick={(e) => { onClick?.(e); s.toggle(); }}><PanelIcon /></IconButton>;
+  return (
+    <IconButton
+      ref={ref}
+      size="sm"
+      aria-label={ariaLabel ?? label}
+      aria-expanded={!s.collapsed}
+      className={cx('sidebar-toggle', className)}
+      {...rest}
+      onClick={(e) => {
+        onClick?.(e);
+        s.toggle();
+      }}
+    >
+      <PanelIcon />
+    </IconButton>
+  );
 });
 
 export interface SidebarTriggerProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'children'> {
@@ -182,7 +318,16 @@ export interface SidebarTriggerProps extends Omit<HTMLAttributes<HTMLButtonEleme
 }
 
 /** The small-screen menu button: opens the sidebar in a drawer, and focus returns here on close. Hidden from 800px up. */
-export const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(function SidebarTrigger({children = 'Menu', className, ...rest}, ref) {
+export const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(function SidebarTrigger(
+  {children = 'Menu', className, ...rest},
+  ref,
+) {
   useSidebar();
-  return <DrawerTrigger asChild><Button ref={ref} variant="line" size="sm" className={cx('sidebar-trigger', className)} {...rest}>{children}</Button></DrawerTrigger>;
+  return (
+    <DrawerTrigger asChild>
+      <Button ref={ref} variant="line" size="sm" className={cx('sidebar-trigger', className)} {...rest}>
+        {children}
+      </Button>
+    </DrawerTrigger>
+  );
 });

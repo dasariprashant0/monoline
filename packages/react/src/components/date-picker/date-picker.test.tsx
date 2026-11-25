@@ -37,7 +37,11 @@ describe('DatePicker', () => {
     expect(screen.getByRole('button', {name: /^Start: /})).toHaveTextContent('Choose');
   });
   it('is labelled by a Field', () => {
-    render(<Field label="Due date"><DatePicker /></Field>);
+    render(
+      <Field label="Due date">
+        <DatePicker />
+      </Field>,
+    );
     expect(screen.getByLabelText('Due date')).toBeInTheDocument();
   });
   it('has no axe violations', async () => {
@@ -47,7 +51,15 @@ describe('DatePicker', () => {
   it('clears the date from the popover when clearable', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
-    render(<DatePicker aria-label="Start" clearable defaultValue={new Date(2026, 0, 15)} locale="en-US" onValueChange={fn} />);
+    render(
+      <DatePicker
+        aria-label="Start"
+        clearable
+        defaultValue={new Date(2026, 0, 15)}
+        locale="en-US"
+        onValueChange={fn}
+      />,
+    );
     const btn = screen.getByRole('button', {name: /^Start: /});
     await user.click(btn);
     await user.click(await screen.findByRole('button', {name: 'Clear date'}));
@@ -76,7 +88,11 @@ describe('DatePicker', () => {
     expect(screen.queryByRole('dialog', {name: 'Choose a date'})).not.toBeInTheDocument();
   });
   it('inside a Field the trigger keeps the Field label as its name, not "undefined: ..."', () => {
-    render(<Field label="Due date"><DatePicker /></Field>);
+    render(
+      <Field label="Due date">
+        <DatePicker />
+      </Field>,
+    );
     expect(screen.getByRole('button', {name: 'Due date'})).toBeInTheDocument();
   });
 });

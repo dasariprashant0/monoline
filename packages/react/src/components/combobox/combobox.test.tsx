@@ -5,7 +5,11 @@ import {useState} from 'react';
 import {Field} from '../field';
 import {Combobox} from './combobox';
 
-const options = [{value: 'ada', label: 'Ada Lovelace'}, {value: 'grace', label: 'Grace Hopper'}, {value: 'alan', label: 'Alan Turing', disabled: true}];
+const options = [
+  {value: 'ada', label: 'Ada Lovelace'},
+  {value: 'grace', label: 'Grace Hopper'},
+  {value: 'alan', label: 'Alan Turing', disabled: true},
+];
 
 describe('Combobox', () => {
   it('has the combobox role, closed at first', () => {
@@ -42,7 +46,11 @@ describe('Combobox', () => {
   });
   it('names the list after the field label', async () => {
     const user = userEvent.setup();
-    render(<Field label="Person"><Combobox options={options} /></Field>);
+    render(
+      <Field label="Person">
+        <Combobox options={options} />
+      </Field>,
+    );
     await user.click(screen.getByRole('combobox', {name: 'Person'}));
     expect(screen.getByRole('listbox')).toHaveAccessibleName('Person');
   });
@@ -84,7 +92,17 @@ describe('Combobox', () => {
   });
   it('works controlled and inside a Field', async () => {
     const user = userEvent.setup();
-    function C() { const [v, setV] = useState('ada'); return <><Field label="Person"><Combobox options={options} value={v} onValueChange={setV} /></Field><output>{v}</output></>; }
+    function C() {
+      const [v, setV] = useState('ada');
+      return (
+        <>
+          <Field label="Person">
+            <Combobox options={options} value={v} onValueChange={setV} />
+          </Field>
+          <output>{v}</output>
+        </>
+      );
+    }
     render(<C />);
     expect(screen.getByLabelText('Person')).toHaveValue('Ada Lovelace');
     await user.click(screen.getByLabelText('Person'));
@@ -114,7 +132,11 @@ describe('Combobox', () => {
   });
   it('names the list after the Field label, not the typed text', async () => {
     const user = userEvent.setup();
-    render(<Field label="Person"><Combobox options={options} /></Field>);
+    render(
+      <Field label="Person">
+        <Combobox options={options} />
+      </Field>,
+    );
     await user.click(screen.getByRole('combobox'));
     expect(screen.getByRole('listbox', {name: 'Person'})).toBeInTheDocument();
   });

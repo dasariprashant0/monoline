@@ -12,7 +12,11 @@ describe('Flex', () => {
     expect(el).not.toHaveClass('flex-inline', 'flex-wrap');
   });
   it('sets direction, wrap, align, justify, inline and the gap token', () => {
-    render(<Flex data-testid="f" direction="column-reverse" wrap inline align="baseline" justify="around" gap={4}>x</Flex>);
+    render(
+      <Flex data-testid="f" direction="column-reverse" wrap inline align="baseline" justify="around" gap={4}>
+        x
+      </Flex>,
+    );
     const el = screen.getByTestId('f');
     expect(el).toHaveClass('flex-inline', 'flex-wrap');
     expect(el).toHaveAttribute('data-direction', 'column-reverse');
@@ -24,7 +28,13 @@ describe('Flex', () => {
     const ref = {current: null as HTMLDivElement | null};
     const {rerender} = render(<Flex ref={ref}>x</Flex>);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
-    rerender(<Flex asChild><ul aria-label="l"><li>a</li></ul></Flex>);
+    rerender(
+      <Flex asChild>
+        <ul aria-label="l">
+          <li>a</li>
+        </ul>
+      </Flex>,
+    );
     expect(screen.getByRole('list', {name: 'l'})).toHaveClass('flex');
   });
   it('has no align, justify or gap attributes unless asked', () => {
@@ -71,7 +81,13 @@ describe('Flex', () => {
   });
   it('asChild puts classes, data attributes and ref on the child', () => {
     const ref = createRef<HTMLDivElement>();
-    render(<Flex asChild ref={ref} direction="column" justify="between" gap={3} className="mine"><ul data-testid="u"><li>a</li></ul></Flex>);
+    render(
+      <Flex asChild ref={ref} direction="column" justify="between" gap={3} className="mine">
+        <ul data-testid="u">
+          <li>a</li>
+        </ul>
+      </Flex>,
+    );
     const u = screen.getByTestId('u');
     expect(ref.current).toBe(u);
     expect(u).toHaveClass('flex', 'mine');

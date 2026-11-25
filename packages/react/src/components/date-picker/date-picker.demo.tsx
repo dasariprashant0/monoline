@@ -5,7 +5,13 @@ import {DatePicker} from './date-picker';
 
 function Clearable() {
   const [d, setD] = useState<Date | null>(new Date());
-  return <div style={{maxWidth: '260px', minHeight: '400px'}}><Field label="Filter by date"><DatePicker clearable value={d} onValueChange={setD} /></Field></div>;
+  return (
+    <div style={{maxWidth: '260px', minHeight: '400px'}}>
+      <Field label="Filter by date">
+        <DatePicker clearable value={d} onValueChange={setD} />
+      </Field>
+    </div>
+  );
 }
 
 export const demos: Demo[] = [
@@ -22,8 +28,6 @@ export const demos: Demo[] = [
   {
     title: 'Clearable',
     description: 'clearable adds a "Clear date" button in the popover; onValueChange receives null.',
-    render: () => (
-      <Clearable />
-    ),
+    render: () => <Clearable />,
   },
 ];

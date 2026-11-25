@@ -14,15 +14,33 @@ export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
  * `renderLink={({href, ...rest}) => <RouterLink to={href} {...rest} />}` (React Router) or
  * `renderLink={(p) => <NextLink {...p} />}` (Next.js). The block adds `className` and `aria-current` for you. `SidebarItem` also passes the props you gave the item (`onClick`, `id`, `data-*`) and its `ref`, so spread all of them.
  */
-export type RenderLink = (props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'className' | 'aria-current' | 'children'> & {href: string; className?: string | undefined; 'aria-current'?: 'page' | undefined; children: ReactNode; ref?: Ref<HTMLAnchorElement> | undefined}) => ReactNode;
+export type RenderLink = (
+  props: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'className' | 'aria-current' | 'children'> & {
+    href: string;
+    className?: string | undefined;
+    'aria-current'?: 'page' | undefined;
+    children: ReactNode;
+    ref?: Ref<HTMLAnchorElement> | undefined;
+  },
+) => ReactNode;
 
 /** An anchor with the Monoline underline. With `asChild` and `external`, the target and rel are applied to your child, which should include its own visually hidden "(opens in a new tab)" text. */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({external, asChild, className, children, ...rest}, ref) {
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
+  {external, asChild, className, children, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'a';
   const extra = external ? {target: '_blank', rel: 'noopener noreferrer'} : {};
   return (
     <Comp ref={ref} className={cx('link', className)} {...extra} {...rest}>
-      {asChild ? children : <>{children}{external && <span className="sr-only"> (opens in a new tab)</span>}</>}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {children}
+          {external && <span className="sr-only"> (opens in a new tab)</span>}
+        </>
+      )}
     </Comp>
   );
 });

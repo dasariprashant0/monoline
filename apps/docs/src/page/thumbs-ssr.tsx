@@ -3,7 +3,9 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import type {Demo} from '@monoline/react';
 import {OVERRIDES} from './thumb-overrides';
 
-const files = import.meta.glob<{demos: Demo[]}>('../../../../packages/react/src/components/*/*.demo.tsx', {eager: true});
+const files = import.meta.glob<{demos: Demo[]}>('../../../../packages/react/src/components/*/*.demo.tsx', {
+  eager: true,
+});
 
 /** Which demo to show when the first is not the best picture of the component. */
 const PICK: Record<string, number> = {};

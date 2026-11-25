@@ -92,7 +92,7 @@
       ]
     }
   ],
-  "usage": "import {Button, useDisclosure} from '@monoline/react';\n\nfunction DisclosureDemo() {\n  const {isOpen, toggle} = useDisclosure();\n  return (\n    <div>\n      <Button variant=\"line\" aria-expanded={isOpen} onClick={toggle}>{isOpen ? 'Hide details' : 'Show details'}</Button>\n      {isOpen && <p>Details appear here.</p>}\n    </div>\n  );\n}\n\n<DisclosureDemo />",
+  "usage": "import {Button, useDisclosure} from '@monoline/react';\n\nfunction DisclosureDemo() {\n  const {isOpen, toggle} = useDisclosure();\n  return (\n    <div>\n      <Button variant=\"line\" aria-expanded={isOpen} onClick={toggle}>\n        {isOpen ? 'Hide details' : 'Show details'}\n      </Button>\n      {isOpen && <p>Details appear here.</p>}\n    </div>\n  );\n}\n\n<DisclosureDemo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},

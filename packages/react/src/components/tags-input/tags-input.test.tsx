@@ -62,7 +62,11 @@ describe('TagsInput', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<Field label="Keywords"><TagsInput defaultValue={['a']} /></Field>);
+    const {container} = render(
+      <Field label="Keywords">
+        <TagsInput defaultValue={['a']} />
+      </Field>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

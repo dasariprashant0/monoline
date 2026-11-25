@@ -43,7 +43,7 @@
       ]
     }
   ],
-  "usage": "import {Button, useHash} from '@monoline/react';\n\nfunction Demo() {\n  const [hash, setHash] = useHash();\n  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><output>#{hash || '(empty)'}</output><Button variant=\"line\" size=\"sm\" onClick={() => setHash('use-hash')}>Set #use-hash</Button></div>;\n}\n\n<Demo />",
+  "usage": "import {Button, useHash} from '@monoline/react';\n\nfunction Demo() {\n  const [hash, setHash] = useHash();\n  return (\n    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>\n      <output>#{hash || '(empty)'}</output>\n      <Button variant=\"line\" size=\"sm\" onClick={() => setHash('use-hash')}>\n        Set #use-hash\n      </Button>\n    </div>\n  );\n}\n\n<Demo />",
   "dataAttributes": [],
   "classes": [],
   "dependencies": {},
@@ -58,7 +58,7 @@
     },
     {
       "path": "packages/react/src/hooks/use-hash/use-hash.ts",
-      "content": "'use client';\nimport {useCallback, useSyncExternalStore} from 'react';\n\nconst subscribe = (cb: () => void) => { window.addEventListener('hashchange', cb); return () => window.removeEventListener('hashchange', cb); };\n\n/**\n * `const [hash, setHash] = useHash()`. The value has no leading \"#\". Empty string on the server.\n *\n * @returns The current hash without \"#\", and a function that sets it.\n */\nexport function useHash(): [string, (hash: string) => void] {\n  const hash = useSyncExternalStore(subscribe, () => window.location.hash.slice(1), () => '');\n  const set = useCallback((next: string) => { window.location.hash = next; }, []);\n  return [hash, set];\n}\n"
+      "content": "'use client';\nimport {useCallback, useSyncExternalStore} from 'react';\n\nconst subscribe = (cb: () => void) => {\n  window.addEventListener('hashchange', cb);\n  return () => window.removeEventListener('hashchange', cb);\n};\n\n/**\n * `const [hash, setHash] = useHash()`. The value has no leading \"#\". Empty string on the server.\n *\n * @returns The current hash without \"#\", and a function that sets it.\n */\nexport function useHash(): [string, (hash: string) => void] {\n  const hash = useSyncExternalStore(\n    subscribe,\n    () => window.location.hash.slice(1),\n    () => '',\n  );\n  const set = useCallback((next: string) => {\n    window.location.hash = next;\n  }, []);\n  return [hash, set];\n}\n"
     }
   ],
   "utils": []

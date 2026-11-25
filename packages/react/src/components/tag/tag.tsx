@@ -9,14 +9,19 @@ export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 /** A label for a category, filter or value. */
-export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag({onRemove, label, className, children, ...rest}, ref) {
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
+  {onRemove, label, className, children, ...rest},
+  ref,
+) {
   const text = label ?? (typeof children === 'string' ? children : '');
   return (
     <span ref={ref} className={cx('tag', className)} {...rest}>
       {children}
       {onRemove && (
         <button type="button" onClick={onRemove} aria-label={`Remove ${text}`.trim()}>
-          <svg aria-hidden="true" viewBox="0 0 10 10" width="10" height="10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" fill="none" /></svg>
+          <svg aria-hidden="true" viewBox="0 0 10 10" width="10" height="10">
+            <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" fill="none" />
+          </svg>
         </button>
       )}
     </span>

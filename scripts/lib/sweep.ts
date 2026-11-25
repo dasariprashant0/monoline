@@ -137,28 +137,41 @@ const PAGE = String.raw`(() => {
   window.__mlcheck = {scope, contrast, collisions, controls, prepare, hover, focus, page: () => { const s = scope(); return [...contrast(s), ...collisions(s)]; }, scopeName: () => sig(scope())};
 })()`;
 
-type Issue = {kind: string, detail: string};
+type Issue = {kind: string; detail: string};
 
 export async function installSweep(cdp: Cdp) {
   await cdp('Page.addScriptToEvaluateOnNewDocument', {source: PAGE});
 }
 
 /** Run the checks for the page's current state. `controls: false` skips the hover and focus passes. */
-export async function sweepState({cdp, evaluate, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), controls = true, max = 40}: {cdp: Cdp, evaluate: Evaluate, sleep?: (ms: number) => Promise<unknown>, controls?: boolean, max?: number}) {
+export async function sweepState({
+  cdp,
+  evaluate,
+  sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+  controls = true,
+  max = 40,
+}: {
+  cdp: Cdp;
+  evaluate: Evaluate;
+  sleep?: (ms: number) => Promise<unknown>;
+  controls?: boolean;
+  max?: number;
+}) {
   await evaluate(PAGE); // idempotent; covers a document that was already open when installSweep ran
-  const issues: Issue[] = [...await evaluate('__mlcheck.page()')];
+  const issues: Issue[] = [...(await evaluate('__mlcheck.page()'))];
   if (!controls) return issues;
   const list = await evaluate(`__mlcheck.controls(${max})`);
   for (const {i} of list) {
-    const p = await evaluate(`__mlcheck.prepare(${i})`); if (!p) continue;
+    const p = await evaluate(`__mlcheck.prepare(${i})`);
+    if (!p) continue;
     await cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: p.x, y: p.y});
     await sleep(30);
-    issues.push(...await evaluate(`__mlcheck.hover(${i})`));
+    issues.push(...(await evaluate(`__mlcheck.hover(${i})`)));
   }
   await cdp('Input.dispatchMouseEvent', {type: 'mouseMoved', x: 1, y: 1});
   // A real Tab press first, so programmatic focus() afterwards matches :focus-visible like a keyboard user's focus.
   await cdp('Input.dispatchKeyEvent', {type: 'rawKeyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9});
   await cdp('Input.dispatchKeyEvent', {type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9});
-  for (const {i} of list) issues.push(...await evaluate(`__mlcheck.focus(${i})`));
+  for (const {i} of list) issues.push(...(await evaluate(`__mlcheck.focus(${i})`)));
   return issues;
 }

@@ -8,33 +8,103 @@ import {i18n, accessibility, accessibilityStatement, contributing} from './guide
 import {viteSteps, recipes, choosing} from './guides-start';
 
 type CssSize = {name: string; kb: number};
-const sizes: {css: CssSize | null; cssPaths: CssSize[]} = Object.values(import.meta.glob<{css: CssSize | null; cssPaths: CssSize[]}>('./site/size.generated.json', {eager: true, import: 'default'}))[0] ?? {css: null, cssPaths: []};
+const sizes: {css: CssSize | null; cssPaths: CssSize[]} = Object.values(
+  import.meta.glob<{css: CssSize | null; cssPaths: CssSize[]}>('./site/size.generated.json', {
+    eager: true,
+    import: 'default',
+  }),
+)[0] ?? {css: null, cssPaths: []};
 // Captured by `npm run size` when the site is built, so the numbers cannot drift.
-const cssRows: CssSize[] = [...(sizes.css ? [{name: 'everything: @monoline/css', kb: sizes.css.kb}] : []), ...sizes.cssPaths];
+const cssRows: CssSize[] = [
+  ...(sizes.css ? [{name: 'everything: @monoline/css', kb: sizes.css.kb}] : []),
+  ...sizes.cssPaths,
+];
 
-export interface Guide {slug: string; title: string; summary: string; body: () => ReactNode}
-
+export interface Guide {
+  slug: string;
+  title: string;
+  summary: string;
+  body: () => ReactNode;
+}
 
 const moreStart = () => (
   <>
     <Section title="Load only the CSS you use">
-      <P><code>import '@monoline/css'</code> is the easy start: one file with every component (about 21 KB gzip). Most apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.</P>
-      <CodeBlock title="main.tsx" code={"import '@monoline/css/core.css';              // tokens, themes, accents, base: always\nimport '@monoline/css/components/button.css';\nimport '@monoline/css/components/dialog.css';\nimport '@monoline/css/components/card.css';"} />
-      <P>Each component page shows its import lines in the Import section. In code, <code>import {'{styles}'} from '@monoline/react'</code> is a map from component name to its file, for tooling and for checking what you load (<code>styles.core</code>, <code>styles.button</code>). Measured, minified and gzipped (<code>npm run size</code>):</P>
-      <Table><TableHeader><TableRow><TableHead>You load</TableHead><TableHead>CSS gzip</TableHead></TableRow></TableHeader><TableBody>
-        {cssRows.map((r) => <TableRow key={r.name}><TableCell>{r.name}</TableCell><TableCell>{r.kb.toFixed(1)} KB</TableCell></TableRow>)}
-      </TableBody></Table>
-      <P>The three example apps in <code>examples/</code> use this path. Without a bundler, link <code>core.css</code> and the component files from <code>node_modules/@monoline/css/dist/</code> in the same way, or copy the source files with the CLI.</P>
-      <P>If you write your own CSS, it wins over Monoline without specificity tricks, because Monoline lives in <code>@layer monoline.*</code> and unlayered CSS beats any layer. Your <code>.card</code> or <code>.badge</code> rules apply as written.</P>
+      <P>
+        <code>import '@monoline/css'</code> is the easy start: one file with every component (about 21 KB gzip). Most
+        apps use a fraction of it. The better path is the core plus one small file per component you use. Each bundle
+        already contains the styles of the parts it renders (a <code>Form</code> brings <code>Field</code> and{' '}
+        <code>Button</code>), and every file is wrapped in a cascade layer, so order does not matter between components.
+      </P>
+      <CodeBlock
+        title="main.tsx"
+        code={
+          "import '@monoline/css/core.css';              // tokens, themes, accents, base: always\nimport '@monoline/css/components/button.css';\nimport '@monoline/css/components/dialog.css';\nimport '@monoline/css/components/card.css';"
+        }
+      />
+      <P>
+        Each component page shows its import lines in the Import section. In code,{' '}
+        <code>import {'{styles}'} from '@monoline/react'</code> is a map from component name to its file, for tooling
+        and for checking what you load (<code>styles.core</code>, <code>styles.button</code>). Measured, minified and
+        gzipped (<code>npm run size</code>):
+      </P>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>You load</TableHead>
+            <TableHead>CSS gzip</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {cssRows.map((r) => (
+            <TableRow key={r.name}>
+              <TableCell>{r.name}</TableCell>
+              <TableCell>{r.kb.toFixed(1)} KB</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <P>
+        The three example apps in <code>examples/</code> use this path. Without a bundler, link <code>core.css</code>{' '}
+        and the component files from <code>node_modules/@monoline/css/dist/</code> in the same way, or copy the source
+        files with the CLI.
+      </P>
+      <P>
+        If you write your own CSS, it wins over Monoline without specificity tricks, because Monoline lives in{' '}
+        <code>@layer monoline.*</code> and unlayered CSS beats any layer. Your <code>.card</code> or <code>.badge</code>{' '}
+        rules apply as written.
+      </P>
     </Section>
     <Section title="Spacing between blocks">
-      <P>A <code>Field</code>, <code>Heading</code>, <code>Text</code> or <code>Button</code> has no outer margin, so siblings in a plain <code>div</code> touch. <code>Form</code> and <code>Stack</code> space their children. <code>Card</code> and <code>Dialog</code> content and <code>.prose</code> do it for you (<code>--flow</code>, default <code>--s4</code>; a heading after a block gets 1.5 steps); <code>Drawer</code> and <code>Alert</code> are flex and grid containers with a gap of their own. Anywhere else, add the <code>flow</code> class to the container, and set <code>--flow</code> (or <code>flow-s2</code> to <code>flow-s8</code>) to change the step.</P>
-      <CodeBlock title="Page.tsx" code={'<section className="flow">\n  <Heading level={2}>Billing</Heading>\n  <Text>Your plan renews on the 1st.</Text>\n  <Button>Update card</Button>\n</section>'} />
+      <P>
+        A <code>Field</code>, <code>Heading</code>, <code>Text</code> or <code>Button</code> has no outer margin, so
+        siblings in a plain <code>div</code> touch. <code>Form</code> and <code>Stack</code> space their children.{' '}
+        <code>Card</code> and <code>Dialog</code> content and <code>.prose</code> do it for you (<code>--flow</code>,
+        default <code>--s4</code>; a heading after a block gets 1.5 steps); <code>Drawer</code> and <code>Alert</code>{' '}
+        are flex and grid containers with a gap of their own. Anywhere else, add the <code>flow</code> class to the
+        container, and set <code>--flow</code> (or <code>flow-s2</code> to <code>flow-s8</code>) to change the step.
+      </P>
+      <CodeBlock
+        title="Page.tsx"
+        code={
+          '<section className="flow">\n  <Heading level={2}>Billing</Heading>\n  <Text>Your plan renews on the 1st.</Text>\n  <Button>Update card</Button>\n</section>'
+        }
+      />
     </Section>
     <Section title="Plain CSS, no React">
       <P>Every component is a set of class names. Link the stylesheet and write HTML.</P>
-      <CodeBlock title="index.html" code={'<link rel="stylesheet" href="node_modules/@monoline/css/dist/monoline.css">\n\n<html data-theme="warm" data-accent="green">\n  <button class="btn btn-solid">Save</button>\n  <button class="btn btn-line">Cancel</button>\n</html>'} />
-      <P>An optional script, <code>@monoline/css/monoline.js</code>, adds behaviour through data attributes: <code>data-ml-theme</code> and <code>data-ml-accent</code> buttons, <code>[data-tabs]</code>, <code>data-dialog-open</code>, <code>data-drawer-open</code>, <code>data-toast</code> and <code>data-copy</code>.</P>
+      <CodeBlock
+        title="index.html"
+        code={
+          '<link rel="stylesheet" href="node_modules/@monoline/css/dist/monoline.css">\n\n<html data-theme="warm" data-accent="green">\n  <button class="btn btn-solid">Save</button>\n  <button class="btn btn-line">Cancel</button>\n</html>'
+        }
+      />
+      <P>
+        An optional script, <code>@monoline/css/monoline.js</code>, adds behaviour through data attributes:{' '}
+        <code>data-ml-theme</code> and <code>data-ml-accent</code> buttons, <code>[data-tabs]</code>,{' '}
+        <code>data-dialog-open</code>, <code>data-drawer-open</code>, <code>data-toast</code> and <code>data-copy</code>
+        .
+      </P>
     </Section>
     <Section title="Or copy the source">
       <P>If you would rather own the component code, use the CLI (next guide) to copy components into your project.</P>
@@ -52,36 +122,133 @@ const gettingStarted = () => (
 const cli = () => (
   <>
     <Section title="Overview">
-      <P>The <code>monoline</code> CLI copies component source and its CSS from the registry into your project, shadcn-style. It is plain Node (20+) with no dependencies.</P>
-      <CodeBlock title="bash" code={'npx monoline init                  # writes monoline.json, prints the tokens import\nnpx monoline list                  # all components   (--category forms)\nnpx monoline info dialog           # description, css, accessibility notes\nnpx monoline add button dialog     # copy source and CSS into your project'} />
+      <P>
+        The <code>monoline</code> CLI copies component source and its CSS from the registry into your project,
+        shadcn-style. It is plain Node (20+) with no dependencies.
+      </P>
+      <CodeBlock
+        title="bash"
+        code={
+          'npx monoline init                  # writes monoline.json, prints the tokens import\nnpx monoline list                  # all components   (--category forms)\nnpx monoline info dialog           # description, css, accessibility notes\nnpx monoline add button dialog     # copy source and CSS into your project'
+        }
+      />
     </Section>
     <Section title="Commands">
       <dl className="kv">
-        <dt><code>add &lt;name...&gt;</code></dt><dd>Copies each component and any component it imports (for example <code>password-input</code> brings <code>input</code>) into <code>src/components/monoline/&lt;name&gt;/</code>, and its stylesheets into <code>src/styles/monoline/</code>. Also writes the shared helpers it needs (<code>utils/cx.ts</code>, <code>utils/slot.tsx</code>, <code>utils/overlay.ts</code>). Prints the CSS imports to add and the npm packages to install.</dd>
-        <dt><code>list</code></dt><dd>Lists components with category, status and description. <code>--category &lt;x&gt;</code> filters.</dd>
-        <dt><code>info &lt;name&gt;</code></dt><dd>Shows title, category, status, import line, primitive, stylesheets and accessibility notes.</dd>
-        <dt><code>search &lt;words...&gt;</code></dt><dd>Finds components by name, title, keyword or description. Exits <code>1</code> when nothing matches.</dd>
-        <dt><code>diff &lt;name...&gt;</code></dt><dd>Prints a unified diff between your copy and the registry. Exit <code>0</code> when all match, <code>1</code> when something differs or the component is not in the project.</dd>
-        <dt><code>update &lt;name...&gt;</code></dt><dd>Shows the diff, then replaces the differing files after a <code>[y/N]</code> question. Without a terminal it needs <code>--yes</code>.</dd>
-        <dt><code>init</code></dt><dd>Writes <code>monoline.json</code> (component and style folders) and prints the token imports. Refuses if the file exists unless <code>--overwrite</code>.</dd>
+        <dt>
+          <code>add &lt;name...&gt;</code>
+        </dt>
+        <dd>
+          Copies each component and any component it imports (for example <code>password-input</code> brings{' '}
+          <code>input</code>) into <code>src/components/monoline/&lt;name&gt;/</code>, and its stylesheets into{' '}
+          <code>src/styles/monoline/</code>. Also writes the shared helpers it needs (<code>utils/cx.ts</code>,{' '}
+          <code>utils/slot.tsx</code>, <code>utils/overlay.ts</code>). Prints the CSS imports to add and the npm
+          packages to install.
+        </dd>
+        <dt>
+          <code>list</code>
+        </dt>
+        <dd>
+          Lists components with category, status and description. <code>--category &lt;x&gt;</code> filters.
+        </dd>
+        <dt>
+          <code>info &lt;name&gt;</code>
+        </dt>
+        <dd>Shows title, category, status, import line, primitive, stylesheets and accessibility notes.</dd>
+        <dt>
+          <code>search &lt;words...&gt;</code>
+        </dt>
+        <dd>
+          Finds components by name, title, keyword or description. Exits <code>1</code> when nothing matches.
+        </dd>
+        <dt>
+          <code>diff &lt;name...&gt;</code>
+        </dt>
+        <dd>
+          Prints a unified diff between your copy and the registry. Exit <code>0</code> when all match, <code>1</code>{' '}
+          when something differs or the component is not in the project.
+        </dd>
+        <dt>
+          <code>update &lt;name...&gt;</code>
+        </dt>
+        <dd>
+          Shows the diff, then replaces the differing files after a <code>[y/N]</code> question. Without a terminal it
+          needs <code>--yes</code>.
+        </dd>
+        <dt>
+          <code>init</code>
+        </dt>
+        <dd>
+          Writes <code>monoline.json</code> (component and style folders) and prints the token imports. Refuses if the
+          file exists unless <code>--overwrite</code>.
+        </dd>
       </dl>
     </Section>
     <Section title="Options">
       <dl className="kv">
-        <dt><code>--registry &lt;path|url&gt;</code></dt><dd>Registry folder or URL. Default is the GitHub <code>master</code> registry. A local checkout works: <code>--registry ./registry</code>.</dd>
-        <dt><code>--dir &lt;path&gt;</code></dt><dd>Component folder. Default <code>src/components/monoline</code>.</dd>
-        <dt><code>--styles &lt;path&gt;</code></dt><dd>CSS folder. Default <code>src/styles/monoline</code>.</dd>
-        <dt><code>--overwrite</code></dt><dd>Replace files that already exist. Without it, <code>add</code> refuses and lists the clashes.</dd>
-        <dt><code>--all</code>, <code>--category &lt;name&gt;</code></dt><dd>(<code>add</code>) every component, or every component in one category such as <code>forms</code>.</dd>
-        <dt><code>--yes</code>, <code>--backup</code></dt><dd>(<code>update</code>) replace without asking; keep the old file as <code>&lt;file&gt;.orig</code>.</dd>
-        <dt><code>--dry-run</code></dt><dd>Print what would be written or changed; write nothing.</dd>
-        <dt><code>--cwd &lt;path&gt;</code></dt><dd>Project root. Default: the current folder.</dd>
+        <dt>
+          <code>--registry &lt;path|url&gt;</code>
+        </dt>
+        <dd>
+          Registry folder or URL. Default is the GitHub <code>master</code> registry. A local checkout works:{' '}
+          <code>--registry ./registry</code>.
+        </dd>
+        <dt>
+          <code>--dir &lt;path&gt;</code>
+        </dt>
+        <dd>
+          Component folder. Default <code>src/components/monoline</code>.
+        </dd>
+        <dt>
+          <code>--styles &lt;path&gt;</code>
+        </dt>
+        <dd>
+          CSS folder. Default <code>src/styles/monoline</code>.
+        </dd>
+        <dt>
+          <code>--overwrite</code>
+        </dt>
+        <dd>
+          Replace files that already exist. Without it, <code>add</code> refuses and lists the clashes.
+        </dd>
+        <dt>
+          <code>--all</code>, <code>--category &lt;name&gt;</code>
+        </dt>
+        <dd>
+          (<code>add</code>) every component, or every component in one category such as <code>forms</code>.
+        </dd>
+        <dt>
+          <code>--yes</code>, <code>--backup</code>
+        </dt>
+        <dd>
+          (<code>update</code>) replace without asking; keep the old file as <code>&lt;file&gt;.orig</code>.
+        </dd>
+        <dt>
+          <code>--dry-run</code>
+        </dt>
+        <dd>Print what would be written or changed; write nothing.</dd>
+        <dt>
+          <code>--cwd &lt;path&gt;</code>
+        </dt>
+        <dd>Project root. Default: the current folder.</dd>
       </dl>
-      <P><code>monoline.json</code> stores <code>components</code>, <code>styles</code> and optionally <code>registry</code>; flags win over it.</P>
+      <P>
+        <code>monoline.json</code> stores <code>components</code>, <code>styles</code> and optionally{' '}
+        <code>registry</code>; flags win over it.
+      </P>
     </Section>
     <Section title="Example">
-      <CodeBlock title="bash" code={'npx monoline add dialog --dry-run\nnpx monoline add dialog\n# the command prints any npm packages the component needs'} />
-      <P>The CSS files assume the tokens are loaded: <code>npm i @monoline/css</code> and import <code>@monoline/css/core.css</code> once, before the component files (<code>init</code> prints the line). Only use registries you trust: the CLI writes whatever source the registry serves.</P>
+      <CodeBlock
+        title="bash"
+        code={
+          'npx monoline add dialog --dry-run\nnpx monoline add dialog\n# the command prints any npm packages the component needs'
+        }
+      />
+      <P>
+        The CSS files assume the tokens are loaded: <code>npm i @monoline/css</code> and import{' '}
+        <code>@monoline/css/core.css</code> once, before the component files (<code>init</code> prints the line). Only
+        use registries you trust: the CLI writes whatever source the registry serves.
+      </P>
     </Section>
   </>
 );
@@ -89,31 +256,102 @@ const cli = () => (
 const theming = () => (
   <>
     <Section title="Attributes on <html>">
-      <P>Look and feel is controlled by data attributes on the root element. Components never change; only token values do.</P>
+      <P>
+        Look and feel is controlled by data attributes on the root element. Components never change; only token values
+        do.
+      </P>
       <dl className="kv">
-        <dt><code>data-theme</code></dt><dd><code>warm</code> (default, light), <code>dark</code>, <code>midnight</code></dd>
-        <dt><code>data-accent</code></dt><dd><code>orange</code> (default), <code>green</code>, <code>blue</code>, <code>violet</code>, <code>rose</code>, <code>teal</code>, <code>amber</code>, <code>slate</code>. Each pair is contrast-checked in all three themes.</dd>
-        <dt><code>data-font</code></dt><dd><code>mono</code> (default), <code>sans</code>, <code>serif</code>. System stacks, nothing to download.</dd>
-        <dt><code>data-radius</code></dt><dd><code>square</code> (default, <code>--radius: 0</code>), <code>soft</code> (6px), <code>round</code> (12px)</dd>
-        <dt><code>data-density</code></dt><dd><code>compact</code>, <code>comfortable</code> (default), <code>spacious</code>. Rescales <code>--s2</code> to <code>--s7</code> and the small text sizes.</dd>
+        <dt>
+          <code>data-theme</code>
+        </dt>
+        <dd>
+          <code>warm</code> (default, light), <code>dark</code>, <code>midnight</code>
+        </dd>
+        <dt>
+          <code>data-accent</code>
+        </dt>
+        <dd>
+          <code>orange</code> (default), <code>green</code>, <code>blue</code>, <code>violet</code>, <code>rose</code>,{' '}
+          <code>teal</code>, <code>amber</code>, <code>slate</code>. Each pair is contrast-checked in all three themes.
+        </dd>
+        <dt>
+          <code>data-font</code>
+        </dt>
+        <dd>
+          <code>mono</code> (default), <code>sans</code>, <code>serif</code>. System stacks, nothing to download.
+        </dd>
+        <dt>
+          <code>data-radius</code>
+        </dt>
+        <dd>
+          <code>square</code> (default, <code>--radius: 0</code>), <code>soft</code> (6px), <code>round</code> (12px)
+        </dd>
+        <dt>
+          <code>data-density</code>
+        </dt>
+        <dd>
+          <code>compact</code>, <code>comfortable</code> (default), <code>spacious</code>. Rescales <code>--s2</code> to{' '}
+          <code>--s7</code> and the small text sizes.
+        </dd>
       </dl>
-      <CodeBlock title="index.html" code={'<html data-theme="midnight" data-accent="teal" data-font="sans" data-radius="soft" data-density="compact">'} />
-      <P>Accents, fonts, radius and density live in <code>accents.css</code> and <code>options.css</code>. Load <code>options.css</code> after the components. The Customise panel on this site sets exactly these attributes.</P>
+      <CodeBlock
+        title="index.html"
+        code={
+          '<html data-theme="midnight" data-accent="teal" data-font="sans" data-radius="soft" data-density="compact">'
+        }
+      />
+      <P>
+        Accents, fonts, radius and density live in <code>accents.css</code> and <code>options.css</code>. Load{' '}
+        <code>options.css</code> after the components. The Customise panel on this site sets exactly these attributes.
+      </P>
     </Section>
     <Section title="Override tokens">
-      <P>Every colour, size, space and timing is a CSS variable defined in <code>tokens.css</code>. Override them on <code>:root</code>, or scope them to a theme. Load your file after Monoline.</P>
-      <CodeBlock title="brand.css" code={':root {\n  --font-body: "Inter", system-ui, sans-serif;\n  --s4: 18px;\n}\n\n/* Brand accent, per theme. Keep the pairs readable. */\n:root, [data-theme="warm"] {\n  --accent: #0057FF;\n  --accent-text: #0047D1;   /* accent used as text */\n  --on-accent: #FFFFFF;     /* text on an accent fill */\n}\n[data-theme="dark"] { --accent: #5B9DFF; --accent-text: #5B9DFF; --on-accent: #07162E; }'} />
+      <P>
+        Every colour, size, space and timing is a CSS variable defined in <code>tokens.css</code>. Override them on{' '}
+        <code>:root</code>, or scope them to a theme. Load your file after Monoline.
+      </P>
+      <CodeBlock
+        title="brand.css"
+        code={
+          ':root {\n  --font-body: "Inter", system-ui, sans-serif;\n  --s4: 18px;\n}\n\n/* Brand accent, per theme. Keep the pairs readable. */\n:root, [data-theme="warm"] {\n  --accent: #0057FF;\n  --accent-text: #0047D1;   /* accent used as text */\n  --on-accent: #FFFFFF;     /* text on an accent fill */\n}\n[data-theme="dark"] { --accent: #5B9DFF; --accent-text: #5B9DFF; --on-accent: #07162E; }'
+        }
+      />
     </Section>
     <Section title="Token groups">
       <dl className="kv">
-        <dt>Colour</dt><dd><code>--background</code>, <code>--foreground</code>, <code>--muted</code>, <code>--border</code>, <code>--surface</code>, <code>--danger</code>, <code>--warning</code>, <code>--ok</code></dd>
-        <dt>Accent</dt><dd><code>--accent</code> (fills, marks, focus), <code>--accent-text</code> (as text), <code>--accent-2</code>, <code>--on-accent</code></dd>
-        <dt>Lines and washes</dt><dd><code>--rule</code>, <code>--wash</code>, <code>--wash-2</code>, <code>--ink-1</code> to <code>--ink-5</code></dd>
-        <dt>Type</dt><dd><code>--font-display</code>, <code>--font-body</code>, <code>--text-xs</code> to <code>--text-lg</code>, <code>--display-sm</code>, <code>--display-md</code>, <code>--display-xl</code></dd>
-        <dt>Space</dt><dd><code>--s1</code> to <code>--s9</code> (4px steps)</dd>
-        <dt>Shape and motion</dt><dd><code>--radius</code>, <code>--round</code>, <code>--ease</code>, <code>--fast</code>, <code>--base</code>, <code>--slow</code></dd>
+        <dt>Colour</dt>
+        <dd>
+          <code>--background</code>, <code>--foreground</code>, <code>--muted</code>, <code>--border</code>,{' '}
+          <code>--surface</code>, <code>--danger</code>, <code>--warning</code>, <code>--ok</code>
+        </dd>
+        <dt>Accent</dt>
+        <dd>
+          <code>--accent</code> (fills, marks, focus), <code>--accent-text</code> (as text), <code>--accent-2</code>,{' '}
+          <code>--on-accent</code>
+        </dd>
+        <dt>Lines and washes</dt>
+        <dd>
+          <code>--rule</code>, <code>--wash</code>, <code>--wash-2</code>, <code>--ink-1</code> to <code>--ink-5</code>
+        </dd>
+        <dt>Type</dt>
+        <dd>
+          <code>--font-display</code>, <code>--font-body</code>, <code>--text-xs</code> to <code>--text-lg</code>,{' '}
+          <code>--display-sm</code>, <code>--display-md</code>, <code>--display-xl</code>
+        </dd>
+        <dt>Space</dt>
+        <dd>
+          <code>--s1</code> to <code>--s9</code> (4px steps)
+        </dd>
+        <dt>Shape and motion</dt>
+        <dd>
+          <code>--radius</code>, <code>--round</code>, <code>--ease</code>, <code>--fast</code>, <code>--base</code>,{' '}
+          <code>--slow</code>
+        </dd>
       </dl>
-      <P>The same tokens ship as W3C design-tokens JSON: <code>@monoline/css/tokens.json</code>. In your own CSS use tokens, not raw values, so themes keep working.</P>
+      <P>
+        The same tokens ship as W3C design-tokens JSON: <code>@monoline/css/tokens.json</code>. In your own CSS use
+        tokens, not raw values, so themes keep working.
+      </P>
     </Section>
   </>
 );
@@ -121,51 +359,171 @@ const theming = () => (
 const forAi = () => (
   <>
     <Section title="Start here">
-      <P>The repository is set up so an AI coding tool can use Monoline without guessing. Point it at these files, in this order.</P>
+      <P>
+        The repository is set up so an AI coding tool can use Monoline without guessing. Point it at these files, in
+        this order.
+      </P>
       <dl className="kv">
-        <dt><code>AGENTS.md</code></dt><dd>Layout, commands, the component recipe, API conventions, CSS rules and the accessibility bar.</dd>
-        <dt><code>DESIGN.md</code></dt><dd>The look, the tokens and the copy rules.</dd>
-        <dt><code>llms.txt</code></dt><dd>Short index: what the kit is, links to the docs, and one line per component.</dd>
-        <dt><code>llms-full.txt</code></dt><dd>Every component in one file: description, import line, primitive, status, accessibility notes and its file list.</dd>
-        <dt><code>registry/</code></dt><dd>One JSON file per component or hook, plus <code>index.json</code> listing them all.</dd>
+        <dt>
+          <code>AGENTS.md</code>
+        </dt>
+        <dd>Layout, commands, the component recipe, API conventions, CSS rules and the accessibility bar.</dd>
+        <dt>
+          <code>DESIGN.md</code>
+        </dt>
+        <dd>The look, the tokens and the copy rules.</dd>
+        <dt>
+          <code>llms.txt</code>
+        </dt>
+        <dd>Short index: what the kit is, links to the docs, and one line per component.</dd>
+        <dt>
+          <code>llms-full.txt</code>
+        </dt>
+        <dd>
+          Every component in one file: description, import line, primitive, status, accessibility notes and its file
+          list.
+        </dd>
+        <dt>
+          <code>registry/</code>
+        </dt>
+        <dd>
+          One JSON file per component or hook, plus <code>index.json</code> listing them all.
+        </dd>
       </dl>
-      <P><code>llms.txt</code>, <code>llms-full.txt</code> and <code>registry/</code> are generated by <code>npm run registry</code>. Do not edit them by hand.</P>
+      <P>
+        <code>llms.txt</code>, <code>llms-full.txt</code> and <code>registry/</code> are generated by{' '}
+        <code>npm run registry</code>. Do not edit them by hand.
+      </P>
     </Section>
     <Section title="registry/*.json">
-      <P><code>registry/index.json</code> lists every entry with <code>name</code>, <code>title</code>, <code>category</code>, <code>description</code>, <code>status</code>, <code>primitive</code>, <code>css</code>, <code>a11y</code>, <code>keywords</code>, <code>related</code>, <code>kind</code>, <code>import</code>, <code>path</code>, <code>files</code> and <code>propNames</code>. Each <code>registry/&lt;name&gt;.json</code> adds <code>dependencies</code> and <code>source</code>, an array of <code>{'{path, content}'}</code> with the full file text. This is what the CLI reads.</P>
-      <CodeBlock title="bash" code="curl -s https://raw.githubusercontent.com/dasariprashant0/monoline/master/registry/button.json" />
+      <P>
+        <code>registry/index.json</code> lists every entry with <code>name</code>, <code>title</code>,{' '}
+        <code>category</code>, <code>description</code>, <code>status</code>, <code>primitive</code>, <code>css</code>,{' '}
+        <code>a11y</code>, <code>keywords</code>, <code>related</code>, <code>kind</code>, <code>import</code>,{' '}
+        <code>path</code>, <code>files</code> and <code>propNames</code>. Each <code>registry/&lt;name&gt;.json</code>{' '}
+        adds <code>dependencies</code> and <code>source</code>, an array of <code>{'{path, content}'}</code> with the
+        full file text. This is what the CLI reads.
+      </P>
+      <CodeBlock
+        title="bash"
+        code="curl -s https://raw.githubusercontent.com/dasariprashant0/monoline/master/registry/button.json"
+      />
     </Section>
     <Section title="meta.json fields">
-      <P>Every component folder has a <code>meta.json</code>, validated by <code>npm run registry</code>. This site is built from it, so a new component needs no docs change.</P>
+      <P>
+        Every component folder has a <code>meta.json</code>, validated by <code>npm run registry</code>. This site is
+        built from it, so a new component needs no docs change.
+      </P>
       <dl className="kv">
-        <dt><code>name</code></dt><dd>Equals the folder name.</dd>
-        <dt><code>title</code></dt><dd>Display name.</dd>
-        <dt><code>category</code></dt><dd>layout, typography, buttons, forms, data-display, feedback, overlays, navigation, effects, blocks or hooks.</dd>
-        <dt><code>description</code></dt><dd>One sentence.</dd>
-        <dt><code>status</code></dt><dd>Maturity, such as stable.</dd>
-        <dt><code>primitive</code></dt><dd>Optional. The Radix primitive underneath, if any.</dd>
-        <dt><code>css</code></dt><dd>Stylesheets in <code>packages/css/src/components/</code> the component needs.</dd>
-        <dt><code>a11y</code></dt><dd>Plain-language accessibility notes.</dd>
-        <dt><code>keywords</code></dt><dd>Alternative names, used for search.</dd>
+        <dt>
+          <code>name</code>
+        </dt>
+        <dd>Equals the folder name.</dd>
+        <dt>
+          <code>title</code>
+        </dt>
+        <dd>Display name.</dd>
+        <dt>
+          <code>category</code>
+        </dt>
+        <dd>
+          layout, typography, buttons, forms, data-display, feedback, overlays, navigation, effects, blocks or hooks.
+        </dd>
+        <dt>
+          <code>description</code>
+        </dt>
+        <dd>One sentence.</dd>
+        <dt>
+          <code>status</code>
+        </dt>
+        <dd>Maturity, such as stable.</dd>
+        <dt>
+          <code>primitive</code>
+        </dt>
+        <dd>Optional. The Radix primitive underneath, if any.</dd>
+        <dt>
+          <code>css</code>
+        </dt>
+        <dd>
+          Stylesheets in <code>packages/css/src/components/</code> the component needs.
+        </dd>
+        <dt>
+          <code>a11y</code>
+        </dt>
+        <dd>Plain-language accessibility notes.</dd>
+        <dt>
+          <code>keywords</code>
+        </dt>
+        <dd>Alternative names, used for search.</dd>
       </dl>
     </Section>
     <Section title="Prompt tip">
-      <CodeBlock title="prompt" code={'Read AGENTS.md and DESIGN.md. Build a settings page with @monoline/react.\nUse only tokens for colour and spacing. Component list: llms.txt.'} />
+      <CodeBlock
+        title="prompt"
+        code={
+          'Read AGENTS.md and DESIGN.md. Build a settings page with @monoline/react.\nUse only tokens for colour and spacing. Component list: llms.txt.'
+        }
+      />
     </Section>
   </>
 );
 
 export const guides: Guide[] = [
-  {slug: 'getting-started', title: 'Getting started', summary: 'From an empty folder to a themed page, dark mode and a dialog with Vite, in ten minutes.', body: gettingStarted},
-  {slug: 'recipes', title: 'Copy-paste recipes', summary: 'A settings form, a toast and an AI prompt, each built and tested.', body: recipes},
-  {slug: 'choosing', title: 'Is Monoline for you?', summary: 'When to pick it, when not to, and what is still missing.', body: choosing},
+  {
+    slug: 'getting-started',
+    title: 'Getting started',
+    summary: 'From an empty folder to a themed page, dark mode and a dialog with Vite, in ten minutes.',
+    body: gettingStarted,
+  },
+  {
+    slug: 'recipes',
+    title: 'Copy-paste recipes',
+    summary: 'A settings form, a toast and an AI prompt, each built and tested.',
+    body: recipes,
+  },
+  {
+    slug: 'choosing',
+    title: 'Is Monoline for you?',
+    summary: 'When to pick it, when not to, and what is still missing.',
+    body: choosing,
+  },
   {slug: 'cli', title: 'CLI', summary: 'Copy components into your project with npx monoline.', body: cli},
   {slug: 'theming', title: 'Theming', summary: 'Themes, accents, fonts, corners, density and tokens.', body: theming},
-  {slug: 'theme-builder', title: 'Theme builder', summary: 'Try the options and custom colours, then copy the CSS.', body: () => <ThemeBuilder />},
-  {slug: 'forms', title: 'Forms and validation', summary: 'Field, Form and react-hook-form, Zod, error summaries and submit states.', body: forms},
-  {slug: 'i18n', title: 'i18n and RTL', summary: 'Direction, locale props, Intl formatting, long text and translated copy.', body: i18n},
-  {slug: 'accessibility', title: 'Accessibility', summary: 'The commitments, how they are checked and what is not covered yet.', body: accessibility},
-  {slug: 'accessibility-statement', title: 'Accessibility statement', summary: 'What is tested and with which tools, the known gaps, and that no screen reader test has been run.', body: accessibilityStatement},
-  {slug: 'contributing', title: 'Contributing a component', summary: 'The recipe, a worked example, the checklist and the generated files.', body: contributing},
+  {
+    slug: 'theme-builder',
+    title: 'Theme builder',
+    summary: 'Try the options and custom colours, then copy the CSS.',
+    body: () => <ThemeBuilder />,
+  },
+  {
+    slug: 'forms',
+    title: 'Forms and validation',
+    summary: 'Field, Form and react-hook-form, Zod, error summaries and submit states.',
+    body: forms,
+  },
+  {
+    slug: 'i18n',
+    title: 'i18n and RTL',
+    summary: 'Direction, locale props, Intl formatting, long text and translated copy.',
+    body: i18n,
+  },
+  {
+    slug: 'accessibility',
+    title: 'Accessibility',
+    summary: 'The commitments, how they are checked and what is not covered yet.',
+    body: accessibility,
+  },
+  {
+    slug: 'accessibility-statement',
+    title: 'Accessibility statement',
+    summary: 'What is tested and with which tools, the known gaps, and that no screen reader test has been run.',
+    body: accessibilityStatement,
+  },
+  {
+    slug: 'contributing',
+    title: 'Contributing a component',
+    summary: 'The recipe, a worked example, the checklist and the generated files.',
+    body: contributing,
+  },
   {slug: 'for-ai-tools', title: 'For AI tools', summary: 'llms.txt, the registry and meta.json.', body: forAi},
 ];

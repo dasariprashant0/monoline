@@ -10,9 +10,13 @@ function IntervalDemo() {
   return (
     <div>
       <p>Elapsed: {seconds} s</p>
-      <Button variant="line" onClick={() => setRunning((r) => !r)}>{running ? 'Pause' : 'Resume'}</Button>
+      <Button variant="line" onClick={() => setRunning((r) => !r)}>
+        {running ? 'Pause' : 'Resume'}
+      </Button>
     </div>
   );
 }
 
-export const demos: Demo[] = [{title: 'Timer', description: 'Pass null as the delay to pause.', render: () => <IntervalDemo />}];
+export const demos: Demo[] = [
+  {title: 'Timer', description: 'Pass null as the delay to pause.', render: () => <IntervalDemo />},
+];

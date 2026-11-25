@@ -5,7 +5,13 @@ import {AvatarGroup} from './avatar-group';
 import {createRef} from 'react';
 
 const people = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds', 'Margaret Hamilton'];
-const ui = (max?: number) => <AvatarGroup aria-label="Members" max={max}>{people.map((n) => <Avatar key={n} name={n} />)}</AvatarGroup>;
+const ui = (max?: number) => (
+  <AvatarGroup aria-label="Members" max={max}>
+    {people.map((n) => (
+      <Avatar key={n} name={n} />
+    ))}
+  </AvatarGroup>
+);
 
 describe('AvatarGroup', () => {
   it('is a named group', () => {
@@ -38,7 +44,12 @@ describe('AvatarGroup', () => {
     expect(screen.getByText('+5')).toBeInTheDocument();
   });
   it('renders an empty group and ignores null/false children', () => {
-    render(<AvatarGroup aria-label="Empty">{null}{false}</AvatarGroup>);
+    render(
+      <AvatarGroup aria-label="Empty">
+        {null}
+        {false}
+      </AvatarGroup>,
+    );
     const g = screen.getByRole('group', {name: 'Empty'});
     expect(g).toBeEmptyDOMElement();
   });

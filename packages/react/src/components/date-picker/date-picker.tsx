@@ -35,7 +35,10 @@ export interface DatePickerProps extends Omit<CalendarProps, 'className' | 'aria
 /** On open, move focus to the day that can be tabbed to (the chosen date, else today), not the month arrows, as in the ARIA date-picker pattern. */
 const focusDay = (e: Event) => {
   const day = (e.currentTarget as HTMLElement).querySelector<HTMLElement>('[role="grid"] button[tabindex="0"]');
-  if (day) { e.preventDefault(); day.focus(); }
+  if (day) {
+    e.preventDefault();
+    day.focus();
+  }
 };
 
 /** Keeps the popover inside short viewports: it takes the side with more room and scrolls inside when even that is too small. */
@@ -46,7 +49,27 @@ const FIT = {maxHeight: 'var(--available-height)', overflowY: 'auto'} as const;
  * Add `clearable` to put a "Clear date" button in the popover; it calls `onValueChange(null)` and closes.
  * @example <DatePicker clearable value={date} onValueChange={setDate} aria-label="Due" />
  */
-export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker({value, defaultValue = null, onValueChange, placeholder = 'Pick a date', format = {dateStyle: 'medium'}, locale, size = 'md', open: openProp, defaultOpen = false, onOpenChange, disabled, name, invalid, className, 'aria-label': label, ...cal}, ref) {
+export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker(
+  {
+    value,
+    defaultValue = null,
+    onValueChange,
+    placeholder = 'Pick a date',
+    format = {dateStyle: 'medium'},
+    locale,
+    size = 'md',
+    open: openProp,
+    defaultOpen = false,
+    onOpenChange,
+    disabled,
+    name,
+    invalid,
+    className,
+    'aria-label': label,
+    ...cal
+  },
+  ref,
+) {
   const f = useFieldControl();
   const [inner, setInner] = useState<Date | null>(defaultValue);
   const [open, setOpen] = useControllableState({value: openProp, defaultValue: defaultOpen, onChange: onOpenChange});
@@ -54,17 +77,44 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
   const text = current ? new Intl.DateTimeFormat(locale, format).format(current) : '';
   return (
     <>
-    {hiddenInputs(name, isoDate(current), disabled)}
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button ref={ref} type="button" disabled={disabled} className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)} {...f} aria-label={label ? `${label}: ${text || placeholder}` : undefined} {...invalidAttrs(invalid)} data-disabled={disabled ? '' : undefined} data-empty={!current || undefined}>
-          {text || placeholder}
-        </button>
-      </PopoverTrigger>
-              <PopoverContent className="date-popover" sideOffset={6} align="start" aria-label="Choose a date" onOpenAutoFocus={focusDay} collisionPadding={8} style={FIT}>
-          <Calendar value={current} locale={locale} {...cal} onValueChange={(d) => { if (value === undefined) setInner(d); onValueChange?.(d); setOpen(false); }} />
+      {hiddenInputs(name, isoDate(current), disabled)}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            ref={ref}
+            type="button"
+            disabled={disabled}
+            className={cx('input date-trigger', size !== 'md' && `input-${size}`, className)}
+            {...f}
+            aria-label={label ? `${label}: ${text || placeholder}` : undefined}
+            {...invalidAttrs(invalid)}
+            data-disabled={disabled ? '' : undefined}
+            data-empty={!current || undefined}
+          >
+            {text || placeholder}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="date-popover"
+          sideOffset={6}
+          align="start"
+          aria-label="Choose a date"
+          onOpenAutoFocus={focusDay}
+          collisionPadding={8}
+          style={FIT}
+        >
+          <Calendar
+            value={current}
+            locale={locale}
+            {...cal}
+            onValueChange={(d) => {
+              if (value === undefined) setInner(d);
+              onValueChange?.(d);
+              setOpen(false);
+            }}
+          />
         </PopoverContent>
-          </Popover>
+      </Popover>
     </>
   );
 });

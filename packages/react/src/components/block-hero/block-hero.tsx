@@ -22,15 +22,24 @@ export interface BlockHeroProps extends Omit<HTMLAttributes<HTMLElement>, 'title
 }
 
 /** A page opener: eyebrow, title, description, actions and optional media. Copy comes from props. */
-export const BlockHero = forwardRef<HTMLElement, BlockHeroProps>(function BlockHero({eyebrow, title, description, actions, media, align = 'start', headingLevel = 1, className, ...rest}, ref) {
+export const BlockHero = forwardRef<HTMLElement, BlockHeroProps>(function BlockHero(
+  {eyebrow, title, description, actions, media, align = 'start', headingLevel = 1, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <section ref={ref} className={cx('block-hero', className)} data-align={align} aria-labelledby={id} {...rest}>
       <Container className="block-hero-inner">
         <div className="block-hero-copy">
           {eyebrow && <p className="block-hero-eyebrow">{eyebrow}</p>}
-          <Heading id={id} level={headingLevel} size="display">{title}</Heading>
-          {description && <Text size="lg" tone="muted" className="block-hero-description">{description}</Text>}
+          <Heading id={id} level={headingLevel} size="display">
+            {title}
+          </Heading>
+          {description && (
+            <Text size="lg" tone="muted" className="block-hero-description">
+              {description}
+            </Text>
+          )}
           {actions && <div className="block-hero-actions">{actions}</div>}
         </div>
         {media && <div className="block-hero-media">{media}</div>}

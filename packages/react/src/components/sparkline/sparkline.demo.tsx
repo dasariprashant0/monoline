@@ -5,7 +5,9 @@ export const demos: Demo[] = [
   {
     title: 'Inline',
     render: () => (
-      <p>Signups <Sparkline title="Signups, last 10 days" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week.</p>
+      <p>
+        Signups <Sparkline title="Signups, last 10 days" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week.
+      </p>
     ),
   },
   {

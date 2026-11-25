@@ -13,14 +13,29 @@ export interface AvatarProps extends Omit<ComponentPropsWithoutRef<typeof RadixA
   variant?: 'solid' | 'line' | undefined;
 }
 
-const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('');
+const initials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('');
 
 /** A person or thing, as an image with an initials fallback. */
-export const Avatar = forwardRef<ElementRef<typeof RadixAvatar.Root>, AvatarProps>(function Avatar({src, name, size = 'md', variant = 'solid', className, ...rest}, ref) {
+export const Avatar = forwardRef<ElementRef<typeof RadixAvatar.Root>, AvatarProps>(function Avatar(
+  {src, name, size = 'md', variant = 'solid', className, ...rest},
+  ref,
+) {
   return (
-    <RadixAvatar.Root ref={ref} className={cx('avatar', size !== 'md' && `avatar-${size}`, variant === 'line' && 'avatar-line', className)} {...rest}>
+    <RadixAvatar.Root
+      ref={ref}
+      className={cx('avatar', size !== 'md' && `avatar-${size}`, variant === 'line' && 'avatar-line', className)}
+      {...rest}
+    >
       {src && <RadixAvatar.Image src={src} alt={name} />}
-      <RadixAvatar.Fallback role="img" aria-label={name}>{initials(name)}</RadixAvatar.Fallback>
+      <RadixAvatar.Fallback role="img" aria-label={name}>
+        {initials(name)}
+      </RadixAvatar.Fallback>
     </RadixAvatar.Root>
   );
 });

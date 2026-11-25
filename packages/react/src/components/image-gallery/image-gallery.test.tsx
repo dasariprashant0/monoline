@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event';
 import {axe} from '../../test/axe';
 import {ImageGallery, type GalleryImage} from './image-gallery';
 
-const images: GalleryImage[] = [1, 2, 3].map((n) => ({src: `/img-${n}.jpg`, thumbnail: `/t-${n}.jpg`, alt: `Picture ${n}`, caption: `Caption ${n}`}));
+const images: GalleryImage[] = [1, 2, 3].map((n) => ({
+  src: `/img-${n}.jpg`,
+  thumbnail: `/t-${n}.jpg`,
+  alt: `Picture ${n}`,
+  caption: `Caption ${n}`,
+}));
 
 describe('ImageGallery', () => {
   it('renders a button per image, named by its alt text', () => {
@@ -56,7 +61,16 @@ describe('ImageGallery', () => {
     const user = userEvent.setup();
     const srcs: string[] = [];
     const RealImage = globalThis.Image;
-    globalThis.Image = class extends RealImage { constructor() { super(); Object.defineProperty(this, 'src', {set: (v: string) => { srcs.push(v); }}); } } as typeof Image;
+    globalThis.Image = class extends RealImage {
+      constructor() {
+        super();
+        Object.defineProperty(this, 'src', {
+          set: (v: string) => {
+            srcs.push(v);
+          },
+        });
+      }
+    } as typeof Image;
     render(<ImageGallery images={images} />);
     await user.click(screen.getByRole('button', {name: 'Picture 1'}));
     await screen.findByRole('dialog');

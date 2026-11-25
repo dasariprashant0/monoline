@@ -15,11 +15,17 @@ const REGISTRY = join(repoRoot, 'registry');
 const propsOf = (name: string) => extractProps(join(SRC, name, `${name}.tsx`), {pattern: COMPONENT_PROPS});
 const byName = (groups: PropGroup[]) => Object.fromEntries(groups.flatMap((g) => g.props).map((p) => [p.name, p]));
 const load = (file: string) => JSON.parse(readFileSync(join(REGISTRY, file), 'utf8'));
-const components = () => readdirSync(REGISTRY).filter((f) => f.endsWith('.json') && f !== 'index.json').sort();
+const components = () =>
+  readdirSync(REGISTRY)
+    .filter((f) => f.endsWith('.json') && f !== 'index.json')
+    .sort();
 
 test('props-extract: button declares ButtonProps with its variants and flags, not the HTML attributes it inherits', () => {
   const groups = propsOf('button');
-  assert.deepEqual(groups.map((g) => g.name), ['ButtonProps']);
+  assert.deepEqual(
+    groups.map((g) => g.name),
+    ['ButtonProps'],
+  );
   const p = byName(groups);
   for (const name of ['variant', 'size', 'loading', 'asChild']) assert.ok(name in p, `missing ${name}`);
   assert.equal(p.variant.optional, true);
@@ -33,7 +39,8 @@ test('props-extract: button declares ButtonProps with its variants and flags, no
 
 test('props-extract: combobox lists its controlled pair, the empty text and invalid', () => {
   const p = byName(propsOf('combobox'));
-  for (const name of ['options', 'value', 'defaultValue', 'onValueChange', 'emptyText', 'invalid']) assert.ok(name in p, `missing ${name}`);
+  for (const name of ['options', 'value', 'defaultValue', 'onValueChange', 'emptyText', 'invalid'])
+    assert.ok(name in p, `missing ${name}`);
   assert.equal(p.options.optional, false, 'options is required');
   assert.equal(p.emptyText.default, "'No matches'");
   assert.equal(p.value.optional, true);
@@ -41,7 +48,19 @@ test('props-extract: combobox lists its controlled pair, the empty text and inva
 
 test('props-extract: data-table lists its columns, data, selection and paging props', () => {
   const p = byName(propsOf('data-table'));
-  for (const name of ['columns', 'data', 'getRowId', 'label', 'sort', 'selectable', 'selection', 'defaultSelection', 'onSelectionChange', 'pageSize', 'emptyTitle']) {
+  for (const name of [
+    'columns',
+    'data',
+    'getRowId',
+    'label',
+    'sort',
+    'selectable',
+    'selection',
+    'defaultSelection',
+    'onSelectionChange',
+    'pageSize',
+    'emptyTitle',
+  ]) {
     assert.ok(name in p, `missing ${name}`);
   }
   assert.equal(p.columns.optional, false);
@@ -108,7 +127,11 @@ test('registry files: usage imports only names the package exports', () => {
   }
   for (const file of components()) {
     for (const m of load(file).usage.matchAll(/^import (.*) from '@monoline\/react';$/gm)) {
-      for (const raw of m[1].replace(/[{}]/g, '').split(',').map((s: string) => s.trim()).filter(Boolean)) {
+      for (const raw of m[1]
+        .replace(/[{}]/g, '')
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean)) {
         const name = raw.replace(/^type /, '').split(' as ')[0];
         assert.ok(exported.has(name), `${file}: usage imports ${name}, which the package does not export`);
       }
@@ -120,7 +143,8 @@ test('registry files: no dotfiles in the file list or the source', () => {
   for (const file of components()) {
     const c = load(file);
     const paths = [...c.files, ...c.source.map((s: {path: string}) => s.path)];
-    for (const p of paths) assert.ok(!p.split('/').some((seg: string) => seg.startsWith('.')), `${file}: dotfile in ${p}`);
+    for (const p of paths)
+      assert.ok(!p.split('/').some((seg: string) => seg.startsWith('.')), `${file}: dotfile in ${p}`);
   }
 });
 
@@ -152,13 +176,23 @@ test('cssFacts: selectors give classes and data attributes; declarations, commen
 
 test('pruneImports keeps only exported names and drops a line with none left', () => {
   const publicNames = new Set(['Button', 'useToggle']);
-  assert.equal(pruneImports("import {Button, type Demo} from '@monoline/react';\n\n<Button />", publicNames), "import {Button} from '@monoline/react';\n\n<Button />");
+  assert.equal(
+    pruneImports("import {Button, type Demo} from '@monoline/react';\n\n<Button />", publicNames),
+    "import {Button} from '@monoline/react';\n\n<Button />",
+  );
   assert.equal(pruneImports("import {Demo} from '@monoline/react';\nx", publicNames), 'x');
   assert.equal(pruneImports("import React from 'react';", publicNames), "import React from 'react';");
 });
 
 test('relatedFor prefers explicit names, then up to three category siblings', () => {
   const known = new Set(['a', 'b', 'c', 'd', 'e']);
-  assert.deepEqual(relatedFor({meta: {name: 'a', uses: ['b'], related: ['c', 'a', 'nope']}, known, siblings: ['a', 'b', 'c', 'd', 'e']}), ['c', 'b']);
+  assert.deepEqual(
+    relatedFor({
+      meta: {name: 'a', uses: ['b'], related: ['c', 'a', 'nope']},
+      known,
+      siblings: ['a', 'b', 'c', 'd', 'e'],
+    }),
+    ['c', 'b'],
+  );
   assert.deepEqual(relatedFor({meta: {name: 'a'}, known, siblings: ['a', 'b', 'c', 'd', 'e']}), ['b', 'c', 'd']);
 });

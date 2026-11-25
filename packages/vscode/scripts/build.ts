@@ -26,14 +26,19 @@ export function usageLines(entry: Entry) {
   const i = name ? code.findIndex((l) => new RegExp(`<${name}[\\s>/]|\\b${name}\\(`).test(l)) : -1;
   if (i < 0) return code.length ? code : [`<${name ?? entry.title} />`];
   const indent = code[i].match(/^\s*/)![0];
-  const end = code[i].includes(`</${name}>`) || /\/>\s*$/.test(code[i]) ? i
-    : code.findIndex((l, j) => j > i && l.startsWith(indent) && l.slice(indent.length).startsWith(`</${name}>`));
+  const end =
+    code[i].includes(`</${name}>`) || /\/>\s*$/.test(code[i])
+      ? i
+      : code.findIndex((l, j) => j > i && l.startsWith(indent) && l.slice(indent.length).startsWith(`</${name}>`));
   return code.slice(i, Math.max(end, i) + 1).map((l) => (l.startsWith(indent) ? l.slice(indent.length) : l));
 }
 
 export function snippetFor(entry: Entry) {
-  const imports = (entry.usage ?? '').split('\n').filter((l) => /^\s*import\s/.test(l)).map((l) => l.trim());
-  const body = [...(imports.length ? imports : [entry.import].filter(Boolean) as string[]), '', ...usageLines(entry)];
+  const imports = (entry.usage ?? '')
+    .split('\n')
+    .filter((l) => /^\s*import\s/.test(l))
+    .map((l) => l.trim());
+  const body = [...(imports.length ? imports : ([entry.import].filter(Boolean) as string[])), '', ...usageLines(entry)];
   return {
     prefix: `ml-${entry.name}`,
     scope: SCOPE,
@@ -53,7 +58,9 @@ export function buildSnippets(entries: Entry[]) {
 }
 
 export function build({registryDir, outFile}: {registryDir: string; outFile: string}) {
-  const entries = readdirSync(registryDir).filter((f) => f.endsWith('.json') && f !== 'index.json').sort()
+  const entries = readdirSync(registryDir)
+    .filter((f) => f.endsWith('.json') && f !== 'index.json')
+    .sort()
     .map((f) => JSON.parse(readFileSync(join(registryDir, f), 'utf8')));
   const text = JSON.stringify(buildSnippets(entries), null, '\t') + '\n';
   writeFileSync(outFile, text);
@@ -62,6 +69,9 @@ export function build({registryDir, outFile}: {registryDir: string; outFile: str
 
 const here = dirname(fileURLToPath(import.meta.url));
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const {count} = build({registryDir: join(here, '../../../registry'), outFile: join(here, '../snippets/monoline.code-snippets')});
+  const {count} = build({
+    registryDir: join(here, '../../../registry'),
+    outFile: join(here, '../snippets/monoline.code-snippets'),
+  });
   console.log(`vscode: wrote ${count} snippets to packages/vscode/snippets/monoline.code-snippets`);
 }

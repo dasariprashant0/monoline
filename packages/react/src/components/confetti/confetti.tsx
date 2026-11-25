@@ -19,13 +19,27 @@ export interface ConfettiProps extends Omit<CanvasHTMLAttributes<HTMLCanvasEleme
   colors?: string[] | undefined;
 }
 
-type Piece = {x: number; y: number; vx: number; vy: number; rot: number; vr: number; w: number; h: number; color: string; life: number};
+type Piece = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  rot: number;
+  vr: number;
+  w: number;
+  h: number;
+  color: string;
+  life: number;
+};
 
 /**
  * A short burst of square confetti on a canvas that covers the window and ignores the pointer. Trigger it with `burst` or `fire()`.
  * Decorative (`aria-hidden`); announce the event it celebrates some other way. Off for reduced motion.
  */
-export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confetti({burst, count = 60, origin = {x: 0.5, y: 0.5}, colors, className, ...rest}, ref) {
+export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confetti(
+  {burst, count = 60, origin = {x: 0.5, y: 0.5}, colors, className, ...rest},
+  ref,
+) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const raf = useRef(0);
   const props = useRef({count, origin, colors});
@@ -40,12 +54,24 @@ export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confe
     el.width = window.innerWidth;
     el.height = window.innerHeight;
     const style = getComputedStyle(el);
-    const palette = given ?? ['--accent', '--foreground', '--muted'].map((t) => style.getPropertyValue(t).trim()).filter(Boolean);
+    const palette =
+      given ?? ['--accent', '--foreground', '--muted'].map((t) => style.getPropertyValue(t).trim()).filter(Boolean);
     if (!palette.length) palette.push('currentColor');
     const pieces: Piece[] = Array.from({length: n}, (_, i) => {
       const a = Math.random() * Math.PI * 2;
       const s = 4 + Math.random() * 8;
-      return {x: o.x * el.width, y: o.y * el.height, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 4, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, w: 4 + Math.random() * 6, h: 4 + Math.random() * 6, color: palette[i % palette.length]!, life: 70 + Math.random() * 40};
+      return {
+        x: o.x * el.width,
+        y: o.y * el.height,
+        vx: Math.cos(a) * s,
+        vy: Math.sin(a) * s - 4,
+        rot: Math.random() * 6,
+        vr: (Math.random() - 0.5) * 0.4,
+        w: 4 + Math.random() * 6,
+        h: 4 + Math.random() * 6,
+        color: palette[i % palette.length]!,
+        life: 70 + Math.random() * 40,
+      };
     });
     cancelAnimationFrame(raf.current);
     const step = () => {
@@ -55,7 +81,11 @@ export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confe
         p.life -= 1;
         if (p.life <= 0) continue;
         alive += 1;
-        p.vy += 0.25; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        p.vy += 0.25;
+        p.vx *= 0.99;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vr;
         ctx.save();
         ctx.globalAlpha = Math.min(1, p.life / 30);
         ctx.translate(p.x, p.y);
@@ -64,7 +94,8 @@ export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confe
         ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         ctx.restore();
       }
-      if (alive) raf.current = requestAnimationFrame(step); else ctx.clearRect(0, 0, el.width, el.height);
+      if (alive) raf.current = requestAnimationFrame(step);
+      else ctx.clearRect(0, 0, el.width, el.height);
     };
     raf.current = requestAnimationFrame(step);
   }, []);
@@ -73,7 +104,10 @@ export const Confetti = forwardRef<ConfettiHandle, ConfettiProps>(function Confe
 
   const first = useRef(true);
   useEffect(() => {
-    if (first.current) { first.current = false; return; }
+    if (first.current) {
+      first.current = false;
+      return;
+    }
     fire();
   }, [burst, fire]);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);

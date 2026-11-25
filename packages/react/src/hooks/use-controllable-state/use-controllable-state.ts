@@ -32,7 +32,10 @@ export function useControllableState<T>({
   const setValue = useCallback((next: T) => {
     const {current: now, isControlled: controlled, onChange: notify} = latest.current;
     if (Object.is(next, now)) return;
-    if (!controlled) { latest.current = {...latest.current, current: next}; setInternal(next); }
+    if (!controlled) {
+      latest.current = {...latest.current, current: next};
+      setInternal(next);
+    }
     notify?.(next);
   }, []);
 

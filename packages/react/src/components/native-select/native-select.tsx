@@ -11,7 +11,20 @@ export interface NativeSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectE
 }
 
 /** A styled <select>. Pass <option> children. Prefer it to the custom Select for plain lists. */
-export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(function NativeSelect({size = 'md', invalid, disabled, className, ...rest}, ref) {
+export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(function NativeSelect(
+  {size = 'md', invalid, disabled, className, ...rest},
+  ref,
+) {
   const f = useFieldControl(rest);
-  return <select ref={ref} className={cx('select', size !== 'md' && `input-${size}`, className)} disabled={disabled} data-disabled={disabled ? '' : undefined} {...invalidAttrs(invalid)} {...rest} {...f} />;
+  return (
+    <select
+      ref={ref}
+      className={cx('select', size !== 'md' && `input-${size}`, className)}
+      disabled={disabled}
+      data-disabled={disabled ? '' : undefined}
+      {...invalidAttrs(invalid)}
+      {...rest}
+      {...f}
+    />
+  );
 });

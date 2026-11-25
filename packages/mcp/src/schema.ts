@@ -74,12 +74,29 @@ type Check = (v: unknown) => boolean;
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const string: Check = (v) => typeof v === 'string';
 const strings: Check = (v) => Array.isArray(v) && v.every(string);
-const files: Check = (v) => Array.isArray(v) && v.every((f) => isObject(f) && string(f['path']) && string(f['content']));
-const optional = (ok: Check): Check => (v) => v === undefined || ok(v);
+const files: Check = (v) =>
+  Array.isArray(v) && v.every((f) => isObject(f) && string(f['path']) && string(f['content']));
+const optional =
+  (ok: Check): Check =>
+  (v) =>
+    v === undefined || ok(v);
 
 // Only the fields the CLI and MCP read are checked; the rest is trusted to match the types.
-const COMMON: Record<string, Check> = {name: (v) => string(v) && NAME.test(v as string), title: string, category: string, description: string, status: string};
-const ENTRY = {...COMMON, source: files, css: files, utils: optional(files), uses: optional(strings), a11y: optional(strings)};
+const COMMON: Record<string, Check> = {
+  name: (v) => string(v) && NAME.test(v as string),
+  title: string,
+  category: string,
+  description: string,
+  status: string,
+};
+const ENTRY = {
+  ...COMMON,
+  source: files,
+  css: files,
+  utils: optional(files),
+  uses: optional(strings),
+  a11y: optional(strings),
+};
 const ROW = {...COMMON, keywords: optional(strings), uses: optional(strings), propNames: optional(strings)};
 
 /** The first field that fails its check, or null. */

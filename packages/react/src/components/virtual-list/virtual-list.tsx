@@ -24,7 +24,10 @@ export interface VirtualListProps extends Omit<HTMLAttributes<HTMLDivElement>, '
  * One row is in the tab order; ArrowUp/Down, PageUp/Down, Home and End move between rows.
  * @example <VirtualList aria-label="Users" count={10000} itemHeight={32} height={320} renderItem={(i) => users[i].name} />
  */
-export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function VirtualList({count, itemHeight, height, overscan = 4, renderItem, className, style, onScroll, onKeyDown, ...rest}, ref) {
+export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function VirtualList(
+  {count, itemHeight, height, overscan = 4, renderItem, className, style, onScroll, onKeyDown, ...rest},
+  ref,
+) {
   // A row height of 0 or less would make every row index NaN: treat it as 1 so the list still renders.
   itemHeight = itemHeight > 0 ? itemHeight : 1;
   const [top, setTop] = useState(0);
@@ -63,7 +66,9 @@ export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function
     if (e.defaultPrevented || t.dataset.index === undefined) return;
     const at = Number(t.dataset.index);
     const page = Math.max(1, Math.floor(height / itemHeight) - 1);
-    const to = {ArrowDown: at + 1, ArrowUp: at - 1, PageDown: at + page, PageUp: at - page, Home: 0, End: count - 1}[e.key];
+    const to = {ArrowDown: at + 1, ArrowUp: at - 1, PageDown: at + page, PageUp: at - page, Home: 0, End: count - 1}[
+      e.key
+    ];
     if (to === undefined) return;
     e.preventDefault();
     go(to);
@@ -75,7 +80,10 @@ export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function
       role="list"
       className={cx('virtual-list', className)}
       style={{height, ...style}}
-      onScroll={(e) => { onScroll?.(e); setTop(e.currentTarget.scrollTop); }}
+      onScroll={(e) => {
+        onScroll?.(e);
+        setTop(e.currentTarget.scrollTop);
+      }}
       onKeyDown={keydown}
       {...rest}
     >
@@ -90,8 +98,12 @@ export const VirtualList = forwardRef<HTMLDivElement, VirtualListProps>(function
             aria-setsize={count}
             tabIndex={i === stop ? 0 : -1}
             style={{top: i * itemHeight, height: itemHeight}}
-            onFocus={(e) => { if (e.target === e.currentTarget) setActive(i); }}
-          >{renderItem(i)}</div>
+            onFocus={(e) => {
+              if (e.target === e.currentTarget) setActive(i);
+            }}
+          >
+            {renderItem(i)}
+          </div>
         ))}
       </div>
     </div>

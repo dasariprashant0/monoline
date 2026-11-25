@@ -14,7 +14,12 @@ describe('Avatar', () => {
     expect(container.firstChild).toHaveClass('avatar', 'avatar-lg', 'avatar-line');
   });
   it('builds initials from the first two words, upper-cased', () => {
-    const cases: Record<string, string> = {'ada lovelace': 'AL', 'Plato': 'P', 'Jean Claude Van Damme': 'JC', '  spaced out  ': 'SO'};
+    const cases: Record<string, string> = {
+      'ada lovelace': 'AL',
+      Plato: 'P',
+      'Jean Claude Van Damme': 'JC',
+      '  spaced out  ': 'SO',
+    };
     for (const [name, text] of Object.entries(cases)) {
       const {unmount} = render(<Avatar name={name} />);
       expect(screen.getByRole('img', {name: name.trim()})).toHaveTextContent(text);
@@ -27,7 +32,12 @@ describe('Avatar', () => {
     expect(container.querySelector('[role="img"]')).toBeEmptyDOMElement();
   });
   it('handles non-Latin and RTL names', () => {
-    render(<><Avatar name="محمد علي" /><Avatar name="山田 太郎" /></>);
+    render(
+      <>
+        <Avatar name="محمد علي" />
+        <Avatar name="山田 太郎" />
+      </>,
+    );
     expect(screen.getByRole('img', {name: 'محمد علي'})).toHaveTextContent('مع');
     expect(screen.getByRole('img', {name: '山田 太郎'})).toHaveTextContent('山太');
   });

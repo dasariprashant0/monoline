@@ -9,7 +9,9 @@ function Fire() {
   return (
     <>
       <Confetti ref={ref} />
-      <Button variant="line" onClick={() => ref.current?.fire()}>Celebrate</Button>
+      <Button variant="line" onClick={() => ref.current?.fire()}>
+        Celebrate
+      </Button>
     </>
   );
 }
@@ -18,8 +20,6 @@ export const demos: Demo[] = [
   {
     title: 'Fire from a ref',
     description: 'Does nothing when the system asks for reduced motion.',
-    render: () => (
-      <Fire />
-    ),
+    render: () => <Fire />,
   },
 ];

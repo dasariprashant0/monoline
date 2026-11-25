@@ -43,17 +43,36 @@ export function cssFacts(cssTexts: string[]) {
  * extractor also brings in same-file helpers' names (a demo's own `type Demo`), which are not public.
  */
 export function pruneImports(code: string, publicNames: Set<string>) {
-  return code.split('\n').flatMap((line) => {
-    const m = /^import (.*) from '@monoline\/react';$/.exec(line);
-    if (!m) return [line];
-    const names = m[1].replace(/[{}]/g, '').split(',').map((s) => s.trim()).filter(Boolean);
-    const kept = names.filter((n) => publicNames.has(n.replace(/^type /, '').split(' as ')[0]));
-    return kept.length ? [`import {${kept.join(', ')}} from '@monoline/react';`] : [];
-  }).join('\n');
+  return code
+    .split('\n')
+    .flatMap((line) => {
+      const m = /^import (.*) from '@monoline\/react';$/.exec(line);
+      if (!m) return [line];
+      const names = m[1]
+        .replace(/[{}]/g, '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const kept = names.filter((n) => publicNames.has(n.replace(/^type /, '').split(' as ')[0]));
+      return kept.length ? [`import {${kept.join(', ')}} from '@monoline/react';`] : [];
+    })
+    .join('\n');
 }
 
 /** Usage: the first demo's standalone snippet when there is one, else the import plus a bare element or call. */
-export function usageFor({demo, importLine, symbol, isHook, publicNames}: {demo?: {code?: string}; importLine: string; symbol: string; isHook: boolean; publicNames: Set<string>}) {
+export function usageFor({
+  demo,
+  importLine,
+  symbol,
+  isHook,
+  publicNames,
+}: {
+  demo?: {code?: string};
+  importLine: string;
+  symbol: string;
+  isHook: boolean;
+  publicNames: Set<string>;
+}) {
   if (demo?.code) return pruneImports(demo.code, publicNames);
   if (isHook) return importLine;
   return `${importLine}\n\n<${symbol} />`;
@@ -63,7 +82,15 @@ export function usageFor({demo, importLine, symbol, isHook, publicNames}: {demo?
  * Related components: explicit `related` and `uses` from meta.json (only names in the registry), else up to
  * three siblings from the same category. Never the component itself.
  */
-export function relatedFor({meta, known, siblings}: {meta: Pick<Meta, 'name' | 'related' | 'uses'>; known: Set<string>; siblings: string[]}) {
+export function relatedFor({
+  meta,
+  known,
+  siblings,
+}: {
+  meta: Pick<Meta, 'name' | 'related' | 'uses'>;
+  known: Set<string>;
+  siblings: string[];
+}) {
   const explicit = [...(meta.related ?? []), ...(meta.uses ?? [])].filter((n) => known.has(n) && n !== meta.name);
   const picked = [...new Set(explicit)];
   if (picked.length) return picked;

@@ -11,7 +11,10 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 /** A native text input. Inside a Field it picks up the id, description and invalid state automatically. */
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({size = 'md', invalid, disabled, className, ...rest}, ref) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {size = 'md', invalid, disabled, className, ...rest},
+  ref,
+) {
   const f = useFieldControl(rest);
   return (
     <input
@@ -19,9 +22,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({si
       className={cx('input', size !== 'md' && `input-${size}`, className)}
       disabled={disabled}
       data-disabled={disabled ? '' : undefined}
-     
       {...invalidAttrs(invalid)}
-      {...rest} {...f}
+      {...rest}
+      {...f}
     />
   );
 });

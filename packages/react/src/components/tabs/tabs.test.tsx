@@ -5,7 +5,10 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from './tabs';
 
 const ui = (onValueChange?: (v: string) => void) => (
   <Tabs defaultValue="a" onValueChange={onValueChange}>
-    <TabsList aria-label="Demo"><TabsTrigger value="a">One</TabsTrigger><TabsTrigger value="b">Two</TabsTrigger></TabsList>
+    <TabsList aria-label="Demo">
+      <TabsTrigger value="a">One</TabsTrigger>
+      <TabsTrigger value="b">Two</TabsTrigger>
+    </TabsList>
     <TabsContent value="a">Panel one</TabsContent>
     <TabsContent value="b">Panel two</TabsContent>
   </Tabs>

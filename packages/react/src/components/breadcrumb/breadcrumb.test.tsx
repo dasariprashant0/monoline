@@ -27,7 +27,14 @@ describe('Breadcrumb', () => {
     expect(screen.getByText('Home').closest('li')).toHaveAttribute('aria-current', 'page');
   });
   it('does not link the last item even if it has an href', () => {
-    render(<Breadcrumb items={[{label: 'A', href: '/a'}, {label: 'B', href: '/b'}]} />);
+    render(
+      <Breadcrumb
+        items={[
+          {label: 'A', href: '/a'},
+          {label: 'B', href: '/b'},
+        ]}
+      />,
+    );
     expect(screen.getAllByRole('link')).toHaveLength(1);
     expect(screen.getByText('B').closest('li')).toHaveAttribute('aria-current', 'page');
   });

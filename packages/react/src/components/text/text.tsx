@@ -20,7 +20,23 @@ export interface TextProps extends HTMLAttributes<HTMLParagraphElement> {
 }
 
 /** A paragraph by default. */
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text({size = 'md', tone = 'default', truncate, fullWidth, asChild, className, ...rest}, ref) {
+export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text(
+  {size = 'md', tone = 'default', truncate, fullWidth, asChild, className, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'p';
-  return <Comp ref={ref} className={cx('text', `text-${size}`, tone !== 'default' && `text-${tone}`, truncate && 'text-truncate', fullWidth && 'text-full', className)} {...rest} />;
+  return (
+    <Comp
+      ref={ref}
+      className={cx(
+        'text',
+        `text-${size}`,
+        tone !== 'default' && `text-${tone}`,
+        truncate && 'text-truncate',
+        fullWidth && 'text-full',
+        className,
+      )}
+      {...rest}
+    />
+  );
 });

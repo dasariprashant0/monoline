@@ -71,13 +71,25 @@ describe('RangeCalendar', () => {
   });
   it('mirrors arrow keys in right-to-left', async () => {
     const user = userEvent.setup();
-    render(<div dir="rtl"><RangeCalendar locale="en-US" defaultValue={{start: jan, end: null}} /></div>);
+    render(
+      <div dir="rtl">
+        <RangeCalendar locale="en-US" defaultValue={{start: jan, end: null}} />
+      </div>,
+    );
     btn('Thursday, January 15, 2026').focus();
     await user.keyboard('{ArrowRight}');
     await vi.waitFor(() => expect(btn('Wednesday, January 14, 2026')).toHaveFocus());
   });
   it('disables days outside min/max and via isDateDisabled', () => {
-    render(<RangeCalendar locale="en-US" defaultValue={{start: jan, end: null}} min={new Date(2026, 0, 10)} max={new Date(2026, 0, 20)} isDateDisabled={(d) => d.getDate() === 12} />);
+    render(
+      <RangeCalendar
+        locale="en-US"
+        defaultValue={{start: jan, end: null}}
+        min={new Date(2026, 0, 10)}
+        max={new Date(2026, 0, 20)}
+        isDateDisabled={(d) => d.getDate() === 12}
+      />,
+    );
     expect(btn('Saturday, January 3, 2026')).toBeDisabled();
     expect(btn('Monday, January 12, 2026')).toBeDisabled();
     expect(btn('Tuesday, January 13, 2026')).toBeEnabled();
@@ -89,7 +101,9 @@ describe('RangeCalendar', () => {
     expect(btn('Thursday, January 15, 2026')).toHaveAttribute('aria-pressed', 'true');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<RangeCalendar defaultValue={{start: jan, end: new Date(2026, 0, 18)}} locale="en-US" />);
+    const {container} = render(
+      <RangeCalendar defaultValue={{start: jan, end: new Date(2026, 0, 18)}} locale="en-US" />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

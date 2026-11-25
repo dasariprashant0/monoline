@@ -4,11 +4,31 @@ import {useState} from 'react';
 import {axe} from '../../test/axe';
 import {DataTable, type DataTableColumn, type DataTableSort} from './data-table';
 
-interface P {id: string; name: string; n: number}
-const data: P[] = [{id: 'a', name: 'Ada', n: 3}, {id: 'b', name: 'Grace', n: 9}, {id: 'c', name: 'Alan', n: 1}];
-const columns: DataTableColumn<P>[] = [{id: 'name', header: 'Name', sortable: true}, {id: 'n', header: 'Count', sortable: true, align: 'end'}, {id: 'x', header: 'Plain', cell: (r) => <em>{r.name}!</em>}];
-const names = () => screen.getAllByRole('row').slice(1).map((r) => within(r).getAllByRole('cell')[0]!.textContent);
-const namesSel = () => screen.getAllByRole('row').slice(1).map((r) => within(r).getAllByRole('cell')[1]!.textContent);
+interface P {
+  id: string;
+  name: string;
+  n: number;
+}
+const data: P[] = [
+  {id: 'a', name: 'Ada', n: 3},
+  {id: 'b', name: 'Grace', n: 9},
+  {id: 'c', name: 'Alan', n: 1},
+];
+const columns: DataTableColumn<P>[] = [
+  {id: 'name', header: 'Name', sortable: true},
+  {id: 'n', header: 'Count', sortable: true, align: 'end'},
+  {id: 'x', header: 'Plain', cell: (r) => <em>{r.name}!</em>},
+];
+const names = () =>
+  screen
+    .getAllByRole('row')
+    .slice(1)
+    .map((r) => within(r).getAllByRole('cell')[0]!.textContent);
+const namesSel = () =>
+  screen
+    .getAllByRole('row')
+    .slice(1)
+    .map((r) => within(r).getAllByRole('cell')[1]!.textContent);
 
 describe('DataTable', () => {
   it('renders rows, headers and custom cells', () => {
@@ -46,11 +66,22 @@ describe('DataTable', () => {
   it('works controlled and uncontrolled for sort', async () => {
     const user = userEvent.setup();
     const fn = vi.fn();
-    render(<DataTable label="People" columns={columns} data={data} defaultSort={{id: 'name', direction: 'desc'}} onSortChange={fn} />);
+    render(
+      <DataTable
+        label="People"
+        columns={columns}
+        data={data}
+        defaultSort={{id: 'name', direction: 'desc'}}
+        onSortChange={fn}
+      />,
+    );
     expect(names()).toEqual(['Grace', 'Alan', 'Ada']);
     await user.click(within(screen.getByRole('columnheader', {name: 'Count'})).getByRole('button'));
     expect(fn).toHaveBeenCalledWith({id: 'n', direction: 'asc'});
-    function C() { const [s, setS] = useState<DataTableSort | null>(null); return <DataTable label="Ctl" columns={columns} data={data} sort={s} onSortChange={setS} />; }
+    function C() {
+      const [s, setS] = useState<DataTableSort | null>(null);
+      return <DataTable label="Ctl" columns={columns} data={data} sort={s} onSortChange={setS} />;
+    }
     render(<C />);
     await user.click(within(screen.getAllByRole('columnheader', {name: 'Name'})[1]!).getByRole('button'));
     expect(screen.getAllByRole('columnheader', {name: 'Name'})[1]).toHaveAttribute('aria-sort', 'ascending');
@@ -94,7 +125,16 @@ describe('DataTable', () => {
     expect(ref.current).toHaveClass('data-table');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<DataTable label="People" columns={columns} data={data} selectable pageSize={2} defaultSort={{id: 'name', direction: 'asc'}} />);
+    const {container} = render(
+      <DataTable
+        label="People"
+        columns={columns}
+        data={data}
+        selectable
+        pageSize={2}
+        defaultSort={{id: 'name', direction: 'asc'}}
+      />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

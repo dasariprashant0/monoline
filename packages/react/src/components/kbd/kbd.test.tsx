@@ -12,17 +12,32 @@ describe('Kbd', () => {
   });
   it('merges className, forwards ref and spreads props', () => {
     const ref = createRef<HTMLElement>();
-    render(<Kbd ref={ref} className="mine" title="Command">⌘</Kbd>);
+    render(
+      <Kbd ref={ref} className="mine" title="Command">
+        ⌘
+      </Kbd>,
+    );
     expect(ref.current!.tagName).toBe('KBD');
     expect(ref.current).toHaveClass('kbd', 'mine');
     expect(ref.current).toHaveAttribute('title', 'Command');
   });
   it('renders a key combination as separate kbd elements', () => {
-    const {container} = render(<><Kbd>⌘</Kbd><Kbd>K</Kbd></>);
+    const {container} = render(
+      <>
+        <Kbd>⌘</Kbd>
+        <Kbd>K</Kbd>
+      </>,
+    );
     expect(container.querySelectorAll('kbd')).toHaveLength(2);
   });
   it('renders empty, multi-character and RTL keys', () => {
-    const {container} = render(<><Kbd /><Kbd>Shift</Kbd><Kbd dir="rtl">مفتاح</Kbd></>);
+    const {container} = render(
+      <>
+        <Kbd />
+        <Kbd>Shift</Kbd>
+        <Kbd dir="rtl">مفتاح</Kbd>
+      </>,
+    );
     expect(container.querySelectorAll('kbd')).toHaveLength(3);
     expect(screen.getByText('Shift')).toBeInTheDocument();
     expect(screen.getByText('مفتاح')).toBeInTheDocument();
@@ -32,7 +47,11 @@ describe('Kbd', () => {
     expect(screen.getByLabelText('Command')).toHaveTextContent('⌘');
   });
   it('has no axe violations', async () => {
-    const {container} = render(<p>Press <Kbd>Esc</Kbd></p>);
+    const {container} = render(
+      <p>
+        Press <Kbd>Esc</Kbd>
+      </p>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

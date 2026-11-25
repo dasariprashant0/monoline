@@ -9,7 +9,11 @@ describe('Heading', () => {
     expect(screen.getByRole('heading', {level: 3, name: 'Plans'})).toBeInTheDocument();
   });
   it('separates level from size', () => {
-    render(<Heading level={2} size="sm">Small h2</Heading>);
+    render(
+      <Heading level={2} size="sm">
+        Small h2
+      </Heading>,
+    );
     const h = screen.getByRole('heading', {level: 2});
     expect(h).toHaveClass('heading-sm');
   });
@@ -33,7 +37,11 @@ describe('Heading', () => {
   });
   it('an explicit size overrides the default and replaces it', () => {
     for (const size of ['display', 'xl', 'lg', 'md', 'sm'] as const) {
-      const {unmount} = render(<Heading level={6} size={size}>T</Heading>);
+      const {unmount} = render(
+        <Heading level={6} size={size}>
+          T
+        </Heading>,
+      );
       const h = screen.getByRole('heading', {level: 6});
       expect(h).toHaveClass(`heading-${size}`);
       expect(h.className.match(/heading-/g)).toHaveLength(1);
@@ -42,12 +50,21 @@ describe('Heading', () => {
   });
   it('forwards ref, merges className and spreads props such as id', () => {
     const ref = createRef<HTMLHeadingElement>();
-    render(<Heading ref={ref} id="t" className="mine">T</Heading>);
+    render(
+      <Heading ref={ref} id="t" className="mine">
+        T
+      </Heading>,
+    );
     expect(ref.current).toHaveClass('heading', 'mine');
     expect(ref.current).toHaveAttribute('id', 't');
   });
   it('renders empty, long and RTL content', () => {
-    render(<><Heading data-testid="e" /><Heading dir="rtl">{'عنوان '.repeat(500)}</Heading></>);
+    render(
+      <>
+        <Heading data-testid="e" />
+        <Heading dir="rtl">{'عنوان '.repeat(500)}</Heading>
+      </>,
+    );
     expect(screen.getByTestId('e')).toBeEmptyDOMElement();
     expect(screen.getByText(/عنوان/)).toHaveAttribute('dir', 'rtl');
   });

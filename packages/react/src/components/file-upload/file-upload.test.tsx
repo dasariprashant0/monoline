@@ -43,7 +43,9 @@ describe('FileUpload', () => {
     const fn = vi.fn();
     const {container} = render(<FileUpload accept="image/*,.pdf" multiple onFilesChange={fn} />);
     const zone = container.querySelector('.upload-zone')!;
-    const png = new File(['x'], 'a.png', {type: 'image/png'}), exe = new File(['x'], 'run.exe', {type: 'application/x-msdownload'}), pdf = new File(['x'], 'b.PDF', {type: ''});
+    const png = new File(['x'], 'a.png', {type: 'image/png'}),
+      exe = new File(['x'], 'run.exe', {type: 'application/x-msdownload'}),
+      pdf = new File(['x'], 'b.PDF', {type: ''});
     fireEvent.drop(zone, {dataTransfer: {files: [png, exe, pdf]}});
     expect(fn).toHaveBeenLastCalledWith([png, pdf]);
     expect(screen.getByRole('status')).toHaveTextContent('2 files added, 1 not accepted');

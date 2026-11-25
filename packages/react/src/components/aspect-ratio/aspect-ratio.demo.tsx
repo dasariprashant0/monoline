@@ -7,7 +7,17 @@ export const demos: Demo[] = [
     render: () => (
       <div style={{width: '320px'}}>
         <AspectRatio ratio={16 / 9}>
-          <div style={{width: '100%', height: '100%', border: '1px solid var(--rule)', display: 'grid', placeItems: 'center'}}>16:9</div>
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              border: '1px solid var(--rule)',
+              display: 'grid',
+              placeItems: 'center',
+            }}
+          >
+            16:9
+          </div>
         </AspectRatio>
       </div>
     ),

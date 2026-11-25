@@ -10,7 +10,9 @@ export const demos: Demo[] = [
         viewportProps={{'aria-label': 'Release notes'}}
       >
         <div style={{padding: 'var(--s3)'}}>
-          {Array.from({length: 20}, (_, i) => <p key={i}>Release note {i + 1}</p>)}
+          {Array.from({length: 20}, (_, i) => (
+            <p key={i}>Release note {i + 1}</p>
+          ))}
         </div>
       </ScrollArea>
     ),

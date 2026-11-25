@@ -4,24 +4,47 @@ import {afterEach, beforeAll, describe, expect, it, vi} from 'vitest';
 import {axe} from '../../test/axe';
 import {DataGrid, type DataGridColumn} from './data-grid';
 
-interface Row { id: string; name: string; n: number }
+interface Row {
+  id: string;
+  name: string;
+  n: number;
+}
 const cols: DataGridColumn<Row>[] = [
   {id: 'name', header: 'Name', field: 'name', sortable: true},
   {id: 'n', header: 'Count', field: 'n', sortable: true, width: 80},
   {id: 'x', header: 'Plain', cell: (r) => `x${r.n}`},
 ];
-const make = (count: number): Row[] => Array.from({length: count}, (_, i) => ({id: `r${i}`, name: `name ${i}`, n: (i * 37) % 101}));
+const make = (count: number): Row[] =>
+  Array.from({length: count}, (_, i) => ({id: `r${i}`, name: `name ${i}`, n: (i * 37) % 101}));
 const small = make(6);
 const bodyRows = (c: HTMLElement) => Array.from(c.querySelectorAll('.data-grid-body-row'));
 const firstIndex = (c: HTMLElement) => Number(bodyRows(c)[0]!.getAttribute('aria-rowindex'));
 
 beforeAll(() => {
-  Object.defineProperty(HTMLElement.prototype, 'clientHeight', {configurable: true, get() { return this.getAttribute?.('role') === 'grid' ? 200 : 0; }});
+  Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+    configurable: true,
+    get() {
+      return this.getAttribute?.('role') === 'grid' ? 200 : 0;
+    },
+  });
 });
 afterEach(() => vi.restoreAllMocks());
 
-const grid = (props: Partial<Omit<React.ComponentProps<typeof DataGrid<Row>>, 'aria-label' | 'aria-labelledby'>> = {}) => <DataGrid<Row> aria-label="Things" columns={cols} rows={small} rowHeight={20} height={200} getRowId={(r) => r.id} {...props} />;
-const cell = (row: number, col: number) => document.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)!;
+const grid = (
+  props: Partial<Omit<React.ComponentProps<typeof DataGrid<Row>>, 'aria-label' | 'aria-labelledby'>> = {},
+) => (
+  <DataGrid<Row>
+    aria-label="Things"
+    columns={cols}
+    rows={small}
+    rowHeight={20}
+    height={200}
+    getRowId={(r) => r.id}
+    {...props}
+  />
+);
+const cell = (row: number, col: number) =>
+  document.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`)!;
 
 describe('DataGrid', () => {
   it('is a named grid with full-size aria and indexes', () => {
@@ -74,15 +97,30 @@ describe('DataGrid', () => {
   });
   it('manualSort leaves the order to the caller', async () => {
     const user = userEvent.setup();
-    const {container} = render(grid({manualSort: true, rows: [{id: 'b', name: 'b', n: 2}, {id: 'a', name: 'a', n: 1}]}));
+    const {container} = render(
+      grid({
+        manualSort: true,
+        rows: [
+          {id: 'b', name: 'b', n: 2},
+          {id: 'a', name: 'a', n: 1},
+        ],
+      }),
+    );
     await user.click(screen.getByRole('columnheader', {name: 'Name'}));
     expect(bodyRows(container)[0]).toHaveTextContent('b');
   });
   it('has one tab stop and roving focus with arrows, Home and End', async () => {
     const user = userEvent.setup();
-    render(<><button>before</button>{grid()}<button>after</button></>);
+    render(
+      <>
+        <button>before</button>
+        {grid()}
+        <button>after</button>
+      </>,
+    );
     expect(document.querySelectorAll('[tabindex="0"][data-col]')).toHaveLength(1);
-    await user.tab(); await user.tab();
+    await user.tab();
+    await user.tab();
     expect(cell(0, 0)).toHaveFocus();
     await user.keyboard('{ArrowDown}');
     expect(cell(1, 0)).toHaveFocus();
@@ -175,7 +213,10 @@ describe('DataGrid', () => {
   it('does not select the row when a control inside a cell is clicked', async () => {
     const user = userEvent.setup();
     const onSelectedIdsChange = vi.fn();
-    const withButton: DataGridColumn<Row>[] = [...cols, {id: 'act', header: 'Action', cell: (r) => <button type="button">Open {r.id}</button>}];
+    const withButton: DataGridColumn<Row>[] = [
+      ...cols,
+      {id: 'act', header: 'Action', cell: (r) => <button type="button">Open {r.id}</button>},
+    ];
     render(grid({columns: withButton, selectionMode: 'multiple', onSelectedIdsChange}));
     await user.click(screen.getByRole('button', {name: 'Open r0'}));
     expect(onSelectedIdsChange).not.toHaveBeenCalled();

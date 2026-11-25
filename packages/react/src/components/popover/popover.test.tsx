@@ -5,7 +5,10 @@ import {nativeHeight} from './float';
 import {Popover, PopoverContent, PopoverTrigger} from './popover';
 
 const ui = () => (
-  <Popover><PopoverTrigger>Open</PopoverTrigger><PopoverContent aria-label="Details">Content</PopoverContent></Popover>
+  <Popover>
+    <PopoverTrigger>Open</PopoverTrigger>
+    <PopoverContent aria-label="Details">Content</PopoverContent>
+  </Popover>
 );
 
 describe('Popover', () => {
@@ -20,7 +23,18 @@ describe('Popover', () => {
   });
   it('Tab from the last control closes it and continues after the trigger, Shift+Tab goes before it', async () => {
     const user = userEvent.setup();
-    render(<><button>Before</button><Popover><PopoverTrigger>Open</PopoverTrigger><PopoverContent aria-label="Details"><button>Inside</button></PopoverContent></Popover><button>After</button></>);
+    render(
+      <>
+        <button>Before</button>
+        <Popover>
+          <PopoverTrigger>Open</PopoverTrigger>
+          <PopoverContent aria-label="Details">
+            <button>Inside</button>
+          </PopoverContent>
+        </Popover>
+        <button>After</button>
+      </>,
+    );
     await user.click(screen.getByRole('button', {name: 'Open'}));
     await screen.findByRole('dialog');
     expect(screen.getByRole('button', {name: 'Inside'})).toHaveFocus();
@@ -52,7 +66,10 @@ describe('Popover', () => {
 
 describe('Popover native anchor positioning (M1)', () => {
   const supports = CSS.supports;
-  afterEach(() => { CSS.supports = supports; delete document.documentElement.dataset.anchor; });
+  afterEach(() => {
+    CSS.supports = supports;
+    delete document.documentElement.dataset.anchor;
+  });
   it('uses position-area and anchor-name when opted in and the browser has them, and no pixel placement', async () => {
     CSS.supports = () => true;
     document.documentElement.dataset.anchor = 'native';
@@ -95,16 +112,30 @@ describe('Popover native anchor positioning (M1)', () => {
 
 describe('native anchor-name and margins', () => {
   const supports = CSS.supports;
-  beforeEach(() => { CSS.supports = () => true; document.documentElement.dataset.anchor = 'native'; });
-  afterEach(() => { CSS.supports = supports; delete document.documentElement.dataset.anchor; });
-  it('two layers on one anchor keep each other\'s anchor-name; cleanup removes only its own', async () => {
+  beforeEach(() => {
+    CSS.supports = () => true;
+    document.documentElement.dataset.anchor = 'native';
+  });
+  afterEach(() => {
+    CSS.supports = supports;
+    delete document.documentElement.dataset.anchor;
+  });
+  it("two layers on one anchor keep each other's anchor-name; cleanup removes only its own", async () => {
     const user = userEvent.setup();
-    render(<Popover><PopoverTrigger>Open</PopoverTrigger><PopoverContent aria-label="A">A</PopoverContent></Popover>);
+    render(
+      <Popover>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent aria-label="A">A</PopoverContent>
+      </Popover>,
+    );
     const trigger = screen.getByRole('button', {name: 'Open'});
     trigger.style.setProperty('anchor-name', '--other');
     await user.click(trigger);
     const panel = await screen.findByRole('dialog', {name: 'A'});
-    const names = trigger.style.getPropertyValue('anchor-name').split(',').map((n) => n.trim());
+    const names = trigger.style
+      .getPropertyValue('anchor-name')
+      .split(',')
+      .map((n) => n.trim());
     expect(names).toHaveLength(2);
     expect(names).toContain('--other');
     expect(panel.style.getPropertyValue('position-anchor')).toBe(names.find((n) => n !== '--other'));
@@ -114,7 +145,14 @@ describe('native anchor-name and margins', () => {
   it('center alignment sets no bogus margin-r', async () => {
     const set = vi.spyOn(CSSStyleDeclaration.prototype, 'setProperty');
     const user = userEvent.setup();
-    render(<Popover><PopoverTrigger>Open</PopoverTrigger><PopoverContent aria-label="A" align="center">A</PopoverContent></Popover>);
+    render(
+      <Popover>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent aria-label="A" align="center">
+          A
+        </PopoverContent>
+      </Popover>,
+    );
     await user.click(screen.getByRole('button', {name: 'Open'}));
     const panel = await screen.findByRole('dialog', {name: 'A'});
     expect(set.mock.calls.map((c) => c[0]).filter((n) => /^margin-/.test(n))).not.toContain('margin-r');
@@ -125,7 +163,7 @@ describe('native anchor-name and margins', () => {
 
 describe('nativeHeight (native --available-height)', () => {
   const root = {clientHeight: 800} as HTMLElement;
-  const rect = (top: number, bottom: number) => ({top, bottom} as DOMRect);
+  const rect = (top: number, bottom: number) => ({top, bottom}) as DOMRect;
   it('uses the larger of the two sides, minus offset and padding, so a too-tall panel flips instead of shrinking', () => {
     expect(nativeHeight(rect(700, 740), root, 'bottom', 4, 8)).toBe(700 - 4 - 8); // little room below, more above
     expect(nativeHeight(rect(100, 140), root, 'bottom', 4, 8)).toBe(660 - 4 - 8); // more room below
@@ -139,11 +177,14 @@ describe('nativeHeight (native --available-height)', () => {
     expect(nativeHeight(rect(2, 798), root, 'bottom', 4, 8)).toBe(0);
   });
   it('is set as a px value on the native panel, not 100%', async () => {
-    CSS.supports = () => true; document.documentElement.dataset.anchor = 'native';
+    CSS.supports = () => true;
+    document.documentElement.dataset.anchor = 'native';
     const user = userEvent.setup();
     render(ui());
     await user.click(screen.getByRole('button', {name: 'Open'}));
     expect((await screen.findByRole('dialog')).style.getPropertyValue('--available-height')).toMatch(/^\d+(\.\d+)?px$/);
   });
-  afterEach(() => { delete document.documentElement.dataset.anchor; });
+  afterEach(() => {
+    delete document.documentElement.dataset.anchor;
+  });
 });

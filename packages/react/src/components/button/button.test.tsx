@@ -12,7 +12,11 @@ describe('Button', () => {
   });
 
   it('applies variant and size classes', () => {
-    render(<Button variant="solid" size="sm">Go</Button>);
+    render(
+      <Button variant="solid" size="sm">
+        Go
+      </Button>,
+    );
     expect(screen.getByRole('button')).toHaveClass('btn-solid', 'btn-sm');
   });
 
@@ -23,9 +27,17 @@ describe('Button', () => {
     await user.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
 
-    rerender(<Button onClick={onClick} disabled>Go</Button>);
+    rerender(
+      <Button onClick={onClick} disabled>
+        Go
+      </Button>,
+    );
     await user.click(screen.getByRole('button'));
-    rerender(<Button onClick={onClick} loading>Go</Button>);
+    rerender(
+      <Button onClick={onClick} loading>
+        Go
+      </Button>,
+    );
     await user.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -37,7 +49,11 @@ describe('Button', () => {
   });
 
   it('can render a link with button styles', () => {
-    render(<Button asChild variant="solid"><a href="/docs">Docs</a></Button>);
+    render(
+      <Button asChild variant="solid">
+        <a href="/docs">Docs</a>
+      </Button>,
+    );
     const link = screen.getByRole('link', {name: 'Docs'});
     expect(link).toHaveClass('btn', 'btn-solid');
     expect(link).not.toHaveAttribute('type');

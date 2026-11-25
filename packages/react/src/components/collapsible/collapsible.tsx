@@ -14,7 +14,17 @@ export const Collapsible = Radix.Root;
 export const CollapsibleTrigger = Radix.Trigger;
 
 /** The region that is shown or hidden. Closed content is found by the browser's Find in page where `hidden="until-found"` is supported. */
-export const CollapsibleContent = forwardRef<ElementRef<typeof Radix.Content>, ComponentPropsWithoutRef<typeof Radix.Content>>(function CollapsibleContent({className, ...rest}, ref) {
+export const CollapsibleContent = forwardRef<
+  ElementRef<typeof Radix.Content>,
+  ComponentPropsWithoutRef<typeof Radix.Content>
+>(function CollapsibleContent({className, ...rest}, ref) {
   const found = useUntilFound();
-  return <Radix.Content ref={(n) => setRefs(n, found.ref, ref)} forceMount={found.forceMount} className={cx('collapsible-content', className)} {...rest} />;
+  return (
+    <Radix.Content
+      ref={(n) => setRefs(n, found.ref, ref)}
+      forceMount={found.forceMount}
+      className={cx('collapsible-content', className)}
+      {...rest}
+    />
+  );
 });

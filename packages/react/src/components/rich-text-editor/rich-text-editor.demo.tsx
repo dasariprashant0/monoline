@@ -3,7 +3,9 @@ import type {Demo} from '../../demo';
 import {RichTextEditor} from './rich-text-editor';
 
 function Controlled() {
-  const [html, setHtml] = useState('<h2>Release notes</h2><p>Select text, then use the toolbar or <strong>Cmd/Ctrl+B</strong>.</p>');
+  const [html, setHtml] = useState(
+    '<h2>Release notes</h2><p>Select text, then use the toolbar or <strong>Cmd/Ctrl+B</strong>.</p>',
+  );
   return (
     <div>
       <RichTextEditor aria-label="Release notes" value={html} onValueChange={setHtml} />
@@ -15,15 +17,11 @@ function Controlled() {
 export const demos: Demo[] = [
   {
     title: 'Basic',
-    render: () => (
-      <RichTextEditor aria-label="Notes" placeholder="Write something…" />
-    ),
+    render: () => <RichTextEditor aria-label="Notes" placeholder="Write something…" />,
   },
   {
     title: 'Controlled, with the HTML shown',
-    render: () => (
-      <Controlled />
-    ),
+    render: () => <Controlled />,
   },
   {
     title: 'Read only',
@@ -37,8 +35,6 @@ export const demos: Demo[] = [
   },
   {
     title: 'Disabled',
-    render: () => (
-      <RichTextEditor aria-label="Locked notes" disabled defaultValue="<p>Disabled.</p>" />
-    ),
+    render: () => <RichTextEditor aria-label="Locked notes" disabled defaultValue="<p>Disabled.</p>" />,
   },
 ];

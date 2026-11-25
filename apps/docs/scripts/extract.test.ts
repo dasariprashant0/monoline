@@ -43,14 +43,20 @@ export const demos: Demo[] = [
 
 test('extracts one snippet per demo with title and description', () => {
   const d = extractDemos(demoFile);
-  assert.deepEqual(d.map((x) => x.title), ['Expression', 'With helper', 'Block']);
+  assert.deepEqual(
+    d.map((x) => x.title),
+    ['Expression', 'With helper', 'Block'],
+  );
   assert.equal(d[0].description, 'One line.');
   assert.equal(d[1].description, undefined);
 });
 
 test('expression demo: de-indented JSX with only the imports it uses', () => {
   const [d] = extractDemos(demoFile);
-  assert.equal(d.code, `import {Button} from '@monoline/react';\n\n<div className="x">\n  <Button variant="solid">Go</Button>\n</div>`);
+  assert.equal(
+    d.code,
+    `import {Button} from '@monoline/react';\n\n<div className="x">\n  <Button variant="solid">Go</Button>\n</div>`,
+  );
 });
 
 test('helper demo includes the helpers it references, transitively, and not the unused ones', () => {
@@ -72,11 +78,14 @@ test('block body keeps its statements and imports from react stay', () => {
 test('a file without a demos array yields nothing', () => assert.deepEqual(extractDemos('export const x = 1;'), []));
 
 test('exportedNames splits values and types', () => {
-  const r = exportedNames(`export {Dialog, DialogTitle} from './dialog';\nexport type {DialogContentProps} from './dialog';`);
+  const r = exportedNames(
+    `export {Dialog, DialogTitle} from './dialog';\nexport type {DialogContentProps} from './dialog';`,
+  );
   assert.deepEqual(r, {values: ['Dialog', 'DialogTitle'], types: ['DialogContentProps']});
 });
 
-test('dedent removes the common indent of following lines', () => assert.equal(dedent('a\n    b\n      c\n    d'), 'a\nb\n  c\nd'));
+test('dedent removes the common indent of following lines', () =>
+  assert.equal(dedent('a\n    b\n      c\n    d'), 'a\nb\n  c\nd'));
 
 test('extractSelectors finds classes and data/aria attributes, ignoring comments, strings and @-rule preludes', () => {
   const css = `/* .ghost [data-fake] */
@@ -101,20 +110,47 @@ test('keyboardRows parses lines that start with keys', () => {
     'Tab order follows the DOM.',
     'Move through options, ArrowDown/ArrowUp, Enter picks, Escape closes.',
   ]);
-  assert.deepEqual(rows.map((r) => r.keys), ['Enter / Space', 'Tab', 'Arrow keys', 'Home / End', 'Escape', 'Enter', 'Escape']);
+  assert.deepEqual(
+    rows.map((r) => r.keys),
+    ['Enter / Space', 'Tab', 'Arrow keys', 'Home / End', 'Escape', 'Enter', 'Escape'],
+  );
   assert.match(rows[2].action, /^Move between tabs/);
 });
 
 test('componentMarkdown has the sections in order and marks required props', () => {
   const md = componentMarkdown({
-    meta: {name: 'x', title: 'X', category: 'buttons', description: 'D.', status: 'stable', css: ['x.css'], a11y: ['Enter activates.']},
+    meta: {
+      name: 'x',
+      title: 'X',
+      category: 'buttons',
+      description: 'D.',
+      status: 'stable',
+      css: ['x.css'],
+      a11y: ['Enter activates.'],
+    },
     extra: {importName: 'X', parts: ['X'], demos: [{title: 'One', code: '<X />'}]},
-    props: [{name: 'XProps', props: [{name: 'a', type: 'string', optional: false, default: null, description: 'A | B'}]}],
+    props: [
+      {name: 'XProps', props: [{name: 'a', type: 'string', optional: false, default: null, description: 'A | B'}]},
+    ],
     styling: [{file: 'x.css', classes: ['x'], attributes: ['[data-state="open"]']}],
     hook: false,
   });
-  const order = ['# X', '## Import', '## Usage', '## Examples', '### One', '## Props', '## Data Attributes', '## Accessibility', '### Keyboard', '## Details'].map((h) => md.indexOf(h));
-  assert.ok(order.every((n, i) => n >= 0 && (i === 0 || n > order[i - 1])), order.join());
+  const order = [
+    '# X',
+    '## Import',
+    '## Usage',
+    '## Examples',
+    '### One',
+    '## Props',
+    '## Data Attributes',
+    '## Accessibility',
+    '### Keyboard',
+    '## Details',
+  ].map((h) => md.indexOf(h));
+  assert.ok(
+    order.every((n, i) => n >= 0 && (i === 0 || n > order[i - 1])),
+    order.join(),
+  );
   assert.match(md, /`a` \(required\)/);
   assert.match(md, /A \\\| B/);
   assert.doesNotMatch(md, /## Anatomy/);

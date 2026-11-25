@@ -35,22 +35,33 @@ export interface BlockDashboardShellProps extends Omit<HTMLAttributes<HTMLDivEle
  * the same navigation in a left `Drawer`. Put one `h1` in the content.
  * Pass `renderLink` to use a client router (React Router, Next.js) for the links.
  */
-export const BlockDashboardShell = forwardRef<HTMLDivElement, BlockDashboardShellProps>(function BlockDashboardShell({brand, nav, renderLink, navLabel = 'Main', topbar, menuLabel = 'Menu', children, className, ...rest}, ref) {
+export const BlockDashboardShell = forwardRef<HTMLDivElement, BlockDashboardShellProps>(function BlockDashboardShell(
+  {brand, nav, renderLink, navLabel = 'Main', topbar, menuLabel = 'Menu', children, className, ...rest},
+  ref,
+) {
   return (
     <AppShell
       ref={ref}
       className={cx('block-shell', className)}
       navbar={<Navbar leading={<SidebarTrigger>{menuLabel}</SidebarTrigger>} actions={topbar} />}
-      sidebar={(
+      sidebar={
         <Sidebar label={navLabel} drawerTitle={brand ?? menuLabel} renderLink={renderLink}>
-          {brand && <SidebarHeader><div className="block-shell-brand">{brand}</div></SidebarHeader>}
+          {brand && (
+            <SidebarHeader>
+              <div className="block-shell-brand">{brand}</div>
+            </SidebarHeader>
+          )}
           <SidebarContent>
             <SidebarGroup>
-              {nav.map((it, i) => <SidebarItem key={i} href={it.href} current={it.current} className="block-shell-link">{it.label}</SidebarItem>)}
+              {nav.map((it, i) => (
+                <SidebarItem key={i} href={it.href} current={it.current} className="block-shell-link">
+                  {it.label}
+                </SidebarItem>
+              ))}
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-      )}
+      }
       {...rest}
     >
       {children}

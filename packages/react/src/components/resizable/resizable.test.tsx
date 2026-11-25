@@ -5,15 +5,20 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup, type ResizablePane
 
 const two = (props: Partial<ResizablePanelGroupProps> = {}, a = {}, b = {}) => (
   <ResizablePanelGroup aria-label="Layout" {...props}>
-    <ResizablePanel defaultSize={30} minSize={20} maxSize={60} {...a}>One</ResizablePanel>
+    <ResizablePanel defaultSize={30} minSize={20} maxSize={60} {...a}>
+      One
+    </ResizablePanel>
     <ResizableHandle aria-label="Resize one" />
-    <ResizablePanel defaultSize={70} {...b}>Two</ResizablePanel>
+    <ResizablePanel defaultSize={70} {...b}>
+      Two
+    </ResizablePanel>
   </ResizablePanelGroup>
 );
 const handle = () => screen.getByRole('separator', {name: 'Resize one'});
 
 // jsdom has no PointerEvent; a MouseEvent carries clientX/clientY and button.
-if (!('PointerEvent' in window)) (window as unknown as {PointerEvent: typeof MouseEvent}).PointerEvent = class extends MouseEvent {};
+if (!('PointerEvent' in window))
+  (window as unknown as {PointerEvent: typeof MouseEvent}).PointerEvent = class extends MouseEvent {};
 
 describe('Resizable', () => {
   it('renders a focusable separator with value, limits and the panel it controls', () => {
@@ -75,7 +80,17 @@ describe('Resizable', () => {
   it('resizes by dragging', () => {
     render(two());
     const group = screen.getByLabelText('Layout');
-    group.getBoundingClientRect = () => ({width: 1000, height: 100, top: 0, left: 0, right: 1000, bottom: 100, x: 0, y: 0, toJSON() {}});
+    group.getBoundingClientRect = () => ({
+      width: 1000,
+      height: 100,
+      top: 0,
+      left: 0,
+      right: 1000,
+      bottom: 100,
+      x: 0,
+      y: 0,
+      toJSON() {},
+    });
     const h = handle();
     fireEvent.pointerDown(h, {button: 0, clientX: 300, pointerId: 1});
     fireEvent.pointerMove(h, {clientX: 400, pointerId: 1});
@@ -106,7 +121,7 @@ describe('Resizable', () => {
     const {container} = render(two());
     expect(await axe(container)).toHaveNoViolations();
   });
-  it('keeps the other panels\' default sizes when a panel is added', () => {
+  it("keeps the other panels' default sizes when a panel is added", () => {
     const three = (show: boolean) => (
       <ResizablePanelGroup aria-label="Layout">
         {show && <ResizablePanel defaultSize={20}>Side</ResizablePanel>}
@@ -121,7 +136,9 @@ describe('Resizable', () => {
     expect(screen.getByRole('separator', {name: 'Right handle'})).toHaveAttribute('aria-valuenow', '60');
   });
   it('still drags when the consumer passes pointer handlers, and calls them', () => {
-    const down = vi.fn(), moveFn = vi.fn(), upFn = vi.fn();
+    const down = vi.fn(),
+      moveFn = vi.fn(),
+      upFn = vi.fn();
     const onLayoutChange = vi.fn();
     render(
       <ResizablePanelGroup aria-label="Layout" onLayoutChange={onLayoutChange}>
@@ -134,7 +151,9 @@ describe('Resizable', () => {
     fireEvent.pointerDown(h, {clientX: 100, button: 0, pointerId: 1});
     fireEvent.pointerMove(h, {clientX: 120, pointerId: 1});
     fireEvent.pointerUp(h, {pointerId: 1});
-    expect(down).toHaveBeenCalled(); expect(moveFn).toHaveBeenCalled(); expect(upFn).toHaveBeenCalled();
+    expect(down).toHaveBeenCalled();
+    expect(moveFn).toHaveBeenCalled();
+    expect(upFn).toHaveBeenCalled();
     expect(onLayoutChange).toHaveBeenCalled();
   });
 });

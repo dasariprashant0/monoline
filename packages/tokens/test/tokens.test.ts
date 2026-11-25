@@ -2,12 +2,25 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {buildTokens, classify, cssBlocks, figmaVariables, flatten, parseSources, tokensCss, typesDts} from '../scripts/lib.ts';
+import {
+  buildTokens,
+  classify,
+  cssBlocks,
+  figmaVariables,
+  flatten,
+  parseSources,
+  tokensCss,
+  typesDts,
+} from '../scripts/lib.ts';
 import type {TokensJson} from '../scripts/lib.ts';
 
 const here = import.meta.dirname;
 const read = (p: string) => readFileSync(join(here, p), 'utf8');
-const sources = {tokens: read('../../css/src/tokens.css'), accents: read('../../css/src/accents.css'), options: read('../../css/src/options.css')};
+const sources = {
+  tokens: read('../../css/src/tokens.css'),
+  accents: read('../../css/src/accents.css'),
+  options: read('../../css/src/options.css'),
+};
 const src = parseSources(sources);
 const json: TokensJson = JSON.parse(read('../dist/tokens.json'));
 const THEMES = ['warm', 'dark', 'midnight'];
@@ -35,7 +48,8 @@ test('accent presets round-trip: generic rule is the warm look, theme rules over
   for (const {selector, decls} of accentBlocks) {
     const name = selector.match(/data-accent="([\w-]+)"/)![1];
     const theme = selector.match(/data-theme="(\w+)"/)?.[1] ?? 'warm';
-    for (const [prop, value] of decls) assert.equal(valueAt(['accent', name, theme], prop), value, `${selector} ${prop}`);
+    for (const [prop, value] of decls)
+      assert.equal(valueAt(['accent', name, theme], prop), value, `${selector} ${prop}`);
   }
 });
 
@@ -43,7 +57,8 @@ test('option presets (font, radius, density) round-trip', () => {
   for (const {selector, decls} of cssBlocks(sources.options)) {
     const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/);
     if (!m) continue;
-    for (const [prop, value] of decls) assert.equal(valueAt(['option', m[1], m[2]], prop), value, `${selector} ${prop}`);
+    for (const [prop, value] of decls)
+      assert.equal(valueAt(['option', m[1], m[2]], prop), value, `${selector} ${prop}`);
   }
 });
 
@@ -69,13 +84,17 @@ test('tokens.css in dist is the same re-export that the build writes', () => {
 
 test('figma variables: four collections, colours per theme and accent, values as the browser computes them', () => {
   const fig = figmaVariables(src);
-  assert.deepEqual(fig.collections.map((c) => c.name), ['Colors', 'Spacing', 'Radius', 'Typography']);
+  assert.deepEqual(
+    fig.collections.map((c) => c.name),
+    ['Colors', 'Spacing', 'Radius', 'Typography'],
+  );
   const colors = fig.collections[0];
   assert.equal(colors.modes.length, 3 * 8);
   for (const v of colors.variables) {
     assert.equal(v.resolvedType, 'COLOR');
     assert.deepEqual(Object.keys(v.valuesByMode).sort(), [...colors.modes].sort(), v.name);
-    for (const c of Object.values(v.valuesByMode)) for (const k of ['r', 'g', 'b', 'a'] as const) assert.ok(c[k] >= 0 && c[k] <= 1, `${v.name} ${k}`);
+    for (const c of Object.values(v.valuesByMode))
+      for (const k of ['r', 'g', 'b', 'a'] as const) assert.ok(c[k] >= 0 && c[k] <= 1, `${v.name} ${k}`);
   }
   const ink2 = colors.variables.find((v) => v.name === 'color/ink-2')!.valuesByMode['warm / orange'];
   assert.deepEqual([ink2.r.toFixed(3), ink2.g.toFixed(3), ink2.b.toFixed(3), ink2.a], ['0.086', '0.071', '0.055', 0.7]);
@@ -88,7 +107,11 @@ test('figma spacing, radius and typography: px become numbers, calc is evaluated
   const [, spacing, radius, typography] = fig.collections;
   assert.equal(spacing.variables.find((v) => v.name === 'control/sm')!.valuesByMode.comfortable, 36);
   assert.equal(spacing.variables.find((v) => v.name === 'space/s2')!.valuesByMode.compact, 6);
-  assert.deepEqual(radius.variables.find((v) => v.name === 'radius/radius')!.valuesByMode, {square: 0, soft: 6, round: 12});
+  assert.deepEqual(radius.variables.find((v) => v.name === 'radius/radius')!.valuesByMode, {
+    square: 0,
+    soft: 6,
+    round: 12,
+  });
   assert.equal(typography.modes.length, 9);
   assert.equal(typography.variables.find((v) => v.name === 'type/text-base')!.valuesByMode['mono / compact'], 14);
   assert.equal(typography.variables.find((v) => v.name === 'type/display-md')!.resolvedType, 'STRING');

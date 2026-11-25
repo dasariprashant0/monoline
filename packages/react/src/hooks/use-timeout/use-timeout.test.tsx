@@ -26,7 +26,8 @@ describe('useTimeout', () => {
     expect(fn).not.toHaveBeenCalled();
   });
   it('is cleared on unmount and uses the latest callback', () => {
-    const a = vi.fn(), b = vi.fn();
+    const a = vi.fn(),
+      b = vi.fn();
     const {result, rerender, unmount} = renderHook(({cb}) => useTimeout(cb, 100), {initialProps: {cb: a}});
     act(() => result.current.start());
     rerender({cb: b});

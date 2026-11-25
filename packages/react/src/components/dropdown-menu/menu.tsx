@@ -1,5 +1,16 @@
 'use client';
-import {createContext, forwardRef, useContext, useEffect, useId, useRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, type RefObject} from 'react';
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import {useControllableState} from '../../hooks/use-controllable-state';
 import {cx} from '../../utils/cx';
 import {nextItem, setRefs} from '../../utils/overlay';
@@ -11,12 +22,23 @@ import {Floating, useDismiss, useHydrated, type Placement} from '../popover/floa
 /** Where focus goes when a menu opens. Set by whatever opened it, read once by the panel. A module variable because only one menu can open at a time. */
 let intent: 'first' | 'last' | 'panel' = 'panel';
 let intentAt = 0;
-export const openWith = (i: typeof intent) => { intent = i; intentAt = Date.now(); };
+export const openWith = (i: typeof intent) => {
+  intent = i;
+  intentAt = Date.now();
+};
 /** The intent set just before this open; an old one (the open was refused, say by a controlled parent) is ignored. */
-const takeIntent = (): typeof intent => { const how = Date.now() - intentAt < 1000 ? intent : 'panel'; intent = 'panel'; return how; };
+const takeIntent = (): typeof intent => {
+  const how = Date.now() - intentAt < 1000 ? intent : 'panel';
+  intent = 'panel';
+  return how;
+};
 
 export interface MenuCtx {
-  open: boolean; setOpen: (o: boolean) => void; trigger: RefObject<HTMLElement | null>; triggerId: string; menuId: string;
+  open: boolean;
+  setOpen: (o: boolean) => void;
+  trigger: RefObject<HTMLElement | null>;
+  triggerId: string;
+  menuId: string;
   /** Element to position against when it is not the trigger (the pointer, for a context menu). */
   anchor?: (() => Element | null) | undefined;
   /** Menubar only: ArrowLeft/ArrowRight inside the panel moves to the neighbouring menu. */
@@ -27,7 +49,10 @@ export const MenuContext = createContext<MenuCtx | null>(null);
 /** The surrounding root's state; a part rendered outside it says so instead of failing on a null. */
 export function useMenuCtx(): MenuCtx {
   const c = useContext(MenuContext);
-  if (!c) throw new Error('Monoline: this menu part must be rendered inside its menu (DropdownMenu, ContextMenu or Menubar).');
+  if (!c)
+    throw new Error(
+      'Monoline: this menu part must be rendered inside its menu (DropdownMenu, ContextMenu or Menubar).',
+    );
   return c;
 }
 
@@ -43,10 +68,21 @@ export interface MenuProps {
 }
 
 /** Internal: holds a menu's open state for DropdownMenu, ContextMenu and Menubar. */
-export function MenuRoot({open, defaultOpen = false, onOpenChange, children, extra}: MenuProps & {extra?: Partial<MenuCtx> | undefined}) {
+export function MenuRoot({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  children,
+  extra,
+}: MenuProps & {extra?: Partial<MenuCtx> | undefined}) {
   const [isOpen, setOpen] = useControllableState({value: open, defaultValue: defaultOpen, onChange: onOpenChange});
-  const trigger = useRef<HTMLElement | null>(null), id = useId();
-  return <MenuContext.Provider value={{open: isOpen, setOpen, trigger, triggerId: id + 't', menuId: id + 'm', ...extra}}>{children}</MenuContext.Provider>;
+  const trigger = useRef<HTMLElement | null>(null),
+    id = useId();
+  return (
+    <MenuContext.Provider value={{open: isOpen, setOpen, trigger, triggerId: id + 't', menuId: id + 'm', ...extra}}>
+      {children}
+    </MenuContext.Provider>
+  );
 }
 
 export interface MenuContentProps extends HTMLAttributes<HTMLDivElement>, Placement {
@@ -58,11 +94,20 @@ export interface MenuContentProps extends HTMLAttributes<HTMLDivElement>, Placem
 
 const ITEM = '[role^=menuitem]:not([aria-disabled=true])';
 
-const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEscapeKeyDown, onCloseAutoFocus, onKeyDown, ...rest}, forwarded) {
+const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel(
+  {onEscapeKeyDown, onCloseAutoFocus, onKeyDown, ...rest},
+  forwarded,
+) {
   const c = useMenuCtx();
-  const el = useRef<HTMLDivElement | null>(null), outside = useRef(false), typed = useRef({text: '', at: 0});
+  const el = useRef<HTMLDivElement | null>(null),
+    outside = useRef(false),
+    typed = useRef({text: '', at: 0});
   useDismiss(true, [el, c.trigger], (kind) => {
-    if (kind === 'escape' && onEscapeKeyDown) { const e = new Event('x', {cancelable: true}); onEscapeKeyDown(e); if (e.defaultPrevented) return; }
+    if (kind === 'escape' && onEscapeKeyDown) {
+      const e = new Event('x', {cancelable: true});
+      onEscapeKeyDown(e);
+      if (e.defaultPrevented) return;
+    }
     outside.current = kind === 'outside';
     c.setOpen(false);
   });
@@ -70,29 +115,65 @@ const Panel = forwardRef<HTMLDivElement, MenuContentProps>(function Panel({onEsc
   const closeFocus = useRef(onCloseAutoFocus);
   closeFocus.current = onCloseAutoFocus;
   useEffect(() => {
-    const p = el.current!, items = p.querySelectorAll<HTMLElement>(ITEM), how = takeIntent();
+    const p = el.current!,
+      items = p.querySelectorAll<HTMLElement>(ITEM),
+      how = takeIntent();
     (how === 'first' ? items[0] : how === 'last' ? items[items.length - 1] : p)?.focus();
     return () => {
       if (outside.current) return;
-      const e = new Event('x', {cancelable: true}); closeFocus.current?.(e);
+      const e = new Event('x', {cancelable: true});
+      closeFocus.current?.(e);
       if (!e.defaultPrevented) c.trigger.current?.focus({preventScroll: true});
     };
   }, []);
   const keydown = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
-    if (e.key === 'Tab') { outside.current = true; c.trigger.current?.focus(); c.setOpen(false); return; } // focus goes to the trigger before the default action, so Tab carries on from there
-    if (c.step && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); c.step(e.key === 'ArrowRight' ? 1 : -1, c.trigger.current); return; }
-    const next = nextItem(e.key, !e.ctrlKey && !e.metaKey && !e.altKey, [...el.current!.querySelectorAll<HTMLElement>(ITEM)], typed.current);
+    if (e.key === 'Tab') {
+      outside.current = true;
+      c.trigger.current?.focus();
+      c.setOpen(false);
+      return;
+    } // focus goes to the trigger before the default action, so Tab carries on from there
+    if (c.step && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      e.preventDefault();
+      c.step(e.key === 'ArrowRight' ? 1 : -1, c.trigger.current);
+      return;
+    }
+    const next = nextItem(
+      e.key,
+      !e.ctrlKey && !e.metaKey && !e.altKey,
+      [...el.current!.querySelectorAll<HTMLElement>(ITEM)],
+      typed.current,
+    );
     if (next === null) return;
-    e.preventDefault(); next?.focus();
+    e.preventDefault();
+    next?.focus();
   };
-  return <Floating ref={(n) => setRefs(n, el, forwarded)} anchor={() => (c.anchor ?? (() => c.trigger.current))()} role="menu" id={c.menuId} aria-orientation="vertical" aria-labelledby={c.anchor ? undefined : c.triggerId} aria-label={c.anchor ? 'Menu' : undefined} tabIndex={-1} data-state="open" {...rest} onKeyDown={keydown} />;
+  return (
+    <Floating
+      ref={(n) => setRefs(n, el, forwarded)}
+      anchor={() => (c.anchor ?? (() => c.trigger.current))()}
+      role="menu"
+      id={c.menuId}
+      aria-orientation="vertical"
+      aria-labelledby={c.anchor ? undefined : c.triggerId}
+      aria-label={c.anchor ? 'Menu' : undefined}
+      tabIndex={-1}
+      data-state="open"
+      {...rest}
+      onKeyDown={keydown}
+    />
+  );
 });
 
 /** Internal: the floating `role="menu"` panel with roving focus and type-ahead. Renders nothing while closed. */
-export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(function MenuContent({className, ...props}, ref) {
-  const {open} = useMenuCtx(), hydrated = useHydrated();
+export const MenuContent = forwardRef<HTMLDivElement, MenuContentProps>(function MenuContent(
+  {className, ...props},
+  ref,
+) {
+  const {open} = useMenuCtx(),
+    hydrated = useHydrated();
   return open && hydrated ? <Panel ref={ref} className={cx('menu-content', className)} {...props} /> : null;
 });
 
@@ -104,17 +185,47 @@ export interface MenuItemProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onS
 }
 
 /** Internal: one menu entry; `role` picks menuitem, menuitemcheckbox or menuitemradio. */
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: string | undefined}>(function MenuItem({role = 'menuitem', disabled, onSelect, onClick, onKeyDown, onPointerMove, onFocus, onBlur, ...rest}, ref) {
+export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps & {role?: string | undefined}>(function MenuItem(
+  {role = 'menuitem', disabled, onSelect, onClick, onKeyDown, onPointerMove, onFocus, onBlur, ...rest},
+  ref,
+) {
   const c = useMenuCtx();
-  const choose = () => { const e = new Event('menu.itemSelect', {cancelable: true}); onSelect?.(e); if (!e.defaultPrevented) c.setOpen(false); };
+  const choose = () => {
+    const e = new Event('menu.itemSelect', {cancelable: true});
+    onSelect?.(e);
+    if (!e.defaultPrevented) c.setOpen(false);
+  };
   return (
     <div
-      ref={ref} role={role} tabIndex={-1} aria-disabled={disabled || undefined} data-disabled={disabled ? '' : undefined} {...rest}
-      onClick={(e) => { onClick?.(e); if (!e.defaultPrevented && !disabled) choose(); }}
-      onKeyDown={(e) => { onKeyDown?.(e); if (!e.defaultPrevented && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (!disabled) choose(); } }}
-      onPointerMove={(e) => { onPointerMove?.(e); if (!disabled) e.currentTarget.focus({preventScroll: true}); }}
-      onFocus={(e) => { onFocus?.(e); e.currentTarget.setAttribute('data-highlighted', ''); }}
-      onBlur={(e) => { onBlur?.(e); e.currentTarget.removeAttribute('data-highlighted'); }}
+      ref={ref}
+      role={role}
+      tabIndex={-1}
+      aria-disabled={disabled || undefined}
+      data-disabled={disabled ? '' : undefined}
+      {...rest}
+      onClick={(e) => {
+        onClick?.(e);
+        if (!e.defaultPrevented && !disabled) choose();
+      }}
+      onKeyDown={(e) => {
+        onKeyDown?.(e);
+        if (!e.defaultPrevented && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          if (!disabled) choose();
+        }
+      }}
+      onPointerMove={(e) => {
+        onPointerMove?.(e);
+        if (!disabled) e.currentTarget.focus({preventScroll: true});
+      }}
+      onFocus={(e) => {
+        onFocus?.(e);
+        e.currentTarget.setAttribute('data-highlighted', '');
+      }}
+      onBlur={(e) => {
+        onBlur?.(e);
+        e.currentTarget.removeAttribute('data-highlighted');
+      }}
     />
   );
 });
@@ -126,10 +237,27 @@ export interface MenuCheckboxItemProps extends MenuItemProps {
   onCheckedChange?: ((checked: boolean) => void) | undefined;
 }
 /** Internal: a menu entry that toggles. */
-export const MenuCheckboxItem = forwardRef<HTMLDivElement, MenuCheckboxItemProps>(function MenuCheckboxItem({checked = false, onCheckedChange, onSelect, children, className, ...rest}, ref) {
+export const MenuCheckboxItem = forwardRef<HTMLDivElement, MenuCheckboxItemProps>(function MenuCheckboxItem(
+  {checked = false, onCheckedChange, onSelect, children, className, ...rest},
+  ref,
+) {
   return (
-    <MenuItem ref={ref} role="menuitemcheckbox" aria-checked={checked === 'indeterminate' ? 'mixed' : checked} data-state={checked === 'indeterminate' ? 'indeterminate' : checked ? 'checked' : 'unchecked'} className={cx('menu-item', className)} onSelect={(e) => { onCheckedChange?.(checked !== true); onSelect?.(e); }} {...rest}>
-      <span className="menu-item-check"><span className="menu-indicator">{checked === 'indeterminate' ? '–' : checked ? '✓' : null}</span>{children}</span>
+    <MenuItem
+      ref={ref}
+      role="menuitemcheckbox"
+      aria-checked={checked === 'indeterminate' ? 'mixed' : checked}
+      data-state={checked === 'indeterminate' ? 'indeterminate' : checked ? 'checked' : 'unchecked'}
+      className={cx('menu-item', className)}
+      onSelect={(e) => {
+        onCheckedChange?.(checked !== true);
+        onSelect?.(e);
+      }}
+      {...rest}
+    >
+      <span className="menu-item-check">
+        <span className="menu-indicator">{checked === 'indeterminate' ? '–' : checked ? '✓' : null}</span>
+        {children}
+      </span>
     </MenuItem>
   );
 });
@@ -142,18 +270,43 @@ export interface MenuRadioGroupProps extends HTMLAttributes<HTMLDivElement> {
   onValueChange?: ((value: string) => void) | undefined;
 }
 /** Internal: a set of radio entries sharing one value. */
-export const MenuRadioGroup = forwardRef<HTMLDivElement, MenuRadioGroupProps>(function MenuRadioGroup({value, onValueChange, ...rest}, ref) {
-  return <Radio.Provider value={{value, onValueChange}}><div ref={ref} role="group" {...rest} /></Radio.Provider>;
+export const MenuRadioGroup = forwardRef<HTMLDivElement, MenuRadioGroupProps>(function MenuRadioGroup(
+  {value, onValueChange, ...rest},
+  ref,
+) {
+  return (
+    <Radio.Provider value={{value, onValueChange}}>
+      <div ref={ref} role="group" {...rest} />
+    </Radio.Provider>
+  );
 });
 /** Internal: one choice in a radio group of menu entries. */
-export const MenuRadioItem = forwardRef<HTMLDivElement, MenuItemProps & {
-  /** The value this item reports to its `MenuRadioGroup`. */
-  value: string;
-}>(function MenuRadioItem({value, onSelect, children, className, ...rest}, ref) {
-  const g = useContext(Radio), checked = g.value === value;
+export const MenuRadioItem = forwardRef<
+  HTMLDivElement,
+  MenuItemProps & {
+    /** The value this item reports to its `MenuRadioGroup`. */
+    value: string;
+  }
+>(function MenuRadioItem({value, onSelect, children, className, ...rest}, ref) {
+  const g = useContext(Radio),
+    checked = g.value === value;
   return (
-    <MenuItem ref={ref} role="menuitemradio" aria-checked={checked} data-state={checked ? 'checked' : 'unchecked'} className={cx('menu-item', className)} onSelect={(e) => { g.onValueChange?.(value); onSelect?.(e); }} {...rest}>
-      <span className="menu-item-check"><span className="menu-indicator">{checked ? '●' : null}</span>{children}</span>
+    <MenuItem
+      ref={ref}
+      role="menuitemradio"
+      aria-checked={checked}
+      data-state={checked ? 'checked' : 'unchecked'}
+      className={cx('menu-item', className)}
+      onSelect={(e) => {
+        g.onValueChange?.(value);
+        onSelect?.(e);
+      }}
+      {...rest}
+    >
+      <span className="menu-item-check">
+        <span className="menu-indicator">{checked ? '●' : null}</span>
+        {children}
+      </span>
     </MenuItem>
   );
 });
@@ -163,10 +316,18 @@ export const MenuGroup = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElemen
   return <div ref={ref} role="group" {...props} />;
 });
 /** Internal: a line between groups of entries. */
-export const MenuSeparator = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function MenuSeparator({className, ...rest}, ref) {
-  return <div ref={ref} role="separator" aria-orientation="horizontal" className={cx('menu-sep', className)} {...rest} />;
+export const MenuSeparator = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function MenuSeparator(
+  {className, ...rest},
+  ref,
+) {
+  return (
+    <div ref={ref} role="separator" aria-orientation="horizontal" className={cx('menu-sep', className)} {...rest} />
+  );
 });
 /** Internal: a heading for a group of entries. */
-export const MenuLabel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function MenuLabel({className, ...rest}, ref) {
+export const MenuLabel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function MenuLabel(
+  {className, ...rest},
+  ref,
+) {
   return <div ref={ref} className={cx('menu-label', className)} {...rest} />;
 });

@@ -24,8 +24,14 @@ Usage:
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@monoline/react';
 
 <Accordion type="single" collapsible defaultValue="a">
-  <AccordionItem value="a"><AccordionTrigger>What is Monoline?</AccordionTrigger><AccordionContent>A small UI kit: plain CSS plus accessible React components.</AccordionContent></AccordionItem>
-  <AccordionItem value="b"><AccordionTrigger>Do I need React?</AccordionTrigger><AccordionContent>No. The CSS works on its own.</AccordionContent></AccordionItem>
+  <AccordionItem value="a">
+    <AccordionTrigger>What is Monoline?</AccordionTrigger>
+    <AccordionContent>A small UI kit: plain CSS plus accessible React components.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="b">
+    <AccordionTrigger>Do I need React?</AccordionTrigger>
+    <AccordionContent>No. The CSS works on its own.</AccordionContent>
+  </AccordionItem>
 </Accordion>
 ```
 
@@ -54,9 +60,15 @@ import {Alert} from '@monoline/react';
 
 <div style={{display: 'grid', gap: 'var(--s3)'}}>
   <Alert title="Synced.">42 entries up to date as of 14:20.</Alert>
-  <Alert tone="success" title="Saved.">Your changes are live.</Alert>
-  <Alert tone="warning" title="Conflict.">Two devices edited 12 March. Pick which copy to keep.</Alert>
-  <Alert tone="danger" title="Can't save.">The folder is read-only. Pick another folder.</Alert>
+  <Alert tone="success" title="Saved.">
+    Your changes are live.
+  </Alert>
+  <Alert tone="warning" title="Conflict.">
+    Two devices edited 12 March. Pick which copy to keep.
+  </Alert>
+  <Alert tone="danger" title="Can't save.">
+    The folder is read-only. Pick another folder.
+  </Alert>
 </div>
 ```
 
@@ -80,10 +92,18 @@ Usage:
 import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, Button} from '@monoline/react';
 
 <AlertDialog>
-  <AlertDialogTrigger asChild><Button variant="danger">Delete project</Button></AlertDialogTrigger>
+  <AlertDialogTrigger asChild>
+    <Button variant="danger">Delete project</Button>
+  </AlertDialogTrigger>
   <AlertDialogContent>
-    <AlertDialogHeader><AlertDialogTitle>Delete this project?</AlertDialogTitle><AlertDialogDescription>All files and history are removed. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-    <AlertDialogFooter><AlertDialogCancel>Keep it</AlertDialogCancel><AlertDialogAction>Delete project</AlertDialogAction></AlertDialogFooter>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete this project?</AlertDialogTitle>
+      <AlertDialogDescription>All files and history are removed. This cannot be undone.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Keep it</AlertDialogCancel>
+      <AlertDialogAction>Delete project</AlertDialogAction>
+    </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
 ```
@@ -111,7 +131,8 @@ import {AnimatedList} from '@monoline/react';
 
 const row = (t: string, d: string) => (
   <div style={{display: 'grid', gap: 'var(--s1)', padding: 'var(--s3) var(--s4)', border: '1px solid var(--rule)'}}>
-    <strong>{t}</strong><span style={{color: 'var(--muted)', fontSize: 'var(--text-sm)'}}>{d}</span>
+    <strong>{t}</strong>
+    <span style={{color: 'var(--muted)', fontSize: 'var(--text-sm)'}}>{d}</span>
   </div>
 );
 
@@ -153,20 +174,37 @@ Usage:
 import {type CSSProperties} from 'react';
 import {AppShell, Breadcrumb, Button, Command, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, PageHeader, Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarItem, SidebarToggle, SidebarTrigger} from '@monoline/react';
 
-const Icon = ({d}: {d: string}) => <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={d} /></svg>;
+const Icon = ({d}: {d: string}) => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <path d={d} />
+  </svg>
+);
 
 const height = {'--app-shell-height': '34rem'} as CSSProperties;
 
-const actions = [{id: 'new', label: 'New project', group: 'Create'}, {id: 'invite', label: 'Invite a teammate', group: 'Create'}, {id: 'theme', label: 'Switch theme', group: 'View'}];
+const actions = [
+  {id: 'new', label: 'New project', group: 'Create'},
+  {id: 'invite', label: 'Invite a teammate', group: 'Create'},
+  {id: 'theme', label: 'Switch theme', group: 'View'},
+];
 
 const sidebar = (
   <Sidebar drawerTitle="Acme">
-    <SidebarHeader><span>Acme</span><SidebarToggle /></SidebarHeader>
+    <SidebarHeader>
+      <span>Acme</span>
+      <SidebarToggle />
+    </SidebarHeader>
     <SidebarContent>
       <SidebarGroup label="Workspace">
-        <SidebarItem href="#overview" current icon={<Icon d="M2 8l6-5 6 5v6H2z" />}>Overview</SidebarItem>
-        <SidebarItem href="#reports" icon={<Icon d="M3 13V8M8 13V3M13 13V6" />}>Reports</SidebarItem>
-        <SidebarItem href="#team" icon={<Icon d="M8 8a3 3 0 100-6 3 3 0 000 6zM2 14c0-3 3-4 6-4s6 1 6 4" />}>Team</SidebarItem>
+        <SidebarItem href="#overview" current icon={<Icon d="M2 8l6-5 6 5v6H2z" />}>
+          Overview
+        </SidebarItem>
+        <SidebarItem href="#reports" icon={<Icon d="M3 13V8M8 13V3M13 13V6" />}>
+          Reports
+        </SidebarItem>
+        <SidebarItem href="#team" icon={<Icon d="M8 8a3 3 0 100-6 3 3 0 000 6zM2 14c0-3 3-4 6-4s6 1 6 4" />}>
+          Team
+        </SidebarItem>
       </SidebarGroup>
     </SidebarContent>
   </Sidebar>
@@ -175,11 +213,18 @@ const sidebar = (
 const navbar = (
   <Navbar
     leading={<SidebarTrigger />}
-    actions={(
+    actions={
       <>
-        <Command shortcut="mod+j" title="Command palette" items={actions} trigger={<Button size="sm">Search…</Button>} />
+        <Command
+          shortcut="mod+j"
+          title="Command palette"
+          items={actions}
+          trigger={<Button size="sm">Search…</Button>}
+        />
         <DropdownMenu>
-          <DropdownMenuTrigger asChild><Button size="sm">Account</Button></DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm">Account</Button>
+          </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ada Example</DropdownMenuLabel>
             <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -189,13 +234,23 @@ const navbar = (
           </DropdownMenuContent>
         </DropdownMenu>
       </>
-    )}
+    }
   />
 );
 
-const header = <PageHeader breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Reports'}]} />} title="Reports" description="Weekly numbers for your workspace." actions={<Button variant="solid">New report</Button>} />;
+const header = (
+  <PageHeader
+    breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Reports'}]} />}
+    title="Reports"
+    description="Weekly numbers for your workspace."
+    actions={<Button variant="solid">New report</Button>}
+  />
+);
 
-<AppShell scroll="contained" style={height} navbar={navbar} sidebar={sidebar}>{header}<p>Your page goes here.</p></AppShell>
+<AppShell scroll="contained" style={height} navbar={navbar} sidebar={sidebar}>
+  {header}
+  <p>Your page goes here.</p>
+</AppShell>
 ```
 
 A11y:
@@ -257,7 +312,17 @@ import {AspectRatio} from '@monoline/react';
 
 <div style={{width: '320px'}}>
   <AspectRatio ratio={16 / 9}>
-    <div style={{width: '100%', height: '100%', border: '1px solid var(--rule)', display: 'grid', placeItems: 'center'}}>16:9</div>
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        border: '1px solid var(--rule)',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      16:9
+    </div>
   </AspectRatio>
 </div>
 ```
@@ -344,7 +409,9 @@ Usage:
 import {Avatar, AvatarGroup} from '@monoline/react';
 
 <AvatarGroup aria-label="Project members" max={3}>
-  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => <Avatar key={n} name={n} />)}
+  {['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds'].map((n) => (
+    <Avatar key={n} name={n} />
+  ))}
 </AvatarGroup>
 ```
 
@@ -401,7 +468,15 @@ Usage:
 ```tsx
 import {BarChart} from '@monoline/react';
 
-const week = [{label: 'Mon', value: 12}, {label: 'Tue', value: 19}, {label: 'Wed', value: 9}, {label: 'Thu', value: 24}, {label: 'Fri', value: 17}, {label: 'Sat', value: 6}, {label: 'Sun', value: 4}];
+const week = [
+  {label: 'Mon', value: 12},
+  {label: 'Tue', value: 19},
+  {label: 'Wed', value: 9},
+  {label: 'Thu', value: 24},
+  {label: 'Fri', value: 17},
+  {label: 'Sat', value: 6},
+  {label: 'Sun', value: 4},
+];
 
 <BarChart title="Signups per weekday" data={week} showValues />
 ```
@@ -431,13 +506,22 @@ Usage:
 ```tsx
 import {BentoCard, BentoGrid} from '@monoline/react';
 
-const tile = (title: string, text: string) => (<><h3 style={{margin: 0, fontWeight: 500}}>{title}</h3><p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>{text}</p></>);
+const tile = (title: string, text: string) => (
+  <>
+    <h3 style={{margin: 0, fontWeight: 500}}>{title}</h3>
+    <p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>{text}</p>
+  </>
+);
 
 <BentoGrid>
-  <BentoCard colSpan={2} rowSpan={2}>{tile('Tokens first', 'Every colour, space and rule comes from one small set of tokens.')}</BentoCard>
+  <BentoCard colSpan={2} rowSpan={2}>
+    {tile('Tokens first', 'Every colour, space and rule comes from one small set of tokens.')}
+  </BentoCard>
   <BentoCard>{tile('Three themes', 'Warm, dark and midnight.')}</BentoCard>
   <BentoCard>{tile('Four accents', 'One accent at a time.')}</BentoCard>
-  <BentoCard colSpan={3}>{tile('Plain CSS core', 'Use the stylesheets alone, or the React layer on top.')}</BentoCard>
+  <BentoCard colSpan={3}>
+    {tile('Plain CSS core', 'Use the stylesheets alone, or the React layer on top.')}
+  </BentoCard>
 </BentoGrid>
 ```
 
@@ -466,7 +550,12 @@ import {BlockCta, Button} from '@monoline/react';
 <BlockCta
   title="Start building today"
   description="Install the package and copy your first component."
-  actions={<><Button variant="solid">Get started</Button><Button variant="line">Read the docs</Button></>}
+  actions={
+    <>
+      <Button variant="solid">Get started</Button>
+      <Button variant="line">Read the docs</Button>
+    </>
+  }
 />
 ```
 
@@ -496,10 +585,17 @@ import {Badge, BlockDashboardShell, Heading, Text} from '@monoline/react';
 
 <BlockDashboardShell
   brand="Your app"
-  nav={[{label: 'Overview', href: '#', current: true}, {label: 'Reports', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Settings', href: '#'}]}
+  nav={[
+    {label: 'Overview', href: '#', current: true},
+    {label: 'Reports', href: '#'},
+    {label: 'Customers', href: '#'},
+    {label: 'Settings', href: '#'},
+  ]}
   topbar={<Badge>Ada Example</Badge>}
 >
-  <Heading level={1} size="xl">Overview</Heading>
+  <Heading level={1} size="xl">
+    Overview
+  </Heading>
   <Text tone="muted">Your content goes here.</Text>
 </BlockDashboardShell>
 ```
@@ -534,7 +630,12 @@ import {BlockEmptyPage, Button} from '@monoline/react';
   code="404"
   title="Page not found"
   description="The address may be wrong, or the page moved."
-  actions={<><Button variant="solid">Go home</Button><Button variant="line">Contact support</Button></>}
+  actions={
+    <>
+      <Button variant="solid">Go home</Button>
+      <Button variant="line">Contact support</Button>
+    </>
+  }
 />
 ```
 
@@ -561,7 +662,11 @@ Usage:
 ```tsx
 import {BlockFeatureGrid} from '@monoline/react';
 
-const dot = <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor"><rect x="3" y="3" width="14" height="14" /></svg>;
+const dot = (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+    <rect x="3" y="3" width="14" height="14" />
+  </svg>
+);
 
 const features = [
   {title: 'Plain CSS', description: 'Works with any framework, or none.', icon: dot},
@@ -572,11 +677,7 @@ const features = [
   {title: 'No runtime styling', description: 'Tokens and classes only.', icon: dot},
 ];
 
-<BlockFeatureGrid
-  title="Why Monoline"
-  description="Fewer parts, clearer pages."
-  features={features}
-/>
+<BlockFeatureGrid title="Why Monoline" description="Fewer parts, clearer pages." features={features} />
 ```
 
 A11y:
@@ -608,9 +709,28 @@ import {BlockFooter} from '@monoline/react';
   brand="Your brand"
   description="Short line about what you make."
   columns={[
-    {title: 'Product', links: [{label: 'Components', href: '#'}, {label: 'Blocks', href: '#'}, {label: 'Changelog', href: '#'}]},
-    {title: 'Resources', links: [{label: 'Docs', href: '#'}, {label: 'Source', href: '#'}]},
-    {title: 'Company', links: [{label: 'About', href: '#'}, {label: 'Contact', href: '#'}]},
+    {
+      title: 'Product',
+      links: [
+        {label: 'Components', href: '#'},
+        {label: 'Blocks', href: '#'},
+        {label: 'Changelog', href: '#'},
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        {label: 'Docs', href: '#'},
+        {label: 'Source', href: '#'},
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        {label: 'About', href: '#'},
+        {label: 'Contact', href: '#'},
+      ],
+    },
   ]}
   legal="© 2026 Your brand. All rights reserved."
 />
@@ -645,8 +765,17 @@ import {BlockHero, Button} from '@monoline/react';
   eyebrow="Version 1.0"
   title="Interfaces with fewer parts"
   description="A small kit of plain components. Copy the ones you need."
-  actions={<><Button variant="solid">Get started</Button><Button variant="line">Read the docs</Button></>}
-  media={<div style={{border: '1px solid var(--rule)', aspectRatio: '4 / 3', display: 'grid', placeItems: 'center'}}>Preview</div>}
+  actions={
+    <>
+      <Button variant="solid">Get started</Button>
+      <Button variant="line">Read the docs</Button>
+    </>
+  }
+  media={
+    <div style={{border: '1px solid var(--rule)', aspectRatio: '4 / 3', display: 'grid', placeItems: 'center'}}>
+      Preview
+    </div>
+  }
 />
 ```
 
@@ -680,7 +809,12 @@ import {BlockLogin, Link} from '@monoline/react';
 
 <BlockLogin
   description="Use the email you signed up with."
-  footer={<><Link href="#">Forgot your password?</Link><Link href="#">Create an account</Link></>}
+  footer={
+    <>
+      <Link href="#">Forgot your password?</Link>
+      <Link href="#">Create an account</Link>
+    </>
+  }
 />
 ```
 
@@ -716,9 +850,30 @@ import {BlockPricing} from '@monoline/react';
   title="Simple pricing"
   description="Switch to yearly for two months free."
   tiers={[
-    {name: 'Free', description: 'For trying it out.', price: {monthly: '$0', yearly: '$0'}, features: ['One project', 'Community support'], ctaLabel: 'Start free', href: '#'},
-    {name: 'Team', description: 'For small teams.', price: {monthly: '$12', yearly: '$120'}, features: ['Unlimited projects', 'Email support', 'Shared themes'], ctaLabel: 'Choose Team', highlighted: true},
-    {name: 'Scale', description: 'For larger groups.', price: {monthly: '$48', yearly: '$480'}, features: ['Everything in Team', 'Single sign-on', 'Priority support'], ctaLabel: 'Talk to us', href: '#'},
+    {
+      name: 'Free',
+      description: 'For trying it out.',
+      price: {monthly: '$0', yearly: '$0'},
+      features: ['One project', 'Community support'],
+      ctaLabel: 'Start free',
+      href: '#',
+    },
+    {
+      name: 'Team',
+      description: 'For small teams.',
+      price: {monthly: '$12', yearly: '$120'},
+      features: ['Unlimited projects', 'Email support', 'Shared themes'],
+      ctaLabel: 'Choose Team',
+      highlighted: true,
+    },
+    {
+      name: 'Scale',
+      description: 'For larger groups.',
+      price: {monthly: '$48', yearly: '$480'},
+      features: ['Everything in Team', 'Single sign-on', 'Priority support'],
+      ctaLabel: 'Talk to us',
+      href: '#',
+    },
   ]}
 />
 ```
@@ -755,14 +910,46 @@ import {BlockSettingsForm} from '@monoline/react';
   title="Settings"
   description="Changes apply to your account."
   sections={[
-    {legend: 'Notifications', description: 'Choose what we email you.', items: [
-      {kind: 'switch', name: 'product', label: 'Product updates', hint: 'About once a month.', defaultChecked: true},
-      {kind: 'switch', name: 'digest', label: 'Weekly digest'},
-    ]},
-    {legend: 'Display', items: [
-      {kind: 'select', name: 'theme', label: 'Theme', options: [{value: 'warm', label: 'Warm'}, {value: 'dark', label: 'Dark'}, {value: 'midnight', label: 'Midnight'}], defaultValue: 'warm'},
-      {kind: 'select', name: 'density', label: 'Density', hint: 'Compact fits more rows.', options: [{value: 'comfortable', label: 'Comfortable'}, {value: 'compact', label: 'Compact'}]},
-    ]},
+    {
+      legend: 'Notifications',
+      description: 'Choose what we email you.',
+      items: [
+        {
+          kind: 'switch',
+          name: 'product',
+          label: 'Product updates',
+          hint: 'About once a month.',
+          defaultChecked: true,
+        },
+        {kind: 'switch', name: 'digest', label: 'Weekly digest'},
+      ],
+    },
+    {
+      legend: 'Display',
+      items: [
+        {
+          kind: 'select',
+          name: 'theme',
+          label: 'Theme',
+          options: [
+            {value: 'warm', label: 'Warm'},
+            {value: 'dark', label: 'Dark'},
+            {value: 'midnight', label: 'Midnight'},
+          ],
+          defaultValue: 'warm',
+        },
+        {
+          kind: 'select',
+          name: 'density',
+          label: 'Density',
+          hint: 'Compact fits more rows.',
+          options: [
+            {value: 'comfortable', label: 'Comfortable'},
+            {value: 'compact', label: 'Compact'},
+          ],
+        },
+      ],
+    },
   ]}
 />
 ```
@@ -798,7 +985,11 @@ import {BlockSignup, Link} from '@monoline/react';
 
 <BlockSignup
   description="It takes a minute."
-  footer={<span>Already have an account? <Link href="#">Sign in</Link></span>}
+  footer={
+    <span>
+      Already have an account? <Link href="#">Sign in</Link>
+    </span>
+  }
 />
 ```
 
@@ -828,7 +1019,11 @@ import {BlockTestimonials} from '@monoline/react';
 <BlockTestimonials
   title="What people say"
   items={[
-    {quote: 'It stayed out of the way and the pages got simpler.', name: 'Ada Example', role: 'Engineer, Example Co'},
+    {
+      quote: 'It stayed out of the way and the pages got simpler.',
+      name: 'Ada Example',
+      role: 'Engineer, Example Co',
+    },
     {quote: 'Keyboard support worked on day one.', name: 'Sam Sample', role: 'Designer, Sample Studio'},
     {quote: 'We deleted a lot of CSS.', name: 'Robin Placeholder', role: 'Founder, Placeholder'},
   ]}
@@ -883,7 +1078,9 @@ Usage:
 ```tsx
 import {Box} from '@monoline/react';
 
-<Box padding={5} border>A bordered box with step 5 padding.</Box>
+<Box padding={5} border>
+  A bordered box with step 5 padding.
+</Box>
 ```
 
 A11y:
@@ -906,9 +1103,7 @@ Usage:
 ```tsx
 import {Breadcrumb} from '@monoline/react';
 
-<Breadcrumb
-  items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]}
-/>
+<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Projects', href: '#'}, {label: 'Monoline'}]} />
 ```
 
 A11y:
@@ -933,7 +1128,10 @@ Usage:
 ```tsx
 import {BreadcrumbsAuto} from '@monoline/react';
 
-<BreadcrumbsAuto pathname="/projects/website-redesign/settings" labels={{'website-redesign': 'Website redesign'}} />
+<BreadcrumbsAuto
+  pathname="/projects/website-redesign/settings"
+  labels={{'website-redesign': 'Website redesign'}}
+/>
 ```
 
 A11y:
@@ -1022,7 +1220,14 @@ import {Calendar} from '@monoline/react';
 
 function Demo() {
   const [d, setD] = useState<Date | null>(null);
-  return <div style={{display: 'grid', gap: 'var(--s3)', justifyItems: 'start'}}><Calendar value={d} onValueChange={setD} weekStartsOn={1} /><p className="muted small" role="status">{d ? d.toDateString() : 'No date picked'}</p></div>;
+  return (
+    <div style={{display: 'grid', gap: 'var(--s3)', justifyItems: 'start'}}>
+      <Calendar value={d} onValueChange={setD} weekStartsOn={1} />
+      <p className="muted small" role="status">
+        {d ? d.toDateString() : 'No date picked'}
+      </p>
+    </div>
+  );
 }
 
 <Demo />
@@ -1061,8 +1266,12 @@ import {Button, Card, CardContent, CardDescription, CardFooter, CardHeader, Card
       <p>Rewrote the headline and the plan table.</p>
     </CardContent>
     <CardFooter>
-      <Button variant="solid" size="sm">Open</Button>
-      <Button variant="line" size="sm">Share</Button>
+      <Button variant="solid" size="sm">
+        Open
+      </Button>
+      <Button variant="line" size="sm">
+        Share
+      </Button>
     </CardFooter>
   </Card>
 </div>
@@ -1088,7 +1297,14 @@ Usage:
 import {Carousel} from '@monoline/react';
 
 <Carousel aria-label="Featured">
-  {['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => <div key={n} style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}>{n}</div>)}
+  {['Alpha', 'Beta', 'Gamma', 'Delta'].map((n) => (
+    <div
+      key={n}
+      style={{display: 'grid', placeItems: 'center', height: '140px', border: '1px solid var(--rule)'}}
+    >
+      {n}
+    </div>
+  ))}
 </Carousel>
 ```
 
@@ -1182,7 +1398,9 @@ import {Button, Collapsible, CollapsibleContent, CollapsibleTrigger} from '@mono
 
 <Collapsible>
   <CollapsibleTrigger asChild>
-    <Button variant="line" size="sm">Show details</Button>
+    <Button variant="line" size="sm">
+      Show details
+    </Button>
   </CollapsibleTrigger>
   <CollapsibleContent>
     <p>Extra detail appears here when the trigger is pressed.</p>
@@ -1218,7 +1436,12 @@ import {ColorPicker} from '@monoline/react';
 
 function Controlled() {
   const [c, setC] = useState('#0090ff');
-  return <div style={{maxWidth: '280px'}}><ColorPicker aria-label="Brand colour" value={c} onValueChange={setC} /><p>Chosen: {c}</p></div>;
+  return (
+    <div style={{maxWidth: '280px'}}>
+      <ColorPicker aria-label="Brand colour" value={c} onValueChange={setC} />
+      <p>Chosen: {c}</p>
+    </div>
+  );
 }
 
 <Controlled />
@@ -1252,7 +1475,10 @@ Usage:
 ```tsx
 import {Combobox, Field} from '@monoline/react';
 
-const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({value: n.toLowerCase().replace(/\W+/g, '-'), label: n}));
+const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({
+  value: n.toLowerCase().replace(/\W+/g, '-'),
+  label: n,
+}));
 
 <div style={{maxWidth: '320px', minHeight: '260px'}}>
   <Field label="Person">
@@ -1303,7 +1529,11 @@ const items: CommandItem[] = [
 <Command
   shortcut="mod+j"
   items={items}
-  trigger={<button type="button" className="btn btn-outline">Open palette</button>}
+  trigger={
+    <button type="button" className="btn btn-outline">
+      Open palette
+    </button>
+  }
 />
 ```
 
@@ -1338,7 +1568,9 @@ function Fire() {
   return (
     <>
       <Confetti ref={ref} />
-      <Button variant="line" onClick={() => ref.current?.fire()}>Celebrate</Button>
+      <Button variant="line" onClick={() => ref.current?.fire()}>
+        Celebrate
+      </Button>
     </>
   );
 }
@@ -1390,8 +1622,30 @@ Usage:
 import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuTrigger} from '@monoline/react';
 
 <ContextMenu>
-  <ContextMenuTrigger asChild><button type="button" style={{display: 'grid', placeItems: 'center', height: '120px', width: '100%', border: '1px dashed var(--rule)', background: 'none', font: 'inherit', color: 'inherit'}}>Right click here, or focus and press Shift+F10</button></ContextMenuTrigger>
-  <ContextMenuContent aria-label="File actions"><ContextMenuLabel>File</ContextMenuLabel><ContextMenuItem>Rename</ContextMenuItem><ContextMenuItem>Duplicate</ContextMenuItem><ContextMenuSeparator /><ContextMenuItem tone="danger">Delete</ContextMenuItem></ContextMenuContent>
+  <ContextMenuTrigger asChild>
+    <button
+      type="button"
+      style={{
+        display: 'grid',
+        placeItems: 'center',
+        height: '120px',
+        width: '100%',
+        border: '1px dashed var(--rule)',
+        background: 'none',
+        font: 'inherit',
+        color: 'inherit',
+      }}
+    >
+      Right click here, or focus and press Shift+F10
+    </button>
+  </ContextMenuTrigger>
+  <ContextMenuContent aria-label="File actions">
+    <ContextMenuLabel>File</ContextMenuLabel>
+    <ContextMenuItem>Rename</ContextMenuItem>
+    <ContextMenuItem>Duplicate</ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuItem tone="danger">Delete</ContextMenuItem>
+  </ContextMenuContent>
 </ContextMenu>
 ```
 
@@ -1425,7 +1679,9 @@ import {CopyButton} from '@monoline/react';
 <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
   <code>npm i @monoline/react</code>
   <CopyButton value="npm i @monoline/react" label="Copy install command" size="sm" />
-  <CopyButton value="npm i @monoline/react" variant="solid">Copy command</CopyButton>
+  <CopyButton value="npm i @monoline/react" variant="solid">
+    Copy command
+  </CopyButton>
 </div>
 ```
 
@@ -1466,12 +1722,23 @@ Usage:
 ```tsx
 import {DataGrid, type DataGridColumn} from '@monoline/react';
 
-interface Order { id: string; customer: string; city: string; items: number; total: number }
+interface Order {
+  id: string;
+  customer: string;
+  city: string;
+  items: number;
+  total: number;
+}
 
 const cities = ['Pune', 'Berlin', 'Lagos', 'Lima', 'Oslo', 'Hanoi', 'Cairo', 'Quito'];
 
-const make = (count: number): Order[] => Array.from({length: count}, (_, i) => ({
-  id: `ORD-${i + 1}`, customer: `Customer ${(i * 7919) % 10007}`, city: cities[i % cities.length]!, items: (i * 13) % 9 + 1, total: ((i * 2654435761) % 100000) / 100,
+const make = (count: number): Order[] =>
+Array.from({length: count}, (_, i) => ({
+  id: `ORD-${i + 1}`,
+  customer: `Customer ${(i * 7919) % 10007}`,
+  city: cities[i % cities.length]!,
+  items: ((i * 13) % 9) + 1,
+  total: ((i * 2654435761) % 100000) / 100,
 }));
 
 const columns: DataGridColumn<Order>[] = [
@@ -1479,18 +1746,20 @@ const columns: DataGridColumn<Order>[] = [
   {id: 'customer', header: 'Customer', field: 'customer', sortable: true},
   {id: 'city', header: 'City', field: 'city', sortable: true},
   {id: 'items', header: 'Items', field: 'items', width: 90, sortable: true, align: 'end'},
-  {id: 'total', header: 'Total', cell: (r) => r.total.toFixed(2), sortValue: (r) => r.total, width: 110, sortable: true, align: 'end'},
+  {
+    id: 'total',
+    header: 'Total',
+    cell: (r) => r.total.toFixed(2),
+    sortValue: (r) => r.total,
+    width: 110,
+    sortable: true,
+    align: 'end',
+  },
 ];
 
 const big = make(100000);
 
-<DataGrid
-  aria-label="Orders, 100,000 rows"
-  columns={columns}
-  rows={big}
-  height={320}
-  getRowId={(r) => r.id}
-/>
+<DataGrid aria-label="Orders, 100,000 rows" columns={columns} rows={big} height={320} getRowId={(r) => r.id} />
 ```
 
 A11y:
@@ -1529,12 +1798,28 @@ Usage:
 ```tsx
 import {DataTable, type DataTableColumn} from '@monoline/react';
 
-interface Person {id: string; name: string; role: string; projects: number}
+interface Person {
+  id: string;
+  name: string;
+  role: string;
+  projects: number;
+}
 
 const people: Person[] = [
-  ['Ada Lovelace', 'Engineer', 4], ['Grace Hopper', 'Admiral', 9], ['Alan Turing', 'Researcher', 6], ['Katherine Johnson', 'Mathematician', 7],
-  ['Linus Torvalds', 'Maintainer', 12], ['Margaret Hamilton', 'Director', 5], ['Dennis Ritchie', 'Engineer', 3], ['Barbara Liskov', 'Professor', 8],
-].map(([name, role, projects], i) => ({id: String(i), name: name as string, role: role as string, projects: projects as number}));
+  ['Ada Lovelace', 'Engineer', 4],
+  ['Grace Hopper', 'Admiral', 9],
+  ['Alan Turing', 'Researcher', 6],
+  ['Katherine Johnson', 'Mathematician', 7],
+  ['Linus Torvalds', 'Maintainer', 12],
+  ['Margaret Hamilton', 'Director', 5],
+  ['Dennis Ritchie', 'Engineer', 3],
+  ['Barbara Liskov', 'Professor', 8],
+].map(([name, role, projects], i) => ({
+  id: String(i),
+  name: name as string,
+  role: role as string,
+  projects: projects as number,
+}));
 
 const columns: DataTableColumn<Person>[] = [
   {id: 'name', header: 'Name', sortable: true},
@@ -1542,12 +1827,7 @@ const columns: DataTableColumn<Person>[] = [
   {id: 'projects', header: 'Projects', sortable: true, align: 'end'},
 ];
 
-<DataTable
-  label="Team"
-  columns={columns}
-  data={people}
-  defaultSort={{id: 'name', direction: 'asc'}}
-/>
+<DataTable label="Team" columns={columns} data={people} defaultSort={{id: 'name', direction: 'asc'}} />
 ```
 
 A11y:
@@ -1652,7 +1932,11 @@ Usage:
 import {DescriptionList} from '@monoline/react';
 
 <DescriptionList
-  items={[{term: 'Plan', details: 'Pro'}, {term: 'Seats', details: '12'}, {term: 'Renews', details: '1 March 2027'}]}
+  items={[
+    {term: 'Plan', details: 'Pro'},
+    {term: 'Seats', details: '12'},
+    {term: 'Renews', details: '1 March 2027'},
+  ]}
 />
 ```
 
@@ -1675,10 +1959,24 @@ Usage:
 import {Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from '@monoline/react';
 
 <Dialog>
-  <DialogTrigger asChild><Button variant="line">Overwrite copy</Button></DialogTrigger>
+  <DialogTrigger asChild>
+    <Button variant="line">Overwrite copy</Button>
+  </DialogTrigger>
   <DialogContent>
-    <DialogHeader><DialogTitle>Overwrite the remote copy?</DialogTitle><DialogDescription>The copy on this device is newer. Changes from 12 March on the other device will be lost.</DialogDescription></DialogHeader>
-    <DialogFooter><DialogClose asChild><Button variant="line">Keep both</Button></DialogClose><DialogClose asChild><Button variant="solid">Overwrite</Button></DialogClose></DialogFooter>
+    <DialogHeader>
+      <DialogTitle>Overwrite the remote copy?</DialogTitle>
+      <DialogDescription>
+        The copy on this device is newer. Changes from 12 March on the other device will be lost.
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose asChild>
+        <Button variant="line">Keep both</Button>
+      </DialogClose>
+      <DialogClose asChild>
+        <Button variant="solid">Overwrite</Button>
+      </DialogClose>
+    </DialogFooter>
   </DialogContent>
 </Dialog>
 ```
@@ -1737,7 +2035,15 @@ Usage:
 ```tsx
 import {DotPattern} from '@monoline/react';
 
-<div style={{position: 'relative', height: 200, display: 'grid', placeItems: 'center', border: '1px solid var(--rule)'}}>
+<div
+  style={{
+    position: 'relative',
+    height: 200,
+    display: 'grid',
+    placeItems: 'center',
+    border: '1px solid var(--rule)',
+  }}
+>
   <DotPattern fade />
   <span style={{position: 'relative'}}>Content sits above</span>
 </div>
@@ -1766,8 +2072,15 @@ import {Button, Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTi
 <div style={{display: 'flex', gap: 'var(--s3)'}}>
   {(['right', 'left'] as const).map((side) => (
     <Drawer key={side}>
-      <DrawerTrigger asChild><Button variant="line">Open {side}</Button></DrawerTrigger>
-      <DrawerContent side={side}><DrawerHeader><DrawerTitle>Filters</DrawerTitle><DrawerDescription>Narrow the list by status or owner.</DrawerDescription></DrawerHeader></DrawerContent>
+      <DrawerTrigger asChild>
+        <Button variant="line">Open {side}</Button>
+      </DrawerTrigger>
+      <DrawerContent side={side}>
+        <DrawerHeader>
+          <DrawerTitle>Filters</DrawerTitle>
+          <DrawerDescription>Narrow the list by status or owner.</DrawerDescription>
+        </DrawerHeader>
+      </DrawerContent>
     </Drawer>
   ))}
 </div>
@@ -1795,7 +2108,9 @@ Usage:
 import {Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from '@monoline/react';
 
 <DropdownMenu>
-  <DropdownMenuTrigger asChild><Button variant="line">Actions</Button></DropdownMenuTrigger>
+  <DropdownMenuTrigger asChild>
+    <Button variant="line">Actions</Button>
+  </DropdownMenuTrigger>
   <DropdownMenuContent>
     <DropdownMenuLabel>Entry</DropdownMenuLabel>
     <DropdownMenuItem>Rename</DropdownMenuItem>
@@ -1997,9 +2312,20 @@ function Example() {
         setErrors(next);
       }}
     >
-      <Field label="Name" name="name"><Input name="name" /></Field>
-      <Field label="Email" name="email"><Input name="email" type="email" /></Field>
-      <FormActions><Button type="submit" variant="solid">Send</Button><Button variant="line" type="reset">Clear</Button></FormActions>
+      <Field label="Name" name="name">
+        <Input name="name" />
+      </Field>
+      <Field label="Email" name="email">
+        <Input name="email" type="email" />
+      </Field>
+      <FormActions>
+        <Button type="submit" variant="solid">
+          Send
+        </Button>
+        <Button variant="line" type="reset">
+          Clear
+        </Button>
+      </FormActions>
     </Form>
   );
 }
@@ -2030,7 +2356,9 @@ Usage:
 import {Card, Grid} from '@monoline/react';
 
 <Grid columns={3}>
-  {['One', 'Two', 'Three'].map((n) => <Card key={n}>{n}</Card>)}
+  {['One', 'Two', 'Three'].map((n) => (
+    <Card key={n}>{n}</Card>
+  ))}
 </Grid>
 ```
 
@@ -2053,7 +2381,15 @@ Usage:
 ```tsx
 import {GridPattern} from '@monoline/react';
 
-<div style={{position: 'relative', height: 200, display: 'grid', placeItems: 'center', border: '1px solid var(--rule)'}}>
+<div
+  style={{
+    position: 'relative',
+    height: 200,
+    display: 'grid',
+    placeItems: 'center',
+    border: '1px solid var(--rule)',
+  }}
+>
   <GridPattern fade />
   <span style={{position: 'relative'}}>Content sits above</span>
 </div>
@@ -2083,7 +2419,9 @@ import {Heading} from '@monoline/react';
   <Heading level={1}>Display</Heading>
   <Heading level={2}>Section</Heading>
   <Heading level={3}>Subsection</Heading>
-  <Heading level={2} size="sm">An h2 that looks small</Heading>
+  <Heading level={2} size="sm">
+    An h2 that looks small
+  </Heading>
 </div>
 ```
 
@@ -2143,7 +2481,11 @@ Usage:
 ```tsx
 import {IconButton} from '@monoline/react';
 
-const Plus = () => <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12"><path d="M6 1v10M1 6h10" stroke="currentColor" fill="none" /></svg>;
+const Plus = () => (
+  <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12">
+    <path d="M6 1v10M1 6h10" stroke="currentColor" fill="none" />
+  </svg>
+);
 
 <div style={{display: 'flex', gap: 'var(--s3)'}}>
   <IconButton aria-label="Add">
@@ -2179,7 +2521,11 @@ Usage:
 ```tsx
 import {Image} from '@monoline/react';
 
-const svg = (c: string) => 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="${c}"/></svg>`);
+const svg = (c: string) =>
+'data:image/svg+xml;utf8,' +
+encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="${c}"/></svg>`,
+);
 
 <div style={{maxWidth: '320px'}}>
   <Image src={svg('#999')} alt="A grey placeholder" ratio={16 / 9} />
@@ -2207,9 +2553,14 @@ Usage:
 ```tsx
 import {ImageGallery, type GalleryImage} from '@monoline/react';
 
-const tile = (n: number, fill: string) => `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="${fill}"/><text x="200" y="165" font-family="monospace" font-size="64" text-anchor="middle" fill="#fff">${n}</text></svg>`)}`;
+const tile = (n: number, fill: string) =>
+`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="${fill}"/><text x="200" y="165" font-family="monospace" font-size="64" text-anchor="middle" fill="#fff">${n}</text></svg>`)}`;
 
-const images: GalleryImage[] = ['#6b4f3a', '#3a5a6b', '#4f6b3a', '#6b3a5a', '#5a3a6b', '#3a6b5a'].map((c, i) => ({src: tile(i + 1, c), alt: `Sample picture ${i + 1}, a flat colour with its number`, caption: `Picture ${i + 1}`}));
+const images: GalleryImage[] = ['#6b4f3a', '#3a5a6b', '#4f6b3a', '#6b3a5a', '#5a3a6b', '#3a6b5a'].map((c, i) => ({
+  src: tile(i + 1, c),
+  alt: `Sample picture ${i + 1}, a flat colour with its number`,
+  caption: `Picture ${i + 1}`,
+}));
 
 <div style={{maxWidth: '480px'}}>
   <ImageGallery images={images} />
@@ -2262,7 +2613,9 @@ Usage:
 ```tsx
 import {Kbd} from '@monoline/react';
 
-<p>Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.</p>
+<p>
+  Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.
+</p>
 ```
 
 A11y:
@@ -2284,7 +2637,9 @@ Usage:
 import {Label} from '@monoline/react';
 
 <div style={{display: 'grid', gap: 'var(--s2)', maxWidth: 320}}>
-  <Label htmlFor="demo-label" required>Email</Label>
+  <Label htmlFor="demo-label" required>
+    Email
+  </Label>
   <input id="demo-label" className="input" placeholder="you@example.com" />
 </div>
 ```
@@ -2311,7 +2666,13 @@ import {LineChart} from '@monoline/react';
 <LineChart
   title="Response time"
   showPoints
-  data={[{label: 'Mon', value: 120}, {label: 'Tue', value: 98}, {label: 'Wed', value: 143}, {label: 'Thu', value: 110}, {label: 'Fri', value: 87}]}
+  data={[
+    {label: 'Mon', value: 120},
+    {label: 'Tue', value: 98},
+    {label: 'Wed', value: 143},
+    {label: 'Thu', value: 110},
+    {label: 'Fri', value: 87},
+  ]}
 />
 ```
 
@@ -2340,7 +2701,13 @@ Usage:
 ```tsx
 import {Link} from '@monoline/react';
 
-<p>Read the <Link href="#button">button docs</Link> or visit <Link href="https://github.com" external>GitHub</Link>.</p>
+<p>
+  Read the <Link href="#button">button docs</Link> or visit{' '}
+  <Link href="https://github.com" external>
+    GitHub
+  </Link>
+  .
+</p>
 ```
 
 A11y:
@@ -2366,7 +2733,11 @@ Usage:
 import {Marquee} from '@monoline/react';
 
 <Marquee duration={20}>
-  {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>{n}</span>)}
+  {['Acme', 'Globex', 'Initech', 'Umbrella', 'Hooli'].map((n) => (
+    <span key={n} style={{padding: '0 var(--s5)', fontFamily: 'var(--font-display)'}}>
+      {n}
+    </span>
+  ))}
 </Marquee>
 ```
 
@@ -2438,8 +2809,22 @@ Usage:
 import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger} from '@monoline/react';
 
 <Menubar aria-label="Application">
-  <MenubarMenu><MenubarTrigger>File</MenubarTrigger><MenubarContent><MenubarItem>New file</MenubarItem><MenubarItem>Open</MenubarItem><MenubarSeparator /><MenubarItem>Quit</MenubarItem></MenubarContent></MenubarMenu>
-  <MenubarMenu><MenubarTrigger>Edit</MenubarTrigger><MenubarContent><MenubarItem>Undo</MenubarItem><MenubarItem>Redo</MenubarItem></MenubarContent></MenubarMenu>
+  <MenubarMenu>
+    <MenubarTrigger>File</MenubarTrigger>
+    <MenubarContent>
+      <MenubarItem>New file</MenubarItem>
+      <MenubarItem>Open</MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem>Quit</MenubarItem>
+    </MenubarContent>
+  </MenubarMenu>
+  <MenubarMenu>
+    <MenubarTrigger>Edit</MenubarTrigger>
+    <MenubarContent>
+      <MenubarItem>Undo</MenubarItem>
+      <MenubarItem>Redo</MenubarItem>
+    </MenubarContent>
+  </MenubarMenu>
 </Menubar>
 ```
 
@@ -2470,15 +2855,14 @@ Usage:
 ```tsx
 import {Field, MultiSelect} from '@monoline/react';
 
-const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({value: n.toLowerCase().replace(/\W+/g, '-'), label: n}));
+const options = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson', 'Linus Torvalds'].map((n) => ({
+  value: n.toLowerCase().replace(/\W+/g, '-'),
+  label: n,
+}));
 
 <div style={{maxWidth: '360px', minHeight: '280px'}}>
   <Field label="People">
-    <MultiSelect
-      options={options}
-      placeholder="Type a name"
-      defaultValue={['ada-lovelace']}
-    />
+    <MultiSelect options={options} placeholder="Type a name" defaultValue={['ada-lovelace']} />
   </Field>
 </div>
 ```
@@ -2542,9 +2926,21 @@ Usage:
 ```tsx
 import {Button, Navbar} from '@monoline/react';
 
-const links = [{label: 'Product', href: '#product', current: true}, {label: 'Pricing', href: '#pricing'}, {label: 'Docs', href: '#docs'}];
+const links = [
+  {label: 'Product', href: '#product', current: true},
+  {label: 'Pricing', href: '#pricing'},
+  {label: 'Docs', href: '#docs'},
+];
 
-<Navbar brand="Acme" links={links} actions={<Button variant="solid" size="sm">Sign in</Button>} />
+<Navbar
+  brand="Acme"
+  links={links}
+  actions={
+    <Button variant="solid" size="sm">
+      Sign in
+    </Button>
+  }
+/>
 ```
 
 A11y:
@@ -2579,12 +2975,24 @@ import {NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMen
 <div style={{minHeight: '200px'}}>
   <NavigationMenu aria-label="Site">
     <NavigationMenuList>
-      <NavigationMenuItem><NavigationMenuLink href="#" active>Home</NavigationMenuLink></NavigationMenuItem>
+      <NavigationMenuItem>
+        <NavigationMenuLink href="#" active>
+          Home
+        </NavigationMenuLink>
+      </NavigationMenuItem>
       <NavigationMenuItem>
         <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-        <NavigationMenuContent><div className="navmenu-panel"><NavigationMenuLink href="#">UI kit</NavigationMenuLink><NavigationMenuLink href="#">Icons</NavigationMenuLink><NavigationMenuLink href="#">Templates</NavigationMenuLink></div></NavigationMenuContent>
+        <NavigationMenuContent>
+          <div className="navmenu-panel">
+            <NavigationMenuLink href="#">UI kit</NavigationMenuLink>
+            <NavigationMenuLink href="#">Icons</NavigationMenuLink>
+            <NavigationMenuLink href="#">Templates</NavigationMenuLink>
+          </div>
+        </NavigationMenuContent>
       </NavigationMenuItem>
-      <NavigationMenuItem><NavigationMenuLink href="#">Docs</NavigationMenuLink></NavigationMenuItem>
+      <NavigationMenuItem>
+        <NavigationMenuLink href="#">Docs</NavigationMenuLink>
+      </NavigationMenuItem>
     </NavigationMenuList>
   </NavigationMenu>
 </div>
@@ -2722,10 +3130,28 @@ Usage:
 ```tsx
 import {OrbitingCircles} from '@monoline/react';
 
-const dot = (t: string) => <span style={{display: 'grid', placeItems: 'center', width: 'var(--s7)', height: 'var(--s7)', border: '1px solid var(--foreground)', background: 'var(--background)', fontSize: 'var(--text-xs)'}}>{t}</span>;
+const dot = (t: string) => (
+  <span
+    style={{
+      display: 'grid',
+      placeItems: 'center',
+      width: 'var(--s7)',
+      height: 'var(--s7)',
+      border: '1px solid var(--foreground)',
+      background: 'var(--background)',
+      fontSize: 'var(--text-xs)',
+    }}
+  >
+    {t}
+  </span>
+);
 
 <div style={{display: 'grid', placeItems: 'center'}}>
-  <OrbitingCircles radius={96} center={dot('M')}>{dot('A')}{dot('B')}{dot('C')}</OrbitingCircles>
+  <OrbitingCircles radius={96} center={dot('M')}>
+    {dot('A')}
+    {dot('B')}
+    {dot('C')}
+  </OrbitingCircles>
 </div>
 ```
 
@@ -2761,7 +3187,14 @@ import {OtpInput} from '@monoline/react';
 
 function Demo() {
   const [done, setDone] = useState('');
-  return <div style={{display: 'grid', gap: 'var(--s3)'}}><OtpInput aria-label="Verification code" onComplete={setDone} /><p className="muted small" role="status">{done ? `Entered ${done}` : 'Enter 6 digits'}</p></div>;
+  return (
+    <div style={{display: 'grid', gap: 'var(--s3)'}}>
+      <OtpInput aria-label="Verification code" onComplete={setDone} />
+      <p className="muted small" role="status">
+        {done ? `Entered ${done}` : 'Enter 6 digits'}
+      </p>
+    </div>
+  );
 }
 
 <Demo />
@@ -2821,10 +3254,17 @@ Usage:
 import {Breadcrumb, Button, PageHeader} from '@monoline/react';
 
 <PageHeader
-  breadcrumbs={<Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Ada Example'}]} />}
+  breadcrumbs={
+    <Breadcrumb items={[{label: 'Home', href: '#'}, {label: 'Customers', href: '#'}, {label: 'Ada Example'}]} />
+  }
   title="Ada Example"
   description="Joined in March. On the Team plan."
-  actions={<><Button>Export</Button><Button variant="solid">Edit customer</Button></>}
+  actions={
+    <>
+      <Button>Export</Button>
+      <Button variant="solid">Edit customer</Button>
+    </>
+  }
 />
 ```
 
@@ -2912,7 +3352,13 @@ Usage:
 ```tsx
 import {PieChart} from '@monoline/react';
 
-const sources = [{label: 'Search', value: 46}, {label: 'Direct', value: 28}, {label: 'Email', value: 14}, {label: 'Referral', value: 8}, {label: 'Social', value: 4}];
+const sources = [
+  {label: 'Search', value: 46},
+  {label: 'Direct', value: 28},
+  {label: 'Email', value: 14},
+  {label: 'Referral', value: 8},
+  {label: 'Social', value: 4},
+];
 
 <PieChart title="Traffic by source" data={sources} />
 ```
@@ -3112,9 +3558,13 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from '@monoline/re
 const box = {padding: 'var(--s4)', fontSize: 'var(--text-sm)'};
 
 <ResizablePanelGroup style={{height: '200px', border: '1px solid var(--rule)'}}>
-  <ResizablePanel defaultSize={30} minSize={15}><div style={box}>Sidebar</div></ResizablePanel>
+  <ResizablePanel defaultSize={30} minSize={15}>
+    <div style={box}>Sidebar</div>
+  </ResizablePanel>
   <ResizableHandle aria-label="Resize sidebar" />
-  <ResizablePanel defaultSize={70}><div style={box}>Content</div></ResizablePanel>
+  <ResizablePanel defaultSize={70}>
+    <div style={box}>Content</div>
+  </ResizablePanel>
 </ResizablePanelGroup>
 ```
 
@@ -3181,9 +3631,15 @@ function Counter() {
   const [n, setN] = useState(1204);
   return (
     <div style={{display: 'flex', gap: 'var(--s4)', alignItems: 'center'}}>
-      <strong style={{fontSize: 'var(--display-sm)'}}><RollingNumber value={n} format={{style: 'currency', currency: 'USD', maximumFractionDigits: 0}} /></strong>
-      <Button variant="line" size="sm" onClick={() => setN((v) => v + 137)}>Add 137</Button>
-      <Button variant="line" size="sm" onClick={() => setN((v) => Math.max(0, v - 999))}>Subtract 999</Button>
+      <strong style={{fontSize: 'var(--display-sm)'}}>
+        <RollingNumber value={n} format={{style: 'currency', currency: 'USD', maximumFractionDigits: 0}} />
+      </strong>
+      <Button variant="line" size="sm" onClick={() => setN((v) => v + 137)}>
+        Add 137
+      </Button>
+      <Button variant="line" size="sm" onClick={() => setN((v) => Math.max(0, v - 999))}>
+        Subtract 999
+      </Button>
     </div>
   );
 }
@@ -3217,7 +3673,9 @@ import {ScrollArea} from '@monoline/react';
   viewportProps={{'aria-label': 'Release notes'}}
 >
   <div style={{padding: 'var(--s3)'}}>
-    {Array.from({length: 20}, (_, i) => <p key={i}>Release note {i + 1}</p>)}
+    {Array.from({length: 20}, (_, i) => (
+      <p key={i}>Release note {i + 1}</p>
+    ))}
   </div>
 </ScrollArea>
 ```
@@ -3271,7 +3729,11 @@ import {SegmentedControl} from '@monoline/react';
 
 <SegmentedControl
   aria-label="Chart range"
-  options={[{value: 'day', label: 'Day'}, {value: 'week', label: 'Week'}, {value: 'month', label: 'Month'}]}
+  options={[
+    {value: 'day', label: 'Day'},
+    {value: 'week', label: 'Week'},
+    {value: 'month', label: 'Month'},
+  ]}
   defaultValue="week"
 />
 ```
@@ -3432,13 +3894,27 @@ Usage:
 import {type CSSProperties, type ReactNode} from 'react';
 import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarItem, SidebarProvider, SidebarToggle, SidebarTrigger, useSidebar} from '@monoline/react';
 
-const Icon = ({d}: {d: string}) => <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={d} /></svg>;
+const Icon = ({d}: {d: string}) => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <path d={d} />
+  </svg>
+);
 
-const frame: CSSProperties = {display: 'flex', alignItems: 'stretch', minBlockSize: '22rem', border: '1px solid var(--rule)'};
+const frame: CSSProperties = {
+  display: 'flex',
+  alignItems: 'stretch',
+  minBlockSize: '22rem',
+  border: '1px solid var(--rule)',
+};
 
 function Brand() {
   const {collapsed} = useSidebar();
-  return <SidebarHeader>{!collapsed && <span>Acme</span>}<SidebarToggle /></SidebarHeader>;
+  return (
+    <SidebarHeader>
+      {!collapsed && <span>Acme</span>}
+      <SidebarToggle />
+    </SidebarHeader>
+  );
 }
 
 function Nav({children}: {children?: ReactNode}) {
@@ -3447,12 +3923,20 @@ function Nav({children}: {children?: ReactNode}) {
       <Brand />
       <SidebarContent>
         <SidebarGroup label="Workspace">
-          <SidebarItem href="#overview" current icon={<Icon d="M2 8l6-5 6 5v6H2z" />}>Overview</SidebarItem>
-          <SidebarItem href="#reports" icon={<Icon d="M3 13V8M8 13V3M13 13V6" />}>Reports</SidebarItem>
-          <SidebarItem href="#team" icon={<Icon d="M8 8a3 3 0 100-6 3 3 0 000 6zM2 14c0-3 3-4 6-4s6 1 6 4" />}>Team</SidebarItem>
+          <SidebarItem href="#overview" current icon={<Icon d="M2 8l6-5 6 5v6H2z" />}>
+            Overview
+          </SidebarItem>
+          <SidebarItem href="#reports" icon={<Icon d="M3 13V8M8 13V3M13 13V6" />}>
+            Reports
+          </SidebarItem>
+          <SidebarItem href="#team" icon={<Icon d="M8 8a3 3 0 100-6 3 3 0 000 6zM2 14c0-3 3-4 6-4s6 1 6 4" />}>
+            Team
+          </SidebarItem>
         </SidebarGroup>
         <SidebarGroup label="Account">
-          <SidebarItem href="#billing" icon={<Icon d="M2 4h12v8H2zM2 7h12" />}>Billing</SidebarItem>
+          <SidebarItem href="#billing" icon={<Icon d="M2 4h12v8H2zM2 7h12" />}>
+            Billing
+          </SidebarItem>
         </SidebarGroup>
       </SidebarContent>
       {children}
@@ -3462,8 +3946,23 @@ function Nav({children}: {children?: ReactNode}) {
 
 <SidebarProvider>
   <div style={frame}>
-    <Sidebar drawerTitle="Acme"><Nav><SidebarFooter><SidebarGroup><SidebarItem href="#help" icon={<Icon d="M8 14A6 6 0 108 2a6 6 0 000 12zM8 11v.01M6.5 6.5a1.5 1.5 0 113 0c0 1-1.5 1-1.5 2" />}>Help</SidebarItem></SidebarGroup></SidebarFooter></Nav></Sidebar>
-    <div style={{padding: 'var(--s5)'}}><SidebarTrigger /></div>
+    <Sidebar drawerTitle="Acme">
+      <Nav>
+        <SidebarFooter>
+          <SidebarGroup>
+            <SidebarItem
+              href="#help"
+              icon={<Icon d="M8 14A6 6 0 108 2a6 6 0 000 12zM8 11v.01M6.5 6.5a1.5 1.5 0 113 0c0 1-1.5 1-1.5 2" />}
+            >
+              Help
+            </SidebarItem>
+          </SidebarGroup>
+        </SidebarFooter>
+      </Nav>
+    </Sidebar>
+    <div style={{padding: 'var(--s5)'}}>
+      <SidebarTrigger />
+    </div>
   </div>
 </SidebarProvider>
 ```
@@ -3552,7 +4051,10 @@ Usage:
 ```tsx
 import {SortableList, type SortableItem} from '@monoline/react';
 
-const items: SortableItem[] = ['Write the brief', 'Draft the spec', 'Review with design', 'Build', 'Ship'].map((t) => ({id: t, label: t}));
+const items: SortableItem[] = ['Write the brief', 'Draft the spec', 'Review with design', 'Build', 'Ship'].map((t) => ({
+  id: t,
+  label: t,
+}));
 
 <div style={{maxWidth: '360px'}}>
   <SortableList aria-label="Tasks" defaultValue={items} />
@@ -3587,7 +4089,9 @@ Usage:
 ```tsx
 import {Sparkline} from '@monoline/react';
 
-<p>Signups <Sparkline title="Signups, last 10 days" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week.</p>
+<p>
+  Signups <Sparkline title="Signups, last 10 days" data={[3, 5, 4, 8, 6, 9, 12, 10, 14, 13]} /> up 18% this week.
+</p>
 ```
 
 A11y:
@@ -3637,7 +4141,9 @@ import {Spotlight} from '@monoline/react';
 
 <Spotlight style={{padding: 'var(--s7)', border: '1px solid var(--rule)', maxWidth: '28rem'}}>
   <h3 style={{margin: 0, fontWeight: 500}}>Hover here</h3>
-  <p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>A soft light follows the pointer. Keyboard and touch see a plain surface.</p>
+  <p style={{margin: 'var(--s2) 0 0', color: 'var(--muted)'}}>
+    A soft light follows the pointer. Keyboard and touch see a plain surface.
+  </p>
 </Spotlight>
 ```
 
@@ -3778,10 +4284,24 @@ import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Table
 
 <Table wrapperLabel="Team">
   <TableCaption>Team members</TableCaption>
-  <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead numeric>Projects</TableHead></TableRow></TableHeader>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Role</TableHead>
+      <TableHead numeric>Projects</TableHead>
+    </TableRow>
+  </TableHeader>
   <TableBody>
-    <TableRow><TableCell>Ada Lovelace</TableCell><TableCell>Engineer</TableCell><TableCell numeric>4</TableCell></TableRow>
-    <TableRow><TableCell>Grace Hopper</TableCell><TableCell>Admiral</TableCell><TableCell numeric>9</TableCell></TableRow>
+    <TableRow>
+      <TableCell>Ada Lovelace</TableCell>
+      <TableCell>Engineer</TableCell>
+      <TableCell numeric>4</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Grace Hopper</TableCell>
+      <TableCell>Admiral</TableCell>
+      <TableCell numeric>9</TableCell>
+    </TableRow>
   </TableBody>
 </Table>
 ```
@@ -3906,8 +4426,12 @@ import {Text} from '@monoline/react';
 <div style={{display: 'grid', gap: 'var(--s2)'}}>
   <Text size="lg">Large</Text>
   <Text>Medium</Text>
-  <Text size="sm" tone="muted">Small and muted</Text>
-  <Text size="xs" tone="danger">Extra small, danger</Text>
+  <Text size="sm" tone="muted">
+    Small and muted
+  </Text>
+  <Text size="xs" tone="danger">
+    Extra small, danger
+  </Text>
 </div>
 ```
 
@@ -3992,10 +4516,17 @@ function Controls() {
   return (
     <div style={{display: 'grid', gap: 12}}>
       <ThemeSwitcher />
-      <p>Theme: {theme}{theme === 'system' ? ` (${resolvedTheme})` : ''}. Accent: {accent}. Density: {density}.</p>
+      <p>
+        Theme: {theme}
+        {theme === 'system' ? ` (${resolvedTheme})` : ''}. Accent: {accent}. Density: {density}.
+      </p>
       <div style={{display: 'flex', gap: 8}}>
-        <Button variant="line" onClick={() => setTheme(resolvedTheme === 'dark' ? 'warm' : 'dark')}>Toggle dark</Button>
-        <Button variant="line" onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}>Toggle compact</Button>
+        <Button variant="line" onClick={() => setTheme(resolvedTheme === 'dark' ? 'warm' : 'dark')}>
+          Toggle dark
+        </Button>
+        <Button variant="line" onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}>
+          Toggle compact
+        </Button>
       </div>
     </div>
   );
@@ -4093,7 +4624,9 @@ Usage:
 import {Timeline, TimelineItem} from '@monoline/react';
 
 <Timeline aria-label="Activity">
-  <TimelineItem title="Project created" time="3 days ago" dateTime="2026-11-09">Ada started the project.</TimelineItem>
+  <TimelineItem title="Project created" time="3 days ago" dateTime="2026-11-09">
+    Ada started the project.
+  </TimelineItem>
   <TimelineItem title="First release" time="Yesterday" dateTime="2026-11-11" />
   <TimelineItem title="Public" time="Today" dateTime="2026-11-12" />
 </Timeline>
@@ -4135,7 +4668,9 @@ function Example() {
   const [open, setOpen] = useState(false);
   return (
     <ToastProvider duration={5000}>
-      <Button variant="line" onClick={() => setOpen(true)}>Save draft</Button>
+      <Button variant="line" onClick={() => setOpen(true)}>
+        Save draft
+      </Button>
       <Toast open={open} onOpenChange={setOpen}>
         <ToastTitle>Draft saved</ToastTitle>
         <ToastDescription>Stored on this device.</ToastDescription>
@@ -4178,12 +4713,41 @@ import {Button, Toaster, toast} from '@monoline/react';
 function Example() {
   return (
     <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-      <Button variant="line" onClick={() => toast('Draft saved')}>Default</Button>
-      <Button variant="line" onClick={() => toast.success('Profile updated', {description: 'Changes are live.'})}>Success</Button>
-      <Button variant="line" onClick={() => toast.error('Could not save', {description: 'Check your connection.', action: {label: 'Retry', onClick: () => toast.info('Retrying')}})}>Error with retry</Button>
-      <Button variant="line" onClick={() => toast.warning('Storage almost full')}>Warning</Button>
-      <Button variant="line" onClick={() => toast.promise(new Promise((r) => setTimeout(r, 1500)), {loading: 'Uploading', success: 'Uploaded', error: 'Upload failed'})}>Promise</Button>
-      <Button variant="ghost" onClick={() => toast.dismiss()}>Dismiss all</Button>
+      <Button variant="line" onClick={() => toast('Draft saved')}>
+        Default
+      </Button>
+      <Button variant="line" onClick={() => toast.success('Profile updated', {description: 'Changes are live.'})}>
+        Success
+      </Button>
+      <Button
+        variant="line"
+        onClick={() =>
+          toast.error('Could not save', {
+            description: 'Check your connection.',
+            action: {label: 'Retry', onClick: () => toast.info('Retrying')},
+          })
+        }
+      >
+        Error with retry
+      </Button>
+      <Button variant="line" onClick={() => toast.warning('Storage almost full')}>
+        Warning
+      </Button>
+      <Button
+        variant="line"
+        onClick={() =>
+          toast.promise(new Promise((r) => setTimeout(r, 1500)), {
+            loading: 'Uploading',
+            success: 'Uploaded',
+            error: 'Upload failed',
+          })
+        }
+      >
+        Promise
+      </Button>
+      <Button variant="ghost" onClick={() => toast.dismiss()}>
+        Dismiss all
+      </Button>
       <Toaster />
     </div>
   );
@@ -4413,9 +4977,15 @@ function Basic() {
   return (
     <div>
       <div style={{display: 'flex', gap: 'var(--s4)', alignItems: 'center'}}>
-        <button type="button" className="btn btn-solid" onClick={() => setOpen(true)}>Start tour</button>
-        <button type="button" className="btn" id="tour-demo-a">Create</button>
-        <button type="button" className="btn" id="tour-demo-b">Share</button>
+        <button type="button" className="btn btn-solid" onClick={() => setOpen(true)}>
+          Start tour
+        </button>
+        <button type="button" className="btn" id="tour-demo-a">
+          Create
+        </button>
+        <button type="button" className="btn" id="tour-demo-b">
+          Share
+        </button>
       </div>
       <Tour
         open={open}
@@ -4463,10 +5033,21 @@ Usage:
 import {Tree, type TreeNode} from '@monoline/react';
 
 const items: TreeNode[] = [
-  {id: 'src', label: 'src', children: [
-    {id: 'components', label: 'components', children: [{id: 'button', label: 'button.tsx'}, {id: 'tree', label: 'tree.tsx'}]},
-    {id: 'index', label: 'index.ts'},
-  ]},
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {
+        id: 'components',
+        label: 'components',
+        children: [
+          {id: 'button', label: 'button.tsx'},
+          {id: 'tree', label: 'tree.tsx'},
+        ],
+      },
+      {id: 'index', label: 'index.ts'},
+    ],
+  },
   {id: 'docs', label: 'docs', children: [{id: 'readme', label: 'README.md'}]},
   {id: 'pkg', label: 'package.json'},
 ];
@@ -4504,11 +5085,29 @@ Usage:
 import {Field, TreeSelect, type TreeNode} from '@monoline/react';
 
 const items: TreeNode[] = [
-  {id: 'eng', label: 'Engineering', children: [
-    {id: 'web', label: 'Web'},
-    {id: 'platform', label: 'Platform', children: [{id: 'infra', label: 'Infrastructure'}, {id: 'data', label: 'Data'}]},
-  ]},
-  {id: 'design', label: 'Design', children: [{id: 'brand', label: 'Brand'}, {id: 'product', label: 'Product design'}]},
+  {
+    id: 'eng',
+    label: 'Engineering',
+    children: [
+      {id: 'web', label: 'Web'},
+      {
+        id: 'platform',
+        label: 'Platform',
+        children: [
+          {id: 'infra', label: 'Infrastructure'},
+          {id: 'data', label: 'Data'},
+        ],
+      },
+    ],
+  },
+  {
+    id: 'design',
+    label: 'Design',
+    children: [
+      {id: 'brand', label: 'Brand'},
+      {id: 'product', label: 'Product design'},
+    ],
+  },
   {id: 'ops', label: 'Operations'},
 ];
 
@@ -4615,7 +5214,9 @@ function PopoverDemo() {
   const ref = useClickOutside<HTMLDivElement>(() => setOpen(false), open);
   return (
     <div>
-      <Button variant="line" aria-expanded={open} onClick={() => setOpen((o) => !o)}>Open panel</Button>
+      <Button variant="line" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        Open panel
+      </Button>
       {open && (
         <div ref={ref} role="group" aria-label="Panel">
           <p>Click anywhere outside this panel to close it.</p>
@@ -4694,9 +5295,13 @@ function Counter({value, defaultValue = 0, onValueChange}: CounterProps) {
   const [count, setCount] = useControllableState({value, defaultValue, onChange: onValueChange});
   return (
     <div>
-      <Button variant="line" aria-label="Decrease" onClick={() => setCount(count - 1)}>−</Button>{' '}
+      <Button variant="line" aria-label="Decrease" onClick={() => setCount(count - 1)}>
+        −
+      </Button>{' '}
       <output>{count}</output>{' '}
-      <Button variant="line" aria-label="Increase" onClick={() => setCount(count + 1)}>+</Button>
+      <Button variant="line" aria-label="Increase" onClick={() => setCount(count + 1)}>
+        +
+      </Button>
     </div>
   );
 }
@@ -4724,7 +5329,20 @@ import {Button, useCounter} from '@monoline/react';
 
 function Demo() {
   const {count, increment, decrement, reset} = useCounter(1, {min: 0, max: 5});
-  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Button variant="line" onClick={() => decrement()} disabled={count === 0}>Less</Button><output aria-live="polite">{count}</output><Button variant="line" onClick={() => increment()} disabled={count === 5}>More</Button><Button variant="ghost" onClick={reset}>Reset</Button></div>;
+  return (
+    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
+      <Button variant="line" onClick={() => decrement()} disabled={count === 0}>
+        Less
+      </Button>
+      <output aria-live="polite">{count}</output>
+      <Button variant="line" onClick={() => increment()} disabled={count === 5}>
+        More
+      </Button>
+      <Button variant="ghost" onClick={reset}>
+        Reset
+      </Button>
+    </div>
+  );
 }
 
 <Demo />
@@ -4794,7 +5412,9 @@ function DisclosureDemo() {
   const {isOpen, toggle} = useDisclosure();
   return (
     <div>
-      <Button variant="line" aria-expanded={isOpen} onClick={toggle}>{isOpen ? 'Hide details' : 'Show details'}</Button>
+      <Button variant="line" aria-expanded={isOpen} onClick={toggle}>
+        {isOpen ? 'Hide details' : 'Show details'}
+      </Button>
       {isOpen && <p>Details appear here.</p>}
     </div>
   );
@@ -4855,11 +5475,15 @@ function TrapDemo() {
   const ref = useFocusTrap<HTMLDivElement>(open);
   return (
     <div>
-      <Button variant="line" onClick={() => setOpen(true)}>Open trapped panel</Button>
+      <Button variant="line" onClick={() => setOpen(true)}>
+        Open trapped panel
+      </Button>
       {open && (
         <div ref={ref} role="dialog" aria-label="Trapped panel">
           <p>Tab stays inside this panel.</p>
-          <Button variant="line" onClick={() => setOpen(false)}>Close</Button>
+          <Button variant="line" onClick={() => setOpen(false)}>
+            Close
+          </Button>
           <Button variant="ghost">Second action</Button>
         </div>
       )}
@@ -4889,7 +5513,14 @@ import {Button, useHash} from '@monoline/react';
 
 function Demo() {
   const [hash, setHash] = useHash();
-  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><output>#{hash || '(empty)'}</output><Button variant="line" size="sm" onClick={() => setHash('use-hash')}>Set #use-hash</Button></div>;
+  return (
+    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
+      <output>#{hash || '(empty)'}</output>
+      <Button variant="line" size="sm" onClick={() => setHash('use-hash')}>
+        Set #use-hash
+      </Button>
+    </div>
+  );
 }
 
 <Demo />
@@ -4951,7 +5582,18 @@ import {useHover} from '@monoline/react';
 
 function Demo() {
   const [ref, hovered] = useHover<HTMLDivElement>();
-  return <div ref={ref} style={{padding: 'var(--s5)', border: '1px solid var(--rule)', background: hovered ? 'var(--wash-2)' : 'transparent'}}>{hovered ? 'Pointer is over this box' : 'Move the pointer here'}</div>;
+  return (
+    <div
+      ref={ref}
+      style={{
+        padding: 'var(--s5)',
+        border: '1px solid var(--rule)',
+        background: hovered ? 'var(--wash-2)' : 'transparent',
+      }}
+    >
+      {hovered ? 'Pointer is over this box' : 'Move the pointer here'}
+    </div>
+  );
 }
 
 <Demo />
@@ -4976,9 +5618,18 @@ import {useIntersection} from '@monoline/react';
 function Demo() {
   const [ref, entry] = useIntersection<HTMLDivElement>({threshold: 0.5});
   return (
-    <div style={{height: '120px', overflowY: 'auto', border: '1px solid var(--rule)'}} tabIndex={0} aria-label="Scrollable area">
+    <div
+      style={{height: '120px', overflowY: 'auto', border: '1px solid var(--rule)'}}
+      tabIndex={0}
+      aria-label="Scrollable area"
+    >
       <div style={{height: '160px', padding: 'var(--s3)'}}>Scroll down</div>
-      <div ref={ref} style={{padding: 'var(--s4)', background: entry?.isIntersecting ? 'var(--wash-2)' : 'transparent'}}>{entry?.isIntersecting ? 'In view' : 'Out of view'}</div>
+      <div
+        ref={ref}
+        style={{padding: 'var(--s4)', background: entry?.isIntersecting ? 'var(--wash-2)' : 'transparent'}}
+      >
+        {entry?.isIntersecting ? 'In view' : 'Out of view'}
+      </div>
       <div style={{height: '120px'}} />
     </div>
   );
@@ -5012,7 +5663,9 @@ function IntervalDemo() {
   return (
     <div>
       <p>Elapsed: {seconds} s</p>
-      <Button variant="line" onClick={() => setRunning((r) => !r)}>{running ? 'Pause' : 'Resume'}</Button>
+      <Button variant="line" onClick={() => setRunning((r) => !r)}>
+        {running ? 'Pause' : 'Resume'}
+      </Button>
     </div>
   );
 }
@@ -5045,7 +5698,9 @@ function CountDemo() {
   const [count, setCount] = useLocalStorage('monoline-demo-count', 0);
   return (
     <div>
-      <Button variant="line" onClick={() => setCount((n) => n + 1)}>Count is {count}</Button>
+      <Button variant="line" onClick={() => setCount((n) => n + 1)}>
+        Count is {count}
+      </Button>
       <p>Saved in this browser. Open this page in another tab and click there to see it sync.</p>
     </div>
   );
@@ -5076,7 +5731,14 @@ import {Button, useLongPress} from '@monoline/react';
 function Demo() {
   const [n, setN] = useState(0);
   const press = useLongPress(() => setN((v) => v + 1), {delay: 600});
-  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Button {...press} onClick={() => setN((v) => v + 1)}>Hold or click</Button><output aria-live="polite">{n} presses</output></div>;
+  return (
+    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
+      <Button {...press} onClick={() => setN((v) => v + 1)}>
+        Hold or click
+      </Button>
+      <output aria-live="polite">{n} presses</output>
+    </div>
+  );
 }
 
 <Demo />
@@ -5160,8 +5822,12 @@ function PreviousDemo() {
   const previous = usePrevious(value);
   return (
     <div>
-      <Button variant="line" onClick={() => setValue((v) => v + 1)}>Increase</Button>
-      <p>Now {value}, before {previous ?? 'nothing'}.</p>
+      <Button variant="line" onClick={() => setValue((v) => v + 1)}>
+        Increase
+      </Button>
+      <p>
+        Now {value}, before {previous ?? 'nothing'}.
+      </p>
     </div>
   );
 }
@@ -5215,7 +5881,11 @@ import {useScrollSpy} from '@monoline/react';
 
 function Demo() {
   const active = useScrollSpy(['intro', 'usage'], 0);
-  return <p>Active section: <output>{active ?? 'none yet'}</output>. Add elements with these ids to your page and scroll.</p>;
+  return (
+    <p>
+      Active section: <output>{active ?? 'none yet'}</output>. Add elements with these ids to your page and scroll.
+    </p>
+  );
 }
 
 <Demo />
@@ -5245,7 +5915,28 @@ import {Button, useTimeout} from '@monoline/react';
 function Demo() {
   const [msg, setMsg] = useState('Idle');
   const {start, clear} = useTimeout(() => setMsg('Done after one second'), 1000);
-  return <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}><Button onClick={() => { setMsg('Waiting'); start(); }}>Start</Button><Button variant="ghost" onClick={() => { clear(); setMsg('Cancelled'); }}>Cancel</Button><output aria-live="polite">{msg}</output></div>;
+  return (
+    <div style={{display: 'flex', gap: 'var(--s3)', alignItems: 'center'}}>
+      <Button
+        onClick={() => {
+          setMsg('Waiting');
+          start();
+        }}
+      >
+        Start
+      </Button>
+      <Button
+        variant="ghost"
+        onClick={() => {
+          clear();
+          setMsg('Cancelled');
+        }}
+      >
+        Cancel
+      </Button>
+      <output aria-live="polite">{msg}</output>
+    </div>
+  );
 }
 
 <Demo />
@@ -5302,7 +5993,11 @@ import {useWindowEvent} from '@monoline/react';
 function Demo() {
   const [key, setKey] = useState('none');
   useWindowEvent('keydown', (e) => setKey(e.key));
-  return <p>Last key pressed: <kbd className="kbd">{key}</kbd></p>;
+  return (
+    <p>
+      Last key pressed: <kbd className="kbd">{key}</kbd>
+    </p>
+  );
 }
 
 <Demo />

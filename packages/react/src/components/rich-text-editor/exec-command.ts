@@ -6,16 +6,28 @@
  */
 export function execFormat(command: string, value?: string): boolean {
   if (typeof document === 'undefined' || typeof document.execCommand !== 'function') return false;
-  try { return document.execCommand(command, false, value); } catch { return false; }
+  try {
+    return document.execCommand(command, false, value);
+  } catch {
+    return false;
+  }
 }
 
 export function queryState(command: string): boolean {
   if (typeof document === 'undefined' || typeof document.queryCommandState !== 'function') return false;
-  try { return document.queryCommandState(command); } catch { return false; }
+  try {
+    return document.queryCommandState(command);
+  } catch {
+    return false;
+  }
 }
 
 /** The current block tag: `p`, `h2`, `h3`, `blockquote` or an empty string. */
 export function queryBlock(): string {
   if (typeof document === 'undefined' || typeof document.queryCommandValue !== 'function') return '';
-  try { return document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g, ''); } catch { return ''; }
+  try {
+    return document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g, '');
+  } catch {
+    return '';
+  }
 }

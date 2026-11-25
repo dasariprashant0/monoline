@@ -4,7 +4,11 @@ import {axe} from '../../test/axe';
 import {Field} from '../field';
 import {MultiSelect} from './multi-select';
 
-const options = [{value: 'ada', label: 'Ada Lovelace'}, {value: 'grace', label: 'Grace Hopper'}, {value: 'alan', label: 'Alan Turing', disabled: true}];
+const options = [
+  {value: 'ada', label: 'Ada Lovelace'},
+  {value: 'grace', label: 'Grace Hopper'},
+  {value: 'alan', label: 'Alan Turing', disabled: true},
+];
 
 describe('MultiSelect', () => {
   it('has the combobox role and a multiselectable listbox', async () => {
@@ -63,7 +67,11 @@ describe('MultiSelect', () => {
     expect(screen.queryByRole('button', {name: 'Remove Ada Lovelace'})).not.toBeInTheDocument();
   });
   it('is named by its Field and has no axe violations', async () => {
-    const {container} = render(<Field label="People"><MultiSelect options={options} defaultValue={['ada']} /></Field>);
+    const {container} = render(
+      <Field label="People">
+        <MultiSelect options={options} defaultValue={['ada']} />
+      </Field>,
+    );
     expect(screen.getByRole('combobox', {name: 'People'})).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });

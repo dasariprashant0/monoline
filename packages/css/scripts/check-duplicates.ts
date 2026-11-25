@@ -12,18 +12,31 @@ import {fileURLToPath} from 'node:url';
 import {read} from './lib.ts';
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '');
-const norm = (s: string) => s.replace(/\s+/g, ' ').replace(/\s*([>+~,])\s*/g, '$1').trim();
+const norm = (s: string) =>
+  s
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([>+~,])\s*/g, '$1')
+    .trim();
 
 /** Split on a top-level separator, ignoring any inside (), [] or quotes. */
 function splitTop(s: string, sep: string) {
-  const out: string[] = []; let d = 0, q = '', from = 0;
+  const out: string[] = [];
+  let d = 0,
+    q = '',
+    from = 0;
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
-    if (q) { if (c === q) q = ''; continue; }
+    if (q) {
+      if (c === q) q = '';
+      continue;
+    }
     if (c === '"' || c === "'") q = c;
     else if (c === '(' || c === '[') d++;
     else if (c === ')' || c === ']') d--;
-    else if (c === sep && d === 0) { out.push(s.slice(from, i)); from = i + 1; }
+    else if (c === sep && d === 0) {
+      out.push(s.slice(from, i));
+      from = i + 1;
+    }
   }
   out.push(s.slice(from));
   return out.map((x) => x.trim()).filter(Boolean);
@@ -38,9 +51,17 @@ export function parseRules(css: string) {
       const open = text.indexOf('{', i);
       const semi = text.indexOf(';', i);
       if (open < 0) break;
-      if (semi >= 0 && semi < open) { i = semi + 1; continue; } // @import / @layer statement
-      let d = 1, j = open + 1;
-      while (j < text.length && d > 0) { if (text[j] === '{') d++; else if (text[j] === '}') d--; j++; }
+      if (semi >= 0 && semi < open) {
+        i = semi + 1;
+        continue;
+      } // @import / @layer statement
+      let d = 1,
+        j = open + 1;
+      while (j < text.length && d > 0) {
+        if (text[j] === '{') d++;
+        else if (text[j] === '}') d--;
+        j++;
+      }
       const head = text.slice(i, open).trim();
       const body = text.slice(open + 1, j - 1);
       i = j;
@@ -51,7 +72,10 @@ export function parseRules(css: string) {
         const props: Record<string, string> = {};
         for (const decl of splitTop(body, ';')) {
           const k = decl.indexOf(':');
-          if (k > 0) props[decl.slice(0, k).trim().toLowerCase()] = norm(decl.slice(k + 1).replace(/\s*!important/, ' !important'));
+          if (k > 0)
+            props[decl.slice(0, k).trim().toLowerCase()] = norm(
+              decl.slice(k + 1).replace(/\s*!important/, ' !important'),
+            );
         }
         for (const sel of splitTop(head, ',')) rules.push({ctx, sel: norm(sel), props});
       }
@@ -63,17 +87,26 @@ export function parseRules(css: string) {
 
 export function findDuplicates() {
   const dir = new URL('../src/components/', import.meta.url);
-  const files = ['utilities.css', 'base.css', ...readdirSync(dir).filter((f) => f.endsWith('.css')).sort().map((f) => `components/${f}`)];
+  const files = [
+    'utilities.css',
+    'base.css',
+    ...readdirSync(dir)
+      .filter((f) => f.endsWith('.css'))
+      .sort()
+      .map((f) => `components/${f}`),
+  ];
   // key -> prop -> [{file, value}]
   const seen = new Map<string, Map<string, {file: string; value: string}[]>>();
   for (const f of files) {
     for (const {ctx, sel, props} of parseRules(read(`src/${f}`))) {
       const key = `${ctx}\u0000${sel}`;
       const byProp = seen.get(key) ?? seen.set(key, new Map()).get(key)!;
-      for (const [p, v] of Object.entries(props)) (byProp.get(p) ?? byProp.set(p, []).get(p)!).push({file: f, value: v});
+      for (const [p, v] of Object.entries(props))
+        (byProp.get(p) ?? byProp.set(p, []).get(p)!).push({file: f, value: v});
     }
   }
-  const conflicts = [], agreeing = [];
+  const conflicts = [],
+    agreeing = [];
   for (const [key, byProp] of seen) {
     const [ctx, sel] = key.split('\u0000');
     const fileSet = new Set([...byProp.values()].flat().map((e) => e.file));
@@ -84,7 +117,8 @@ export function findDuplicates() {
       if (new Set(list.map((e) => e.file)).size > 1 && vals.size > 1) props.push({prop: p, defs: list});
     }
     const row = {ctx, sel, files: [...fileSet]};
-    if (props.length) conflicts.push({...row, props}); else agreeing.push(row);
+    if (props.length) conflicts.push({...row, props});
+    else agreeing.push(row);
   }
   return {conflicts, agreeing};
 }
@@ -92,14 +126,20 @@ export function findDuplicates() {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const {conflicts, agreeing} = findDuplicates();
   const label = (c: {ctx: string; sel: string}) => (c.ctx ? `${c.ctx} { ${c.sel} }` : c.sel);
-  if (process.argv.includes('--all')) for (const a of agreeing) console.log(`same   ${label(a)}  (${a.files.join(', ')})`);
+  if (process.argv.includes('--all'))
+    for (const a of agreeing) console.log(`same   ${label(a)}  (${a.files.join(', ')})`);
   if (conflicts.length) {
     for (const c of conflicts) {
       console.error(`FAIL duplicate selector ${label(c)} defined in ${c.files.join(', ')}`);
-      for (const p of c.props) console.error(`       ${p.prop}: ${p.defs.map((d) => `${d.value} (${d.file})`).join('  vs  ')}`);
+      for (const p of c.props)
+        console.error(`       ${p.prop}: ${p.defs.map((d) => `${d.value} (${d.file})`).join('  vs  ')}`);
     }
-    console.error(`${conflicts.length} selector(s) defined in more than one stylesheet with different declarations. Keep one definition (in the component's own file) and delete the other.`);
+    console.error(
+      `${conflicts.length} selector(s) defined in more than one stylesheet with different declarations. Keep one definition (in the component's own file) and delete the other.`,
+    );
     process.exit(1);
   }
-  console.log(`ok: no selector is defined in more than one stylesheet with conflicting declarations (${agreeing.length} harmless repeats).`);
+  console.log(
+    `ok: no selector is defined in more than one stylesheet with conflicting declarations (${agreeing.length} harmless repeats).`,
+  );
 }

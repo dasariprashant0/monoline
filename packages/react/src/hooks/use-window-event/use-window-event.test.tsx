@@ -17,7 +17,8 @@ describe('useWindowEvent', () => {
     expect(fn).not.toHaveBeenCalled();
   });
   it('uses the latest listener', () => {
-    const a = vi.fn(), b = vi.fn();
+    const a = vi.fn(),
+      b = vi.fn();
     const {rerender} = renderHook(({l}) => useWindowEvent('resize', l), {initialProps: {l: a}});
     rerender({l: b});
     fireEvent(window, new Event('resize'));

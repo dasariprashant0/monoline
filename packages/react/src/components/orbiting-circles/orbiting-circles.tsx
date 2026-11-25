@@ -18,14 +18,32 @@ export interface OrbitingCirclesProps extends HTMLAttributes<HTMLDivElement> {
  * Small items (icons, logos) circling a centre. Purely decorative: the whole thing is `aria-hidden`, so do not put anything
  * users must read or operate inside it. Items sit evenly spaced and stay still under reduced motion.
  */
-export const OrbitingCircles = forwardRef<HTMLDivElement, OrbitingCirclesProps>(function OrbitingCircles({radius = 96, duration = 20, reverse, ring = true, center, className, style, children, ...rest}, ref) {
+export const OrbitingCircles = forwardRef<HTMLDivElement, OrbitingCirclesProps>(function OrbitingCircles(
+  {radius = 96, duration = 20, reverse, ring = true, center, className, style, children, ...rest},
+  ref,
+) {
   const items = Children.toArray(children);
   return (
-    <div ref={ref} aria-hidden="true" className={cx('orbit', reverse && 'orbit-reverse', className)} style={{'--orbit-radius': `${radius}px`, '--orbit-duration': `${duration}s`, '--n': items.length, ...style} as CSSProperties} {...rest}>
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className={cx('orbit', reverse && 'orbit-reverse', className)}
+      style={
+        {
+          '--orbit-radius': `${radius}px`,
+          '--orbit-duration': `${duration}s`,
+          '--n': items.length,
+          ...style,
+        } as CSSProperties
+      }
+      {...rest}
+    >
       {ring && <span className="orbit-ring" />}
       {center != null && <span className="orbit-center">{center}</span>}
       {items.map((child, i) => (
-        <span key={i} className="orbit-item" style={{'--i': i} as CSSProperties}>{child}</span>
+        <span key={i} className="orbit-item" style={{'--i': i} as CSSProperties}>
+          {child}
+        </span>
       ))}
     </div>
   );

@@ -8,5 +8,13 @@ const {server, base} = await serveDist(join(fileURLToPath(new URL('../..', impor
 const browser = await launchChrome({label: 'monoline-inspect'});
 const p = await createPage(browser, base);
 await p.open(route);
-console.log(expr ? await p.eval(expr) : await p.eval(`[...document.querySelectorAll('.cdoc-example')].map(e => '## ' + e.querySelector('h3').textContent + '\\n' + e.querySelector('.cdoc-stage').innerHTML.replace(/ (class|style)="[^"]*"/g, '').slice(0, 1800)).join('\\n\\n')`));
-browser.close(); server.close(); process.exit(0);
+console.log(
+  expr
+    ? await p.eval(expr)
+    : await p.eval(
+        `[...document.querySelectorAll('.cdoc-example')].map(e => '## ' + e.querySelector('h3').textContent + '\\n' + e.querySelector('.cdoc-stage').innerHTML.replace(/ (class|style)="[^"]*"/g, '').slice(0, 1800)).join('\\n\\n')`,
+      ),
+);
+browser.close();
+server.close();
+process.exit(0);

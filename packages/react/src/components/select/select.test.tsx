@@ -7,8 +7,13 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from './s
 const ui = (onValueChange?: (v: string) => void) => (
   <Field label="Interval">
     <Select onValueChange={onValueChange}>
-      <SelectTrigger><SelectValue placeholder="Choose" /></SelectTrigger>
-      <SelectContent><SelectItem value="5">5 minutes</SelectItem><SelectItem value="15">15 minutes</SelectItem></SelectContent>
+      <SelectTrigger>
+        <SelectValue placeholder="Choose" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="5">5 minutes</SelectItem>
+        <SelectItem value="15">15 minutes</SelectItem>
+      </SelectContent>
     </Select>
   </Field>
 );

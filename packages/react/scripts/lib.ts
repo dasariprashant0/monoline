@@ -10,7 +10,19 @@ export type Unit = {kind: 'components' | 'hooks'; name: string; dir: string};
 
 export const pkgRoot = fileURLToPath(new URL('..', import.meta.url));
 export const repoRoot = join(pkgRoot, '..', '..');
-export const CATEGORIES = ['layout', 'typography', 'buttons', 'forms', 'data-display', 'feedback', 'overlays', 'navigation', 'effects', 'blocks', 'hooks'];
+export const CATEGORIES = [
+  'layout',
+  'typography',
+  'buttons',
+  'forms',
+  'data-display',
+  'feedback',
+  'overlays',
+  'navigation',
+  'effects',
+  'blocks',
+  'hooks',
+];
 
 /** Folders that hold a unit: src/components/<name>/ and src/hooks/<name>/ */
 export function units() {

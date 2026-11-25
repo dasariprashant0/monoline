@@ -17,13 +17,26 @@ export interface BlockEmptyPageProps extends Omit<HTMLAttributes<HTMLElement>, '
 }
 
 /** A full-page message: not found, nothing here yet, access denied. For a list or table with no rows use `EmptyState`. */
-export const BlockEmptyPage = forwardRef<HTMLElement, BlockEmptyPageProps>(function BlockEmptyPage({code, title, description, actions, headingLevel = 1, className, ...rest}, ref) {
+export const BlockEmptyPage = forwardRef<HTMLElement, BlockEmptyPageProps>(function BlockEmptyPage(
+  {code, title, description, actions, headingLevel = 1, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <section ref={ref} className={cx('block-empty-page', className)} aria-labelledby={id} {...rest}>
-      {code && <p className="block-empty-page-code" aria-hidden="true">{code}</p>}
-      <Heading id={id} level={headingLevel} size="xl">{title}</Heading>
-      {description && <Text tone="muted" className="block-empty-page-description">{description}</Text>}
+      {code && (
+        <p className="block-empty-page-code" aria-hidden="true">
+          {code}
+        </p>
+      )}
+      <Heading id={id} level={headingLevel} size="xl">
+        {title}
+      </Heading>
+      {description && (
+        <Text tone="muted" className="block-empty-page-description">
+          {description}
+        </Text>
+      )}
       {actions && <div className="block-empty-page-actions">{actions}</div>}
     </section>
   );

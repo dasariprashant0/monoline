@@ -64,7 +64,12 @@ describe('highlight', () => {
       ['anything at all <> ""', 'text'],
       ['unterminated "string', 'tsx'],
     ];
-    for (const [code, lang] of samples) expect(highlight(code, lang).map((t) => t.text).join('')).toBe(code);
+    for (const [code, lang] of samples)
+      expect(
+        highlight(code, lang)
+          .map((t) => t.text)
+          .join(''),
+      ).toBe(code);
   });
   it('types css properties, variables and numbers', () => {
     const t = highlight('a { margin: 4px; color: var(--x); }', 'css');

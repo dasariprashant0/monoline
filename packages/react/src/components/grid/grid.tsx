@@ -11,12 +11,17 @@ export interface GridProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** Equal columns that collapse on small screens when auto-fit. Fixed columns stack at 40rem. */
-export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid({columns, minColumn = '16rem', gap = 4, className, style, ...rest}, ref) {
+export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
+  {columns, minColumn = '16rem', gap = 4, className, style, ...rest},
+  ref,
+) {
   return (
     <div
       ref={ref}
       className={cx('grid', columns ? 'grid-fixed' : 'grid-auto', className)}
-      style={{'--grid-gap': `var(--s${gap})`, '--grid-cols': columns, '--grid-min': minColumn, ...style} as CSSProperties}
+      style={
+        {'--grid-gap': `var(--s${gap})`, '--grid-cols': columns, '--grid-min': minColumn, ...style} as CSSProperties
+      }
       {...rest}
     />
   );

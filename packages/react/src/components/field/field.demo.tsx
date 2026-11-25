@@ -27,7 +27,8 @@ export const demos: Demo[] = [
   },
   {
     title: 'A lone checkbox with an error',
-    description: 'Leave the Field label for the group (here "Terms") and let the checkbox carry its own text. The Field supplies the error slot and aria-invalid.',
+    description:
+      'Leave the Field label for the group (here "Terms") and let the checkbox carry its own text. The Field supplies the error slot and aria-invalid.',
     render: () => (
       <div style={{maxWidth: 360}}>
         <Field label="Terms" error="Accept the terms to continue.">

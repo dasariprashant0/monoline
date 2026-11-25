@@ -6,4 +6,10 @@ function MotionDemo() {
   return <p>{reduce ? 'You asked for less motion: transitions are skipped.' : 'Motion is allowed.'}</p>;
 }
 
-export const demos: Demo[] = [{title: 'Motion preference', description: 'Set “reduce motion” in your system settings to see it change.', render: () => <MotionDemo />}];
+export const demos: Demo[] = [
+  {
+    title: 'Motion preference',
+    description: 'Set “reduce motion” in your system settings to see it change.',
+    render: () => <MotionDemo />,
+  },
+];

@@ -12,16 +12,12 @@ export const demos: Demo[] = [
   {
     title: 'With a file name',
     description: 'The copy button sits in the header; the language comes from the file name.',
-    render: () => (
-      <CodeBlock title="save.tsx" code={tsx} />
-    ),
+    render: () => <CodeBlock title="save.tsx" code={tsx} />,
   },
   {
     title: 'Without a title',
     description: 'The copy button floats in the top corner, inside the panel.',
-    render: () => (
-      <CodeBlock language="bash" code={'npx monoline add button'} />
-    ),
+    render: () => <CodeBlock language="bash" code={'npx monoline add button'} />,
   },
   {
     title: 'Line numbers',

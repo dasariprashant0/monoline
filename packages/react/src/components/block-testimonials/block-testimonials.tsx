@@ -22,18 +22,27 @@ export interface BlockTestimonialsProps extends Omit<HTMLAttributes<HTMLElement>
 }
 
 /** A row of quotes with their authors. Each is a `figure` with a `blockquote` and a `figcaption`. */
-export const BlockTestimonials = forwardRef<HTMLElement, BlockTestimonialsProps>(function BlockTestimonials({title, items, headingLevel = 2, className, ...rest}, ref) {
+export const BlockTestimonials = forwardRef<HTMLElement, BlockTestimonialsProps>(function BlockTestimonials(
+  {title, items, headingLevel = 2, className, ...rest},
+  ref,
+) {
   const id = useId();
   return (
     <section ref={ref} className={cx('block-testimonials', className)} aria-labelledby={id} {...rest}>
       <Container>
-        <Heading id={id} level={headingLevel} className="block-testimonials-title">{title}</Heading>
+        <Heading id={id} level={headingLevel} className="block-testimonials-title">
+          {title}
+        </Heading>
         <div className="block-testimonials-grid">
           {items.map((t, i) => (
             <figure key={i} className="block-testimonial">
               <blockquote>{t.quote}</blockquote>
               <figcaption>
-                {t.avatar && <span className="block-testimonial-avatar" aria-hidden="true">{t.avatar}</span>}
+                {t.avatar && (
+                  <span className="block-testimonial-avatar" aria-hidden="true">
+                    {t.avatar}
+                  </span>
+                )}
                 <span>
                   <span className="block-testimonial-name">{t.name}</span>
                   {t.role && <span className="block-testimonial-role">{t.role}</span>}

@@ -24,7 +24,10 @@ export interface FlexProps extends HTMLAttributes<HTMLDivElement> {
  * Prefer `Stack` for the common case (a column or row with one gap); use `Flex` when you need reversed order,
  * baseline alignment, space-around or an inline container.
  */
-export const Flex = forwardRef<HTMLDivElement, FlexProps>(function Flex({direction = 'row', wrap, align, justify, gap, inline, asChild, className, style, ...rest}, ref) {
+export const Flex = forwardRef<HTMLDivElement, FlexProps>(function Flex(
+  {direction = 'row', wrap, align, justify, gap, inline, asChild, className, style, ...rest},
+  ref,
+) {
   const Comp = asChild ? Slot : 'div';
   return (
     <Comp

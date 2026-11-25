@@ -4,13 +4,29 @@ import {axe} from '../../test/axe';
 import {BlockSettingsForm, type SettingsSection} from './block-settings-form';
 
 const sections: SettingsSection[] = [
-  {legend: 'Notifications', description: 'Choose what we email.', items: [
-    {kind: 'switch', name: 'product', label: 'Product updates', hint: 'About once a month.', defaultChecked: true},
-    {kind: 'switch', name: 'digest', label: 'Weekly digest'},
-  ]},
-  {legend: 'Display', items: [
-    {kind: 'select', name: 'theme', label: 'Theme', options: [{value: 'warm', label: 'Warm'}, {value: 'dark', label: 'Dark'}], defaultValue: 'warm'},
-  ]},
+  {
+    legend: 'Notifications',
+    description: 'Choose what we email.',
+    items: [
+      {kind: 'switch', name: 'product', label: 'Product updates', hint: 'About once a month.', defaultChecked: true},
+      {kind: 'switch', name: 'digest', label: 'Weekly digest'},
+    ],
+  },
+  {
+    legend: 'Display',
+    items: [
+      {
+        kind: 'select',
+        name: 'theme',
+        label: 'Theme',
+        options: [
+          {value: 'warm', label: 'Warm'},
+          {value: 'dark', label: 'Dark'},
+        ],
+        defaultValue: 'warm',
+      },
+    ],
+  },
 ];
 
 describe('BlockSettingsForm', () => {
@@ -39,7 +55,9 @@ describe('BlockSettingsForm', () => {
     expect(screen.getByRole('button', {name: 'Undo'})).toBeInTheDocument();
   });
   it('has no axe violations', async () => {
-    const {container} = render(<BlockSettingsForm title="Settings" description="Manage your account." sections={sections} />);
+    const {container} = render(
+      <BlockSettingsForm title="Settings" description="Manage your account." sections={sections} />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

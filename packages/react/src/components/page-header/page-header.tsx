@@ -18,7 +18,10 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
  * The top of a page: breadcrumbs, a title, a description and actions.
  * @example <PageHeader title="Customers" description="Everyone who has signed up." actions={<Button variant="solid">Add customer</Button>} />
  */
-export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function PageHeader({title, description, breadcrumbs, actions, level = 1, className, ...rest}, ref) {
+export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(function PageHeader(
+  {title, description, breadcrumbs, actions, level = 1, className, ...rest},
+  ref,
+) {
   return (
     <div ref={ref} className={cx('page-header', className)} {...rest}>
       {breadcrumbs}

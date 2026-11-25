@@ -9,13 +9,21 @@ describe('Text', () => {
     expect(screen.getByText('Wide')).toHaveClass('text-full');
   });
   it('renders a paragraph with size and tone classes', () => {
-    render(<Text size="sm" tone="muted">Hello</Text>);
+    render(
+      <Text size="sm" tone="muted">
+        Hello
+      </Text>,
+    );
     const el = screen.getByText('Hello');
     expect(el.tagName).toBe('P');
     expect(el).toHaveClass('text', 'text-sm', 'text-muted');
   });
   it('supports truncate and asChild', () => {
-    render(<Text asChild truncate><span>Long</span></Text>);
+    render(
+      <Text asChild truncate>
+        <span>Long</span>
+      </Text>,
+    );
     expect(screen.getByText('Long').tagName).toBe('SPAN');
     expect(screen.getByText('Long')).toHaveClass('text-truncate');
   });
@@ -49,7 +57,11 @@ describe('Text', () => {
   });
   it('asChild renders the child element with text classes, merged className and ref', () => {
     const ref = createRef<HTMLParagraphElement>();
-    render(<Text asChild ref={ref} size="sm" tone="muted" className="mine"><span className="own">hi</span></Text>);
+    render(
+      <Text asChild ref={ref} size="sm" tone="muted" className="mine">
+        <span className="own">hi</span>
+      </Text>,
+    );
     const el = screen.getByText('hi');
     expect(el.tagName).toBe('SPAN');
     expect(el).toHaveClass('text', 'text-sm', 'text-muted', 'own', 'mine');
@@ -57,7 +69,11 @@ describe('Text', () => {
   });
   it('forwards ref, spreads props and keeps long and RTL text intact', () => {
     const ref = createRef<HTMLParagraphElement>();
-    render(<Text ref={ref} dir="rtl" id="t">{'مرحبا '.repeat(1000)}</Text>);
+    render(
+      <Text ref={ref} dir="rtl" id="t">
+        {'مرحبا '.repeat(1000)}
+      </Text>,
+    );
     expect(ref.current).toHaveAttribute('dir', 'rtl');
     expect(ref.current).toHaveAttribute('id', 't');
     expect(ref.current!.textContent!.length).toBeGreaterThan(5000);

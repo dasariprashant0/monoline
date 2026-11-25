@@ -55,9 +55,22 @@ export interface ThemeProviderProps extends Partial<{[K in keyof Look]: Look[K] 
   children?: ReactNode | undefined;
 }
 
-const read = (key: string): string | null => { try { return window.localStorage.getItem(key); } catch { return null; } };
-const write = (key: string, value: string) => { try { window.localStorage.setItem(key, value); } catch { /* storage blocked: the choice lasts for this visit only */ } };
-const systemTheme = () => (typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'warm');
+const read = (key: string): string | null => {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+const write = (key: string, value: string) => {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    /* storage blocked: the choice lasts for this visit only */
+  }
+};
+const systemTheme = () =>
+  typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'warm';
 
 /**
  * Holds the look of the app (theme, accent, font, corners, density, direction), saves it in localStorage and writes it
@@ -66,7 +79,16 @@ const systemTheme = () => (typeof matchMedia === 'function' && matchMedia('(pref
  * put `themeScript()` in the `<head>` of server-rendered pages.
  * @example <ThemeProvider accent="green"><App /></ThemeProvider>
  */
-export function ThemeProvider({storageKey = 'monoline', children, theme = 'system', accent = 'orange', font = 'mono', radius = 'square', density = 'comfortable', dir = 'ltr'}: ThemeProviderProps) {
+export function ThemeProvider({
+  storageKey = 'monoline',
+  children,
+  theme = 'system',
+  accent = 'orange',
+  font = 'mono',
+  radius = 'square',
+  density = 'comfortable',
+  dir = 'ltr',
+}: ThemeProviderProps) {
   // Destructuring defaults, so an explicit `undefined` keeps the default (a spread over defaults would not).
   const [look, setLook] = useState<Look>({theme, accent, font, radius, density, dir});
   const [ready, setReady] = useState(false);
@@ -104,21 +126,27 @@ export function ThemeProvider({storageKey = 'monoline', children, theme = 'syste
     root.setAttribute('dir', look.dir);
   }, [ready, resolvedTheme, look.accent, look.font, look.radius, look.density, look.dir]);
 
-  const set = useCallback(<K extends keyof Look>(k: K, v: Look[K]) => {
-    setLook((cur) => ({...cur, [k]: v}));
-    write(`${storageKey}-${k}`, v);
-  }, [storageKey]);
+  const set = useCallback(
+    <K extends keyof Look>(k: K, v: Look[K]) => {
+      setLook((cur) => ({...cur, [k]: v}));
+      write(`${storageKey}-${k}`, v);
+    },
+    [storageKey],
+  );
 
-  const value = useMemo<ThemeContextValue>(() => ({
-    ...look,
-    resolvedTheme,
-    setTheme: (v) => set('theme', v),
-    setAccent: (v) => set('accent', v),
-    setFont: (v) => set('font', v),
-    setRadius: (v) => set('radius', v),
-    setDensity: (v) => set('density', v),
-    setDir: (v) => set('dir', v),
-  }), [look, resolvedTheme, set]);
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      ...look,
+      resolvedTheme,
+      setTheme: (v) => set('theme', v),
+      setAccent: (v) => set('accent', v),
+      setFont: (v) => set('font', v),
+      setRadius: (v) => set('radius', v),
+      setDensity: (v) => set('density', v),
+      setDir: (v) => set('dir', v),
+    }),
+    [look, resolvedTheme, set],
+  );
 
   return (
     <ThemeContext.Provider value={value}>

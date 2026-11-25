@@ -38,12 +38,31 @@ export interface NavbarProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> 
  * Below 800px the links move into a drawer behind a menu button.
  * @example <Navbar brand="Acme" links={[{label: 'Docs', href: '/docs'}]} actions={<Button size="sm">Sign in</Button>} />
  */
-export const Navbar = forwardRef<HTMLElement, NavbarProps>(function Navbar({brand, links = [], linksLabel = 'Main', renderLink, leading, actions, menuLabel = 'Menu', sticky = false, className, ...rest}, ref) {
+export const Navbar = forwardRef<HTMLElement, NavbarProps>(function Navbar(
+  {
+    brand,
+    links = [],
+    linksLabel = 'Main',
+    renderLink,
+    leading,
+    actions,
+    menuLabel = 'Menu',
+    sticky = false,
+    className,
+    ...rest
+  },
+  ref,
+) {
   const [open, setOpen] = useState(false);
   const list = (
     <ul className="navbar-list">
       {links.map((l, i) => {
-        const p = {href: l.href, className: 'navbar-link', 'aria-current': l.current ? ('page' as const) : undefined, children: l.label};
+        const p = {
+          href: l.href,
+          className: 'navbar-link',
+          'aria-current': l.current ? ('page' as const) : undefined,
+          children: l.label,
+        };
         return <li key={i}>{renderLink ? renderLink(p) : <a {...p} />}</li>;
       })}
     </ul>
@@ -52,13 +71,28 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(function Navbar({bran
     <header ref={ref} className={cx('navbar', className)} data-sticky={sticky || undefined} {...rest}>
       {leading}
       {brand && <div className="navbar-brand">{brand}</div>}
-      {links.length > 0 && <nav aria-label={linksLabel} className="navbar-links">{list}</nav>}
+      {links.length > 0 && (
+        <nav aria-label={linksLabel} className="navbar-links">
+          {list}
+        </nav>
+      )}
       <div className="navbar-actions">
         {actions}
         {links.length > 0 && (
           <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild><Button variant="line" size="sm" className="navbar-menu">{menuLabel}</Button></DrawerTrigger>
-            <DrawerContent side="end" className="navbar-drawer" aria-describedby={undefined} onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); }}>
+            <DrawerTrigger asChild>
+              <Button variant="line" size="sm" className="navbar-menu">
+                {menuLabel}
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent
+              side="end"
+              className="navbar-drawer"
+              aria-describedby={undefined}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('a')) setOpen(false);
+              }}
+            >
               <DrawerTitle>{brand ?? menuLabel}</DrawerTitle>
               <nav aria-label={linksLabel}>{list}</nav>
             </DrawerContent>

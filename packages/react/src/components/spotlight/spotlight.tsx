@@ -12,7 +12,10 @@ export interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {
  * A surface with a soft highlight that follows the pointer. Pointer only: keyboard and touch users see the plain surface and lose nothing.
  * The glow is a pseudo-element, so it is never read aloud. No transition under reduced motion.
  */
-export const Spotlight = forwardRef<HTMLDivElement, SpotlightProps>(function Spotlight({size = 240, className, style, onPointerMove, children, ...rest}, ref) {
+export const Spotlight = forwardRef<HTMLDivElement, SpotlightProps>(function Spotlight(
+  {size = 240, className, style, onPointerMove, children, ...rest},
+  ref,
+) {
   const local = useRef<HTMLDivElement | null>(null);
   const move = (e: PointerEvent<HTMLDivElement>) => {
     const el = local.current;
@@ -24,7 +27,13 @@ export const Spotlight = forwardRef<HTMLDivElement, SpotlightProps>(function Spo
     onPointerMove?.(e);
   };
   return (
-    <div ref={(node) => setRefs(node, local, ref)} className={cx('spotlight', className)} style={{'--spotlight-size': `${size}px`, ...style} as CSSProperties} onPointerMove={move} {...rest}>
+    <div
+      ref={(node) => setRefs(node, local, ref)}
+      className={cx('spotlight', className)}
+      style={{'--spotlight-size': `${size}px`, ...style} as CSSProperties}
+      onPointerMove={move}
+      {...rest}
+    >
       {children}
     </div>
   );

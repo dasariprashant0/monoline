@@ -11,7 +11,10 @@ export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
 const defaults = {1: 'display', 2: 'xl', 3: 'lg', 4: 'md', 5: 'sm', 6: 'sm'} as const;
 
 /** `<Heading level={2}>Pricing</Heading>`. */
-export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(function Heading({level = 2, size, className, ...rest}, ref) {
+export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(function Heading(
+  {level = 2, size, className, ...rest},
+  ref,
+) {
   const Tag = `h${level}` as 'h2';
   return <Tag ref={ref} className={cx('heading', `heading-${size ?? defaults[level]}`, className)} {...rest} />;
 });

@@ -5,9 +5,17 @@ import type * as Monoline from '@monoline/react';
 import type {JSXElementConstructor} from 'react';
 
 /** Optional keys of T whose type, under exactOptionalPropertyTypes, does not accept `undefined`. */
-type RejectsUndefined<T> = {[K in keyof T]-?: {} extends Pick<T, K> ? (undefined extends Required<T>[K] ? never : K) : never}[keyof T];
+type RejectsUndefined<T> = {
+  [K in keyof T]-?: {} extends Pick<T, K> ? (undefined extends Required<T>[K] ? never : K) : never;
+}[keyof T];
 // Components only: PascalCase exports (hooks and helpers such as `sanitizeHtml` are plain functions).
-type PerExport = {[N in keyof typeof Monoline]: N extends Capitalize<N> ? ((typeof Monoline)[N] extends JSXElementConstructor<infer P> ? RejectsUndefined<P> : never) : never};
+type PerExport = {
+  [N in keyof typeof Monoline]: N extends Capitalize<N>
+    ? (typeof Monoline)[N] extends JSXElementConstructor<infer P>
+      ? RejectsUndefined<P>
+      : never
+    : never;
+};
 type Offenders = {[N in keyof PerExport as [PerExport[N]] extends [never] ? never : N]: PerExport[N]};
 
 // `{}` only fits when Offenders has no keys; otherwise the error names each component and prop.
