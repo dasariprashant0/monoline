@@ -13,16 +13,16 @@ export interface OverflowItem {
   /** What is shown, inline when it fits and as a menu item when it does not. */
   label: ReactNode;
   /** Called when the item is chosen from the "+N" menu. Inline items handle their own clicks inside `label`. */
-  onSelect?: () => void;
+  onSelect?: (() => void) | undefined;
   /** Greys the item out in the menu. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface OverflowListProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** The items in order. As many as fit are shown; the rest move into a "+N" menu. */
   items: OverflowItem[];
   /** Accessible name of the "+N" button, given the number of hidden items. Default "N more items". */
-  moreLabel?: (hidden: number) => string;
+  moreLabel?: ((hidden: number) => string) | undefined;
 }
 
 /** How many of `widths` fit in `avail`, leaving room for a `more` button when some must be dropped. */

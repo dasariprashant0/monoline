@@ -9,7 +9,7 @@ export const RadioGroup = forwardRef<ElementRef<typeof RadixRadioGroup.Root>, Co
 
 export interface RadioGroupItemProps extends Omit<ComponentPropsWithoutRef<typeof RadixRadioGroup.Item>, 'children'> {
   /** Visible label shown next to the radio. Without it, give the item an `aria-label`. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
 }
 
 /** One option in a RadioGroup. Arrow keys move between options; only the selected one is a Tab stop. */

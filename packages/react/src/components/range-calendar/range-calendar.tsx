@@ -13,23 +13,23 @@ export interface DateRange {
 
 export interface RangeCalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
   /** Texts for the month arrows, for other languages. Defaults are English. */
-  labels?: {previousMonth?: string; nextMonth?: string};
+  labels?: {previousMonth?: string | undefined; nextMonth?: string | undefined} | undefined;
   /** The selected range when controlled. Pair with `onValueChange`. */
-  value?: DateRange;
+  value?: DateRange | undefined;
   /** The initially selected range when uncontrolled. Default empty. */
-  defaultValue?: DateRange;
+  defaultValue?: DateRange | undefined;
   /** Called after every pick. The first pick gives `{start, end: null}`; the second completes the range. */
-  onValueChange?: (range: DateRange) => void;
+  onValueChange?: ((range: DateRange) => void) | undefined;
   /** First day of the week: 0 = Sunday, 1 = Monday. Default 0. */
-  weekStartsOn?: 0 | 1;
+  weekStartsOn?: 0 | 1 | undefined;
   /** Earliest selectable date; earlier days are disabled. */
-  min?: Date;
+  min?: Date | undefined;
   /** Latest selectable date; later days are disabled. */
-  max?: Date;
+  max?: Date | undefined;
   /** Return true for a day that cannot be picked, such as a holiday. */
-  isDateDisabled?: (date: Date) => boolean;
+  isDateDisabled?: ((date: Date) => boolean) | undefined;
   /** BCP 47 locale for month and day names. */
-  locale?: string;
+  locale?: string | undefined;
 }
 
 const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());

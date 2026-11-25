@@ -3,15 +3,15 @@ import {cx} from '../../utils/cx';
 
 export interface OrbitingCirclesProps extends HTMLAttributes<HTMLDivElement> {
   /** Orbit radius in px. Default 96. */
-  radius?: number;
+  radius?: number | undefined;
   /** Seconds for one full turn. Default 20. */
-  duration?: number;
+  duration?: number | undefined;
   /** Turn the other way. */
-  reverse?: boolean;
+  reverse?: boolean | undefined;
   /** Draw the orbit as a thin ring. Default true. */
-  ring?: boolean;
+  ring?: boolean | undefined;
   /** Fixed content in the centre. */
-  center?: ReactNode;
+  center?: ReactNode | undefined;
 }
 
 /**

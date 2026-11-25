@@ -4,9 +4,9 @@ import {cx} from '../../utils/cx';
 
 export interface ScrollAreaProps extends ComponentPropsWithoutRef<typeof Radix.Root> {
   /** Which scrollbars to render. */
-  orientation?: 'vertical' | 'horizontal' | 'both';
+  orientation?: 'vertical' | 'horizontal' | 'both' | undefined;
   /** Passed to the focusable viewport, e.g. a name for the region. */
-  viewportProps?: ComponentPropsWithoutRef<typeof Radix.Viewport>;
+  viewportProps?: ComponentPropsWithoutRef<typeof Radix.Viewport> | undefined;
 }
 
 /** Give it a height or width; content that overflows scrolls. */

@@ -6,9 +6,9 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   /** Required. Describe the image, or pass "" if it is decorative. */
   alt: string;
   /** Width / height, for example `16 / 9`. Reserves space so the page does not jump. */
-  ratio?: number;
+  ratio?: number | undefined;
   /** How the image fills its box when `ratio` crops it: `cover` (default) or `contain`. */
-  fit?: 'cover' | 'contain';
+  fit?: 'cover' | 'contain' | undefined;
 }
 
 /** Lazy-loaded by default. If the source fails, the alt text is shown in its place. */

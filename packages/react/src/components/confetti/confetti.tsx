@@ -10,13 +10,13 @@ export interface ConfettiHandle {
 
 export interface ConfettiProps extends Omit<CanvasHTMLAttributes<HTMLCanvasElement>, 'children'> {
   /** Fires a burst each time this number changes (not on mount). Or call `ref.current.fire()`. */
-  burst?: number;
+  burst?: number | undefined;
   /** Pieces per burst. Default 60. */
-  count?: number;
+  count?: number | undefined;
   /** Where the burst starts, as 0 to 1 of the window. Default the centre. */
-  origin?: {x: number; y: number};
+  origin?: {x: number; y: number} | undefined;
   /** Fill colours. Default: the accent, foreground and muted tokens. */
-  colors?: string[];
+  colors?: string[] | undefined;
 }
 
 type Piece = {x: number; y: number; vx: number; vy: number; rot: number; vr: number; w: number; h: number; color: string; life: number};

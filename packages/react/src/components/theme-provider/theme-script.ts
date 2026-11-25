@@ -16,7 +16,7 @@ export const SCRIPT_OPTIONS = {
  * page paints, so server-rendered pages do not flash the wrong look. Inline it in `<head>`.
  * @example <script dangerouslySetInnerHTML={{__html: themeScript()}} />
  */
-export function themeScript(options: {storageKey?: string; defaultTheme?: Theme} = {}): string {
+export function themeScript(options: {storageKey?: string | undefined; defaultTheme?: Theme | undefined} = {}): string {
   const key = JSON.stringify(options.storageKey ?? 'monoline');
   const def = JSON.stringify(options.defaultTheme ?? 'system');
   return `(function(){try{var d=document.documentElement,k=${key},o=${JSON.stringify(SCRIPT_OPTIONS)},g=function(n){var v=localStorage.getItem(k+'-'+n);return v&&o[n].indexOf(v)>-1?v:null},t=g('theme')||${def};if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'warm';d.setAttribute('data-theme',t);['accent','font','radius','density'].forEach(function(n){var v=g(n);if(v)d.setAttribute('data-'+n,v)});var r=g('dir');if(r)d.setAttribute('dir',r)}catch(e){}})()`;

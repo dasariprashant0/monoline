@@ -3,7 +3,7 @@ import {useCallback, useEffect, useRef, useState, type RefCallback} from 'react'
 
 export interface UseIntersectionOptions extends IntersectionObserverInit {
   /** Stop observing after the first time it is visible. */
-  once?: boolean;
+  once?: boolean | undefined;
 }
 
 /** Returns `[ref, entry]`; `entry?.isIntersecting` says if it is in view. */
@@ -22,7 +22,7 @@ export function useIntersection<T extends Element = Element>({once, root, rootMa
       if (!e) return;
       setEntry(e);
       if (once && e.isIntersecting) observer.current?.disconnect();
-    }, {root, rootMargin, threshold: thresholdRef.current});
+    }, {root: root ?? null, rootMargin: rootMargin ?? '0px', threshold: thresholdRef.current ?? 0});
     observer.current.observe(el);
   }, [once, root, rootMargin, thresholdKey]);
   useEffect(() => () => observer.current?.disconnect(), []);

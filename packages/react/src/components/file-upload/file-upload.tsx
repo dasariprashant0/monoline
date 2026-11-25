@@ -5,11 +5,11 @@ import {setRefs} from '../../utils/overlay';
 
 export interface FileUploadProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'defaultValue' | 'onChange' | 'children'> {
   /** The visible prompt, for example "Drop files here or choose". */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
   /** Called with the full current list whenever it changes. */
-  onFilesChange?: (files: File[]) => void;
+  onFilesChange?: ((files: File[]) => void) | undefined;
   /** Texts for other languages. `list` names the file list, `remove` is the button word. Defaults "Selected files" and "Remove". */
-  labels?: {list?: string; remove?: string};
+  labels?: {list?: string | undefined; remove?: string | undefined} | undefined;
 }
 
 /** Whether a file matches an `accept` list such as `.png, image/*, application/pdf`. An empty list accepts everything. */

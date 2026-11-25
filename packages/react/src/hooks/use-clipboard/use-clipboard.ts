@@ -3,7 +3,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 
 export interface UseClipboardOptions {
   /** How long `copied` stays true, in milliseconds. Default 2000. */
-  timeout?: number;
+  timeout?: number | undefined;
 }
 
 export interface UseClipboardReturn {

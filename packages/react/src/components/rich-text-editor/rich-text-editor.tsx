@@ -11,23 +11,23 @@ import {useIsoLayoutEffect} from '../../utils/use-iso-layout-effect';
 
 export {sanitizeHtml, isSafeUrl} from './sanitize';
 
-type Name = {'aria-label': string; 'aria-labelledby'?: string} | {'aria-labelledby': string; 'aria-label'?: string};
+type Name = {'aria-label': string; 'aria-labelledby'?: string | undefined} | {'aria-labelledby': string; 'aria-label'?: string | undefined};
 
 export type RichTextEditorProps = Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange' | 'aria-label' | 'aria-labelledby'> & Name & {
   /** Controlled content as an HTML string. It is sanitized with `sanitizeHtml` before it is shown. */
-  value?: string;
+  value?: string | undefined;
   /** Initial HTML when uncontrolled. Sanitized with `sanitizeHtml` before it is shown. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with sanitized HTML after every edit. */
-  onValueChange?: (html: string) => void;
+  onValueChange?: ((html: string) => void) | undefined;
   /** Shown while the editor is empty (a data attribute and CSS, not a text node). */
-  placeholder?: string;
+  placeholder?: string | undefined;
   /** Disables editing and the toolbar. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Shows the content without letting anyone change it; the toolbar is disabled. */
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   /** Names the formatting toolbar. */
-  toolbarLabel?: string;
+  toolbarLabel?: string | undefined;
 };
 
 interface Fmt { bold: boolean; italic: boolean; underline: boolean; ul: boolean; ol: boolean; block: string }
@@ -166,7 +166,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
   };
 
   const mouseDown = (e: React.MouseEvent) => e.preventDefault(); // keep the selection in the editor when a toolbar button is clicked
-  const btn = (label: string, on: boolean, action: () => void, extra?: {pressed?: boolean}) => (
+  const btn = (label: string, on: boolean, action: () => void, extra?: {pressed?: boolean | undefined}) => (
     <ToolbarButton aria-pressed={extra?.pressed === false ? undefined : on} disabled={inert} onMouseDown={mouseDown} onClick={action}>{label}</ToolbarButton>
   );
 

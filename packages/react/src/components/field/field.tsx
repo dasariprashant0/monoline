@@ -20,10 +20,10 @@ export const FormErrorsContext = createContext<Record<string, ReactNode> | null>
  * Spread them **after** the caller's own props and pass those props in: inside a Field the Field's `id` wins (the label points at it)
  * and the caller's `aria-describedby` is joined to the Field's hint and error ids. Outside a Field it returns an empty object, so controls work alone too.
  */
-export function useFieldControl(own: {'aria-describedby'?: string} = {}): {id?: string; 'aria-describedby'?: string; 'aria-invalid'?: true; 'data-invalid'?: ''; required?: true} {
+export function useFieldControl(own: {'aria-describedby'?: string | undefined} = {}): {id?: string | undefined; 'aria-describedby'?: string | undefined; 'aria-invalid'?: true | undefined; 'data-invalid'?: '' | undefined; required?: true | undefined} {
   const ctx = useContext(FieldContext);
   if (!ctx) return {};
-  const f: {id?: string; 'aria-describedby'?: string; 'aria-invalid'?: true; 'data-invalid'?: ''; required?: true} = {id: ctx.id};
+  const f: {id?: string | undefined; 'aria-describedby'?: string | undefined; 'aria-invalid'?: true | undefined; 'data-invalid'?: '' | undefined; required?: true | undefined} = {id: ctx.id};
   const d = [ctx.describedBy, own['aria-describedby']].filter(Boolean).join(' ');
   if (d) f['aria-describedby'] = d;
   if (ctx.invalid) { f['aria-invalid'] = true; f['data-invalid'] = ''; }
@@ -42,7 +42,7 @@ export function useFieldLabelId(): string | undefined {
 }
 
 /** Attributes for a control marked invalid with its own `invalid` prop: `aria-invalid` for assistive tech, `data-invalid` for styling. */
-export function invalidAttrs(invalid?: boolean): {'aria-invalid'?: true; 'data-invalid'?: ''} {
+export function invalidAttrs(invalid?: boolean): {'aria-invalid'?: true | undefined; 'data-invalid'?: '' | undefined} {
   return invalid ? {'aria-invalid': true, 'data-invalid': ''} : {};
 }
 
@@ -50,13 +50,13 @@ export interface FieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'childr
   /** The visible label of the control. Required so every control has a name. */
   label: ReactNode;
   /** Help text shown under the control. */
-  hint?: ReactNode;
+  hint?: ReactNode | undefined;
   /** Error message. Its presence marks the control invalid and it is announced politely. Inside a `Form` with `errors`, leave it out and set `name` instead. */
-  error?: ReactNode;
+  error?: ReactNode | undefined;
   /** The `name` of the control. Inside a `Form` that has `errors`, the Field shows the message for this name, so you pass each error once. */
-  name?: string;
+  name?: string | undefined;
   /** Marks the control as required: adds a required marker to the label and sets `required` on the control. Default false. */
-  required?: boolean;
+  required?: boolean | undefined;
   /** The control: Input, Textarea, Select trigger, etc. */
   children: ReactNode;
 }

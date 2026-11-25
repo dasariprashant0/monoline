@@ -7,26 +7,26 @@ import {invalidAttrs, useFieldControl, useFieldLabelId, hiddenInputs} from '../f
 export interface ComboboxOption {
   value: string;
   label: string;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface ComboboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'role' | 'size'> {
   /** The choices, each with a `value`, a `label` and an optional `disabled`. The user filters them by typing part of the label. */
   options: ComboboxOption[];
   /** The selected option's `value` when controlled; `''` means none. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The initially selected option's `value` when uncontrolled. Default none. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the chosen option's value, or '' when cleared. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Form field name. A hidden input submits the chosen option `value` (not its label); the visible text box is not submitted. */
-  name?: string;
+  name?: string | undefined;
   /** Shown when nothing matches. */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** A searchable single select. The list opens on typing, ArrowDown/ArrowUp or a click, not on focus alone (WAI-ARIA editable combobox). Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */

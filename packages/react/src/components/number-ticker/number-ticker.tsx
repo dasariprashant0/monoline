@@ -8,13 +8,13 @@ export interface NumberTickerProps extends HTMLAttributes<HTMLSpanElement> {
   /** The number to count to. Screen readers get this, never the frames in between. */
   value: number;
   /** Where the count starts. Default 0. */
-  from?: number;
+  from?: number | undefined;
   /** Milliseconds for the count. Default 1500. */
-  duration?: number;
+  duration?: number | undefined;
   /** Digits after the decimal point. Default 0. */
-  decimals?: number;
+  decimals?: number | undefined;
   /** Custom formatting, for currency or units. Overrides `decimals`. */
-  format?: (n: number) => string;
+  format?: ((n: number) => string) | undefined;
 }
 
 /**

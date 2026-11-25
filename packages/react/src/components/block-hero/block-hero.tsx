@@ -6,19 +6,19 @@ import {Text} from '../text';
 
 export interface BlockHeroProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Optional small line above the title, for example a category or announcement. */
-  eyebrow?: ReactNode;
+  eyebrow?: ReactNode | undefined;
   /** The main headline of the page. */
   title: ReactNode;
   /** Optional muted supporting text under the title. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Buttons or links. Make one of them the solid Button. */
-  actions?: ReactNode;
+  actions?: ReactNode | undefined;
   /** An image, screenshot or illustration shown beside (wide) or below (narrow) the copy. */
-  media?: ReactNode;
+  media?: ReactNode | undefined;
   /** `start` (default) left-aligns the copy; `center` centres it. */
-  align?: 'start' | 'center';
+  align?: 'start' | 'center' | undefined;
   /** Outline level of the title. A hero is usually the page's h1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** A page opener: eyebrow, title, description, actions and optional media. Copy comes from props. */

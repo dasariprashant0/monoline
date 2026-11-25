@@ -17,23 +17,23 @@ export interface SignupValues {
 
 export interface BlockSignupProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'onSubmit'> {
   /** Heading of the form. Default "Create your account". */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
   /** Optional muted line under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** Text of the submit button. Default "Create account". */
-  submitLabel?: ReactNode;
+  submitLabel?: ReactNode | undefined;
   /** Called with the values once they pass validation. */
-  onSubmit?: (values: SignupValues) => void;
+  onSubmit?: ((values: SignupValues) => void) | undefined;
   /** Shows a spinner on the submit button while you sign in. */
-  loading?: boolean;
+  loading?: boolean | undefined;
   /** Links under the form: forgot password, create an account. */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
   /** Replace the validation messages (translate them, or change the tone). */
-  messages?: Partial<{name: string; email: string; emailInvalid: string; password: string; passwordShort: string}>;
+  messages?: Partial<{name: string; email: string; emailInvalid: string; password: string; passwordShort: string}> | undefined;
   /** Shortest password accepted. Default 8. */
-  passwordMin?: number;
+  passwordMin?: number | undefined;
   /** Outline level of the title, 1 to 3. Default 1 because a signup page is usually the page's h1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** Name, email and password with a submit button. Validation messages show in an error summary and under each field. */

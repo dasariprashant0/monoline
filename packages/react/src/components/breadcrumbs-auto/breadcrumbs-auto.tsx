@@ -5,9 +5,9 @@ export interface BreadcrumbsAutoProps extends Omit<BreadcrumbProps, 'items'> {
   /** The current URL path, from your router: `/settings/billing`. Query and hash are ignored. */
   pathname: string;
   /** Text for a path segment, keyed by the segment: `{billing: 'Billing and plans'}`. Others are the segment with dashes as spaces, capitalised. */
-  labels?: Record<string, string>;
+  labels?: Record<string, string> | undefined;
   /** Text of the first crumb, which links to `/`. Default "Home". */
-  homeLabel?: string;
+  homeLabel?: string | undefined;
 }
 
 const title = (s: string) => { const t = decodeURIComponent(s).replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };

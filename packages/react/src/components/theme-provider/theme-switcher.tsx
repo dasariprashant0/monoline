@@ -6,7 +6,7 @@ import {themeOptions, useTheme} from './theme-provider';
 
 export interface ThemeSwitcherProps extends HTMLAttributes<HTMLDivElement> {
   /** Which choices to offer. Default both: `['theme', 'accent']`. */
-  show?: ('theme' | 'accent')[];
+  show?: ('theme' | 'accent')[] | undefined;
 }
 
 const cap = (s: string) => s[0]!.toUpperCase() + s.slice(1);

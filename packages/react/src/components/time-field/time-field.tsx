@@ -7,23 +7,23 @@ import {setRefs} from '../../utils/overlay';
 
 export interface TimeFieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange' | 'role'> {
   /** The time as 24-hour `"HH:mm"` when controlled; `""` means none. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The initial time as `"HH:mm"` when uncontrolled. Default none. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with `"HH:mm"` once hour and minute are both set, or `""` when either is cleared. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** Show hours 1-12 with an AM/PM segment (`12`) or 0-23 (`24`). Default 12. */
-  hourCycle?: 12 | 24;
+  hourCycle?: 12 | 24 | undefined;
   /** Minutes the arrow keys move by. Default 1. */
-  step?: number;
+  step?: number | undefined;
   /** Stops all input. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
   /** Form field name; a hidden input submits the 24-hour `"HH:mm"` value. */
-  name?: string;
+  name?: string | undefined;
   /** Names the group when it is not inside a Field. Default "Time". */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
 }
 
 type Part = 'hour' | 'minute' | 'period';

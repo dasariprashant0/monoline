@@ -4,15 +4,15 @@ import {cx} from '../../utils/cx';
 
 export interface SliderProps extends Omit<ComponentPropsWithoutRef<typeof RadixSlider.Root>, 'value' | 'defaultValue' | 'onValueChange'> {
   /** A number for one thumb, or [low, high] for a range. */
-  value?: number | [number, number];
+  value?: number | [number, number] | undefined;
   /** The starting value when uncontrolled: a number for one thumb or `[low, high]` for a range. Default 0. */
-  defaultValue?: number | [number, number];
+  defaultValue?: number | [number, number] | undefined;
   /** Called with an array holding the value of each thumb while the user drags or uses the keyboard. */
-  onValueChange?: (value: number[]) => void;
+  onValueChange?: ((value: number[]) => void) | undefined;
   /** Accessible name of the slider. For a range, each thumb gets this name followed by "minimum" or "maximum" (see `labels`). */
   'aria-label': string;
   /** Words added to the name of a range's two thumbs, for other languages. Defaults "minimum" and "maximum". */
-  labels?: {minimum?: string; maximum?: string};
+  labels?: {minimum?: string | undefined; maximum?: string | undefined} | undefined;
 }
 
 const arr = (v: number | [number, number] | undefined) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);

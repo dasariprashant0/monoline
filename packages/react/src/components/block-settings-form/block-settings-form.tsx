@@ -14,23 +14,23 @@ export interface SettingSwitch {
   kind: 'switch';
   name: string;
   label: ReactNode;
-  hint?: ReactNode;
-  defaultChecked?: boolean;
+  hint?: ReactNode | undefined;
+  defaultChecked?: boolean | undefined;
 }
 export interface SettingSelect {
   kind: 'select';
   name: string;
   label: ReactNode;
-  hint?: ReactNode;
+  hint?: ReactNode | undefined;
   options: {value: string; label: string}[];
-  defaultValue?: string;
+  defaultValue?: string | undefined;
 }
 export type SettingItem = SettingSwitch | SettingSelect;
 
 export interface SettingsSection {
   /** Names the group (a `legend`). */
   legend: ReactNode;
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   items: SettingItem[];
 }
 
@@ -38,19 +38,19 @@ export interface BlockSettingsFormProps extends Omit<HTMLAttributes<HTMLElement>
   /** Heading of the settings page. */
   title: ReactNode;
   /** Optional muted line under the heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** The groups of settings; each has a `legend`, optional `description` and a list of switch or select `items`. */
   sections: SettingsSection[];
   /** Text of the submit button. Default "Save changes". */
-  saveLabel?: ReactNode;
+  saveLabel?: ReactNode | undefined;
   /** Text of the button that restores the initial values. Default "Reset". */
-  resetLabel?: ReactNode;
+  resetLabel?: ReactNode | undefined;
   /** Called with every control's value: switches are `true` or `false`, selects their value. */
-  onSubmit?: (values: Record<string, string | boolean>) => void;
+  onSubmit?: ((values: Record<string, string | boolean>) => void) | undefined;
   /** Shows a spinner on the save button while you save. */
-  loading?: boolean;
+  loading?: boolean | undefined;
   /** Outline level of the title, 1 to 3. Default 1. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | undefined;
 }
 
 /** A settings page body: sections of switches and selects, each in a Fieldset, with Save and Reset. */

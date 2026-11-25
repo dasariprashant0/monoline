@@ -4,17 +4,17 @@ import {useControllableState} from '../../hooks/use-controllable-state';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   /** Current page, 1-based, when controlled. Pair with `onPageChange`. */
-  page?: number;
+  page?: number | undefined;
   /** The starting page when uncontrolled. Default 1. */
-  defaultPage?: number;
+  defaultPage?: number | undefined;
   /** Total number of pages. */
   pageCount: number;
   /** Called with the new 1-based page number when the user picks a page or presses Prev or Next. */
-  onPageChange?: (page: number) => void;
+  onPageChange?: ((page: number) => void) | undefined;
   /** How many numbers to show on each side of the current page. */
-  siblings?: number;
+  siblings?: number | undefined;
   /** Texts for other languages: the landmark name, the two buttons and each page button's name. Defaults are English. */
-  labels?: {navigation?: string; previous?: string; next?: string; page?: (page: number) => string};
+  labels?: {navigation?: string | undefined; previous?: string | undefined; next?: string | undefined; page?: ((page: number) => string) | undefined} | undefined;
 }
 
 /** Page numbers with the first and last always visible and "…" for gaps. Pure function exported for testing. */

@@ -3,9 +3,9 @@ import {useCallback, useEffect, useRef, type PointerEvent} from 'react';
 
 export interface UseLongPressOptions {
   /** Hold time in milliseconds. Default 500. */
-  delay?: number;
+  delay?: number | undefined;
   /** Movement in pixels that cancels the press. Default 10. */
-  tolerance?: number;
+  tolerance?: number | undefined;
 }
 
 /** Returns pointer handlers to spread on an element: `<button {...useLongPress(fn)}>`. */

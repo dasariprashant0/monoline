@@ -5,28 +5,28 @@ import {SidebarProvider} from '../sidebar';
 
 export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** A `Navbar`. Sticks to the top while the page scrolls. */
-  navbar?: ReactNode;
+  navbar?: ReactNode | undefined;
   /** A `Sidebar`. Hidden below 800px (its drawer opens from a `SidebarTrigger`). */
-  sidebar?: ReactNode;
+  sidebar?: ReactNode | undefined;
   /** Secondary content in a complementary landmark: a details panel, help, activity. Beside the page from 1100px, below it on narrower screens. */
-  aside?: ReactNode;
+  aside?: ReactNode | undefined;
   /** Names the aside landmark. Default "Details". */
-  asideLabel?: string;
+  asideLabel?: string | undefined;
   /** Text of the skip link, the first thing a keyboard user can reach. Default "Skip to main content". */
-  skipLinkLabel?: string;
+  skipLinkLabel?: string | undefined;
   /** The `id` of the main region, which the skip link targets. Default is generated. */
-  mainId?: string;
+  mainId?: string | undefined;
   /**
    * `page` (default): the page scrolls; the navbar and sidebar stay in view. `contained`: the shell fills its height and the sidebar and main scroll on their own.
    * Set the height with the CSS variable `--app-shell-height` (default full viewport); in `page` mode `--app-shell-min-height` sets the minimum.
    */
-  scroll?: 'page' | 'contained';
+  scroll?: 'page' | 'contained' | undefined;
   /** Whether the sidebar is collapsed to icons, when controlled. Pair with `onCollapsedChange`. */
-  collapsed?: boolean;
+  collapsed?: boolean | undefined;
   /** Whether the sidebar starts collapsed when uncontrolled. Default false. */
-  defaultCollapsed?: boolean;
+  defaultCollapsed?: boolean | undefined;
   /** Called with the new collapsed state. Save it to persist the choice, then pass it back as `defaultCollapsed`. */
-  onCollapsedChange?: (collapsed: boolean) => void;
+  onCollapsedChange?: ((collapsed: boolean) => void) | undefined;
   /** The page. Put one h1 in it (a `PageHeader` does). */
   children: ReactNode;
 }

@@ -8,20 +8,20 @@ export interface Feature {
   title: ReactNode;
   description: ReactNode;
   /** Inline SVG, `aria-hidden`. */
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 }
 
 export interface BlockFeatureGridProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Section heading shown above the grid. */
   title: ReactNode;
   /** Optional muted line under the section heading. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** The items to show, each with a `title`, `description` and optional `icon`. */
   features: Feature[];
   /** Number of columns on wide screens: 2, 3 (default) or 4. Fewer columns are used on narrow screens. */
-  columns?: 2 | 3 | 4;
+  columns?: 2 | 3 | 4 | undefined;
   /** Outline level of the section title; each feature title is one level lower. */
-  headingLevel?: 1 | 2 | 3 | 4 | 5;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | undefined;
 }
 
 /** A section title above a grid of short features. */

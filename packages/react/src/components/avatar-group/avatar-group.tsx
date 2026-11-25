@@ -5,7 +5,7 @@ export interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {
   /** Names the group, for example "Project members". */
   'aria-label': string;
   /** Show at most this many avatars, then "+N". */
-  max?: number;
+  max?: number | undefined;
 }
 
 /** A row of overlapping Avatars. */

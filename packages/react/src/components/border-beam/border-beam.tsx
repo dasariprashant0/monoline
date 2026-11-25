@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface BorderBeamProps extends HTMLAttributes<HTMLDivElement> {
   /** Seconds for the light to travel once around. Default 6. */
-  duration?: number;
+  duration?: number | undefined;
 }
 
 /** A box with a thin rule and a light that travels around it. CSS only; the beam is decorative and off for reduced motion. */

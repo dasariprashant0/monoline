@@ -3,7 +3,7 @@ import {cx} from '../../utils/cx';
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   /** Names the scrollable wrapper. Give it when the table can overflow. */
-  wrapperLabel?: string;
+  wrapperLabel?: string | undefined;
 }
 
 /** A data table. Compose with TableHeader, TableBody, TableRow, TableHead and TableCell. */
@@ -26,10 +26,10 @@ export const TableRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTable
 
 export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
   /** Right-aligns numbers. */
-  numeric?: boolean;
+  numeric?: boolean | undefined;
 }
 /** A column or row heading cell (`th`). Defaults to `scope="col"`; use `numeric` for number columns. */
-export const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTableCellElement> & {numeric?: boolean}>(function TableHead({numeric, className, scope = 'col', ...rest}, ref) {
+export const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTableCellElement> & {numeric?: boolean | undefined}>(function TableHead({numeric, className, scope = 'col', ...rest}, ref) {
   return <th ref={ref} scope={scope} className={cx(numeric && 'num', className)} {...rest} />;
 });
 /** A data cell (`td`). Use `numeric` to right-align numbers. */

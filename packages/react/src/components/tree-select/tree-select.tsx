@@ -10,22 +10,22 @@ export interface TreeSelectProps extends Omit<InputHTMLAttributes<HTMLInputEleme
   /** The tree: top-level nodes, each with an `id`, a `label` and optional `children`. Same shape as `Tree`. */
   items: TreeNode[];
   /** Selected node ids when controlled. Always an array, also in single mode (zero or one id). Pair with `onValueChange`. */
-  value?: string[];
+  value?: string[] | undefined;
   /** Form field name. Hidden inputs submit one entry per selected node id; the visible box is not submitted. */
-  name?: string;
+  name?: string | undefined;
   /** Ids selected at first when uncontrolled. Default none. */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /** Called with the full list of selected ids after each change. */
-  onValueChange?: (ids: string[]) => void;
+  onValueChange?: ((ids: string[]) => void) | undefined;
   /** Allows several selections: choosing a node toggles it and the list stays open. Default false (choosing closes the list). */
-  multiple?: boolean;
+  multiple?: boolean | undefined;
   /** Shown when the search matches nothing. Default "No matches". */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
-interface Row {node: TreeNode; level: number; parent?: string; kids: boolean; open: boolean; pos: number; size: number}
+interface Row {node: TreeNode; level: number; parent?: string | undefined; kids: boolean; open: boolean; pos: number; size: number}
 
 const textOf = (n: TreeNode) => n.text ?? (typeof n.label === 'string' ? n.label : n.id);
 

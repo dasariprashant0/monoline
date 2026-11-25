@@ -7,31 +7,31 @@ export interface TreeNode {
   id: string;
   label: ReactNode;
   /** Plain text used for type-ahead. Defaults to `label` when it is a string. */
-  text?: string;
-  disabled?: boolean;
-  children?: TreeNode[];
+  text?: string | undefined;
+  disabled?: boolean | undefined;
+  children?: TreeNode[] | undefined;
 }
 
 export interface TreeProps extends Omit<HTMLAttributes<HTMLUListElement>, 'defaultValue' | 'onChange'> {
   /** The top-level nodes; each node has an `id`, a `label` and optional `children`. */
   items: TreeNode[];
   /** Selected node id. Controlled with `value` + `onValueChange`, or uncontrolled with `defaultValue`. */
-  value?: string;
+  value?: string | undefined;
   /** The id of the node selected at first when uncontrolled. Default none. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the id of the node the user selects. */
-  onValueChange?: (id: string) => void;
+  onValueChange?: ((id: string) => void) | undefined;
   /** Open branches. Controlled with `expanded` + `onExpandedChange`, or uncontrolled with `defaultExpanded`. */
-  expanded?: string[];
+  expanded?: string[] | undefined;
   /** Ids of the branches open at first when uncontrolled. Default none. */
-  defaultExpanded?: string[];
+  defaultExpanded?: string[] | undefined;
   /** Called with the full list of open branch ids when the user opens or closes a branch. */
-  onExpandedChange?: (ids: string[]) => void;
+  onExpandedChange?: ((ids: string[]) => void) | undefined;
   /** Required: names the tree. */
   'aria-label': string;
 }
 
-interface Flat {node: TreeNode; parent?: string; level: number}
+interface Flat {node: TreeNode; parent?: string | undefined; level: number}
 
 /**
  * A tree view with single selection. One node is in the tab order (roving tabindex);

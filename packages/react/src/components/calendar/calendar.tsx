@@ -5,23 +5,23 @@ import {useIsRtl} from '../../utils/direction';
 
 export interface CalendarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defaultValue' | 'onChange'> {
   /** Texts for the month arrows, for other languages. Defaults are English. */
-  labels?: {previousMonth?: string; nextMonth?: string};
+  labels?: {previousMonth?: string | undefined; nextMonth?: string | undefined} | undefined;
   /** The selected date when controlled; `null` means none. Pair with `onValueChange`. */
-  value?: Date | null;
+  value?: Date | null | undefined;
   /** The initially selected date when uncontrolled. Default none. */
-  defaultValue?: Date | null;
+  defaultValue?: Date | null | undefined;
   /** Called with the date the user picks, or `null` when the user presses "Clear date" (only with `clearable`). */
-  onValueChange?(date: Date | null): void;
+  onValueChange?: ((date: Date | null) => void) | undefined;
   /** Adds a "Clear date" button under the grid that resets the value to `null`. Default false. */
-  clearable?: boolean;
+  clearable?: boolean | undefined;
   /** First day of the week: 0 = Sunday, 1 = Monday. */
-  weekStartsOn?: 0 | 1;
+  weekStartsOn?: 0 | 1 | undefined;
   /** Earliest selectable date; earlier days are disabled. */
-  min?: Date;
+  min?: Date | undefined;
   /** Latest selectable date; later days are disabled. */
-  max?: Date;
+  max?: Date | undefined;
   /** BCP 47 locale for month and day names. */
-  locale?: string;
+  locale?: string | undefined;
 }
 
 const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());

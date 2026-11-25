@@ -5,7 +5,7 @@ export interface TextRevealProps extends HTMLAttributes<HTMLParagraphElement> {
   /** The sentence to reveal, word by word. */
   text: string;
   /** Milliseconds between words. Default 80. */
-  stagger?: number;
+  stagger?: number | undefined;
 }
 
 /** Words fade in one after another on mount. Pure CSS, so the text is ordinary text to assistive tech. Static under reduced motion. */

@@ -3,9 +3,9 @@ import {cx} from '../../utils/cx';
 
 export interface GridPatternProps extends Omit<SVGAttributes<SVGSVGElement>, 'children'> {
   /** Cell size in px. Default 32. */
-  size?: number;
+  size?: number | undefined;
   /** Fade the lines out towards the edges. */
-  fade?: boolean;
+  fade?: boolean | undefined;
 }
 
 /** A decorative line grid that fills its positioned parent. Colour comes from `currentColor` (default `--rule`). Always `aria-hidden`. */

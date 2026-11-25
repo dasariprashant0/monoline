@@ -4,9 +4,9 @@ import {cx} from '../../utils/cx';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /** Adds a hover outline. Use with `asChild` on a link or button so the whole card is one control. */
-  interactive?: boolean;
+  interactive?: boolean | undefined;
   /** Render the child element (a link, an `article`) with the card styles instead of a `div`. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /** A bordered group for one thing you can pick up or open. Prefer rules and space over cards for everything else. */

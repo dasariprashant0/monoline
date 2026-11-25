@@ -3,9 +3,9 @@ import {cx} from '../../utils/cx';
 
 export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   /** Document outline level, 1 to 6. */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
   /** Look. Defaults follow the level. `display` uses the display font. */
-  size?: 'display' | 'xl' | 'lg' | 'md' | 'sm';
+  size?: 'display' | 'xl' | 'lg' | 'md' | 'sm' | undefined;
 }
 
 const defaults = {1: 'display', 2: 'xl', 3: 'lg', 4: 'md', 5: 'sm', 6: 'sm'} as const;

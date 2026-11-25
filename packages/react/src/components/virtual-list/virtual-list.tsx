@@ -13,7 +13,7 @@ export interface VirtualListProps extends Omit<HTMLAttributes<HTMLDivElement>, '
   /** Height of the scrolling window in pixels. */
   height: number;
   /** Extra rows rendered above and below the visible ones, so fast scrolling shows no blanks. Default 4. */
-  overscan?: number;
+  overscan?: number | undefined;
   /** Returns the content of row `index`. Only called for rows in or near the window. */
   renderItem: (index: number) => ReactNode;
 }

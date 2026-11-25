@@ -11,32 +11,32 @@ export interface MentionOption {
   /** Text shown in the list. */
   label: string;
   /** Makes the option unselectable. */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface MentionsProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'defaultValue' | 'onChange' | 'role'> {
   /** The text when controlled. Pair with `onValueChange`. */
-  value?: string;
+  value?: string | undefined;
   /** The initial text when uncontrolled. Default empty. */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** Called with the full text after every edit and after a mention is inserted. */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /** The choices, filtered by what is typed after the trigger. Use `onSearch` instead to load them. */
-  options?: MentionOption[];
+  options?: MentionOption[] | undefined;
   /** Loads choices for the typed query, for example from a server. Return the options or a promise of them. Late answers for an older query are ignored. Replaces `options` filtering when given. */
-  onSearch?: (query: string, trigger: string) => MentionOption[] | Promise<MentionOption[]>;
+  onSearch?: ((query: string, trigger: string) => MentionOption[] | Promise<MentionOption[]>) | undefined;
   /** Called when `onSearch` throws or its promise rejects. The list is then empty; use this to show or report the failure. */
-  onSearchError?: (error: unknown) => void;
+  onSearchError?: ((error: unknown) => void) | undefined;
   /** Characters that open the list when typed at the start of a word. Default `["@"]`. */
-  triggers?: string[];
+  triggers?: string[] | undefined;
   /** Called with the option and the trigger when the user inserts a mention. */
-  onMentionSelect?: (option: MentionOption, trigger: string) => void;
+  onMentionSelect?: ((option: MentionOption, trigger: string) => void) | undefined;
   /** Text shown while `onSearch` is loading. Default "Loading". */
-  loadingText?: string;
+  loadingText?: string | undefined;
   /** Text shown when nothing matches. Default "No matches". */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 interface Active { trigger: string; start: number; query: string }

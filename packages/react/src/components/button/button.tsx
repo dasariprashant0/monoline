@@ -4,13 +4,13 @@ import {cx} from '../../utils/cx';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Default `solid`: the one main action per view. `line` for the rest, `ghost` for inline links, `danger` for destructive. */
-  variant?: 'solid' | 'line' | 'ghost' | 'danger';
+  variant?: 'solid' | 'line' | 'ghost' | 'danger' | undefined;
   /** `md` (default), `sm` for dense toolbars and table rows, or `lg` for prominent calls to action. Same heights as Input and Select. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Shows a spinner, sets `aria-busy` and ignores clicks. The label stays so the width does not jump. */
-  loading?: boolean;
+  loading?: boolean | undefined;
   /** Render the child element (a link, a router link) with the button styles instead of a `<button>`. With `disabled` the link gets `aria-disabled`, leaves the tab order and ignores clicks. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }
 
 /**

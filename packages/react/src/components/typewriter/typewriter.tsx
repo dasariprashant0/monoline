@@ -7,13 +7,13 @@ export interface TypewriterProps extends HTMLAttributes<HTMLSpanElement> {
   /** The string to type. Screen readers get all of it at once. */
   text: string;
   /** Milliseconds per character. Default 40. */
-  speed?: number;
+  speed?: number | undefined;
   /** Milliseconds to wait before the first character. Default 0. */
-  delay?: number;
+  delay?: number | undefined;
   /** Show a blinking caret. Default true. */
-  cursor?: boolean;
+  cursor?: boolean | undefined;
   /** Called once the last character is shown (also straight away for reduced motion). */
-  onComplete?: () => void;
+  onComplete?: (() => void) | undefined;
 }
 
 /**

@@ -28,7 +28,7 @@ export const AlertDialogDescription = forwardRef<HTMLParagraphElement, HTMLAttri
 
 type ActionProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Render your own element instead of a button. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 };
 
 /** Confirms and closes. Styled as the danger button by default; pass `className="btn-solid"` for a non-destructive confirm. */

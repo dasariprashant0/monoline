@@ -9,13 +9,13 @@ export type ToastKind = 'default' | 'success' | 'error' | 'info' | 'warning' | '
 /** Options for `toast()` and its helpers. */
 export interface ToastOptions {
   /** Longer text under the message. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** One button, such as Undo or Retry. `label` is also its accessible name. */
-  action?: {label: string; onClick: () => void};
+  action?: {label: string; onClick: () => void} | undefined;
   /** Milliseconds before it closes. Default 5000; 8000 for errors; `Infinity` keeps it until dismissed. */
-  duration?: number;
+  duration?: number | undefined;
   /** Reuse an id to replace a toast that is already showing instead of adding another. */
-  id?: string | number;
+  id?: string | number | undefined;
 }
 
 /** Texts for `toast.promise()`. Each may be a string or a function of the result or error. */
@@ -110,13 +110,13 @@ export const toast: ToastFn = Object.assign(
 
 export interface ToasterProps {
   /** Most toasts shown at once. Older ones wait out of sight and return when there is room. Default 3. */
-  limit?: number;
+  limit?: number | undefined;
   /** Where the stack sits. `end` is the bottom corner at the end of the reading direction. Default "end". */
-  position?: 'end' | 'start' | 'center';
+  position?: 'end' | 'start' | 'center' | undefined;
   /** Names the region for screen readers. Default "Notifications". */
-  label?: string;
+  label?: string | undefined;
   /** Text of each close button. Default "Dismiss". */
-  dismissLabel?: string;
+  dismissLabel?: string | undefined;
 }
 
 /**

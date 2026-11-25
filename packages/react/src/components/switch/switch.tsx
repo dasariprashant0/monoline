@@ -6,9 +6,9 @@ import {invalidAttrs, useFieldControl} from '../field';
 
 export interface SwitchProps extends Omit<ComponentPropsWithoutRef<typeof RadixSwitch.Root>, 'children'> {
   /** Visible label. Without it, give the switch an `aria-label`. */
-  label?: ReactNode;
+  label?: ReactNode | undefined;
   /** Marks the switch as having an error: sets `aria-invalid` and `data-invalid`. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /** An on/off setting that applies at once. Use a Checkbox for a choice you submit later. */

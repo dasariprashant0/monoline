@@ -17,13 +17,13 @@ export interface ComponentMeta {
   /** `stable` once tested and documented; `beta` while the API may change. */
   status: 'stable' | 'beta';
   /** Other Monoline components this one imports, by name. */
-  uses?: string[];
+  uses?: string[] | undefined;
   /** The headless primitive it wraps, if any: `radix-ui/Dialog`. */
-  primitive?: string;
+  primitive?: string | undefined;
   /** Stylesheets in packages/css/src/components/ this component needs (the CSS-only classes it renders). */
   css: string[];
   /** Keyboard and screen reader behaviour, one line each. */
   a11y: string[];
   /** Words people may search for: `modal`, `popup`. */
-  keywords?: string[];
+  keywords?: string[] | undefined;
 }

@@ -8,22 +8,22 @@ export interface TocItem {
   /** Link text. */
   text: string;
   /** Heading level (2 for h2). Deeper levels are indented. Default 2. */
-  level?: number;
+  level?: number | undefined;
 }
 
 export interface TocProps extends Omit<HTMLAttributes<HTMLElement>, 'children'> {
   /** The entries, in page order. Use this or `container`. */
-  items?: TocItem[];
+  items?: TocItem[] | undefined;
   /** Build the entries from the headings (that have an id) inside this element; rescanned when it changes. Used when `items` is not set. */
-  container?: RefObject<HTMLElement | null>;
+  container?: RefObject<HTMLElement | null> | undefined;
   /** Heading levels to pick up from `container`. Default [2, 3]. */
-  levels?: number[];
+  levels?: number[] | undefined;
   /** Visible title above the list. Pass `null` to hide it. Default "On this page". */
-  heading?: string | null;
+  heading?: string | null | undefined;
   /** Name of the navigation landmark. Default is the heading, or "On this page". */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
   /** Pixels from the top of the viewport where a heading becomes the current one; match your sticky header. Default 96. */
-  offset?: number;
+  offset?: number | undefined;
 }
 
 function scan(el: HTMLElement, levels: number[]): TocItem[] {

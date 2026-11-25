@@ -4,9 +4,9 @@ import {SeriesChart, type SeriesChartProps} from '../../utils/chart-series';
 
 export interface AreaChartProps extends SeriesChartProps {
   /** Stack series on top of each other so the top edge is the running total. */
-  stacked?: boolean;
+  stacked?: boolean | undefined;
   /** Mark each data point. A single point is always marked. */
-  showPoints?: boolean;
+  showPoints?: boolean | undefined;
 }
 
 /** Area chart in plain SVG: a line chart filled down to zero. The value axis always includes 0. */

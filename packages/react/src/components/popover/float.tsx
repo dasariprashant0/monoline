@@ -12,15 +12,15 @@ export type Side = 'top' | 'right' | 'bottom' | 'left';
 export type Align = 'start' | 'center' | 'end';
 export interface Placement {
   /** Preferred side of the anchor. Flips to the opposite side when it does not fit. Default `bottom`. */
-  side?: Side;
+  side?: Side | undefined;
   /** Alignment along the anchor's edge. `start` and `end` follow the reading direction. Default `center`. */
-  align?: Align;
+  align?: Align | undefined;
   /** Gap in px between the anchor and the panel. */
-  sideOffset?: number;
+  sideOffset?: number | undefined;
   /** Shift in px along the anchor's edge. */
-  alignOffset?: number;
+  alignOffset?: number | undefined;
   /** Minimum gap in px kept to the viewport edges. Default 8. */
-  collisionPadding?: number;
+  collisionPadding?: number | undefined;
 }
 
 const OPPOSITE = {top: 'bottom', bottom: 'top', left: 'right', right: 'left'} as const;

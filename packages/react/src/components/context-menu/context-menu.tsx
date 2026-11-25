@@ -22,7 +22,7 @@ export function ContextMenu({children, ...props}: MenuProps) {
 /** The area that opens the menu when right-clicked or long-pressed; use `asChild` to make your own element the area. */
 export const ContextMenuTrigger = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement> & {
   /** Render your own element instead of a span; it receives the props and handlers. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 }>(function ContextMenuTrigger({asChild, onContextMenu, onPointerDown, onPointerUp, onPointerMove, onPointerCancel, tabIndex, ...rest}, ref) {
   const c = useMenuCtx(), at = useContext(Point);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -56,7 +56,7 @@ export const ContextMenuSeparator = MenuSeparator;
 export const ContextMenuLabel = MenuLabel;
 export interface ContextMenuItemProps extends MenuItemProps {
   /** `danger` highlights in the danger colour. */
-  tone?: 'default' | 'danger';
+  tone?: 'default' | 'danger' | undefined;
 }
 /** One action in the menu; call `onSelect` when it is chosen. */
 export const ContextMenuItem = forwardRef<HTMLDivElement, ContextMenuItemProps>(function ContextMenuItem({className, tone = 'default', ...rest}, ref) {

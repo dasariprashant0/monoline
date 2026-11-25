@@ -7,9 +7,9 @@ export interface Testimonial {
   quote: ReactNode;
   name: ReactNode;
   /** Role and company, for example "Design lead, Example Co". */
-  role?: ReactNode;
+  role?: ReactNode | undefined;
   /** An `Avatar` or image, decorative. */
-  avatar?: ReactNode;
+  avatar?: ReactNode | undefined;
 }
 
 export interface BlockTestimonialsProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
@@ -18,7 +18,7 @@ export interface BlockTestimonialsProps extends Omit<HTMLAttributes<HTMLElement>
   /** The quotes to show, each with `quote`, `name` and optional `role` and `avatar`. */
   items: Testimonial[];
   /** Outline level of the section title, 1 to 6. Default 2. */
-  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 }
 
 /** A row of quotes with their authors. Each is a `figure` with a `blockquote` and a `figcaption`. */

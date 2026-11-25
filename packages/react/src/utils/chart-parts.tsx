@@ -16,16 +16,16 @@ export interface Hit {
   y: number;
   shape: HitShape;
   title: string;
-  rows: {name?: string; value: string; k?: number}[];
+  rows: {name?: string | undefined; value: string; k?: number | undefined}[];
 }
 
-export interface LegendItem { name: string; k: number; kind: 'fill' | 'line'; detail?: string }
+export interface LegendItem { name: string; k: number; kind: 'fill' | 'line'; detail?: string | undefined }
 
 export interface ChartShellProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: string;
   height: number;
-  empty?: boolean;
-  legend?: LegendItem[];
+  empty?: boolean | undefined;
+  legend?: LegendItem[] | undefined;
   table: {head: string[]; rows: string[][]};
   build: (w: number, active: string | null, uid: string) => {visual: ReactNode; hits: Hit[]};
 }

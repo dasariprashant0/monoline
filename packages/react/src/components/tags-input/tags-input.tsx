@@ -6,17 +6,17 @@ import {Tag} from '../tag';
 
 export interface TagsInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
   /** The current tags when controlled. Pair with `onValueChange`. */
-  value?: string[];
+  value?: string[] | undefined;
   /** The tags present at first when uncontrolled. Default empty. */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /** Called with the full list of tags after one is added or removed. */
-  onValueChange?: (value: string[]) => void;
+  onValueChange?: ((value: string[]) => void) | undefined;
   /** Form field name. A hidden input submits one entry per tag; the visible text box is not submitted. */
-  name?: string;
+  name?: string | undefined;
   /** `md` (default), `sm` for dense layouts or `lg` for prominent forms. Heights match Button, Input and Select at each size. */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | undefined;
   /** Marks the field as having an error: sets `aria-invalid` and shows the error border. */
-  invalid?: boolean;
+  invalid?: boolean | undefined;
 }
 
 /**

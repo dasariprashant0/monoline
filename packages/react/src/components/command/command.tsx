@@ -8,36 +8,36 @@ export interface CommandItem {
   id: string;
   label: string;
   /** Items with the same group are listed together under a heading. */
-  group?: string;
+  group?: string | undefined;
   /** Extra words that also match the search. */
-  keywords?: string[];
+  keywords?: string[] | undefined;
   /** Shown at the right, for example "⌘N". Display only. */
-  hint?: string;
-  disabled?: boolean;
-  onSelect?: () => void;
+  hint?: string | undefined;
+  disabled?: boolean | undefined;
+  onSelect?: (() => void) | undefined;
 }
 
 export interface CommandProps {
   /** The actions to list, each with an `id`, `label` and optional `group`, `keywords`, `hint`, `disabled` and `onSelect`. */
   items: CommandItem[];
   /** Whether the palette is open when controlled. Pair with `onOpenChange`. */
-  open?: boolean;
+  open?: boolean | undefined;
   /** Whether the palette starts open when uncontrolled. Default false. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
   /** Called with the new open state when the palette opens or closes. */
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /** A global key that toggles the palette, like `mod+k` (`mod` is Cmd on Mac, Ctrl elsewhere). */
-  shortcut?: string;
+  shortcut?: string | undefined;
   /** Names the dialog. Visually hidden. */
-  title?: string;
+  title?: string | undefined;
   /** Placeholder text of the search box. Default "Type a command". */
-  placeholder?: string;
+  placeholder?: string | undefined;
   /** Message shown when no item matches the search. Default "No results". */
-  emptyText?: string;
+  emptyText?: string | undefined;
   /** Optional trigger element, rendered as-is (use a Button with aria-haspopup="dialog"). */
-  trigger?: ReactNode;
+  trigger?: ReactNode | undefined;
   /** Extra class name for the palette panel. */
-  className?: string;
+  className?: string | undefined;
 }
 
 /** True when a keydown matches a combo such as `mod+k` or `shift+p`. */

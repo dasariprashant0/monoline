@@ -51,9 +51,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export interface ThemeProviderProps extends Partial<Look> {
   /** Prefix of the localStorage keys, e.g. `monoline` stores `monoline-theme`. Default "monoline". Match it in `themeScript`. */
-  storageKey?: string;
+  storageKey?: string | undefined;
   /** The app. */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 const read = (key: string): string | null => { try { return window.localStorage.getItem(key); } catch { return null; } };

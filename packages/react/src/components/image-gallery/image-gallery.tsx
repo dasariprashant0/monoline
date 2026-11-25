@@ -11,18 +11,18 @@ export interface GalleryImage {
   /** Required: describes the image for people who cannot see it. Used for the thumbnail button's name and the lightbox image. */
   alt: string;
   /** Smaller image URL for the grid. Defaults to `src`. */
-  thumbnail?: string;
+  thumbnail?: string | undefined;
   /** Optional visible text under the image in the lightbox. */
-  caption?: string;
+  caption?: string | undefined;
 }
 
 export interface ImageGalleryProps extends Omit<HTMLAttributes<HTMLUListElement>, 'children'> {
   /** The images, in order. Each needs `alt` text. */
   images: GalleryImage[];
   /** Number of columns in the thumbnail grid. Default 3. */
-  columns?: number;
+  columns?: number | undefined;
   /** Called with the index of the image shown whenever the lightbox opens or moves. */
-  onIndexChange?: (index: number) => void;
+  onIndexChange?: ((index: number) => void) | undefined;
 }
 
 /**

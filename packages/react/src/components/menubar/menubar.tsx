@@ -47,7 +47,7 @@ export const Menubar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
 });
 
 /** One menu in the bar. Put a `MenubarTrigger` and a `MenubarContent` inside. */
-export function MenubarMenu({children}: {children?: ReactNode}) {
+export function MenubarMenu({children}: {children?: ReactNode | undefined}) {
   const bar = useBarCtx(), id = useId();
   return (
     <Key.Provider value={id}>
@@ -81,7 +81,7 @@ export const MenubarSeparator = MenuSeparator;
 export const MenubarLabel = MenuLabel;
 export interface MenubarItemProps extends MenuItemProps {
   /** `danger` highlights in the danger colour. */
-  tone?: 'default' | 'danger';
+  tone?: 'default' | 'danger' | undefined;
 }
 /** One action in the menu; call `onSelect` when it is chosen. */
 export const MenubarItem = forwardRef<HTMLDivElement, MenubarItemProps>(function MenubarItem({className, tone = 'default', ...rest}, ref) {

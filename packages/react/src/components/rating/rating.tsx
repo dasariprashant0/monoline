@@ -6,19 +6,19 @@ export interface RatingProps extends Omit<HTMLAttributes<HTMLDivElement>, 'defau
   /** Names the control, for example "Rate this article". */
   'aria-label': string;
   /** The current score (0 to `max`) when controlled. Pair with `onValueChange`. */
-  value?: number;
+  value?: number | undefined;
   /** The initial score when uncontrolled. Default 0. */
-  defaultValue?: number;
+  defaultValue?: number | undefined;
   /** Called with the new score (1 to `max`, or 0 when `clearable` and the chosen star is clicked again) when the user picks a star. */
-  onValueChange?: (value: number) => void;
+  onValueChange?: ((value: number) => void) | undefined;
   /** Number of stars. Default 5. */
-  max?: number;
+  max?: number | undefined;
   /** Shows the score without letting anyone change it. */
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   /** Name of the underlying radio inputs, so the score submits with a native form. A unique name is generated if omitted. */
-  name?: string;
+  name?: string | undefined;
   /** Lets a click on the chosen star clear the score back to 0. Default false. */
-  clearable?: boolean;
+  clearable?: boolean | undefined;
 }
 
 const Star = () => <svg aria-hidden="true" viewBox="0 0 20 20" width="1em" height="1em"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="miter" /></svg>;

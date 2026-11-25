@@ -11,9 +11,9 @@ export const DrawerClose = ModalClose;
 
 export interface DrawerContentProps extends ModalContentProps {
   /** The edge it slides from. `start` and `end` follow the reading direction; `left` and `right` are fixed. */
-  side?: 'right' | 'left' | 'top' | 'bottom' | 'start' | 'end';
+  side?: 'right' | 'left' | 'top' | 'bottom' | 'start' | 'end' | undefined;
   /** Shows a "Close" text button. Escape and the backdrop always close it. */
-  showClose?: boolean;
+  showClose?: boolean | undefined;
 }
 
 /** The panel, opened as a modal `<dialog>` (focus trapped, page behind inert). Include a DrawerTitle. */

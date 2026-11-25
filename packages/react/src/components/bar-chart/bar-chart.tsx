@@ -7,23 +7,23 @@ export interface BarChartProps extends Omit<HTMLAttributes<HTMLDivElement>, 'tit
   /** Accessible name and table caption. Required. */
   title: string;
   /** One series: `[{label: 'Mon', value: 3}]`. */
-  data?: ChartDatum[];
+  data?: ChartDatum[] | undefined;
   /** Several series: `[{name: 'Visits', values: [3, 5]}]`, with `labels` for the categories. */
-  series?: ChartSeries[];
+  series?: ChartSeries[] | undefined;
   /** Category labels for the x axis (or y axis when horizontal), one per value in `series`. */
-  labels?: string[];
+  labels?: string[] | undefined;
   /** Name of the single series when `data` is used. Default "Value". */
-  seriesName?: string;
+  seriesName?: string | undefined;
   /** `vertical` draws columns, `horizontal` draws rows (better for long labels). Default `vertical`. */
-  orientation?: 'vertical' | 'horizontal';
+  orientation?: 'vertical' | 'horizontal' | undefined;
   /** Stack series on top of each other instead of side by side. */
-  stacked?: boolean;
+  stacked?: boolean | undefined;
   /** Print each value at the end of its bar (the total for stacked bars). */
-  showValues?: boolean;
+  showValues?: boolean | undefined;
   /** Chart height in px. Horizontal charts size themselves to the number of rows when omitted. Default 280. */
-  height?: number;
+  height?: number | undefined;
   /** Format a value for labels, tooltips and the table. */
-  valueFormat?: (value: number) => string;
+  valueFormat?: ((value: number) => string) | undefined;
 }
 
 /** Bar chart in plain SVG. Several series are told apart by fill pattern as well as colour. Chart-wide choices follow shadcn/Recharts: one tooltip per category. */
