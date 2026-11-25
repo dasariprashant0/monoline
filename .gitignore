@@ -5,7 +5,7 @@ dist/
 coverage/
 packages/react/src/index.ts
 apps/docs/src/props.generated.json
-audit/
+/audit/
 audit-all-accents.txt
 apps/docs/src/page/demos.generated.json
 apps/docs/src/page/thumbs.generated.json
