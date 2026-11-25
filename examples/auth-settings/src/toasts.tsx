@@ -1,7 +1,7 @@
 import {createContext, useCallback, useContext, useState, type ReactNode} from 'react';
 import {Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport} from '@monoline/react';
 
-interface Item {id: number; title: string; description?: string}
+interface Item {id: number; title: string; description?: string | undefined}
 const Ctx = createContext<(title: string, description?: string) => void>(() => {});
 export const useToast = () => useContext(Ctx);
 
