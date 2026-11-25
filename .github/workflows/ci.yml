@@ -12,7 +12,7 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  # Fast suites, no build: lint-style checks, typecheck (react, docs, scripts), unit tests, script tests.
+  # Fast suites, no build: Biome lint and format (also the first step of npm run check), CSS checks, typecheck (react, docs, scripts), unit tests, script tests.
   test:
     name: test (node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -28,6 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '${{ matrix.node }}', cache: npm}
       - run: npm ci
+      - run: npm run lint
       - run: npm run check
       - run: npm run test:cli
       - run: npm run test:mcp

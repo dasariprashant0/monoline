@@ -28,7 +28,9 @@ npm install --cache "$TMPDIR/npm-cache"   # once
 npm run dev                               # docs site on :5180, live components and CSS
 npm test                                  # vitest + axe for every component
 npm run typecheck                         # tsc for react + docs
-npm run check                             # css lint (contrast, raw colours, motion), doc comments, 'use client', registry, typecheck, script typecheck, tests
+npm run lint                              # Biome: lint and format check for JS/TS (about 0.5 s)
+npm run lint:fix                          # Biome: apply formatting and safe lint fixes
+npm run check                             # lint, css lint (contrast, raw colours, motion), doc comments, 'use client', registry, typecheck, script typecheck, tests
 npm run typecheck:scripts                 # tsc over every .ts script (tsconfig.scripts.json)
 npm run build                             # css dist, react dist, docs site, cli and mcp dist
 npm run size                              # gzip budgets for JS and CSS; run after build
@@ -41,6 +43,8 @@ npm run test:vscode                       # snippet generator tests
 ```
 
 The other root scripts (`test:cli`, `test:mcp`, `e2e`, `ax`, `install-smoke` and more) are listed in `package.json`.
+
+Formatting and lint are Biome ([ADR 0011](docs/decisions/0011-biome-lint-and-format.md), config in `biome.jsonc`). Run `npm run lint:fix` before committing; it formats and applies safe fixes. Silence a finding only with `// biome-ignore <rule>: <reason>` on the line before it. Formatting-only commits are listed in `.git-blame-ignore-revs`.
 
 Scripts are TypeScript that Node runs directly (type stripping, Node 22.18 or later; `.nvmrc` says 22). Write erasable syntax only (no `enum`, `namespace` or parameter properties), end relative imports in `.ts`, and keep them passing `npm run typecheck:scripts` ([ADR 0010](docs/decisions/0010-typescript-scripts-and-one-build-ci.md)). The CLI and MCP packages are built with `tsc` instead, because Node does not strip types under `node_modules` ([ADR 0008](docs/decisions/0008-cli-mcp-typescript-and-pinned-registry.md)).
 
