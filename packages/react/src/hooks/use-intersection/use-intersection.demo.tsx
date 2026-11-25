@@ -6,6 +6,7 @@ function Demo() {
   return (
     <div
       style={{height: '120px', overflowY: 'auto', border: '1px solid var(--rule)'}}
+      role="region"
       tabIndex={0}
       aria-label="Scrollable area"
     >

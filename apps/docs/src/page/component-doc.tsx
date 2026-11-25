@@ -314,7 +314,7 @@ function PropsTables({groups}: {groups: PropGroup[]}) {
                     {p.default ? (
                       <code>{p.default}</code>
                     ) : (
-                      <span className="cdoc-muted" aria-label="no default">
+                      <span className="cdoc-muted" role="img" aria-label="no default">
                         –
                       </span>
                     )}

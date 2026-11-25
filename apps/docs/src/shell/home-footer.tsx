@@ -116,7 +116,11 @@ export function Footer() {
       </div>
       <div className="foot-bottom">
         <p>
-          Built with <span aria-label="love">❤️</span> in the open. <a href={GITHUB}>Source on GitHub</a>
+          Built with{' '}
+          <span role="img" aria-label="love">
+            ❤️
+          </span>{' '}
+          in the open. <a href={GITHUB}>Source on GitHub</a>
         </p>
         <p>
           Copyright © 2026 Monoline contributors. MIT licence.{' '}
