@@ -48,5 +48,5 @@ Measured locally (darwin arm64, warm cache): css 1.3 s, react 17.6 s, docs gen 1
 - `npm run build` runs once per push instead of 16 full times plus one partial. Browser jobs start after the build (about a minute later) rather than all building at once.
 - A script written with `enum`, `namespace` or a parameter property fails at once in Node and in `typecheck:scripts`. Use string unions and plain objects.
 - Moving a script means updating its relative imports, which must include the `.ts`.
-- Generated text that names a script (the tokens `dist/` headers, `docs/a11y-report.md`) was regenerated with the `.ts` paths. The CSS `dist/` banner still names `build.mjs` while that shim exists.
+- Generated text that names a script (the tokens `dist/` headers, `docs/a11y-report.md`) was regenerated with the `.ts` paths. So does the CSS `dist/` banner, now that the `build.mjs` shim is gone.
 - Node older than 22.18 cannot run the scripts.
