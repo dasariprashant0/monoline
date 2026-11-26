@@ -24,6 +24,7 @@ async function press(key: string) {
 const helpers = `
   var $ = (c, root = document) => root.querySelector('[data-check="' + c + '"]');
   var cs = (el) => getComputedStyle(el);
+  var len = (el, prop, v) => { const s = document.createElement('span'); s.style.display = 'inline-block'; s.style[prop] = v; el.append(s); const c = cs(s)[prop]; s.remove(); return c; };
   var resolve = (el, v) => { const s = document.createElement('span'); s.style.color = v; el.append(s); const c = cs(s).color; s.remove(); return c; };
 `;
 
@@ -69,6 +70,18 @@ for (const page of pages) {
     false,
   );
 
+  // Density and radius set on a subtree (measured): the button reads the subtree's space steps and control height, and
+  // options.css rounds `.btn` in data-radius="round" by class name, so only stable class names get it.
+  await check(
+    'look: subtree data-density="compact" padding and height',
+    `const t = $('subtree-look'); const b = $('solid', t); return [cs(b).paddingLeft === len(t, 'paddingLeft', 'var(--s5)') && cs(b).height === len(t, 'height', 'var(--control-md)'), cs(b).paddingLeft + ' ' + cs(b).height];`,
+    false,
+  );
+  await check(
+    'look: subtree data-radius="round" rounds the button (options.css .btn)',
+    `const t = $('subtree-look'); const b = $('solid', t); return [cs(b).borderTopLeftRadius === len(t, 'borderTopLeftRadius', 'var(--round)'), cs(b).borderTopLeftRadius];`,
+    false,
+  );
   await check(
     'variant: neutral alert bar = --muted',
     `const a = $('alert-neutral'); return [cs(a).boxShadow.includes(resolve(document.body, 'var(--muted)')), cs(a).boxShadow];`,
