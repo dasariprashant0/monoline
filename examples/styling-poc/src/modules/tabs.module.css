@@ -1,0 +1,8 @@
+@layer monoline.components {
+  .root { display: grid; gap: var(--s4); min-width: 0; }
+  .list { display: flex; gap: var(--s5); border-bottom: 1px solid var(--rule); max-width: 100%; overflow-x: auto; }
+  .trigger { padding: var(--s3) 0; margin-bottom: -1px; font-weight: var(--weight-medium); color: var(--muted); border-bottom: 2px solid transparent; }
+  .trigger:hover { color: var(--foreground); }
+  .trigger[data-state="active"] { color: var(--foreground); border-color: var(--foreground); }
+  .content:focus-visible { outline-offset: 4px; }
+}

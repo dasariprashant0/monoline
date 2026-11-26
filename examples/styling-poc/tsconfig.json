@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.base.json",
+  // @pandacss/types 2.6.0 fails its own declarations under skipLibCheck: false (TS2308, duplicate re-exports), which
+  // the other examples keep on. Everything else here passes with it off.
+  "compilerOptions": {"skipLibCheck": true},
+  "include": ["src", "vite.config.ts", "panda.config.ts", "postcss.config.js"]
+}

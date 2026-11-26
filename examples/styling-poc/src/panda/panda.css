@@ -1,0 +1,2 @@
+/* Panda's entry: its PostCSS plugin replaces this layer statement with the generated tokens, recipes and utilities. */
+@layer reset, base, tokens, recipes, utilities;

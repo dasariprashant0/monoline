@@ -1,0 +1,29 @@
+{
+  "name": "monoline-styling-poc",
+  "private": true,
+  "type": "module",
+  "description": "M2 PoC: the same four components styled four ways (plain CSS, CSS Modules, Vanilla Extract, Panda CSS). Not a workspace, not in CI.",
+  "scripts": {
+    "codegen": "panda codegen --silent",
+    "dev": "npm run codegen && vite",
+    "build": "npm run codegen && vite build",
+    "typecheck": "npm run codegen && tsc --noEmit -p . && tsc -p tsconfig.scripts.json",
+    "browser": "node scripts/browser.ts",
+    "measure": "npm run codegen && node scripts/measure.ts",
+    "ssr": "npm run codegen && node scripts/ssr.ts"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "2.6.0",
+    "@pandacss/preset-base": "2.6.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vanilla-extract/css": "1.21.3",
+    "@vanilla-extract/recipes": "0.5.7",
+    "@vanilla-extract/vite-plugin": "5.2.6",
+    "@vitejs/plugin-react": "5.2.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.8"
+  }
+}

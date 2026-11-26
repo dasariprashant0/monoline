@@ -1,0 +1,15 @@
+@layer monoline.components {
+  .root { display: flex; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--wash); box-shadow: inset 3px 0 0 var(--foreground); font-size: var(--text-sm); border-radius: var(--radius-md); }
+  .icon { display: flex; padding-block: var(--s1); }
+  .body { display: grid; gap: var(--s1); min-width: 0; }
+  .title { overflow-wrap: anywhere; font-weight: var(--weight-medium); }
+  .description { overflow-wrap: anywhere; color: color-mix(in srgb, var(--foreground) 78%, transparent); }
+  .root[data-tone="info"] { box-shadow: inset 3px 0 0 var(--accent); }
+  .root[data-tone="ok"] { box-shadow: inset 3px 0 0 var(--ok); }
+  .root[data-tone="warning"] { box-shadow: inset 3px 0 0 var(--warning); }
+  .root[data-tone="danger"] { box-shadow: inset 3px 0 0 var(--danger); }
+  .root[data-tone="neutral"] { box-shadow: inset 3px 0 0 var(--muted); }
+  .root[data-tone="ok"] .title { color: var(--ok); }
+  .root[data-tone="warning"] .title { color: var(--warning); }
+  .root[data-tone="danger"] .title { color: var(--danger); }
+}
