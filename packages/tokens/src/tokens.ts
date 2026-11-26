@@ -35,9 +35,8 @@ export type Model = {
 export const tokens = {
   'tokens.css': [
     {
-      comment: `Monoline tokens: the one source of every colour, size and timing.
-Components never use a
-raw value; if a token is missing, add it here (DESIGN.md "Adding a token").
+      comment: `Monoline tokens: every colour, size and timing. Components never use a raw value;
+if a token is missing, add it to packages/tokens/src/tokens.ts and run npm run tokens (DESIGN.md "Adding a token").
 
 An app may override only the accent group (--accent, --accent-text,
 --accent-2) in its own brand.css, per theme. Everything else is shared.`,
@@ -504,8 +503,9 @@ Load after components. Fonts use system stacks, nothing extra to download.`,
   ],
 } as const satisfies Model;
 
-// Every var(--x) in the model must name a token declared in it. A misspelling fails `tsc` on the line below with
-// "Type 'true' does not satisfy the expected type '"--misspelt"'".
+// Every var(--x) in the model must name a token declared in it. A misspelling fails `tsc` on the last line of this
+// file, naming the bad reference (not the token that holds it): "Type 'true' does not satisfy the expected type
+// '"--misspelt"'". Search the file for that name. test/reference-check.ts proves the check still fires.
 type Strings<T> = T extends string
   ? T
   : T extends readonly (infer E)[]
@@ -523,5 +523,6 @@ type Names<T> = T extends string
 type Refs<S> = S extends `${string}var(${infer N})${infer Rest}`
   ? (N extends `--${string}` ? N : never) | Refs<Rest>
   : never;
-type Undeclared = Exclude<Refs<Strings<typeof tokens>>, Names<typeof tokens>>;
-true satisfies [Undeclared] extends [never] ? true : Undeclared;
+type Undeclared<M> = Exclude<Refs<Strings<M>>, Names<M>>;
+export type ReferenceCheck<M> = [Undeclared<M>] extends [never] ? true : Undeclared<M>;
+true satisfies ReferenceCheck<typeof tokens>;

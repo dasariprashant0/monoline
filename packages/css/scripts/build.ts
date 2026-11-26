@@ -41,7 +41,7 @@ const isColor = (v: string) => /^(#|rgba?\()/.test(v);
 const tok = (v: string) => ({$value: v, ...(isColor(v) ? {$type: 'color'} : {})});
 const map = (o: Record<string, string>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.slice(2), tok(v)]));
 const tokens = {
-  $description: `Monoline ${pkg.version} design tokens, generated from src/tokens.css and src/accents.css.`,
+  $description: `Monoline ${pkg.version} design tokens, generated from packages/tokens/src/tokens.ts (the same values as src/tokens.css and src/accents.css).`,
   base: map(base),
   theme: Object.fromEntries(Object.entries(themes).map(([t, v]) => [t, map(v)])),
   accent: Object.fromEntries(
