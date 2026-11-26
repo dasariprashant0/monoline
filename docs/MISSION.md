@@ -183,6 +183,11 @@ report to the user (findings, decisions, what changed, verification results, ope
   Tooltip, Tabs, Menu, Table. Each passes the AGENTS.md Definition of done plus keyboard e2e.
 - Exit: those 14 green; migration plan for the rest in the audit doc (retain / refactor / replace /
   merge / remove per component).
+- Carried from M2: (1) add a variant check to `npm run check`: every value of a component's variant
+  unions has a matching CSS selector (prototype: `examples/styling-poc/scripts/variant-check.ts`, ADR 0015).
+  (2) NavigationMenu "closes the panel with Escape" (`navigation-menu.test.tsx:59`) failed once in a full
+  parallel run on 2026-11-26, then passed 20 of 20 runs alone and 4 full-suite runs; watch it when
+  NavigationMenu's Radix decision is made.
 
 ### M4: Platforms
 - Web: rerun install smoke from packed tarballs in Vite, Next App Router (RSC + client), Astro and
@@ -192,6 +197,11 @@ report to the user (findings, decisions, what changed, verification results, ope
   React Native Testing Library. Go/no-go ADR on cost, demand and maintenance.
 - Write `docs/compatibility.md`: per platform and feature, supported / limited / experimental /
   unsupported, each with the command that proved it.
+- Carried from M2: the starters in `examples/starters/` inline `themeScript()` with the same options
+  as their `ThemeProvider` (Next: in the root layout, a Server Component; Astro: `<script is:inline
+  set:html={...}>`), so install-smoke builds and server-renders it from the packed tarball. That also
+  proves the Next.js guide snippet in `apps/docs/src/site/start-snippets.ts`, which M2 changed but
+  could not build in a real Next app (ADR 0013).
 - Exit: compatibility doc with only verified claims.
 
 ### M5: Docs and AI surface
