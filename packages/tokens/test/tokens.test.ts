@@ -142,9 +142,6 @@ test('the scoped derived tokens (selector lists that start with :root, ADR 0012)
 // data-<kind> layer overrides must be declared again on [data-<kind>] (in its selector list) or by every such layer
 // itself (data-radius re-declares --radius-sm/md/lg). Read from the generated tokens.css, so the scoped selector lists
 // cannot drop out of the generated file without this failing.
-// ponytail: known gap until worker A's follow-up moves --window-pad into the `:root, [data-density]` block; then
-// delete this entry.
-const SCOPE_PENDING = new Set(['--window-pad']);
 test('every derived base token is re-declared on the elements that set its inputs (scoped selector lists)', () => {
   const selectorOf = new Map(
     cssBlocks(css.tokens)
@@ -176,8 +173,7 @@ test('every derived base token is re-declared on the elements that set its input
     for (const [kind, decls] of layers) {
       if (![...inputs].some((r) => r in decls) || name in decls) continue;
       if (selectorOf.get(name)?.split(', ').includes(`[data-${kind}]`)) scoped++;
-      else if (!SCOPE_PENDING.has(name))
-        missing.push(`${name} (reads a token [data-${kind}] sets; declared on "${selectorOf.get(name)}")`);
+      else missing.push(`${name} (reads a token [data-${kind}] sets; declared on "${selectorOf.get(name)}")`);
     }
   }
   assert.deepEqual([...new Set(missing)], []);

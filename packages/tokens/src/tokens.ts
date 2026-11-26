@@ -213,6 +213,15 @@ An app may override only the accent group (--accent, --accent-text,
           },
         },
         {
+          note: `Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
+soft 3/6/9px, round 6/12/18px. --radius-md is --radius. Set data-radius on <html>: these are resolved there.`,
+          tokens: {
+            '--radius-sm': 'calc(var(--radius) * 0.5)',
+            '--radius-md': 'var(--radius)',
+            '--radius-lg': 'calc(var(--radius) * 1.5)',
+          },
+        },
+        {
           note: 'Lines and states.',
           tokens: {
             '--border-width': '1px',
@@ -264,7 +273,6 @@ use older widths, listed in CHANGELOG.md; do not copy them.`,
             '--bp-lg': '1024px',
             '--bp-xl': '1280px',
             '--bp-2xl': '1536px',
-            '--window-pad': ['var(--s6)', "a small window's inset from every edge (Settings, a panel)"],
           },
         },
         {
@@ -281,8 +289,9 @@ use older widths, listed in CHANGELOG.md; do not copy them.`,
       comment: `─── Derived tokens ───
 Each is computed from another token. A custom property resolves var() on the element that declares it and children
 inherit the result, so a derived token declared only on :root would keep the <html> look inside a wrapper with its own
-data-theme, data-accent, data-density or data-radius. Each group is therefore declared again on exactly the elements
-that set its inputs (ADR 0012). Override one of these in your own CSS on the same selectors, not on :root alone.`,
+data-theme, data-accent or data-density. Each group is therefore declared again on exactly the elements that set its
+inputs (ADR 0012); the radius scale stays on :root, since options.css re-declares it in each data-radius rule.
+Override one of these in your own CSS on the same selectors, not on :root alone.`,
     },
     {
       note: 'From --foreground and --muted, which the themes set.',
@@ -337,21 +346,7 @@ dark themes, so dividers use --rule.`,
             '--control-sm': 'calc(var(--s6) + var(--s1))',
             '--control-md': 'var(--s7)',
             '--control-lg': 'calc(var(--s7) + var(--s2))',
-          },
-        },
-      ],
-    },
-    {
-      note: 'From --radius, which data-radius sets.',
-      selector: ':root, [data-radius]',
-      groups: [
-        {
-          note: `Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
-soft 3/6/9px, round 6/12/18px. --radius-md is --radius.`,
-          tokens: {
-            '--radius-sm': 'calc(var(--radius) * 0.5)',
-            '--radius-md': 'var(--radius)',
-            '--radius-lg': 'calc(var(--radius) * 1.5)',
+            '--window-pad': ['var(--s6)', "a small window's inset from every edge (Settings, a panel)"],
           },
         },
       ],
