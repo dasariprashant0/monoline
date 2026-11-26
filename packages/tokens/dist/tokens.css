@@ -42,9 +42,6 @@
   --s7: 48px;
   --s8: 64px;
   --s9: 96px;
-  --control-sm: calc(var(--s6) + var(--s1));
-  --control-md: var(--s7);
-  --control-lg: calc(var(--s7) + var(--s2));
   --radius: 0;
   --round: 999px;
   --radius-sm: calc(var(--radius) * 0.5);
@@ -52,9 +49,9 @@
   --radius-lg: calc(var(--radius) * 1.5);
   --border-width: 1px;
   --opacity-disabled: 0.5;
-  --focus-ring: 2px solid var(--accent);
   --shadow-popover: none;
   --shadow-toast: 0 8px 30px -12px rgba(0, 0, 0, 0.5);
+  --focus-ring: 2px solid var(--accent);
   --ease: cubic-bezier(0.76, 0, 0.24, 1);
   --fast: 0.12s;
   --base: 0.2s;
@@ -77,6 +74,9 @@
   --z-drawer: 40;
   --z-grain: 50;
   --z-toast: 60;
+  --control-sm: calc(var(--s6) + var(--s1));
+  --control-md: var(--s7);
+  --control-lg: calc(var(--s7) + var(--s2));
 }
 
 :root, [data-theme="warm"] {

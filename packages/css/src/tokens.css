@@ -99,40 +99,16 @@
   --leading-normal:  1.55;
   --leading-relaxed: 1.6;
 
-  /* Lines: a 20% mix of the text colour. --border alone is ~1.1:1 in the
-     dark themes, so dividers use --rule. */
-  --rule: color-mix(in srgb, var(--foreground) 20%, transparent);
-  /* Washes: hover rows, code blocks, selected cells. */
-  --wash:   color-mix(in srgb, var(--foreground) 4%, transparent);
-  --wash-2: color-mix(in srgb, var(--foreground) 9%, transparent);
-
-  /* Ink density: tell up to five kinds apart without new colours. */
-  --ink-1: var(--foreground);
-  --ink-2: color-mix(in srgb, var(--foreground) 70%, transparent);
-  --ink-3: color-mix(in srgb, var(--foreground) 45%, transparent);
-  --ink-4: color-mix(in srgb, var(--foreground) 25%, transparent);
-  --ink-5: color-mix(in srgb, var(--foreground) 10%, transparent);
-  --hatch: repeating-linear-gradient(135deg, var(--muted) 0 1.5px, transparent 1.5px 7px);
-
   /* Space: 4px steps. */
   --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px; --s5: 24px;
   --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px;
-  /* One height per size for every single-line control, so Button, Input, Select and friends line up in a form row. */
-  --control-sm: calc(var(--s6) + var(--s1)); --control-md: var(--s7); --control-lg: calc(var(--s7) + var(--s2));
 
   /* Shape: square. One radius for the rare round thing (a ring, a dot). */
   --radius: 0;
   --round: 999px;
-  /* Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
-     soft 3/6/9px, round 6/12/18px. --radius-md is --radius. Set data-radius on <html>: these are resolved there. */
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) * 1.5);
   /* Lines and states. */
   --border-width: 1px;
   --opacity-disabled: 0.5;
-  /* Focus: the one ring. Add outline-offset where the control needs room (base.css uses 3px). Resolved on <html>, like the accent. */
-  --focus-ring: 2px solid var(--accent);
   /* Elevation. Popovers and menus are flat panels with a rule, so --shadow-popover is none (a hook for apps that want a lift). The toast floats over the page. */
   --shadow-popover: none;
   --shadow-toast: 0 8px 30px -12px rgba(0, 0, 0, 0.5);
@@ -168,4 +144,48 @@
   --z-drawer: 40;
   --z-grain: 50;
   --z-toast: 60;
+}
+
+/* ─── Derived tokens ───
+   Each is computed from another token. A custom property resolves var() on the element that declares it and children
+   inherit the result, so a derived token declared only on :root would keep the <html> look inside a wrapper with its own
+   data-theme, data-accent, data-density or data-radius. Each group is therefore declared again on exactly the elements
+   that set its inputs (ADR 0012). Override one of these in your own CSS on the same selectors, not on :root alone. */
+
+/* From --foreground and --muted, which the themes set. */
+:root, [data-theme] {
+  /* Lines: a 20% mix of the text colour. --border alone is ~1.1:1 in the
+     dark themes, so dividers use --rule. */
+  --rule: color-mix(in srgb, var(--foreground) 20%, transparent);
+  /* Washes: hover rows, code blocks, selected cells. */
+  --wash:   color-mix(in srgb, var(--foreground) 4%, transparent);
+  --wash-2: color-mix(in srgb, var(--foreground) 9%, transparent);
+  /* Ink density: tell up to five kinds apart without new colours. */
+  --ink-1: var(--foreground);
+  --ink-2: color-mix(in srgb, var(--foreground) 70%, transparent);
+  --ink-3: color-mix(in srgb, var(--foreground) 45%, transparent);
+  --ink-4: color-mix(in srgb, var(--foreground) 25%, transparent);
+  --ink-5: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --hatch: repeating-linear-gradient(135deg, var(--muted) 0 1.5px, transparent 1.5px 7px);
+}
+
+/* From --accent, which the themes and accents set. Add outline-offset where the control needs room (base.css uses 3px). */
+:root, [data-theme], [data-accent] {
+  /* Focus: the one ring. */
+  --focus-ring: 2px solid var(--accent);
+}
+
+/* From the space steps, which data-density sets. */
+:root, [data-density] {
+  /* One height per size for every single-line control, so Button, Input, Select and friends line up in a form row. */
+  --control-sm: calc(var(--s6) + var(--s1)); --control-md: var(--s7); --control-lg: calc(var(--s7) + var(--s2));
+}
+
+/* From --radius, which data-radius sets. */
+:root, [data-radius] {
+  /* Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
+     soft 3/6/9px, round 6/12/18px. --radius-md is --radius. */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
 }

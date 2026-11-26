@@ -4339,33 +4339,6 @@
           }
         },
         {
-          "name": "control/sm",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 36,
-            "compact": 28,
-            "spacious": 44
-          }
-        },
-        {
-          "name": "control/md",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 48,
-            "compact": 36,
-            "spacious": 60
-          }
-        },
-        {
-          "name": "control/lg",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 56,
-            "compact": 42,
-            "spacious": 70
-          }
-        },
-        {
           "name": "layout/side",
           "resolvedType": "FLOAT",
           "valuesByMode": {
@@ -4498,6 +4471,33 @@
             "comfortable": 32,
             "compact": 24,
             "spacious": 40
+          }
+        },
+        {
+          "name": "control/sm",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 36,
+            "compact": 28,
+            "spacious": 44
+          }
+        },
+        {
+          "name": "control/md",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 48,
+            "compact": 36,
+            "spacious": 60
+          }
+        },
+        {
+          "name": "control/lg",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 56,
+            "compact": 42,
+            "spacious": 70
           }
         }
       ]

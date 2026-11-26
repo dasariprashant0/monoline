@@ -11,9 +11,12 @@
 //
 // --dump prints every measured value instead of asserting (handy when you add a component to the list).
 // Chrome: set CHROME=/path/to/chrome. In Claude Code's sandbox it needs dangerouslyDisableSandbox.
-import {existsSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {themeScript} from '@monoline/react';
+import {build as esbuild} from 'esbuild';
 import {openBrowser} from './lib/browser.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -320,6 +323,169 @@ if (!dump) {
       fails.push(`[375px] heading sizes must strictly descend display > xl > lg > md > sm, got ${z.join(', ')}`);
   } finally {
     b3.close();
+  }
+}
+if (!dump) {
+  // Scoped options: data-theme, data-accent, data-density and data-radius on a wrapper, not on <html>. A token derived
+  // from another (--rule from --foreground, --focus-ring from --accent, --control-md from --s7) must be derived again on
+  // the wrapper, so inside it each one equals what the same option gives on <html> (ADR 0012).
+  const scoped = (html: Record<string, string>, wrap: Record<string, string>) => `(() => {
+    const r = document.documentElement;
+    for (const k of ['theme', 'accent', 'density', 'radius']) delete r.dataset[k];
+    Object.assign(r.dataset, ${JSON.stringify(html)});
+    document.getElementById('mlscope')?.remove();
+    const w = document.createElement('div'); w.id = 'mlscope'; w.style.cssText = 'position:absolute;left:0;top:0;width:600px';
+    Object.assign(w.dataset, ${JSON.stringify(wrap)});
+    w.innerHTML = '<div id="s-rule" style="border-top:1px solid var(--rule)"></div><div id="s-ink" style="color:var(--ink-3);background:var(--wash);border-top:1px solid var(--accent)"></div><button class="btn btn-line" id="s-btn" style="outline:var(--focus-ring)">x</button><div class="card" id="s-card">x</div>';
+    document.body.append(w);
+    const s = (id) => getComputedStyle(w.querySelector('#' + id));
+    return {rule: s('s-rule').borderTopColor, ink: s('s-ink').color, wash: s('s-ink').backgroundColor, accent: s('s-ink').borderTopColor,
+      ring: s('s-btn').outlineColor, btn: w.querySelector('#s-btn').getBoundingClientRect().height, radius: s('s-card').borderTopLeftRadius};
+  })()`;
+  const b4 = await openBrowser({dist});
+  try {
+    await b4.setViewport(1280, 800);
+    await b4.navigate(b4.base);
+    const m = async (html: Record<string, string>, wrap: Record<string, string> = {}) =>
+      (await b4.evaluate(scoped(html, wrap))) as Record<string, string | number>;
+    const check = (where: string, name: string, got: unknown, exp: unknown) => {
+      n++;
+      if (got !== exp) fails.push(`[scoped ${where}] ${name}: got ${got}, expected ${exp}`);
+    };
+    for (const page of ['warm', 'dark', 'midnight'])
+      for (const wrap of ['warm', 'dark', 'midnight']) {
+        if (page === wrap) continue;
+        const got = await m({theme: page}, {theme: wrap});
+        const ref = await m({theme: wrap});
+        const other = await m({theme: page});
+        const where = `data-theme=${wrap} in a ${page} page`;
+        for (const k of ['rule', 'ink', 'wash', 'ring']) check(where, `${k} = the ${wrap} value`, got[k], ref[k]);
+        n++;
+        if (ref.rule === other.rule)
+          fails.push(`[scoped ${where}] the test is vacuous: ${wrap} and ${page} share --rule`);
+      }
+    for (const page of ['warm', 'dark', 'midnight']) {
+      const got = await m({theme: page}, {accent: 'green'});
+      const pageAccent = (await m({theme: page})).accent;
+      check(`data-accent=green in a ${page} page`, 'focus ring = the wrapper accent', got.ring, got.accent);
+      n++;
+      if (got.accent === pageAccent) fails.push(`[scoped data-accent=green in a ${page} page] accent did not change`);
+      const dense = await m({theme: page}, {density: 'compact'});
+      const ref = await m({theme: page, density: 'compact'});
+      const comfy = await m({theme: page});
+      check(`data-density=compact in a ${page} page`, 'Button md height = the compact value', dense.btn, ref.btn);
+      n++;
+      if (ref.btn === comfy.btn) fails.push(`[scoped density in a ${page} page] compact and comfortable heights match`);
+      const round = await m({theme: page}, {radius: 'round'});
+      check(
+        `data-radius=round in a ${page} page`,
+        'Card radius = the round value',
+        round.radius,
+        (await m({theme: page, radius: 'round'})).radius,
+      );
+    }
+  } finally {
+    b4.close();
+  }
+}
+if (!dump) {
+  // First paint (ADR 0013): a page with themeScript() in <head> and a hydrated ThemeProvider. The head records <html>'s
+  // data-theme/data-accent and the painted colours before the first frame; after React has hydrated and run its effects
+  // they must be the same, and no attribute the script set may change value (a flip is a visible flash).
+  const fx = mkdtempSync(join(tmpdir(), 'monoline-init-'));
+  copyFileSync(join(root, 'packages/css/dist/core.css'), join(fx, 'core.css'));
+  await esbuild({
+    stdin: {
+      contents:
+        "import {createElement as h} from 'react'; import {hydrateRoot} from 'react-dom/client'; import {ThemeProvider} from '@monoline/react';" +
+        "hydrateRoot(document.getElementById('root'), h(ThemeProvider, window.__props, h('p', null, 'hi')));",
+      resolveDir: root,
+    },
+    bundle: true,
+    outfile: join(fx, 'app.js'),
+    define: {'process.env.NODE_ENV': '"production"'},
+    logLevel: 'error',
+  });
+  const RECORD = `(function(){var d=document.documentElement,c=function(){var s=getComputedStyle(d);return {theme:d.getAttribute('data-theme'),accent:d.getAttribute('data-accent'),bg:s.getPropertyValue('--background').trim(),fill:s.getPropertyValue('--accent').trim()}};window.__first=c();window.__read=c;window.__flips=[];new MutationObserver(function(ms){ms.forEach(function(m){var v=d.getAttribute(m.attributeName);if(m.oldValue!==null&&v!==m.oldValue)window.__flips.push(m.attributeName+': '+m.oldValue+' -> '+v)})}).observe(d,{attributes:true,attributeOldValue:true});requestAnimationFrame(function(){window.__paint=c()})})()`;
+  const cases: {
+    name: string;
+    saved: Record<string, string>;
+    script?: Parameters<typeof themeScript>[0];
+    props?: object;
+    dark?: boolean;
+    expect: [string, string | null];
+  }[] = [
+    {name: 'saved dark + green', saved: {theme: 'dark', accent: 'green'}, expect: ['dark', 'green']},
+    {
+      name: 'saved midnight + rose',
+      saved: {theme: 'midnight', accent: 'rose', density: 'compact'},
+      expect: ['midnight', 'rose'],
+    },
+    {
+      name: 'saved system (OS dark) + violet',
+      saved: {theme: 'system', accent: 'violet'},
+      dark: true,
+      expect: ['dark', 'violet'],
+    },
+    {name: 'nothing saved, OS light', saved: {}, expect: ['warm', null]},
+    // The Next.js guide's setup: the app picks an accent in ThemeProvider and passes the same one to themeScript.
+    {
+      name: 'nothing saved, app accent teal',
+      saved: {},
+      script: {accent: 'teal'},
+      props: {accent: 'teal'},
+      expect: ['warm', 'teal'],
+    },
+    {
+      name: 'saved blue beats app accent teal',
+      saved: {accent: 'blue'},
+      script: {accent: 'teal'},
+      props: {accent: 'teal'},
+      expect: ['warm', 'blue'],
+    },
+  ];
+  cases.forEach((c, i) =>
+    writeFileSync(
+      join(fx, `case${i}.html`),
+      `<!doctype html><html lang="en"><head><link rel="stylesheet" href="core.css"><script>${themeScript(c.script)}</script><script>${RECORD}</script><script>window.__props=${JSON.stringify(c.props ?? {})}</script></head><body><div id="root"><p>hi</p></div><script src="app.js"></script></body></html>`,
+    ),
+  );
+  writeFileSync(join(fx, 'seed.html'), '<!doctype html><title>seed</title>');
+  const b5 = await openBrowser({dist: fx});
+  try {
+    for (const [i, c] of cases.entries()) {
+      await b5.cdp('Emulation.setEmulatedMedia', {
+        features: [{name: 'prefers-color-scheme', value: c.dark ? 'dark' : 'light'}],
+      });
+      await b5.navigate(`${b5.base}seed.html`, 200);
+      await b5.evaluate(
+        `(() => { localStorage.clear(); for (const [k, v] of Object.entries(${JSON.stringify(c.saved)})) localStorage.setItem('monoline-' + k, v); })()`,
+      );
+      await b5.navigate(`${b5.base}case${i}.html`, 800); // ThemeProvider always writes data-radius once its effects ran
+      const r = await b5.evaluate(
+        `(() => ({first: window.__first, paint: window.__paint, after: window.__read(), flips: window.__flips, hydrated: document.documentElement.hasAttribute('data-radius')}))()`,
+      );
+      const where = `[theme init: ${c.name}]`;
+      const check = (name: string, ok: boolean, detail: string) => {
+        n++;
+        if (!ok) fails.push(`${where} ${name}: ${detail}`);
+      };
+      check('ThemeProvider hydrated', r.hydrated, 'no data-radius on <html> after load');
+      check(
+        'before first paint, <html> has the expected theme and accent',
+        r.first.theme === c.expect[0] && r.first.accent === c.expect[1],
+        `got ${r.first.theme}/${r.first.accent}, expected ${c.expect.join('/')}`,
+      );
+      check(
+        'first frame paints the final colours',
+        r.paint.bg === r.after.bg && r.paint.fill === r.after.fill,
+        `${JSON.stringify(r.paint)} then ${JSON.stringify(r.after)}`,
+      );
+      check('no attribute flips after hydration', r.flips.length === 0, r.flips.join(', '));
+    }
+  } finally {
+    b5.close();
+    rmSync(fx, {recursive: true, force: true});
   }
 }
 if (dump) process.exit(0);

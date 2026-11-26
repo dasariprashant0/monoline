@@ -27,7 +27,7 @@ export function parseTokens() {
   for (const {sel, vars} of blocks(read('src/tokens.css'))) {
     const t = sel.match(/\[data-theme="(\w+)"\]/);
     if (t) themes[t[1]] = {...(themes[t[1]] || {}), ...vars};
-    else if (sel === ':root') Object.assign(base, vars);
+    else if (sel.split(',')[0]?.trim() === ':root') Object.assign(base, vars); // also ':root, [data-theme], ...' (ADR 0012)
   }
   for (const {sel, vars} of blocks(read('src/accents.css'))) {
     const a = sel.match(/^\[data-accent="(\w+)"\](?:\[data-theme="(\w+)"\])?$/);
