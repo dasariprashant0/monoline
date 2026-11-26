@@ -1,76 +1,25 @@
 // Fails if a theme or accent breaks the contrast rules, or a component stylesheet uses a raw colour.
 // Run: npm run check (in packages/css). CI runs it on every push.
 import {readdirSync} from 'node:fs';
-import {read, parseTokens, contrast} from './lib.ts';
+import {read} from './lib.ts';
+import {contrastChecks, cssFiles, sources} from '../../tokens/scripts/lib.ts';
 import './check-logical.ts';
 import './check-layers.ts';
 import './check-motion.ts';
 import {findDuplicates, parseRules} from './check-duplicates.ts';
 import './size.ts';
 
-const {themes, accents} = parseTokens();
-const fails = [];
-let n = 0;
-function need(label: string, a: string, b: string, min: number) {
-  n++;
-  const r = contrast(a, b);
-  if (r < min) fails.push(`${label}: ${r.toFixed(2)}:1, needs ${min}:1 (${a} on ${b})`);
-}
+// Contrast for every theme x (no accent + 8 accents), code colours on --surface and prefers-contrast: more, all on
+// resolved values from the token source (packages/tokens/src/tokens.ts). sources() also fails on a missing, circular,
+// duplicate or malformed reference.
+const tokens = sources();
+const contrast = contrastChecks(tokens, read('src/utilities.css'));
+const fails = [...contrast.fails];
 
-for (const [theme, base] of Object.entries(themes)) {
-  const bg = base['--background'];
-  for (const k of ['--foreground', '--muted', '--danger', '--warning', '--ok'])
-    need(`${theme} ${k} on background`, base[k], bg, 4.5);
-  need(`${theme} surface-text on surface`, '#FFFFFF', base['--surface'], 4.5);
-  for (const [accent, byTheme] of Object.entries({default: {[theme]: {}}, ...accents})) {
-    const v: Record<string, string> = {...base, ...(byTheme[theme] || (theme === 'warm' ? byTheme.warm : {}) || {})};
-    const id = `${theme}/${accent}`;
-    need(`${id} accent-text on background`, v['--accent-text'], bg, 4.5);
-    need(`${id} accent on background`, v['--accent'], bg, 3);
-    need(`${id} on-accent on accent`, v['--on-accent'], v['--accent'], 4.5);
-  }
-}
-
-// prefers-contrast: more (tokens.css). Mirrors its colour-mix(in srgb) maths: --muted is 85% text colour, --border 55%.
-{
-  const mix = (a: string, b: string, p: number) =>
-    '#' +
-    [1, 3, 5]
-      .map((i) =>
-        Math.round(parseInt(a.slice(i, i + 2), 16) * p + parseInt(b.slice(i, i + 2), 16) * (1 - p))
-          .toString(16)
-          .padStart(2, '0'),
-      )
-      .join('');
-  const tokens = read('src/utilities.css');
-  if (
-    !/--muted:\s*color-mix\(in srgb, var\(--foreground\) 85%/.test(tokens) ||
-    !/--border:\s*color-mix\(in srgb, var\(--foreground\) 55%/.test(tokens)
-  )
-    fails.push('utilities.css: the prefers-contrast block changed; update the mixes in check.ts');
-  for (const [theme, base] of Object.entries(themes)) {
-    need(
-      `${theme} more-contrast muted on background`,
-      mix(base['--foreground'], base['--background'], 0.85),
-      base['--background'],
-      7,
-    );
-    need(
-      `${theme} more-contrast border on background`,
-      mix(base['--foreground'], base['--background'], 0.55),
-      base['--background'],
-      3,
-    );
-  }
-}
-
-// Code colours sit on the always-dark --surface of every theme.
-{
-  const tokens = read('src/tokens.css');
-  const codeColours = [...tokens.matchAll(/--(code-[a-z]+):\s*(#[0-9A-Fa-f]{6})/g)];
-  for (const [theme, base] of Object.entries(themes))
-    for (const [, name, hex] of codeColours) need(`${theme} --${name} on surface`, hex, base['--surface'], 4.5);
-}
+// tokens.css, accents.css and options.css are generated from the token source; a hand edit or a stale file fails here.
+for (const [name, css] of Object.entries(cssFiles()))
+  if (read(`src/${name}`) !== css)
+    fails.push(`src/${name} is not what packages/tokens/src/tokens.ts generates; run npm run tokens`);
 
 // Tokens only: no raw hex in any stylesheet except tokens.css and accents.css.
 const linted = [
@@ -161,5 +110,5 @@ if (fails.length) {
   process.exit(1);
 }
 console.log(
-  `ok: ${n} contrast checks across ${Object.keys(themes).length} themes and ${Object.keys(accents).length + 1} accents; no raw colours in components.`,
+  `ok: ${contrast.count} contrast checks across ${Object.keys(tokens.themes).length} themes and ${Object.keys(tokens.accents).length + 1} accents (default + presets); token CSS matches packages/tokens/src; no raw colours in components.`,
 );
