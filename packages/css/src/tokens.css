@@ -1,8 +1,7 @@
 /* Generated from packages/tokens/src/tokens.ts by `npm run tokens`. Do not edit: change that file and run `npm run tokens`. */
 
-/* Monoline tokens: the one source of every colour, size and timing.
-   Components never use a
-   raw value; if a token is missing, add it here (DESIGN.md "Adding a token").
+/* Monoline tokens: every colour, size and timing. Components never use a raw value;
+   if a token is missing, add it to packages/tokens/src/tokens.ts and run npm run tokens (DESIGN.md "Adding a token").
 
    An app may override only the accent group (--accent, --accent-text,
    --accent-2) in its own brand.css, per theme. Everything else is shared. */

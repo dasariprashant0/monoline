@@ -18,11 +18,11 @@ Status: proposed (M2). The user chose the TypeScript source on 2026-11-26. An in
 
 - **Shape.** Each of the three CSS files is a list of items in output order:
   - `{comment}`: a comment on its own line;
-  - `{selector, groups}`: a rule block, with an optional `note` above it. A group is `{note?, tokens}`, and a token is `'value'` or `['value', 'note']`;
+  - `{selector, groups}`: a rule block, with an optional `note` above it. A group is `{note?, tokens}`, and a token is `'value'` or `['value', 'note']`. An optional `css` field holds declarations that are not tokens, written after the tokens; today only `color-scheme` in the three theme blocks;
   - `{raw}`: CSS kept as written. This holds the two `options.css` rules that style descendants (`[data-font] .display`, `[data-radius] .badge/.tag/.btn`), so `options.css` stays one file in the same rule order and `bundle.ts`, `check-layers.ts` and `check-motion.ts` are unchanged.
 
   `accents.css` is a table with one row of `[--accent, --accent-text, --accent-2, --on-accent]` per preset and theme. Every comment in today's CSS, contrast notes included, is in the model, and the generator writes it back out.
-- **Type-checked references.** Values are CSS strings: a reference is `var(--name)`. A type at the end of the file collects every `var(--x)` in the model and every declared name. A reference to a name that is not declared fails `tsc`: `Type 'true' does not satisfy the expected type '"--foregrund"'`. A `ref()` helper typed against the name union was tried first. TypeScript cannot infer the names of an object whose values call a function typed on those same names (TS2502, TS7022, TS2456), so the helper would need a hand-kept list of every name. The type-level check needs none.
+- **Type-checked references.** Values are CSS strings: a reference is `var(--name)`. A type at the end of the file collects every `var(--x)` in the model and every declared name. A reference to a name that is not declared fails `tsc`: `Type 'true' does not satisfy the expected type '"--foregrund"'`. The error points at the last line of `tokens.ts` and names the bad reference, not the token that holds it, so you search the file for that name; `sources()` names the holder at runtime. `test/reference-check.ts` has a model with a misspelt reference under `@ts-expect-error`, so a check that stops firing fails `typecheck:scripts`. A `ref()` helper typed against the name union was tried first. TypeScript cannot infer the names of an object whose values call a function typed on those same names (TS2502, TS7022, TS2456), so the helper would need a hand-kept list of every name. The type-level check needs none.
 - **One model, no parser.** `sources()` in `packages/tokens/scripts/lib.ts` reads the model and returns the same `{base, themes, accents, options}` the parser did. Every output reads it:
   - the token CSS (`cssFiles()`);
   - `tokens.json`, `tokens.css`, Figma variables, `tokens.d.ts` and `native.json`;
@@ -41,10 +41,12 @@ Validation runs on the model (`sources()`), and the build stops with the file, b
 | Missing reference | every token resolves in every theme × (no accent + 8 accents) × font, radius and density combination (3 × 9 × 27 = 729 environments) | `tsc` (the type check) and `sources()`: `tokens.css :root: --a uses undefined token --nope (theme warm)` |
 | Cycle | a real cycle check (the resolution stack), also cycles that only close when a theme or accent layer applies | `sources()`: `accents.css [data-accent="x"][data-theme="dark"]: reference cycle --a -> --accent -> --a (theme dark, accent x)` |
 | Duplicate | the same token twice in one layer. Within one group it is a repeated object key, so `tsc` refuses it (TS1117). Across groups or blocks of one layer (e.g. `:root` and `:root, [data-theme]`), the build refuses it. A theme or accent overriding a base token is the cascade and is allowed. | `tsc`, and `sources()`: `--a is declared twice in this layer; keep one` |
-| Invalid reference | `var(` must be exactly `var(--name)`. Refused: malformed, not a custom property (`var(color)`), or with a fallback (`var(--b, red)`, which would hide a missing token). | `sources()`. A fallback also fails `tsc`, since `--b, red` is not a declared name. |
-| Selector | a list that starts with `:root` and otherwise holds bare attributes (ADR 0012) is the base layer; any other `tokens.css` selector is refused, as is an `options.css` token block without one `[data-kind="value"]` selector | `sources()`: `tokens.css: unexpected selector ".card"` |
+| Invalid reference | `var(`, in any case, must be exactly `var(--name)`. Refused: `VAR(--x)`, malformed, not a custom property (`var(color)`), or with a fallback (`var(--b, red)`, which would hide a missing token). | `sources()`. A fallback also fails `tsc`, since `--b, red` is not a declared name. |
+| Selector | a theme rule is exactly `[data-theme="x"]` (warm: `:root, [data-theme="warm"]`); a list that starts with `:root` and otherwise holds bare attributes (ADR 0012) is the base layer; any other `tokens.css` selector, such as `[data-theme="dark"] .card`, is refused, as is an `options.css` token block without one `[data-kind="value"]` selector | `sources()`: `tokens.css: unexpected selector ".card"` |
 
 Contrast (`contrastChecks`, run by `npm run check`) resolves the model: 126 checks over 3 themes × (no accent + 8 accents), the code colours on `--surface`, and the `prefers-contrast: more` mixes. All pass.
+
+**Boundary (a deliberate exception, M2 lead decision).** The `@media (prefers-contrast: more)` and `@media (forced-colors: active)` blocks in `packages/css/src/utilities.css` (lines 58-74) redefine some tokens. They stay hand-written CSS, outside the model and every token output. They are modes that only a media query can switch on, and the forced-colors values are system colours (`CanvasText`, `Highlight` …) with no meaning outside a browser. The contrast check reads only the `prefers-contrast: more` values of `--muted` and `--border`, straight from `utilities.css`. This is not a gap to close later: a token that should change under these modes is still added to `src/tokens.ts`, and its media-query override goes in `utilities.css`.
 
 ## Options considered
 
@@ -99,12 +101,12 @@ Hand-written CSS → one parser (validates) → every output.
 
 | Dimension | Assessment |
 |---|---|
-| Source size | 532 lines for 308 lines of generated CSS. The data itself is about 480 lines, with one token per line as in the CSS; the rest is the format description and the 21-line type check. A new theme colour is 3 lines, one per theme block, as in A. |
+| Source size | 528 lines for 305 lines of generated CSS. The data itself is about 480 lines, with one token per line as in the CSS; the rest is the format description and the 21-line type check. A new theme colour is 3 lines, one per theme block, as in A. |
 | Pipeline code | `blocks()` 13 lines, `sources()` 22, `cssFiles()` 40, the type check 21. `parseSources()` and the DTCG prototype (`to-css.ts`, `from-css.ts`, 1,338-line JSON) are deleted. |
 | Typos in references | fail `tsc` (`npm run typecheck:scripts`, part of `npm run check`) with the token's name, and in the editor |
 | Comments | every comment is a `note` or `comment` in the model and is written back to the CSS. Only their position follows the generator's rule. |
 | Contributor workflow | edit `src/tokens.ts`, run `npm run tokens`, commit the TS, the three CSS files and `dist/` together. The CSS files say "Do not edit" in their header. |
-| Outputs | byte-identical (`cmp`): `@monoline/css/dist/tokens.json`, `monoline.min.css` and the five `packages/tokens/dist` files. `monoline.css` and `core.css` differ only by whitespace and the generated header. |
+| Outputs | Baseline: a build of 8c7c454, the lead branch with worker A's final CSS and the old parser. `@monoline/css`: `monoline.min.css` is byte-identical (`cmp`). `tokens.json` differs only in its `$description`, which now names `packages/tokens/src/tokens.ts`; values are identical. `monoline.css` and `core.css` differ only in whitespace, the generated-file header and the reworded header comment of `tokens.css` (core.css 22,097 → 22,355 bytes raw, 7,439 → 7,403 gzip). `packages/tokens/dist`: the explained diff is the `$description` strings; `--heading-1/2` filed as type, not colour (`tokens.json`, `tokens.d.ts`, the Figma Typography collection); the order of the `tokens.css` re-export, where the headings move with their group; and the new `native.json`. |
 
 **Pros:** one model that every output reads, so no text is parsed back into tokens. References are checked by the type checker. The source is the same language as the rest of the repo, with no new tool.
 **Cons:** the CSS that ships is generated and committed, so a contributor can still edit it by mistake. The staleness check catches that, and the header says so. The layout of the CSS is no longer hand-tuned. Values stay CSS strings, the same as in A and B.
@@ -118,7 +120,7 @@ Hand-written CSS → one parser (validates) → every output.
 
 - `packages/css/src/tokens.css`, `accents.css` and `options.css` are generated. Hand edits fail `npm run check`, `npm run test:tokens` and the CI diff.
 - Adding a token: edit `packages/tokens/src/tokens.ts`, run `npm run tokens`, commit everything it regenerates. AGENTS.md, DESIGN.md and `packages/tokens/README.md` describe this.
-- `packages/css/scripts` imports `packages/tokens/scripts/lib.ts`, which imports `packages/tokens/src/tokens.ts`. Only repo scripts do; `@monoline/css`'s published files are unchanged. `@monoline/tokens` (private) lists `src` in `files`.
+- `packages/css/scripts` imports `packages/tokens/scripts/lib.ts`, which imports `packages/tokens/src/tokens.ts`. Only repo scripts do. `@monoline/css` publishes the same list of files, but some change content: `src/tokens.css`, `accents.css` and `options.css` (layout and the generated header), `dist/monoline.css` and `dist/core.css` (the same, carried into the bundle), and the `$description` of `dist/tokens.json`. No token value changes. `@monoline/tokens` (private) lists `src` in `files`.
 - The non-token `options.css` rules are CSS inside the TS file (`{raw}`). They are not validated as tokens. A third such rule should get a stylesheet of its own rather than more raw CSS in the model.
 - Changes from earlier in M2 are kept:
   - `dist/native.json`;
