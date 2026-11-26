@@ -1,6 +1,6 @@
 # 0013: SSR theme init: inline themeScript, ThemeProvider applies after load
 
-Status: accepted
+Status: accepted (M2, 2026-11-26), after an independent Skeptic review; its required changes are in.
 
 ## Context
 
@@ -50,5 +50,5 @@ Option 2. `themeScript()` accepts `accent`, `font`, `radius`, `density` and `dir
 
 Evidence:
 - `npm run test:css-browser` with the first version of the check, on be7bafd's `themeScript`: 30 of 697 failed (2 the teal case, 28 the scoped-token cases of ADR 0012). One-off run, 2026-11-25.
-- `npm run test:css-browser` with the drift case temporarily treated as a normal case: 1 of 700 failed, `[theme init: drift: provider dir rtl, script without dir] the first paint is the hydrated look: dir ltr -> rtl`. With it kept as an expected failure: 700 of 700.
+- `npm run test:css-browser` with the drift case temporarily treated as a normal case: 1 of 700 failed, `[theme init: drift: provider dir rtl, script without dir] the first paint is the hydrated look: dir ltr -> rtl`. With it kept as an expected failure: 700 of 700 at that commit; the suite is 771 checks after the ADR 0012 cases were added (771 of 771).
 - `npx vitest run src/components/theme-provider` (in `packages/react`): 16 passed. The escaping and blocked-storage tests fail against the previous `theme-script.ts` (2 of 16).

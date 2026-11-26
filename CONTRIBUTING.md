@@ -31,11 +31,11 @@ npx monoline add button dialog
 4. Check it in warm, dark and midnight, with each accent, at 360px and 1200px, and with the keyboard only.
 5. Run `npm run check && npm run build`, then `npm run registry` if you are a maintainer. CI fails if `registry/` and `llms*.txt` are stale.
 
-Never hand-edit generated files: `packages/react/src/index.ts`, `registry/`, `llms.txt`, `llms-full.txt`, any `dist/`.
+Never hand-edit generated files: `packages/react/src/index.ts`, `registry/`, `llms.txt`, `llms-full.txt`, `packages/css/src/tokens.css`, `accents.css`, `options.css`, any `dist/`.
 
 ## Adding an accent or token
 
-Add the token to `packages/css/src/tokens.css` for all three themes, document it in DESIGN.md, then run `npm run check`.
+Add the token (for all three themes if it's a colour) or the accent row to `packages/tokens/src/tokens.ts`, run `npm run tokens` and commit the regenerated CSS and `packages/tokens/dist` with it, document it in DESIGN.md, then run `npm run check`.
 
 ## Pull requests
 

@@ -1,6 +1,6 @@
 # 0015: Keep plain CSS and custom properties for component styles
 
-Status: proposed (M2). Date: 2026-11-26, revised after review the same day.
+Status: accepted (M2, 2026-11-26), after an independent Reality Checker review; revised the same day with its required changes.
 
 ## Context
 

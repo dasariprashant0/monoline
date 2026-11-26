@@ -1,6 +1,6 @@
 # 0012: Derived tokens are declared again on scoped data-* wrappers
 
-Status: proposed
+Status: accepted (M2, 2026-11-26), after an independent Skeptic review; its required changes are in.
 
 ## Context
 

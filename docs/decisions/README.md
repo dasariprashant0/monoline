@@ -15,3 +15,6 @@ Short records of choices that shaped the code. One file each: context, decision,
 | [0009](0009-exact-optional-property-types.md) | `exactOptionalPropertyTypes` on; every optional prop accepts `undefined` |
 | [0010](0010-typescript-scripts-and-one-build-ci.md) | Scripts are TypeScript run by Node's type stripping; CI builds once per push; stay on npm workspaces |
 | [0011](0011-biome-lint-and-format.md) | Biome lints and formats JS/TS; formatting matches the existing style |
+| [0012](0012-scoped-derived-tokens.md) | Derived tokens are declared again on `data-theme`, `data-accent` and `data-density` wrappers, so scoped options apply in full |
+| [0013](0013-ssr-theme-init.md) | `themeScript()` sets the saved and app look on `<html>` before first paint; options allowlisted and escaped |
+| [0015](0015-styling-approach.md) | Keep plain CSS and custom properties; CSS Modules, Vanilla Extract and Panda compared in `examples/styling-poc` |
