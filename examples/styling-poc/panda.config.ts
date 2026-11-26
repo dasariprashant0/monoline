@@ -1,7 +1,7 @@
 // Approach 4: Panda CSS. Tokens point at Monoline's custom properties, so tokens.css stays the source; recipes hold
 // the component styles. Monoline's core.css supplies the reset and base, so Panda's preflight is off.
 import {defineConfig} from '@pandacss/dev';
-import {alert, button, dialog, tabs} from './src/panda/recipes';
+import {alert, button, dialog, spinner, tabs} from './src/panda/recipes';
 
 const v = (names: string[], prefix = '') => Object.fromEntries(names.map((n) => [n, {value: `var(--${prefix}${n})`}]));
 
@@ -47,7 +47,7 @@ export default defineConfig({
       spin: {to: {transform: 'rotate(360deg)'}},
       pop: {from: {opacity: 0, transform: 'translateY(8px)'}, to: {opacity: 1, transform: 'none'}},
     },
-    recipes: {button},
+    recipes: {button, spinner},
     slotRecipes: {alert, tabs, dialog},
   },
 });

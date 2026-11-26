@@ -17,11 +17,12 @@ export type Size = 'sm' | 'md' | 'lg';
 export type Tone = 'info' | 'ok' | 'warning' | 'danger' | 'neutral';
 type AlertParts = {root: string; icon: string; body: string; title: string; description: string};
 
-/** What an approach provides: class names per part, computed from the variant props where there are any. */
+/** What an approach provides: class names per part, computed from the variant props where there are any. Property
+ * syntax, not method syntax, so parameters are checked strictly: an approach that cannot style a Tone fails tsc. */
 export type Styles = {
-  button(p: {variant: Variant; size: Size}): string;
+  button: (p: {variant: Variant; size: Size}) => string;
   spinner: string;
-  alert(p: {tone: Tone}): AlertParts;
+  alert: (p: {tone: Tone}) => AlertParts;
   tabs: string;
   tabsList: string;
   tabsTrigger: string;

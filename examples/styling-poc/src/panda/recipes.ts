@@ -44,6 +44,18 @@ export const button = defineRecipe({
   defaultVariants: {variant: 'solid', size: 'md'},
 });
 
+export const spinner = defineRecipe({
+  className: 'spinner',
+  base: {
+    w: '1em',
+    h: '1em',
+    border: '2px solid currentColor',
+    borderBottomColor: 'transparent',
+    borderRadius: '50%',
+    animation: 'spin 0.8s linear infinite',
+  },
+});
+
 const bar = (token: string) => ({root: {boxShadow: `inset 3px 0 0 token(colors.${token})`}});
 export const alert = defineSlotRecipe({
   className: 'alert',
