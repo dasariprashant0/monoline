@@ -11,12 +11,11 @@
 //
 // --dump prints every measured value instead of asserting (handy when you add a component to the list).
 // Chrome: set CHROME=/path/to/chrome. In Claude Code's sandbox it needs dangerouslyDisableSandbox.
-import {copyFileSync, existsSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {themeScript} from '@monoline/react';
-import {build as esbuild} from 'esbuild';
+import {build as esbuild, transformSync} from 'esbuild';
 import {openBrowser} from './lib/browser.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -388,6 +387,14 @@ if (!dump) {
     b4.close();
   }
 }
+// themeScript from source, types stripped by esbuild: importing the .ts directly would pull theme-provider.tsx into the
+// scripts type-check, and @monoline/react has no types until it is built (CI's check job does not build).
+const themeScript: (o?: Record<string, string>) => string = (
+  await import(
+    `data:text/javascript,${encodeURIComponent(transformSync(readFileSync(join(root, 'packages/react/src/components/theme-provider/theme-script.ts'), 'utf8'), {loader: 'ts', format: 'esm'}).code)}`
+  )
+).themeScript;
+
 if (!dump) {
   // First paint (ADR 0013): a page with themeScript() in <head> and a hydrated ThemeProvider. The head records <html>'s
   // data-theme/data-accent and the painted colours before the first frame; after React has hydrated and run its effects
@@ -410,7 +417,7 @@ if (!dump) {
   const cases: {
     name: string;
     saved: Record<string, string>;
-    script?: Parameters<typeof themeScript>[0];
+    script?: Record<string, string>;
     props?: object;
     dark?: boolean;
     expect: [string, string | null];
