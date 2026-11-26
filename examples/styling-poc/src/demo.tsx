@@ -77,6 +77,13 @@ export function Demo({styles, label}: {styles: k.Styles; label: string}) {
           <Components label={`${label} midnight`} />
         </div>
 
+        <h3>Subtree look: compact, round</h3>
+        <div className="subtree" data-density="compact" data-radius="round" data-check="subtree-look">
+          <div className="row">
+            <k.Button data-check="solid">Save</k.Button>
+          </div>
+        </div>
+
         <h3>Consumer overrides</h3>
         <div className="row">
           <k.Button className="consumer-btn" data-check="override-class">
