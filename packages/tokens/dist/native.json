@@ -1,5 +1,5 @@
 {
-  "$description": "Monoline tokens for React Native, generated from packages/css/src by packages/tokens/scripts/build.ts. colors.<theme>.<accent>; values are px, ms, unitless numbers or bezier points.",
+  "$description": "Monoline tokens for React Native, generated from packages/tokens/src/tokens.ts by packages/tokens/scripts/build.ts. colors.<theme>.<accent>; values are px, ms, unitless numbers or bezier points.",
   "$omitted": [
     "--display-md",
     "--display-sm",
