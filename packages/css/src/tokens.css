@@ -106,6 +106,11 @@
   /* Shape: square. One radius for the rare round thing (a ring, a dot). */
   --radius: 0;
   --round: 999px;
+  /* Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
+     soft 3/6/9px, round 6/12/18px. --radius-md is --radius. Set data-radius on <html>: these are resolved there. */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
   /* Lines and states. */
   --border-width: 1px;
   --opacity-disabled: 0.5;
@@ -138,7 +143,6 @@
   --bp-lg: 1024px;
   --bp-xl: 1280px;
   --bp-2xl: 1536px;
-  --window-pad: var(--s6); /* a small window's inset from every edge (Settings, a panel) */
 
   /* Layers. */
   --z-drawer: 40;
@@ -149,8 +153,9 @@
 /* ─── Derived tokens ───
    Each is computed from another token. A custom property resolves var() on the element that declares it and children
    inherit the result, so a derived token declared only on :root would keep the <html> look inside a wrapper with its own
-   data-theme, data-accent, data-density or data-radius. Each group is therefore declared again on exactly the elements
-   that set its inputs (ADR 0012). Override one of these in your own CSS on the same selectors, not on :root alone. */
+   data-theme, data-accent or data-density. Each group is therefore declared again on exactly the elements that set its
+   inputs (ADR 0012); the radius scale stays on :root, since options.css re-declares it in each data-radius rule.
+   Override one of these in your own CSS on the same selectors, not on :root alone. */
 
 /* From --foreground and --muted, which the themes set. */
 :root, [data-theme] {
@@ -179,13 +184,5 @@
 :root, [data-density] {
   /* One height per size for every single-line control, so Button, Input, Select and friends line up in a form row. */
   --control-sm: calc(var(--s6) + var(--s1)); --control-md: var(--s7); --control-lg: calc(var(--s7) + var(--s2));
-}
-
-/* From --radius, which data-radius sets. */
-:root, [data-radius] {
-  /* Radius scale, derived from --radius so data-radius="soft" | "round" moves every step: square 0/0/0,
-     soft 3/6/9px, round 6/12/18px. --radius-md is --radius. */
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) * 1.5);
+  --window-pad: var(--s6); /* a small window's inset from every edge (Settings, a panel) */
 }
