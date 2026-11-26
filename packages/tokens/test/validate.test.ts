@@ -72,6 +72,10 @@ test('invalid reference: malformed var(, a non-custom-property, a fallback', () 
     /--a: "var\(color\)" is not a var\(--name\) reference/,
   );
   assert.throws(
+    () => parse(block(':root', {'--a': 'VAR(--nope)'})),
+    /--a: "VAR\(--nope\)" is not a var\(--name\) reference/,
+  );
+  assert.throws(
     () => parse(block(':root', {'--a': 'var(--b, red)', '--b': 'red'})),
     /has a fallback, which would hide/,
   );
@@ -87,6 +91,13 @@ test('a selector list that starts with :root and holds bare attributes is the ba
   assert.throws(() => parse(block('.card', {'--a': '#000000'})), /tokens\.css: unexpected selector "\.card"/);
   assert.throws(() => parse(block(':root, .card', {'--a': '#000000'})), /unexpected selector/);
   assert.throws(() => parse(block('[data-accent], :root', {'--a': '#000000'})), /unexpected selector/);
+  // A theme rule is exactly [data-theme="x"] (warm: `:root, [data-theme="warm"]`); one that only contains it is refused.
+  for (const selector of [
+    '[data-theme="dark"] .card',
+    '[data-theme="dark"][data-accent="x"]',
+    '.x:hover, [data-theme="dark"]',
+  ])
+    assert.throws(() => parse(block(selector, {'--a': '#000000'})), /unexpected selector/, selector);
 });
 
 const util = readFileSync(join(import.meta.dirname, '../../css/src/utilities.css'), 'utf8');

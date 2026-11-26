@@ -45,10 +45,10 @@ const isBase = (selector: string) => {
   return parts[0] === ':root' && parts.slice(1).every((p) => /^\[data-[\w-]+\]$/.test(p));
 };
 
-// Every var( must be a plain var(--name). A fallback is refused: the token set is closed, so a fallback is either
-// dead or hides a missing token that the build should report.
+// Every var( (in any case: CSS function names are case-insensitive) must be a plain, lower-case var(--name). A
+// fallback is refused: the token set is closed, so a fallback is either dead or hides a missing token.
 function checkRefs(where: string, name: string, value: string) {
-  for (const {index} of value.matchAll(/var\(/g)) {
+  for (const {index} of value.matchAll(/var\(/gi)) {
     const at = value.slice(index);
     if (/^var\(--[\w-]+\)/.test(at)) continue;
     const why = /^var\(\s*--[\w-]+\s*,/.test(at)
@@ -98,7 +98,8 @@ export function sources(model: Model = tokens) {
   const src: Sources = {base: {}, themes: {}, accents: {}, options: {}};
   const b = blocks(model);
   for (const {selector, decls} of b['tokens.css']) {
-    const theme = attrs(selector).theme;
+    // Exactly a theme rule: no descendant, compound or mixed selector list, which would only apply in part.
+    const theme = selector.match(/^(?::root, )?\[data-theme="([\w-]+)"\]$/)?.[1];
     const where = `tokens.css ${selector}`;
     if (theme) addDecls((src.themes[theme] ??= {}), decls, where);
     else if (isBase(selector)) addDecls(src.base, decls, where);
