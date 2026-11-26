@@ -6,63 +6,62 @@
    --accent-2) in its own brand.css, per theme. Everything else is shared. */
 
 /* ─── Theme: Warm (default, light) ─── */
-:root,
-[data-theme="warm"] {
-  --background:   #FAFAF5;
-  --foreground:   #16120E;
-  --muted:        #706B65;   /* 4.9:1 on background */
-  --border:       #E6E1D9;
-  --surface:      #16120E;   /* always-dark panel: toasts, code */
+:root, [data-theme="warm"] {
+  --background: #FAFAF5;
+  --foreground: #16120E;
+  --muted: #706B65; /* 4.9:1 on background */
+  --border: #E6E1D9;
+  --surface: #16120E; /* always-dark panel: toasts, code */
   --surface-text: rgba(250, 250, 245, 0.85);
 
-  --accent:       #FF4500;   /* fills, marks, focus; not body text */
-  --accent-text:  #D13900;   /* accent as text: 4.6:1 on background */
-  --accent-2:     #AAFF00;
-  --on-accent:    #16120E;   /* text on an accent fill: 5.6:1 */
+  --accent: #FF4500; /* fills, marks, focus; not body text */
+  --accent-text: #D13900; /* accent as text: 4.6:1 on background */
+  --accent-2: #AAFF00;
+  --on-accent: #16120E; /* text on an accent fill: 5.6:1 */
 
-  --danger:       #B3261E;
-  --warning:      #8A5300;
-  --ok:           #1F6B3A;
+  --danger: #B3261E;
+  --warning: #8A5300;
+  --ok: #1F6B3A;
   color-scheme: light;
 }
 
 /* ─── Theme: Dark ─── */
 [data-theme="dark"] {
-  --background:   #111110;
-  --foreground:   #F0EDE7;
-  --muted:        #8C8279;
-  --border:       #242220;
-  --surface:      #09090A;
+  --background: #111110;
+  --foreground: #F0EDE7;
+  --muted: #8C8279;
+  --border: #242220;
+  --surface: #09090A;
   --surface-text: rgba(240, 237, 231, 0.85);
 
-  --accent:       #FF4500;
-  --accent-text:  #FF4500;
-  --accent-2:     #AAFF00;
-  --on-accent:    #111110;
+  --accent: #FF4500;
+  --accent-text: #FF4500;
+  --accent-2: #AAFF00;
+  --on-accent: #111110;
 
-  --danger:       #F0847A;
-  --warning:      #E0A23A;
-  --ok:           #6FCF8E;
+  --danger: #F0847A;
+  --warning: #E0A23A;
+  --ok: #6FCF8E;
   color-scheme: dark;
 }
 
 /* ─── Theme: Midnight ─── */
 [data-theme="midnight"] {
-  --background:   #060B1A;
-  --foreground:   #DDE3F5;
-  --muted:        #7680A5;
-  --border:       #0F1630;
-  --surface:      #02050F;
+  --background: #060B1A;
+  --foreground: #DDE3F5;
+  --muted: #7680A5;
+  --border: #0F1630;
+  --surface: #02050F;
   --surface-text: rgba(221, 227, 245, 0.85);
 
-  --accent:       #AAFF00;
-  --accent-text:  #AAFF00;
-  --accent-2:     #00E5FF;
-  --on-accent:    #060B1A;
+  --accent: #AAFF00;
+  --accent-text: #AAFF00;
+  --accent-2: #00E5FF;
+  --on-accent: #060B1A;
 
-  --danger:       #FF8A80;
-  --warning:      #FFC857;
-  --ok:           #7CE0A3;
+  --danger: #FF8A80;
+  --warning: #FFC857;
+  --ok: #7CE0A3;
   color-scheme: dark;
 }
 
@@ -70,45 +69,57 @@
   /* Code colours. The code panel is always dark (--surface), so these are one set for every theme.
      `npm run check` tests each against all three surfaces for 4.5:1. */
   --code-keyword: #FF9A70;
-  --code-string:  #A8E6A1;
-  --code-number:  #F5CD7A;
+  --code-string: #A8E6A1;
+  --code-number: #F5CD7A;
   --code-comment: #9A9EAD;
-  --code-tag:     #7FC8FF;
-  --code-attr:    #F0A8D4;
-  --code-fn:      #D6B4FF;
+  --code-tag: #7FC8FF;
+  --code-attr: #F0A8D4;
+  --code-fn: #D6B4FF;
 
   /* Type: Space Mono for display, DM Mono for everything else. */
   --font-display: "Space Mono", ui-monospace, monospace;
-  --font-body:    "DM Mono", ui-monospace, monospace;
-  --text-xs:   11px;
-  --text-sm:   13px;
+  --font-body: "DM Mono", ui-monospace, monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
   --text-base: 15px;
-  --text-lg:   18px;
+  --text-lg: 18px;
+
   /* Page headings in app content (Heading level 1 and 2, .prose h2). The 64px+ display sizes below are for heroes (.display-*). */
   --heading-1: clamp(32px, 4vw, 44px);
   --heading-2: clamp(26px, 3vw, 34px);
   --display-sm: clamp(28px, 3.4vw, 40px);
   --display-md: clamp(34px, 5vw, 64px);
   --display-xl: clamp(44px, 8vw, 104px);
+
   /* Weights: the three the bundled fonts ship (400 and 700 Space Mono, 400 and 500 DM Mono). No 600 is used. */
   --weight-regular: 400;
-  --weight-medium:  500;
-  --weight-bold:    700;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
   /* Line heights: tight for headings, normal for body text (the page default), relaxed for code and long form. */
-  --leading-tight:   1.2;
-  --leading-normal:  1.55;
+  --leading-tight: 1.2;
+  --leading-normal: 1.55;
   --leading-relaxed: 1.6;
 
   /* Space: 4px steps. */
-  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px; --s5: 24px;
-  --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
 
   /* Shape: square. One radius for the rare round thing (a ring, a dot). */
   --radius: 0;
   --round: 999px;
+
   /* Lines and states. */
   --border-width: 1px;
   --opacity-disabled: 0.5;
+
   /* Elevation. Popovers and menus are flat panels with a rule, so --shadow-popover is none (a hook for apps that want a lift). The toast floats over the page. */
   --shadow-popover: none;
   --shadow-toast: 0 8px 30px -12px rgba(0, 0, 0, 0.5);
@@ -120,15 +131,17 @@
   --slow: 0.45s;
 
   /* Layout. */
-  --side: 264px;        /* sidebar width */
-  --measure: 64ch;      /* longest comfortable line */
-  --content: 1080px;    /* widest main column */
+  --side: 264px; /* sidebar width */
+  --measure: 64ch; /* longest comfortable line */
+  --content: 1080px; /* widest main column */
+
   /* Container widths (Tailwind's steps), for max-width on a centred column. */
   --container-sm: 640px;
   --container-md: 768px;
   --container-lg: 1024px;
   --container-xl: 1280px;
   --container-2xl: 1536px;
+
   /* Breakpoints, for JavaScript (matchMedia) and documentation. CSS cannot read a variable inside @media,
      so a stylesheet must write the number out; these are the values to write. The built-in stylesheets still
      use older widths, listed in CHANGELOG.md; do not copy them. */
@@ -157,9 +170,11 @@
   /* Lines: a 20% mix of the text colour. --border alone is ~1.1:1 in the
      dark themes, so dividers use --rule. */
   --rule: color-mix(in srgb, var(--foreground) 20%, transparent);
+
   /* Washes: hover rows, code blocks, selected cells. */
-  --wash:   color-mix(in srgb, var(--foreground) 4%, transparent);
+  --wash: color-mix(in srgb, var(--foreground) 4%, transparent);
   --wash-2: color-mix(in srgb, var(--foreground) 9%, transparent);
+
   /* Ink density: tell up to five kinds apart without new colours. */
   --ink-1: var(--foreground);
   --ink-2: color-mix(in srgb, var(--foreground) 70%, transparent);
@@ -178,7 +193,9 @@
 /* From the space steps, which data-density sets. */
 :root, [data-density] {
   /* One height per size for every single-line control, so Button, Input, Select and friends line up in a form row. */
-  --control-sm: calc(var(--s6) + var(--s1)); --control-md: var(--s7); --control-lg: calc(var(--s7) + var(--s2));
+  --control-sm: calc(var(--s6) + var(--s1));
+  --control-md: var(--s7);
+  --control-lg: calc(var(--s7) + var(--s2));
 }
 
 /* From --radius, which data-radius sets. */
