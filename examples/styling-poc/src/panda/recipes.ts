@@ -70,6 +70,7 @@ export const alert = defineSlotRecipe({
       ok: {...bar('ok'), title: {color: 'ok'}},
       warning: {...bar('warning'), title: {color: 'warning'}},
       danger: {...bar('danger'), title: {color: 'danger'}},
+      neutral: bar('muted'),
     },
   },
   defaultVariants: {tone: 'info'},

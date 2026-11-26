@@ -14,7 +14,7 @@ import {
 
 export type Variant = 'solid' | 'outline' | 'ghost';
 export type Size = 'sm' | 'md' | 'lg';
-export type Tone = 'info' | 'ok' | 'warning' | 'danger';
+export type Tone = 'info' | 'ok' | 'warning' | 'danger' | 'neutral';
 type AlertParts = {root: string; icon: string; body: string; title: string; description: string};
 
 /** What an approach provides: class names per part, computed from the variant props where there are any. */

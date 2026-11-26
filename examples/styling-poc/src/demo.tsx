@@ -35,6 +35,9 @@ function Components({label}: {label: string}) {
         <k.AlertTitle>Payment failed</k.AlertTitle>
         <k.AlertDescription>Update the card and try again.</k.AlertDescription>
       </k.Alert>
+      <k.Alert tone="neutral" data-check="alert-neutral">
+        <k.AlertTitle>Draft</k.AlertTitle>
+      </k.Alert>
       <k.Tabs defaultValue="one" data-check="tabs">
         <k.TabsList aria-label={`${label} sections`}>
           <k.TabsTrigger value="one">Overview</k.TabsTrigger>

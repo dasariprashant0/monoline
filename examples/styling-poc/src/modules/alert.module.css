@@ -8,6 +8,7 @@
   .root[data-tone="ok"] { box-shadow: inset 3px 0 0 var(--ok); }
   .root[data-tone="warning"] { box-shadow: inset 3px 0 0 var(--warning); }
   .root[data-tone="danger"] { box-shadow: inset 3px 0 0 var(--danger); }
+  .root[data-tone="neutral"] { box-shadow: inset 3px 0 0 var(--muted); }
   .root[data-tone="ok"] .title { color: var(--ok); }
   .root[data-tone="warning"] .title { color: var(--warning); }
   .root[data-tone="danger"] .title { color: var(--danger); }

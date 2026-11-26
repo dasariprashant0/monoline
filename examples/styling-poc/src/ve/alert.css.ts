@@ -13,7 +13,15 @@ export const alert = recipe({
     fontSize: vars.text.sm,
     borderRadius: vars.radius.md,
   }),
-  variants: {tone: {info: bar(vars.accent), ok: bar(vars.ok), warning: bar(vars.warning), danger: bar(vars.danger)}},
+  variants: {
+    tone: {
+      info: bar(vars.accent),
+      ok: bar(vars.ok),
+      warning: bar(vars.warning),
+      danger: bar(vars.danger),
+      neutral: bar(vars.muted),
+    },
+  },
 });
 export const icon = style(inLayer({display: 'flex', paddingBlock: vars.space[1]}));
 export const body = style(inLayer({display: 'grid', gap: vars.space[1], minWidth: 0}));
@@ -24,6 +32,7 @@ export const titleTone = styleVariants({
   ok: inLayer({color: vars.ok}),
   warning: inLayer({color: vars.warning}),
   danger: inLayer({color: vars.danger}),
+  neutral: {},
 });
 export const description = style(
   inLayer({overflowWrap: 'anywhere', color: `color-mix(in srgb, ${vars.foreground} 78%, transparent)`}),

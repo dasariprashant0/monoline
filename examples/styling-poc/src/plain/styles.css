@@ -23,6 +23,7 @@
   .alert[data-tone="ok"] { box-shadow: inset 3px 0 0 var(--ok); }
   .alert[data-tone="warning"] { box-shadow: inset 3px 0 0 var(--warning); }
   .alert[data-tone="danger"] { box-shadow: inset 3px 0 0 var(--danger); }
+  .alert[data-tone="neutral"] { box-shadow: inset 3px 0 0 var(--muted); }
   .alert[data-tone="ok"] .alert-title { color: var(--ok); }
   .alert[data-tone="warning"] .alert-title { color: var(--warning); }
   .alert[data-tone="danger"] .alert-title { color: var(--danger); }

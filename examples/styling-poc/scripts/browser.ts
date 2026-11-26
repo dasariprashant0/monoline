@@ -64,6 +64,11 @@ for (const page of pages) {
     false,
   );
 
+  await check(
+    'variant: neutral alert bar = --muted',
+    `const a = $('alert-neutral'); return [cs(a).boxShadow.includes(resolve(document.body, 'var(--muted)')), cs(a).boxShadow];`,
+  );
+
   // Consumer overrides (measured, not enforced).
   await check(
     'override: className on Button',
