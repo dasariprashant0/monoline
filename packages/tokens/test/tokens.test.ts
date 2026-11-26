@@ -138,6 +138,52 @@ test('the scoped derived tokens (selector lists that start with :root, ADR 0012)
   assert.equal(src.base['--control-md'], 'var(--s7)');
 });
 
+// ADR 0012: a derived token resolves var() where it is declared, so a base token that reads a token some
+// data-<kind> layer overrides must be declared again on [data-<kind>] (in its selector list) or by every such layer
+// itself (data-radius re-declares --radius-sm/md/lg). Read from the generated tokens.css, so the scoped selector lists
+// cannot drop out of the generated file without this failing.
+// ponytail: known gap until worker A's follow-up moves --window-pad into the `:root, [data-density]` block; then
+// delete this entry.
+const SCOPE_PENDING = new Set(['--window-pad']);
+test('every derived base token is re-declared on the elements that set its inputs (scoped selector lists)', () => {
+  const selectorOf = new Map(
+    cssBlocks(css.tokens)
+      .filter((b) => b.selector.startsWith(':root') && !b.selector.includes('="'))
+      .flatMap((b) => b.decls.map(([n]) => [n, b.selector] as const)),
+  );
+  const refs = (value: string, seen = new Set(['--window-pad'])): Set<string> => {
+    for (const [, n] of value.matchAll(/var\((--[\w-]+)\)/g))
+      if (!seen.has(n!)) {
+        seen.add(n!);
+        if (src.base[n!]) refs(src.base[n!]!, seen);
+      }
+    return seen;
+  };
+  // Every layer that can override a base token, by the attribute that turns it on.
+  const layers: [string, Record<string, string>][] = [
+    ...Object.values(src.themes).map((d): [string, Record<string, string>] => ['theme', d]),
+    ...Object.values(src.accents).flatMap((a) =>
+      Object.values(a).map((d): [string, Record<string, string>] => ['accent', d]),
+    ),
+    ...Object.entries(src.options).flatMap(([kind, values]) =>
+      Object.values(values).map((d): [string, Record<string, string>] => [kind, d]),
+    ),
+  ];
+  const missing: string[] = [];
+  let scoped = 0;
+  for (const [name, value] of Object.entries(src.base)) {
+    const inputs = refs(value);
+    for (const [kind, decls] of layers) {
+      if (![...inputs].some((r) => r in decls) || name in decls) continue;
+      if (selectorOf.get(name)?.split(', ').includes(`[data-${kind}]`)) scoped++;
+      else if (!SCOPE_PENDING.has(name))
+        missing.push(`${name} (reads a token [data-${kind}] sets; declared on "${selectorOf.get(name)}")`);
+    }
+  }
+  assert.deepEqual([...new Set(missing)], []);
+  assert.ok(scoped > 0);
+});
+
 test('the token CSS in packages/css/src is what the source generates, under the generated-file header', () => {
   const generated = cssFiles();
   for (const [name, text] of Object.entries(css)) {
