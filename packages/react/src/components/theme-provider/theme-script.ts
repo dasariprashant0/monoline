@@ -28,13 +28,13 @@ export function themeScript(
     dir?: Dir | undefined;
   } = {},
 ): string {
-  const key = JSON.stringify(options.storageKey ?? 'monoline');
-  const def = JSON.stringify(options.defaultTheme ?? 'system');
-  // Only allowlisted values reach the inline script.
+  // Only allowlisted options reach the inline script, and `<` is escaped so no value can close the <script> element.
+  const ok = (n: keyof typeof SCRIPT_OPTIONS) =>
+    (SCRIPT_OPTIONS[n] as readonly string[]).includes(options[n === 'theme' ? 'defaultTheme' : n] as string);
+  const js = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c');
   const app = Object.fromEntries(
-    (['accent', 'font', 'radius', 'density', 'dir'] as const)
-      .filter((n) => (SCRIPT_OPTIONS[n] as readonly string[]).includes(options[n] as string))
-      .map((n) => [n, options[n]]),
+    (['accent', 'font', 'radius', 'density', 'dir'] as const).filter(ok).map((n) => [n, options[n]]),
   );
-  return `(function(){try{var d=document.documentElement,k=${key},o=${JSON.stringify(SCRIPT_OPTIONS)},a=${JSON.stringify(app)},g=function(n){var v=localStorage.getItem(k+'-'+n);return v&&o[n].indexOf(v)>-1?v:a[n]||null},t=g('theme')||${def};if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'warm';d.setAttribute('data-theme',t);['accent','font','radius','density'].forEach(function(n){var v=g(n);if(v)d.setAttribute('data-'+n,v)});var r=g('dir');if(r)d.setAttribute('dir',r)}catch(e){}})()`;
+  // Storage is read inside its own try: when it throws (blocked site data, a sandboxed iframe), the app's options still apply.
+  return `(function(){try{var d=document.documentElement,k=${js(options.storageKey ?? 'monoline')},o=${js(SCRIPT_OPTIONS)},a=${js(app)},g=function(n){var v=null;try{v=localStorage.getItem(k+'-'+n)}catch(e){}return v&&o[n].indexOf(v)>-1?v:a[n]||null},t=g('theme')||${js(ok('theme') ? options.defaultTheme : 'system')};if(t==='system')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'warm';d.setAttribute('data-theme',t);['accent','font','radius','density'].forEach(function(n){var v=g(n);if(v)d.setAttribute('data-'+n,v)});var r=g('dir');if(r)d.setAttribute('dir',r)}catch(e){}})()`;
 }
