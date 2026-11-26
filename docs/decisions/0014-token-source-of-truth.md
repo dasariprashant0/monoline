@@ -1,6 +1,6 @@
 # 0014: A TypeScript file is the token source; one model, no CSS parser
 
-Status: proposed (M2). The user chose the TypeScript source on 2026-11-26. An independent challenge runs before this record is accepted. Date: 2026-11-26.
+Status: accepted (M2, 2026-11-26). The user chose the TypeScript source on 2026-11-26; accepted after an independent Skeptic review, whose required changes are in.
 
 ## Context
 
