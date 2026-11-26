@@ -393,9 +393,9 @@ const {themeScript} = (await import('@monoline/react' as string)) as {
 };
 
 if (!dump) {
-  // First paint (ADR 0013): a page with themeScript() in <head> and a hydrated ThemeProvider. The head records <html>'s
-  // data-theme/data-accent and the painted colours before the first frame; after React has hydrated and run its effects
-  // they must be the same, and no attribute the script set may change value (a flip is a visible flash).
+  // First paint (ADR 0013): a page with themeScript() in <head> and a hydrated ThemeProvider. A script right after it
+  // records <html>'s computed look synchronously, before anything can paint: theme and accent colours, font, direction,
+  // a radius and a density token. After React has hydrated and run its effects, each must be unchanged (a change is a flash).
   const fx = mkdtempSync(join(tmpdir(), 'monoline-init-'));
   copyFileSync(join(root, 'packages/css/dist/core.css'), join(fx, 'core.css'));
   await esbuild({
@@ -410,7 +410,8 @@ if (!dump) {
     define: {'process.env.NODE_ENV': '"production"'},
     logLevel: 'error',
   });
-  const RECORD = `(function(){var d=document.documentElement,c=function(){var s=getComputedStyle(d);return {theme:d.getAttribute('data-theme'),accent:d.getAttribute('data-accent'),bg:s.getPropertyValue('--background').trim(),fill:s.getPropertyValue('--accent').trim()}};window.__first=c();window.__read=c;window.__flips=[];new MutationObserver(function(ms){ms.forEach(function(m){var v=d.getAttribute(m.attributeName);if(m.oldValue!==null&&v!==m.oldValue)window.__flips.push(m.attributeName+': '+m.oldValue+' -> '+v)})}).observe(d,{attributes:true,attributeOldValue:true});requestAnimationFrame(function(){window.__paint=c()})})()`;
+  const RECORD = `(function(){var d=document.documentElement,c=function(){var s=getComputedStyle(d),p=function(n){return s.getPropertyValue(n).trim()};return {theme:d.getAttribute('data-theme'),accent:d.getAttribute('data-accent'),bg:p('--background'),fill:p('--accent'),font:p('--font-body'),radius:p('--radius-md'),density:p('--s4'),dir:s.direction}};window.__first=c();window.__read=c})()`;
+  const LOOK = ['bg', 'fill', 'font', 'radius', 'density', 'dir'];
   const cases: {
     name: string;
     saved: Record<string, string>;
@@ -418,6 +419,8 @@ if (!dump) {
     props?: object;
     dark?: boolean;
     expect: [string, string | null];
+    after?: Record<string, string>;
+    drift?: boolean;
   }[] = [
     {name: 'saved dark + green', saved: {theme: 'dark', accent: 'green'}, expect: ['dark', 'green']},
     {
@@ -447,6 +450,22 @@ if (!dump) {
       props: {accent: 'teal'},
       expect: ['warm', 'blue'],
     },
+    {
+      name: 'nothing saved, all five app options',
+      saved: {},
+      script: {accent: 'violet', font: 'serif', radius: 'round', density: 'spacious', dir: 'rtl'},
+      props: {accent: 'violet', font: 'serif', radius: 'round', density: 'spacious', dir: 'rtl'},
+      expect: ['warm', 'violet'],
+      after: {radius: '12px', density: '20px', dir: 'rtl'},
+    },
+    // Deliberate drift: the provider sets dir="rtl" but the script was not told. The check must catch the flip.
+    {
+      name: 'drift: provider dir rtl, script without dir',
+      saved: {},
+      props: {dir: 'rtl'},
+      expect: ['warm', null],
+      drift: true,
+    },
   ];
   cases.forEach((c, i) =>
     writeFileSync(
@@ -467,7 +486,7 @@ if (!dump) {
       );
       await b5.navigate(`${b5.base}case${i}.html`, 800); // ThemeProvider always writes data-radius once its effects ran
       const r = await b5.evaluate(
-        `(() => ({first: window.__first, paint: window.__paint, after: window.__read(), flips: window.__flips, hydrated: document.documentElement.hasAttribute('data-radius')}))()`,
+        `(() => ({first: window.__first, after: window.__read(), hydrated: document.documentElement.hasAttribute('data-radius')}))()`,
       );
       const where = `[theme init: ${c.name}]`;
       const check = (name: string, ok: boolean, detail: string) => {
@@ -480,12 +499,11 @@ if (!dump) {
         r.first.theme === c.expect[0] && r.first.accent === c.expect[1],
         `got ${r.first.theme}/${r.first.accent}, expected ${c.expect.join('/')}`,
       );
-      check(
-        'first frame paints the final colours',
-        r.paint.bg === r.after.bg && r.paint.fill === r.after.fill,
-        `${JSON.stringify(r.paint)} then ${JSON.stringify(r.after)}`,
-      );
-      check('no attribute flips after hydration', r.flips.length === 0, r.flips.join(', '));
+      const changed = LOOK.filter((k) => r.first[k] !== r.after[k]).map((k) => `${k} ${r.first[k]} -> ${r.after[k]}`);
+      if (c.drift) check('the drift is caught', changed.length > 0, 'first paint and hydrated look are the same');
+      else check('the first paint is the hydrated look', changed.length === 0, changed.join(', '));
+      for (const [k, v] of Object.entries(c.after ?? {}))
+        check(`hydrated ${k}`, r.after[k] === v, `got ${r.after[k]}, expected ${v}`);
     }
   } finally {
     b5.close();
