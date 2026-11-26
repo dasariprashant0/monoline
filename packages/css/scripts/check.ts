@@ -1,8 +1,8 @@
 // Fails if a theme or accent breaks the contrast rules, or a component stylesheet uses a raw colour.
 // Run: npm run check (in packages/css). CI runs it on every push.
 import {readdirSync} from 'node:fs';
-import {read, parseTokens} from './lib.ts';
-import {contrastChecks} from '../../tokens/scripts/lib.ts';
+import {read} from './lib.ts';
+import {contrastChecks, cssFiles, sources} from '../../tokens/scripts/lib.ts';
 import './check-logical.ts';
 import './check-layers.ts';
 import './check-motion.ts';
@@ -10,11 +10,16 @@ import {findDuplicates, parseRules} from './check-duplicates.ts';
 import './size.ts';
 
 // Contrast for every theme x (no accent + 8 accents), code colours on --surface and prefers-contrast: more, all on
-// resolved values from the one token parser (packages/tokens/scripts/lib.ts). parseTokens also fails on a missing,
-// circular, duplicate or malformed reference.
-const tokens = parseTokens();
+// resolved values from the token source (packages/tokens/src/tokens.ts). sources() also fails on a missing, circular,
+// duplicate or malformed reference.
+const tokens = sources();
 const contrast = contrastChecks(tokens, read('src/utilities.css'));
 const fails = [...contrast.fails];
+
+// tokens.css, accents.css and options.css are generated from the token source; a hand edit or a stale file fails here.
+for (const [name, css] of Object.entries(cssFiles()))
+  if (read(`src/${name}`) !== css)
+    fails.push(`src/${name} is not what packages/tokens/src/tokens.ts generates; run npm run tokens`);
 
 // Tokens only: no raw hex in any stylesheet except tokens.css and accents.css.
 const linted = [
@@ -105,5 +110,5 @@ if (fails.length) {
   process.exit(1);
 }
 console.log(
-  `ok: ${contrast.count} contrast checks across ${Object.keys(tokens.themes).length} themes and ${Object.keys(tokens.accents).length + 1} accents (default + presets); no raw colours in components.`,
+  `ok: ${contrast.count} contrast checks across ${Object.keys(tokens.themes).length} themes and ${Object.keys(tokens.accents).length + 1} accents (default + presets); token CSS matches packages/tokens/src; no raw colours in components.`,
 );

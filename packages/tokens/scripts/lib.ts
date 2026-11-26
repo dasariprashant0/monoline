@@ -1,5 +1,6 @@
-// Turns Monoline's CSS token sources into design-tool files. No dependencies.
-// Input: packages/css/src/{tokens,accents,options}.css. Output: see build.ts.
+// Turns Monoline's token source (packages/tokens/src/tokens.ts) into the token CSS and design-tool files. No
+// dependencies. Output: see build.ts.
+import {type Item, type Model, tokens} from '../src/tokens.ts';
 
 type Decls = Record<string, string>;
 type Sources = {
@@ -67,28 +68,96 @@ function addDecls(layer: Decls, decls: [string, string][], where: string) {
   }
 }
 
-// Sorts the CSS into {base, themes, accents, options} and validates it (see validate). accents[name] has `generic`
-// (the bare [data-accent] rule, which is the warm look) plus one object per theme that overrides it.
-export function parseSources({tokens, accents, options}: {tokens: string; accents: string; options: string}) {
+const isBlock = (item: Item): item is Extract<Item, {selector: string}> => 'selector' in item;
+const decls = (block: Extract<Item, {selector: string}>): [string, string][] =>
+  block.groups.flatMap((g) =>
+    Object.entries(g.tokens).map(([n, v]): [string, string] => [n, typeof v === 'string' ? v : v[0]]),
+  );
+const accentSelector = (name: string, theme: string) =>
+  `[data-accent="${name}"]${theme === 'warm' ? '' : `[data-theme="${theme}"]`}`;
+
+// The model's rule blocks per file, as {selector, decls}: the shape cssBlocks reads back from the generated CSS.
+export function blocks(model: Model = tokens) {
+  const own = (items: readonly Item[]) => items.filter(isBlock).map((b) => ({selector: b.selector, decls: decls(b)}));
+  return {
+    'tokens.css': own(model['tokens.css']),
+    'accents.css': Object.entries(model['accents.css'].presets).flatMap(([name, byTheme]) =>
+      Object.entries(byTheme).map(([theme, values]) => ({
+        selector: accentSelector(name, theme),
+        decls: ACCENT_VARS.map((n, i): [string, string] => [n, values[i]!]),
+      })),
+    ),
+    'options.css': own(model['options.css']),
+  };
+}
+
+// Sorts the model (packages/tokens/src/tokens.ts) into {base, themes, accents, options} and validates it (see
+// validate). accents[name] has `generic` (the bare [data-accent] rule, which is the warm look) plus one object per
+// theme that overrides it.
+export function sources(model: Model = tokens) {
   const src: Sources = {base: {}, themes: {}, accents: {}, options: {}};
-  for (const {selector, decls} of cssBlocks(tokens)) {
+  const b = blocks(model);
+  for (const {selector, decls} of b['tokens.css']) {
     const theme = attrs(selector).theme;
     const where = `tokens.css ${selector}`;
     if (theme) addDecls((src.themes[theme] ??= {}), decls, where);
     else if (isBase(selector)) addDecls(src.base, decls, where);
     else throw new Error(`tokens.css: unexpected selector "${selector}"`);
   }
-  for (const {selector, decls} of cssBlocks(accents)) {
+  for (const {selector, decls} of b['accents.css']) {
     const {accent, theme = 'generic'} = attrs(selector);
-    if (!accent) throw new Error(`accents.css: no data-accent in "${selector}"`);
-    addDecls(((src.accents[accent] ??= {})[theme] ??= {}), decls, `accents.css ${selector}`);
+    addDecls(((src.accents[accent!] ??= {})[theme] ??= {}), decls, `accents.css ${selector}`);
   }
-  for (const {selector, decls} of cssBlocks(options)) {
-    const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/); // descendant rules hold no custom properties
-    if (m) addDecls(((src.options[m[1]] ??= {})[m[2]] ??= {}), decls, `options.css ${selector}`);
+  for (const {selector, decls} of b['options.css']) {
+    const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/);
+    if (!m) throw new Error(`options.css: a token block needs one [data-kind="value"] selector, not "${selector}"`);
+    addDecls(((src.options[m[1]!] ??= {})[m[2]!] ??= {}), decls, `options.css ${selector}`);
   }
   validate(src);
   return src;
+}
+
+// The three CSS files, in the layout the generator owns: one declaration per line, a blank line between groups and
+// between blocks, notes above (or, for a token, after) what they describe. accents.css keeps one line per rule.
+export const CSS_HEADER =
+  '/* Generated from packages/tokens/src/tokens.ts by `npm run tokens`. Do not edit: change that file and run `npm run tokens`. */';
+export function cssFiles(model: Model = tokens, header = CSS_HEADER) {
+  const comment = (text: string, indent = '') =>
+    `${indent}/* ${text
+      .split('\n')
+      .map((l, i) => (i && l ? `${indent}   ${l}` : l))
+      .join('\n')} */`;
+  const item = (it: Item) => {
+    if ('comment' in it) return comment(it.comment);
+    if ('raw' in it) return it.raw;
+    const lines = it.note ? [comment(it.note)] : [];
+    lines.push(`${it.selector} {`);
+    it.groups.forEach((g, i) => {
+      if (i) lines.push('');
+      if (g.note) lines.push(comment(g.note, '  '));
+      for (const [n, v] of Object.entries(g.tokens))
+        lines.push(typeof v === 'string' ? `  ${n}: ${v};` : `  ${n}: ${v[0]}; /* ${v[1]} */`);
+    });
+    for (const [p, v] of Object.entries(it.css ?? {})) lines.push(`  ${p}: ${v};`);
+    return [...lines, '}'].join('\n');
+  };
+  const file = (parts: string[]) => `${[...(header ? [header] : []), ...parts].join('\n\n')}\n`;
+  const {comment: accentsNote, presets} = model['accents.css'];
+  return {
+    'tokens.css': file(model['tokens.css'].map(item)),
+    'accents.css': file([
+      comment(accentsNote),
+      ...Object.entries(presets).map(([name, byTheme]) =>
+        Object.entries(byTheme)
+          .map(
+            ([theme, values]) =>
+              `${accentSelector(name, theme)} { ${ACCENT_VARS.map((n, i) => `${n}: ${values[i]};`).join(' ')} }`,
+          )
+          .join('\n'),
+      ),
+    ]),
+    'options.css': file(model['options.css'].map(item)),
+  };
 }
 
 // The layers that apply for a theme, an accent ('' for none) and option values, in cascade order, with where each

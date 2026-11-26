@@ -7,9 +7,12 @@ import {
   classify,
   cssBlocks,
   figmaVariables,
+  blocks,
+  CSS_HEADER,
+  cssFiles,
   flatten,
   nativeTokens,
-  parseSources,
+  sources,
   tokensCss,
   typesDts,
 } from '../scripts/lib.ts';
@@ -17,12 +20,12 @@ import type {TokensJson} from '../scripts/lib.ts';
 
 const here = import.meta.dirname;
 const read = (p: string) => readFileSync(join(here, p), 'utf8');
-const sources = {
+const css = {
   tokens: read('../../css/src/tokens.css'),
   accents: read('../../css/src/accents.css'),
   options: read('../../css/src/options.css'),
 };
-const src = parseSources(sources);
+const src = sources();
 const json: TokensJson = JSON.parse(read('../dist/tokens.json'));
 const THEMES = ['warm', 'dark', 'midnight'];
 
@@ -34,7 +37,7 @@ const valueAt = (scope: string[], name: string) => {
 };
 
 test('every custom property in tokens.css is in tokens.json, with the same value', () => {
-  for (const {selector, decls} of cssBlocks(sources.tokens)) {
+  for (const {selector, decls} of cssBlocks(css.tokens)) {
     const theme = selector.match(/data-theme="(\w+)"/)?.[1] ?? 'warm';
     const scope = selector.includes(':root') && !selector.includes('data-theme="') ? ['base'] : ['theme', theme];
     for (const [name, value] of decls) {
@@ -44,7 +47,7 @@ test('every custom property in tokens.css is in tokens.json, with the same value
 });
 
 test('accent presets round-trip: generic rule is the warm look, theme rules override it', () => {
-  const accentBlocks = cssBlocks(sources.accents);
+  const accentBlocks = cssBlocks(css.accents);
   assert.equal(Object.keys(json.accent).length, Object.keys(src.accents).length);
   for (const {selector, decls} of accentBlocks) {
     const name = selector.match(/data-accent="([\w-]+)"/)![1];
@@ -55,7 +58,7 @@ test('accent presets round-trip: generic rule is the warm look, theme rules over
 });
 
 test('option presets (font, radius, density) round-trip', () => {
-  for (const {selector, decls} of cssBlocks(sources.options)) {
+  for (const {selector, decls} of cssBlocks(css.options)) {
     const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/);
     if (!m) continue;
     for (const [prop, value] of decls)
@@ -70,13 +73,13 @@ test('themes are warm, dark and midnight; there are eight accents and three dens
 });
 
 test('tokens.css re-export parses back to the same values as tokens.json', () => {
-  const css = cssBlocks(tokensCss(json));
-  const base = css.find((b) => b.selector === ':root');
+  const blocks = cssBlocks(tokensCss(json));
+  const base = blocks.find((b) => b.selector === ':root');
   assert.deepEqual(Object.fromEntries(base!.decls), Object.fromEntries(flatten(json.base)));
-  const dark = css.find((b) => b.selector === '[data-theme="dark"]');
+  const dark = blocks.find((b) => b.selector === '[data-theme="dark"]');
   assert.deepEqual(Object.fromEntries(dark!.decls), Object.fromEntries(flatten(json.theme.dark)));
   const options = Object.values(json.option).reduce((n, values) => n + Object.keys(values).length, 0);
-  assert.equal(css.length, 1 + THEMES.length + Object.keys(json.accent).length * THEMES.length + options);
+  assert.equal(blocks.length, 1 + THEMES.length + Object.keys(json.accent).length * THEMES.length + options);
 });
 
 test('tokens.css in dist is the same re-export that the build writes', () => {
@@ -128,17 +131,26 @@ test('typescript types list the token names and themes', () => {
   assert.equal(typesDts(json), dts);
 });
 
-test('a missing reference fails the build instead of writing a wrong value', () => {
-  const broken = {...sources, tokens: sources.tokens.replace('--ink-1:', '--ink-1: var(--nope);\n  --x:')};
-  assert.throws(() => figmaVariables(parseSources(broken)), /undefined token --nope/);
-});
-
-test('a selector list that starts with :root (scoped derived tokens, ADR 0012) is base; any other list fails', () => {
+test('the scoped derived tokens (selector lists that start with :root, ADR 0012) are base tokens', () => {
+  // The refusal of other selector lists, e.g. `[data-accent], :root`, is in validate.test.ts.
   assert.equal(src.base['--rule'], 'color-mix(in srgb, var(--foreground) 20%, transparent)');
   assert.equal(src.base['--focus-ring'], '2px solid var(--accent)');
   assert.equal(src.base['--control-md'], 'var(--s7)');
-  const extra = (css: string) => ({...sources, tokens: `${sources.tokens}\n${css}`});
-  assert.throws(() => parseSources(extra('[data-accent], :root { --x: 1; }')), /unexpected selector/);
+});
+
+test('the token CSS in packages/css/src is what the source generates, under the generated-file header', () => {
+  const generated = cssFiles();
+  for (const [name, text] of Object.entries(css)) {
+    assert.equal(text, generated[`${name}.css` as keyof typeof generated], `${name}.css is stale; run npm run tokens`);
+    assert.ok(text.startsWith(`${CSS_HEADER}\n`), name);
+  }
+});
+
+test('round trip: the generated CSS parses back to the source, block by block and declaration by declaration', () => {
+  // cssBlocks is a plain CSS reader, independent of the generator.
+  const model = blocks();
+  for (const [name, text] of Object.entries(css))
+    assert.deepEqual(cssBlocks(text), model[`${name}.css` as keyof typeof model], `${name}.css`);
 });
 
 test('build output matches a fresh build of the sources (dist is not stale)', () => {

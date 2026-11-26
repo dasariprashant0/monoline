@@ -8,7 +8,8 @@
 //   dist/monoline.js            optional vanilla behaviours
 //   dist/tokens.json            every token, in the W3C design-tokens shape
 import {cpSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
-import {read, parseTokens} from './lib.ts';
+import {read} from './lib.ts';
+import {sources} from '../../tokens/scripts/lib.ts';
 import {bundles, minify} from './bundle.ts';
 
 const pkg = JSON.parse(read('package.json'));
@@ -29,7 +30,7 @@ cpSync(new URL('../src/fonts/', import.meta.url), new URL('fonts/', out), {recur
 cpSync(new URL('../js/monoline.js', import.meta.url), new URL('monoline.js', out));
 
 // The bare [data-accent] rule is the warm look, so it is filed under warm.
-const {base, themes, accents: parsed} = parseTokens();
+const {base, themes, accents: parsed} = sources();
 const accents = Object.fromEntries(
   Object.entries(parsed).map(([a, byTheme]) => [
     a,
