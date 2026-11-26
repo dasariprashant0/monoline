@@ -45,7 +45,7 @@ Option 2. `themeScript()` accepts `accent`, `font`, `radius`, `density` and `dir
 - The Next.js guide's root layout (a server component) renders `<script dangerouslySetInnerHTML={{__html: themeScript({accent: 'teal'})}} />` itself; the `'use client'` `ThemeInit` file is gone (it was needed in 0.4.0, where `themeScript` came from a client module).
 - Duplication stays: an app states its options for both the script and the provider. Pass the provider's `theme` as `defaultTheme`; no `theme` alias is added, since two names for one option cost more than they save.
 - CSP: an inline script needs `nonce` on the `<script>` element, or a hash in `script-src` that must be recomputed whenever the options change or Monoline is upgraded (the script text changes).
-- Astro: `<script is:inline set:html={themeScript()} />` in `<head>` (without `is:inline`, Astro bundles and defers it).
+- Astro: `<script is:inline set:html={themeScript()} />` in `<head>`; `is:inline` keeps Astro from processing it.
 - The test does not run Next.js itself. It checks the contract (script before first frame, provider after hydration) with React's `hydrateRoot` against server markup identical to what `ThemeProvider` renders.
 
 Evidence:
