@@ -36,7 +36,7 @@ const valueAt = (scope: string[], name: string) => {
 test('every custom property in tokens.css is in tokens.json, with the same value', () => {
   for (const {selector, decls} of cssBlocks(sources.tokens)) {
     const theme = selector.match(/data-theme="(\w+)"/)?.[1] ?? 'warm';
-    const scope = selector.includes(':root') && !selector.includes('data-theme') ? ['base'] : ['theme', theme];
+    const scope = selector.includes(':root') && !selector.includes('data-theme="') ? ['base'] : ['theme', theme];
     for (const [name, value] of decls) {
       assert.equal(valueAt(scope, name), value, `${selector} ${name}`);
     }
@@ -131,6 +131,14 @@ test('typescript types list the token names and themes', () => {
 test('a missing reference fails the build instead of writing a wrong value', () => {
   const broken = {...sources, tokens: sources.tokens.replace('--ink-1:', '--ink-1: var(--nope);\n  --x:')};
   assert.throws(() => figmaVariables(parseSources(broken)), /undefined token --nope/);
+});
+
+test('a selector list that starts with :root (scoped derived tokens, ADR 0012) is base; any other list fails', () => {
+  assert.equal(src.base['--rule'], 'color-mix(in srgb, var(--foreground) 20%, transparent)');
+  assert.equal(src.base['--focus-ring'], '2px solid var(--accent)');
+  assert.equal(src.base['--control-md'], 'var(--s7)');
+  const extra = (css: string) => ({...sources, tokens: `${sources.tokens}\n${css}`});
+  assert.throws(() => parseSources(extra('[data-accent], :root { --x: 1; }')), /unexpected selector/);
 });
 
 test('build output matches a fresh build of the sources (dist is not stale)', () => {

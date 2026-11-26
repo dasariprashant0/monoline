@@ -762,14 +762,8 @@
     "s7": 48,
     "s8": 64,
     "s9": 96,
-    "control-sm": 36,
-    "control-md": 48,
-    "control-lg": 56,
     "radius": 0,
     "round": 999,
-    "radius-sm": 0,
-    "radius-md": 0,
-    "radius-lg": 0,
     "border-width": 1,
     "opacity-disabled": 0.5,
     "ease": [
@@ -797,6 +791,12 @@
     "window-pad": 32,
     "z-drawer": 40,
     "z-grain": 50,
-    "z-toast": 60
+    "z-toast": 60,
+    "control-sm": 36,
+    "control-md": 48,
+    "control-lg": 56,
+    "radius-sm": 0,
+    "radius-md": 0,
+    "radius-lg": 0
   }
 }

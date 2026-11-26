@@ -37,11 +37,11 @@ export function cssBlocks(css: string) {
 const attrs = (selector: string) =>
   Object.fromEntries([...selector.matchAll(/\[data-(\w+)="([\w-]+)"\]/g)].map(([, k, v]) => [k, v]));
 
-// A selector list that holds :root and otherwise only bare attributes, e.g. `:root, [data-theme], [data-accent]`:
+// A selector list that starts with :root and otherwise holds only bare attributes, e.g. `:root, [data-theme], [data-accent]`:
 // tokens declared there are re-declared on every themed element, so they belong to the base layer.
 const isBase = (selector: string) => {
   const parts = selector.split(',').map((s) => s.trim());
-  return parts.includes(':root') && parts.every((p) => p === ':root' || /^\[data-[\w-]+\]$/.test(p));
+  return parts[0] === ':root' && parts.slice(1).every((p) => /^\[data-[\w-]+\]$/.test(p));
 };
 
 // Every var( must be a plain var(--name). A fallback is refused: the token set is closed, so a fallback is either
