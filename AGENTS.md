@@ -12,7 +12,7 @@ Monoline is an open-source UI kit with two layers:
 | CLI | `packages/cli` → `monoline` | `npx monoline add <component>` copies a component and its CSS from `registry/` into a project. No dependencies. TypeScript, built to `dist/` with tsc. |
 | React | `packages/react` → `@monoline/react` | Accessible, typed React components that render the core's classes. Modals use native `<dialog>`, popovers and menus use one own floating layer ([ADR 0001](docs/decisions/0001-native-dialog-and-own-floating-layer.md)); roving focus and collections (tabs, accordion, slider and others) still come from Radix (`radix-ui`). |
 | MCP | `packages/mcp` → `@monoline/mcp` | MCP server over stdio that answers questions from the registry. No dependencies. TypeScript, built to `dist/` with tsc. |
-| Tokens | `packages/tokens` → `@monoline/tokens` | Generates `dist/` (JSON, CSS, `.d.ts`, Figma variables) from the core's token CSS. Private, not published yet. |
+| Tokens | `packages/tokens` → `@monoline/tokens` | The token source, `src/tokens.ts` ([ADR 0014](docs/decisions/0014-token-source-of-truth.md)). Generates the core's token CSS (`packages/css/src/tokens.css`, `accents.css`, `options.css`) and `dist/` (JSON, CSS, `.d.ts`, Figma variables, React Native values). Private, not published yet. |
 | VS Code | `packages/vscode` | Snippets generated from `registry/`. Not a workspace (no `package.json`), not published. |
 | Docs | `apps/docs` | The documentation site. Discovers components automatically. |
 | Registry | `registry/`, `llms.txt`, `llms-full.txt` | Generated, machine-readable component list and source for AI tools. |
@@ -37,7 +37,7 @@ npm run size                              # gzip budgets for JS and CSS; run aft
 npm run typecheck:examples                # examples and the consumer type check, against dist; run after build
 npm run test:docs -w docs                 # docs scripts tests
 npm run registry                          # regenerate registry/ and llms*.txt
-npm run tokens                            # regenerate packages/tokens/dist
+npm run tokens                            # regenerate the token CSS and packages/tokens/dist from packages/tokens/src/tokens.ts
 npm run test:tokens                       # tokens generator tests
 npm run test:vscode                       # snippet generator tests
 ```
@@ -60,7 +60,9 @@ Agents often run in a sandbox (macOS Seatbelt in Claude Code). Most commands, `n
 ## Where things live
 
 ```
-packages/css/src/tokens.css, base.css, accents.css, options.css, utilities.css
+packages/tokens/src/tokens.ts             the token source: every token, theme, accent and option (ADR 0014)
+packages/css/src/tokens.css, accents.css, options.css   GENERATED from packages/tokens/src/tokens.ts, committed
+packages/css/src/base.css, utilities.css
 packages/css/src/components/NN-name.css   legacy numbered files (keep order) and <name>.css for new ones
 packages/css/js/monoline.js               optional vanilla behaviours for CSS-only users
 packages/react/src/components/<name>/     one folder per component (see recipe)
@@ -106,7 +108,7 @@ packages/css/src/components/<name>.css   styles, tokens only
 
 ### CSS rules
 
-- Tokens only: no raw hex, px font size or spacing number. `npm run check` fails on raw colours. If a value is missing, add a token to `tokens.css` first (all three themes).
+- Tokens only: no raw hex, px font size or spacing number. `npm run check` fails on raw colours. If a value is missing, add a token to `packages/tokens/src/tokens.ts` first (all three themes) and run `npm run tokens`; never edit the generated `tokens.css`, `accents.css` or `options.css`.
 - Square edges (`--radius` is 0), thin `--rule` lines, no shadows except toast/popover layers, no gradients except `--hatch` (the `effects` category is exempt but must respect `prefers-reduced-motion`).
 - Source files are unlayered; `packages/css/scripts/bundle.ts` adds the layers when it builds `dist/`. Do not write `@layer` in `src/`.
 - Style Radix and native state through attributes: `[data-state="open"]`, `[aria-current]`, `[aria-invalid="true"]`, `:disabled`. Focus uses `:focus-visible` with the shared ring.
@@ -152,7 +154,7 @@ Several agents may build at once, each in its own worktree. To avoid conflicts:
 
 1. Work only inside the folders and CSS files your task owns (named in your task). Do not edit another category's component or CSS files; open a note in your report instead.
 2. Never hand-edit generated files (see "Generated files" below).
-3. Shared files (`tokens.css`, `base.css`, `accents.css`, `options.css`, `utilities.css`, `package.json`, `AGENTS.md`, `DESIGN.md`) belong to the `core` task. If you need a token, add it in your own CSS file as a component-scoped custom property (`--dialog-width`) and note it in your report.
+3. Shared files (`packages/tokens/src/tokens.ts` and the CSS it generates, `base.css`, `utilities.css`, `package.json`, `AGENTS.md`, `DESIGN.md`) belong to the `core` task. If you need a token, add it in your own CSS file as a component-scoped custom property (`--dialog-width`) and note it in your report.
 4. Commit early and small, on your own branch. Message style: `button: add loading state`.
 5. Finish with the Definition of done below, and report: what you built, what you could not finish, anything another task must change.
 
@@ -164,6 +166,7 @@ Regenerate them with their command and commit the output in the same PR as the c
 |---|---|---|---|
 | `registry/`, `llms.txt`, `llms-full.txt` | `npm run registry` | yes | `ci.yml` diff step |
 | `packages/tokens/dist/` | `npm run tokens` | yes | `ci.yml` diff step |
+| `packages/css/src/tokens.css`, `accents.css`, `options.css` | `npm run tokens` (from `packages/tokens/src/tokens.ts`) | yes | `ci.yml` diff step; `npm run check` and `npm run test:tokens` fail if stale |
 | `packages/vscode/snippets/` | `node packages/vscode/scripts/build.ts`, after `npm run registry` | yes | `npm run test:vscode` in `ci.yml` |
 | `packages/react/src/index.ts` and `styles.ts`, `apps/docs/src/**/*.generated.json`, `apps/docs/public/docs/`, `apps/docs/public/llms.txt`, any `dist/` except tokens | run by `test`, `typecheck`, `build`, `dev` | no, gitignored | n/a |
 

@@ -156,6 +156,26 @@ describe('themeScript', () => {
     expect(root).not.toHaveAttribute('dir', 'foo');
     expect(root.getAttribute('data-accent')).not.toBe('"><x>');
     expect(root.getAttribute('data-theme')).not.toBe('neon');
+    // Developer options are serialised into the inline script: nothing may close the <script> element or skip the allowlist.
+    const s = themeScript({defaultTheme: '</script><script>alert(1)</script>' as never, storageKey: '</script><x>'});
+    expect(s).not.toContain('<');
+    expect(s).toContain('||"system"');
+    expect(themeScript({defaultTheme: 'neon' as never})).not.toContain('neon');
+    localStorage.setItem('a<b-theme', 'dark');
+    new Function(themeScript({storageKey: 'a<b'}))();
+    expect(root).toHaveAttribute('data-theme', 'dark');
+  });
+  it("sets the app's own choices when nothing is saved, and a saved choice still wins", () => {
+    new Function(
+      themeScript({defaultTheme: 'warm', accent: 'teal', density: 'compact', dir: 'rtl', font: '"><x>' as never}),
+    )();
+    expect(root).toHaveAttribute('data-accent', 'teal');
+    expect(root).toHaveAttribute('data-density', 'compact');
+    expect(root).toHaveAttribute('dir', 'rtl');
+    expect(root.getAttribute('data-font')).not.toBe('"><x>');
+    localStorage.setItem('monoline-accent', 'blue');
+    new Function(themeScript({defaultTheme: 'warm', accent: 'teal'}))();
+    expect(root).toHaveAttribute('data-accent', 'blue');
   });
   it('uses a custom key and never throws', () => {
     localStorage.setItem('app-theme', 'dark');
@@ -166,6 +186,19 @@ describe('themeScript', () => {
     });
     expect(() => new Function(themeScript())()).not.toThrow();
     get.mockRestore();
+  });
+  it("applies the app's options when storage itself throws (blocked site data, sandboxed iframe)", () => {
+    for (const t of [window, globalThis])
+      Object.defineProperty(t, 'localStorage', {
+        get: () => {
+          throw new Error('SecurityError');
+        },
+        configurable: true,
+      });
+    expect(() => new Function(themeScript({defaultTheme: 'dark', accent: 'teal', dir: 'rtl'}))()).not.toThrow();
+    expect(root).toHaveAttribute('data-theme', 'dark');
+    expect(root).toHaveAttribute('data-accent', 'teal');
+    expect(root).toHaveAttribute('dir', 'rtl');
   });
 });
 

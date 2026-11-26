@@ -8,7 +8,7 @@ import {Markdown} from './markdown';
 import {CopyIcon, CheckIcon} from '../shell/Logo';
 import {href} from '../shell/router';
 import {GITHUB} from '../shell/Topbar';
-import {viteMain1, nextLayout, nextThemeInit, nextDemo, nextPage} from './start-snippets';
+import {viteMain1, nextLayout, nextDemo, nextPage} from './start-snippets';
 
 const H2 = ({id, children}: {id: string; children: ReactNode}) => (
   <h2 id={id} className="cdoc-h2">
@@ -52,21 +52,15 @@ export const Nextjs = () => (
         </Step>
         <Step n={2} title="Load the CSS and the theme in the layout">
           <p className="cdoc-muted">
-            Import <code>core.css</code> first, then one file per component you use.{' '}
-            <code>suppressHydrationWarning</code> is needed because the theme is written to <code>&lt;html&gt;</code>{' '}
-            before React loads.
+            Import <code>core.css</code> first, then one file per component you use. <code>themeScript</code> sets the
+            saved theme before first paint, so dark-mode visitors see no light flash; give it the same options as{' '}
+            <code>ThemeProvider</code>. <code>suppressHydrationWarning</code> is needed because the theme is written to{' '}
+            <code>&lt;html&gt;</code> before React loads. (In 0.4.0 <code>themeScript</code> came from a client module
+            and needed its own <code>'use client'</code> file.)
           </p>
           <CodeBlock title="app/layout.tsx" language="tsx" code={nextLayout} />
         </Step>
-        <Step n={3} title="Set the saved theme before first paint">
-          <p className="cdoc-muted">
-            In 0.4.0, <code>themeScript</code> is exported from a client module, so a Server Component cannot call it
-            (the build fails with "Attempted to call themeScript() from the server"). Later versions export it from a
-            plain module; this small client file works with both, so dark-mode visitors see no light flash.
-          </p>
-          <CodeBlock title="app/theme-init.tsx" language="tsx" code={nextThemeInit} />
-        </Step>
-        <Step n={4} title="Use components from a client file">
+        <Step n={3} title="Use components from a client file">
           <p className="cdoc-muted">
             Anything with state or handlers needs <code>'use client'</code> in the file where you use it. Import that
             file from the server page.

@@ -1,0 +1,45 @@
+/* Approach 1, today's model: plain classes and data-* selectors over Monoline's tokens. The @layer wrapper is what
+   packages/css/scripts/bundle.ts adds to dist (ADR 0003); it is written by hand here because this file is not bundled. */
+@layer monoline.components {
+  .btn { height: var(--control-md); display: inline-flex; align-items: center; justify-content: center; gap: var(--s3); padding: 0 var(--s5); font-size: var(--text-sm); font-weight: var(--weight-medium); white-space: nowrap; border-radius: var(--radius); transition: background var(--fast), color var(--fast); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-solid { background: var(--btn-bg, var(--foreground)); color: var(--btn-fg, var(--background)); }
+  .btn-solid:hover:not(:disabled) { background: var(--btn-bg-hover, var(--ink-2)); }
+  .btn-outline { box-shadow: inset 0 0 0 1px var(--foreground); }
+  .btn-outline:hover:not(:disabled) { background: var(--foreground); color: var(--background); }
+  .btn-ghost { padding-inline: 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--muted); }
+  .btn-ghost:hover:not(:disabled) { text-decoration-color: currentColor; }
+  .btn-sm { height: var(--control-sm); padding: 0 var(--s3); font-size: var(--text-xs); }
+  .btn-lg { height: var(--control-lg); padding: 0 var(--s6); font-size: var(--text-base); }
+  .btn-spinner { width: 1em; height: 1em; border: 2px solid currentColor; border-bottom-color: transparent; border-radius: 50%; animation: btn-spin 0.8s linear infinite; }
+  @keyframes btn-spin { to { transform: rotate(360deg); } }
+
+  .alert { display: flex; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--wash); box-shadow: inset 3px 0 0 var(--foreground); font-size: var(--text-sm); border-radius: var(--radius-md); }
+  .alert-icon { display: flex; padding-block: var(--s1); }
+  .alert-body { display: grid; gap: var(--s1); min-width: 0; }
+  .alert-title { overflow-wrap: anywhere; font-weight: var(--weight-medium); }
+  .alert-description { overflow-wrap: anywhere; color: color-mix(in srgb, var(--foreground) 78%, transparent); }
+  .alert[data-tone="info"] { box-shadow: inset 3px 0 0 var(--accent); }
+  .alert[data-tone="ok"] { box-shadow: inset 3px 0 0 var(--ok); }
+  .alert[data-tone="warning"] { box-shadow: inset 3px 0 0 var(--warning); }
+  .alert[data-tone="danger"] { box-shadow: inset 3px 0 0 var(--danger); }
+  .alert[data-tone="neutral"] { box-shadow: inset 3px 0 0 var(--muted); }
+  .alert[data-tone="ok"] .alert-title { color: var(--ok); }
+  .alert[data-tone="warning"] .alert-title { color: var(--warning); }
+  .alert[data-tone="danger"] .alert-title { color: var(--danger); }
+
+  .tabs { display: grid; gap: var(--s4); min-width: 0; }
+  .tabs-list { display: flex; gap: var(--s5); border-bottom: 1px solid var(--rule); max-width: 100%; overflow-x: auto; }
+  .tabs-trigger { padding: var(--s3) 0; margin-bottom: -1px; font-weight: var(--weight-medium); color: var(--muted); border-bottom: 2px solid transparent; }
+  .tabs-trigger:hover { color: var(--foreground); }
+  .tabs-trigger[data-state="active"] { color: var(--foreground); border-color: var(--foreground); }
+  .tabs-content:focus-visible { outline-offset: 4px; }
+
+  .dialog::backdrop { background: color-mix(in srgb, var(--surface) 45%, transparent); }
+  .dialog { position: fixed; inset: 0; margin: auto; width: min(520px, 92vw); height: fit-content; max-height: 90vh; overflow-y: auto; padding: var(--s6); background: var(--background); color: var(--foreground); border: 1px solid var(--foreground); border-radius: var(--radius-md); }
+  .dialog[data-state="open"] { animation: dialog-pop var(--base) var(--ease); }
+  .dialog-title { padding-inline-end: var(--s9); font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-lg); letter-spacing: -0.02em; margin-bottom: var(--s3); }
+  .dialog-description { color: var(--muted); font-size: var(--text-sm); margin-bottom: var(--s5); }
+  .dialog-close { position: absolute; top: var(--s4); inset-inline-end: var(--s4); padding: var(--s1) var(--s2); font-size: var(--text-sm); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--muted); }
+  @keyframes dialog-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}

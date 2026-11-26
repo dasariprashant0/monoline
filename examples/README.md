@@ -8,6 +8,8 @@ Three small apps that use Monoline the way a consumer would: `import '@monoline/
 | `auth-settings` | sign-in and sign-up with validation (`Form`, `Field`, `PasswordInput`), `Tabs`, `Switch`, `Select`, `NativeSelect`, `FileUpload`, `AlertDialog` danger zone. Routes by hash: `#signin`, `#signup`, `#settings` |
 | `landing` | `BlockHero`, `BlockFeatureGrid`, `BlockPricing` with billing toggle, `BlockTestimonials`, `BlockCta`, `BlockFooter`, light and dark switch |
 
+`styling-poc/` is the M2 styling comparison: Button, Alert, Tabs and Dialog built with plain CSS, CSS Modules, Vanilla Extract and Panda over one behaviour layer ([ADR 0015](../docs/decisions/0015-styling-approach.md), numbers in [docs/audit/m2-styling-poc.md](../docs/audit/m2-styling-poc.md)). It has its own `package.json` and lockfile, is not a workspace and is not in CI; its README says how to run it.
+
 `consumer-types/` is not an app: one type-only file that fails to compile if an optional prop of any exported component rejects an explicit `undefined` ([ADR 0009](../docs/decisions/0009-exact-optional-property-types.md)). `npm run typecheck:examples` checks it and the three apps.
 
 ## Starter

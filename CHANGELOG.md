@@ -14,17 +14,23 @@ Versions follow [semver](https://semver.org). Before 1.0, a minor version may ch
 
 - **Props and types from the audit fixes (all optional, nothing removed):** a `labels` object for the built-in strings of Pagination, NumberInput, Calendar, RangeCalendar and FileUpload; `open`, `defaultOpen` and `onOpenChange` on DatePicker and DateRangePicker, and `size` on DateRangePicker; `invalid` on Switch; `onSearchError` on Mentions; exported prop types for Popover, Select, Table, HoverCard, DropdownMenu and the Radix wrappers.
 - **CLI:** `monoline add` now copies the shared helpers a component imports (`utils/slot.tsx`, `utils/overlay.ts`, `utils/cx.ts`), so copied Button, Card and Dialog compile. The registry lists `radix-ui` as a dependency only for components whose copied files import it.
+- **`@monoline/tokens` React Native values:** `native.json`, exported as `@monoline/tokens/native.json`, with colours per theme and accent (resolved to `#RRGGBB` or `rgba()`) and lengths, durations (ms) and the easing curve as numbers.
 
 ### Changed
 
 - Context-based parts (for example `DialogTitle` outside `Dialog`) throw a clear Monoline error when used outside their root. A Modal sets `aria-labelledby` only while a title is rendered.
 - Built CSS has a new layer, `monoline.options`, between components and utilities. `data-radius`, `data-font` and `data-density` rules moved out of `monoline.tokens` into it, so options restyle components in every bundle. The layer order is `base, tokens, components, options, utilities`.
 - The all-CSS size budget is 21 KB (was 20). The anchor-positioning path and the audit fixes raised the budgets in `scripts/size.mjs` (owner approved): Button 0.9, Dialog 2.2, AlertDialog 2.1, Drawer 2.2, Tooltip 3.4, Popover 3.4, DropdownMenu 4.5, Select 5.9 and Everything 102 KB.
+- Design tokens have one source, `packages/tokens/src/tokens.ts` (ADR 0014). `packages/css/src/tokens.css`, `accents.css` and `options.css` are generated from it by `npm run tokens`, with a new layout (one declaration per line). Token names, values, selectors and order are unchanged, `@monoline/css/dist/tokens.json` and `monoline.min.css` are byte-identical, and `monoline.css` and `core.css` differ only in whitespace and a generated-file comment.
+- The token build fails on a reference to an undefined token, a reference cycle (also one that only a theme or accent closes), a token declared twice in one layer, and a malformed `var()` or one with a fallback. A misspelt reference also fails the type check.
 
 ### Fixed
 
+- **Scoped theming:** `data-theme`, `data-accent` and `data-density` on a wrapper now re-derive `--rule`, `--wash`, `--ink-*`, `--hatch`, `--focus-ring`, `--control-*` and `--window-pad` (ADR 0012). Changed with it: an app override of one of those tokens on `:root` alone no longer reaches inside such a wrapper; write it on `:root, [data-theme]`.
+- **`themeScript()`** escapes its options (a `defaultTheme` or `storageKey` containing `</script>` could break out of the inline script) and still applies the app's look when `localStorage` is blocked. It also takes `accent`, `font`, `radius`, `density` and `dir`, so a first visit paints the app's look before hydration (ADR 0013).
 - Components that read Field context carry `'use client'`, so they work in Next.js Server Component trees; `useIntersection` no longer loops on inline thresholds; `useControllableState` returns a stable setter.
 - A tooltip no longer closes when keyboard focus scrolls its trigger into view.
+- `@monoline/tokens`: `--heading-1` and `--heading-2` are type tokens (`TypeToken`, the Typography collection), not colours. `ColorToken` no longer lists them.
 - A combobox no longer opens on focus alone, and the toast's focus proxies are out of the Tab order.
 - The context-menu demo trigger is a focusable button, so Shift+F10 works.
 

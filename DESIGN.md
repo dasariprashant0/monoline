@@ -60,7 +60,7 @@ export default defineConfig({plugins: [react()], resolve: {preserveSymlinks: tru
 [data-theme="midnight"]    { --accent: #5FD6B2; --accent-text: #5FD6B2; --accent-2: #FFC857; --on-accent: #06241C; }
 ```
 
-A new accent must pass: `--accent-text` on `--background` at least 4.5:1, `--accent` on `--background` at least 3:1, and `--on-accent` on `--accent` at least 4.5:1, in all three themes. To add it to the kit, put it in `packages/css/src/accents.css` and the table above.
+A new accent must pass: `--accent-text` on `--background` at least 4.5:1, `--accent` on `--background` at least 3:1, and `--on-accent` on `--accent` at least 4.5:1, in all three themes (`npm run check` tests it). To add it to the kit, add a row to the accent table in `packages/tokens/src/tokens.ts`, run `npm run tokens` (it writes `packages/css/src/accents.css`), and add it to the table above.
 
 ## 2. Principles
 
@@ -74,7 +74,7 @@ A new accent must pass: `--accent-text` on `--background` at least 4.5:1, `--acc
 
 ## 3. Tokens
 
-All in `packages/css/src/tokens.css`. Three themes, set on `<html data-theme>` (the React `useTheme()` does it for you); the accent is `<html data-accent>`.
+All in `packages/tokens/src/tokens.ts`, which generates `packages/css/src/tokens.css` (`npm run tokens`). Three themes, set on `<html data-theme>` (the React `useTheme()` does it for you); the accent is `<html data-accent>`.
 
 | Group | Tokens | Use |
 |---|---|---|
@@ -89,6 +89,8 @@ All in `packages/css/src/tokens.css`. Three themes, set on `<html data-theme>` (
 | Motion | `--ease`, `--fast` .12s, `--base` .2s, `--slow` .45s | See §8 |
 
 Never use `--border` for a visible line: it is about 1.1:1 in dark themes. Use `--rule`.
+
+Derived tokens (`--rule`, `--wash`, `--ink-*`, `--hatch`, `--focus-ring`, `--control-*`, `--window-pad`) are declared again on every `data-theme`, `data-accent` and `data-density` wrapper, so a scoped option looks the same as on `<html>` ([ADR 0012](docs/decisions/0012-scoped-derived-tokens.md)). To override one, write it on the same selectors (`:root, [data-theme]`); an override on `:root`, `body` or a class above a wrapper does not reach inside it. Put `data-accent` on a wrapper together with `data-theme`: accent presets are per theme.
 
 ## 4. Type
 
@@ -184,7 +186,7 @@ Never use `--border` for a visible line: it is about 1.1:1 in dark themes. Use `
 
 - **Project-only layout** goes in the project's own CSS, using tokens.
 - **Second use:** when a pattern appears in a second project, move it here (CSS class first, then a React wrapper if it has behaviour) and add it to the gallery.
-- **Adding a token:** add it to all three themes if it's a colour, add it to §3, and show it in the gallery.
+- **Adding a token:** add it to `packages/tokens/src/tokens.ts` (all three themes if it's a colour), run `npm run tokens` and commit the regenerated CSS and `packages/tokens/dist` with it, add it to §3, and show it in the gallery. A reference to a token that does not exist fails `npm run typecheck:scripts`.
 - After any change, open the gallery in all three themes with each accent. Then run `npm run build` here to regenerate `packages/css/src/monoline.css`.
 
 ## 12. Before you call a screen done

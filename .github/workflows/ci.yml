@@ -37,7 +37,7 @@ jobs:
       - run: npm run test:docs -w docs
       - run: npm run test:vscode
       - name: Tokens are up to date
-        run: npm run tokens && git diff --exit-code packages/tokens/dist
+        run: npm run tokens && git diff --exit-code packages/tokens/dist packages/css/src/tokens.css packages/css/src/accents.css packages/css/src/options.css
 
   # The one build. Also runs everything that needs dist but no browser.
   build:

@@ -7,8 +7,12 @@ import {
   classify,
   cssBlocks,
   figmaVariables,
+  blocks,
+  CSS_HEADER,
+  cssFiles,
   flatten,
-  parseSources,
+  nativeTokens,
+  sources,
   tokensCss,
   typesDts,
 } from '../scripts/lib.ts';
@@ -16,12 +20,12 @@ import type {TokensJson} from '../scripts/lib.ts';
 
 const here = import.meta.dirname;
 const read = (p: string) => readFileSync(join(here, p), 'utf8');
-const sources = {
+const css = {
   tokens: read('../../css/src/tokens.css'),
   accents: read('../../css/src/accents.css'),
   options: read('../../css/src/options.css'),
 };
-const src = parseSources(sources);
+const src = sources();
 const json: TokensJson = JSON.parse(read('../dist/tokens.json'));
 const THEMES = ['warm', 'dark', 'midnight'];
 
@@ -33,9 +37,9 @@ const valueAt = (scope: string[], name: string) => {
 };
 
 test('every custom property in tokens.css is in tokens.json, with the same value', () => {
-  for (const {selector, decls} of cssBlocks(sources.tokens)) {
+  for (const {selector, decls} of cssBlocks(css.tokens)) {
     const theme = selector.match(/data-theme="(\w+)"/)?.[1] ?? 'warm';
-    const scope = selector.includes(':root') && !selector.includes('data-theme') ? ['base'] : ['theme', theme];
+    const scope = selector.includes(':root') && !selector.includes('data-theme="') ? ['base'] : ['theme', theme];
     for (const [name, value] of decls) {
       assert.equal(valueAt(scope, name), value, `${selector} ${name}`);
     }
@@ -43,7 +47,7 @@ test('every custom property in tokens.css is in tokens.json, with the same value
 });
 
 test('accent presets round-trip: generic rule is the warm look, theme rules override it', () => {
-  const accentBlocks = cssBlocks(sources.accents);
+  const accentBlocks = cssBlocks(css.accents);
   assert.equal(Object.keys(json.accent).length, Object.keys(src.accents).length);
   for (const {selector, decls} of accentBlocks) {
     const name = selector.match(/data-accent="([\w-]+)"/)![1];
@@ -54,7 +58,7 @@ test('accent presets round-trip: generic rule is the warm look, theme rules over
 });
 
 test('option presets (font, radius, density) round-trip', () => {
-  for (const {selector, decls} of cssBlocks(sources.options)) {
+  for (const {selector, decls} of cssBlocks(css.options)) {
     const m = selector.match(/^\[data-(\w+)="([\w-]+)"\]$/);
     if (!m) continue;
     for (const [prop, value] of decls)
@@ -69,13 +73,13 @@ test('themes are warm, dark and midnight; there are eight accents and three dens
 });
 
 test('tokens.css re-export parses back to the same values as tokens.json', () => {
-  const css = cssBlocks(tokensCss(json));
-  const base = css.find((b) => b.selector === ':root');
+  const blocks = cssBlocks(tokensCss(json));
+  const base = blocks.find((b) => b.selector === ':root');
   assert.deepEqual(Object.fromEntries(base!.decls), Object.fromEntries(flatten(json.base)));
-  const dark = css.find((b) => b.selector === '[data-theme="dark"]');
+  const dark = blocks.find((b) => b.selector === '[data-theme="dark"]');
   assert.deepEqual(Object.fromEntries(dark!.decls), Object.fromEntries(flatten(json.theme.dark)));
   const options = Object.values(json.option).reduce((n, values) => n + Object.keys(values).length, 0);
-  assert.equal(css.length, 1 + THEMES.length + Object.keys(json.accent).length * THEMES.length + options);
+  assert.equal(blocks.length, 1 + THEMES.length + Object.keys(json.accent).length * THEMES.length + options);
 });
 
 test('tokens.css in dist is the same re-export that the build writes', () => {
@@ -127,11 +131,98 @@ test('typescript types list the token names and themes', () => {
   assert.equal(typesDts(json), dts);
 });
 
-test('a missing reference fails the build instead of writing a wrong value', () => {
-  const broken = {...sources, tokens: sources.tokens.replace('--ink-1:', '--ink-1: var(--nope);\n  --x:')};
-  assert.throws(() => figmaVariables(parseSources(broken)), /undefined token --nope/);
+test('the scoped derived tokens (selector lists that start with :root, ADR 0012) are base tokens', () => {
+  // The refusal of other selector lists, e.g. `[data-accent], :root`, is in validate.test.ts.
+  assert.equal(src.base['--rule'], 'color-mix(in srgb, var(--foreground) 20%, transparent)');
+  assert.equal(src.base['--focus-ring'], '2px solid var(--accent)');
+  assert.equal(src.base['--control-md'], 'var(--s7)');
+});
+
+// ADR 0012: a derived token resolves var() where it is declared, so a base token that reads a token some
+// data-<kind> layer overrides must be declared again on [data-<kind>] (in its selector list) or by every such layer
+// itself (data-radius re-declares --radius-sm/md/lg). Read from the generated tokens.css, so the scoped selector lists
+// cannot drop out of the generated file without this failing.
+test('every derived base token is re-declared on the elements that set its inputs (scoped selector lists)', () => {
+  const selectorOf = new Map(
+    cssBlocks(css.tokens)
+      .filter((b) => b.selector.startsWith(':root') && !b.selector.includes('="'))
+      .flatMap((b) => b.decls.map(([n]) => [n, b.selector] as const)),
+  );
+  const refs = (value: string, seen = new Set(['--window-pad'])): Set<string> => {
+    for (const [, n] of value.matchAll(/var\((--[\w-]+)\)/g))
+      if (!seen.has(n!)) {
+        seen.add(n!);
+        if (src.base[n!]) refs(src.base[n!]!, seen);
+      }
+    return seen;
+  };
+  // Every layer that can override a base token, by the attribute that turns it on.
+  const layers: [string, Record<string, string>][] = [
+    ...Object.values(src.themes).map((d): [string, Record<string, string>] => ['theme', d]),
+    ...Object.values(src.accents).flatMap((a) =>
+      Object.values(a).map((d): [string, Record<string, string>] => ['accent', d]),
+    ),
+    ...Object.entries(src.options).flatMap(([kind, values]) =>
+      Object.values(values).map((d): [string, Record<string, string>] => [kind, d]),
+    ),
+  ];
+  const missing: string[] = [];
+  let scoped = 0;
+  for (const [name, value] of Object.entries(src.base)) {
+    const inputs = refs(value);
+    for (const [kind, decls] of layers) {
+      if (![...inputs].some((r) => r in decls) || name in decls) continue;
+      if (selectorOf.get(name)?.split(', ').includes(`[data-${kind}]`)) scoped++;
+      else missing.push(`${name} (reads a token [data-${kind}] sets; declared on "${selectorOf.get(name)}")`);
+    }
+  }
+  assert.deepEqual([...new Set(missing)], []);
+  assert.ok(scoped > 0);
+});
+
+test('the token CSS in packages/css/src is what the source generates, under the generated-file header', () => {
+  const generated = cssFiles();
+  for (const [name, text] of Object.entries(css)) {
+    assert.equal(text, generated[`${name}.css` as keyof typeof generated], `${name}.css is stale; run npm run tokens`);
+    assert.ok(text.startsWith(`${CSS_HEADER}\n`), name);
+  }
+});
+
+test('round trip: the generated CSS parses back to the source, block by block and declaration by declaration', () => {
+  // cssBlocks is a plain CSS reader, independent of the generator.
+  const model = blocks();
+  for (const [name, text] of Object.entries(css))
+    assert.deepEqual(cssBlocks(text), model[`${name}.css` as keyof typeof model], `${name}.css`);
 });
 
 test('build output matches a fresh build of the sources (dist is not stale)', () => {
   assert.equal(read('../dist/tokens.json'), JSON.stringify(buildTokens(src), null, 2) + '\n');
+});
+
+test('react native: colours per theme x accent resolved, lengths and calc as numbers, ms, bezier; the rest listed', () => {
+  const text = read('../dist/native.json');
+  assert.equal(text, JSON.stringify(nativeTokens(src), null, 2) + '\n');
+  const native = JSON.parse(text);
+  assert.deepEqual(Object.keys(native.colors), THEMES);
+  for (const t of THEMES) {
+    assert.deepEqual(Object.keys(native.colors[t]), Object.keys(json.accent));
+    for (const colours of Object.values<Record<string, string>>(native.colors[t]))
+      for (const [n, c] of Object.entries(colours))
+        assert.match(c, /^#[0-9A-F]{6}$|^rgba\(\d+, \d+, \d+, [\d.]+\)$/, n);
+  }
+  assert.equal(native.colors.warm.orange['ink-2'], 'rgba(22, 18, 14, 0.7)');
+  assert.equal(native.colors.midnight.green.accent, '#5FD6B2');
+  assert.equal(native.colors.dark.blue['surface-text'], 'rgba(240, 237, 231, 0.85)');
+  assert.equal(native.values['control-sm'], 36);
+  assert.equal(native.values['radius-lg'], 0);
+  assert.equal(native.values.fast, 120);
+  assert.deepEqual(native.values.ease, [0.76, 0, 0.24, 1]);
+  for (const n of ['--hatch', '--heading-1', '--font-body', '--measure', '--focus-ring', '--shadow-toast'])
+    assert.ok(native.$omitted.includes(n), n);
+  // Every token is either exported or listed as omitted.
+  const exported = new Set(
+    [...Object.keys(native.colors.warm.orange), ...Object.keys(native.values)].map((n) => `--${n}`),
+  );
+  for (const n of Object.keys({...src.base, ...src.themes.warm}))
+    assert.ok(exported.has(n) !== native.$omitted.includes(n), n);
 });

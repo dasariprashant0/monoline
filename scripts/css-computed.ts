@@ -11,9 +11,11 @@
 //
 // --dump prints every measured value instead of asserting (handy when you add a component to the list).
 // Chrome: set CHROME=/path/to/chrome. In Claude Code's sandbox it needs dangerouslyDisableSandbox.
-import {existsSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {build as esbuild} from 'esbuild';
 import {openBrowser} from './lib/browser.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -320,6 +322,328 @@ if (!dump) {
       fails.push(`[375px] heading sizes must strictly descend display > xl > lg > md > sm, got ${z.join(', ')}`);
   } finally {
     b3.close();
+  }
+}
+if (!dump) {
+  // Scoped options: data-theme, data-accent, data-density and data-radius on a wrapper, not on <html>. A token derived
+  // from another (--rule from --foreground, --focus-ring from --accent, --control-md and --window-pad from the space
+  // steps) must be derived again on the wrapper, so inside it each one equals what the same option gives on <html>
+  // (ADR 0012). `chain` is a list of nested wrappers (attribute maps); `css` is unlayered app CSS, as an app writes it.
+  const scoped = (html: Record<string, string>, chain: Record<string, string>[], css: string) => `(() => {
+    const r = document.documentElement;
+    for (const k of ['theme', 'accent', 'density', 'radius']) delete r.dataset[k];
+    Object.assign(r.dataset, ${JSON.stringify(html)});
+    document.getElementById('mlscope')?.remove(); document.getElementById('mlcss')?.remove();
+    const st = document.createElement('style'); st.id = 'mlcss'; st.textContent = ${JSON.stringify(css)}; document.head.append(st);
+    const top = document.createElement('div'); top.id = 'mlscope'; top.style.cssText = 'position:absolute;left:0;top:0;width:600px';
+    let w = top;
+    for (const attrs of ${JSON.stringify(chain)}) { const d = document.createElement('div'); for (const [k, v] of Object.entries(attrs)) d.setAttribute(k, v); w.append(d); w = d; }
+    w.innerHTML = '<div id="s-rule" style="border-top:1px solid var(--rule)"></div><div id="s-ink" style="color:var(--ink-3);background:var(--wash);border-top:1px solid var(--accent)"></div><div id="s-bg" style="background:var(--background)"></div><button class="btn btn-line" id="s-btn" style="outline:var(--focus-ring)">x</button><div class="card" id="s-card">x</div><div class="window-body" id="s-win"></div>';
+    document.body.append(top);
+    const s = (id) => getComputedStyle(w.querySelector('#' + id));
+    return {rule: s('s-rule').borderTopColor, ink: s('s-ink').color, wash: s('s-ink').backgroundColor, accent: s('s-ink').borderTopColor,
+      bg: s('s-bg').backgroundColor, ring: s('s-btn').outlineColor, btn: w.querySelector('#s-btn').getBoundingClientRect().height,
+      radius: s('s-card').borderTopLeftRadius, win: s('s-win').paddingTop};
+  })()`;
+  // WCAG contrast of two computed rgb()/rgba() colours (alpha ignored: the ring and the background are opaque).
+  const lum = (c: string) => {
+    const v = (c.match(/[\d.]+/g) ?? []).slice(0, 3).map((x) => Number(x) / 255);
+    const l = v.map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * (l[0] ?? 0) + 0.7152 * (l[1] ?? 0) + 0.0722 * (l[2] ?? 0);
+  };
+  const ratio = (a: string, b: string) => {
+    const [x, y] = [lum(a), lum(b)];
+    return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+  };
+  const THEME_LIST = ['warm', 'dark', 'midnight'];
+  const ACCENTS = ['orange', 'green', 'blue', 'violet', 'rose', 'teal', 'amber', 'slate'];
+  const RED = 'rgb(255, 0, 0)';
+  const b4 = await openBrowser({dist});
+  try {
+    await b4.setViewport(1280, 800);
+    await b4.navigate(b4.base);
+    const m = async (html: Record<string, string>, chain: Record<string, string>[] = [], css = '') =>
+      (await b4.evaluate(scoped(html, chain, css))) as Record<string, string>;
+    const media = (features: {name: string; value: string}[]) => b4.cdp('Emulation.setEmulatedMedia', {features});
+    const check = (where: string, name: string, ok: boolean, detail: string) => {
+      n++;
+      if (!ok) fails.push(`[scoped ${where}] ${name}: ${detail}`);
+    };
+    const same = (
+      where: string,
+      got: Record<string, string>,
+      ref: Record<string, string>,
+      keys: string[],
+      what: string,
+    ) => {
+      for (const k of keys) check(where, `${k} = ${what}`, got[k] === ref[k], `got ${got[k]}, expected ${ref[k]}`);
+    };
+    // A theme wrapper inside a page of each other theme, and two themes nested inside a third.
+    for (const page of THEME_LIST)
+      for (const wrap of THEME_LIST) {
+        if (page === wrap) continue;
+        const where = `data-theme=${wrap} in a ${page} page`;
+        const ref = await m({theme: wrap});
+        same(
+          where,
+          await m({theme: page}, [{'data-theme': wrap}]),
+          ref,
+          ['rule', 'ink', 'wash', 'ring'],
+          `the ${wrap} value`,
+        );
+        const other = await m({theme: page});
+        check(where, 'the test is not vacuous', ref.rule !== other.rule, `${wrap} and ${page} share --rule`);
+      }
+    for (const [page, outer, inner] of [
+      ['warm', 'midnight', 'dark'],
+      ['dark', 'warm', 'midnight'],
+    ] as const)
+      same(
+        `data-theme=${inner} inside ${outer} inside a ${page} page`,
+        await m({theme: page}, [{'data-theme': outer}, {'data-theme': inner}]),
+        await m({theme: inner}),
+        ['rule', 'ink', 'wash', 'ring'],
+        `the ${inner} value`,
+      );
+    // Accent presets are per theme, so a data-accent wrapper carries its own data-theme (ADR 0012). Its ring is that
+    // theme and accent's ring on <html>, and is at least 3:1 against the wrapper's background.
+    for (const [i, page] of THEME_LIST.entries())
+      for (const accent of ACCENTS) {
+        const theme = THEME_LIST[(i + 1) % 3] as string;
+        const where = `data-theme=${theme} data-accent=${accent} in a ${page} page`;
+        const got = await m({theme: page}, [{'data-theme': theme, 'data-accent': accent}]);
+        same(where, got, await m({theme, accent}), ['ring'], `the ${theme}/${accent} value`);
+        const r = ratio(got.ring as string, got.bg as string);
+        check(
+          where,
+          'focus ring >= 3:1 on the wrapper background',
+          r >= 3,
+          `${r.toFixed(2)}:1 (${got.ring} on ${got.bg})`,
+        );
+      }
+    for (const page of THEME_LIST) {
+      const where = `data-density=compact in a ${page} page`;
+      const dense = await m({theme: page}, [{'data-density': 'compact'}]);
+      const ref = await m({theme: page, density: 'compact'});
+      const comfy = await m({theme: page});
+      same(where, dense, ref, ['btn', 'win'], 'the compact value');
+      check(where, 'the test is not vacuous', ref.btn !== comfy.btn && ref.win !== comfy.win, 'compact = comfortable');
+      same(
+        `data-radius=round in a ${page} page`,
+        await m({theme: page}, [{'data-radius': 'round'}]),
+        await m({theme: page, radius: 'round'}),
+        ['radius'],
+        'the round value',
+      );
+    }
+    // App overrides of derived tokens (unlayered CSS). On :root alone they do not reach a wrapper of that token's group,
+    // because Monoline derives it again there; on the same selectors they do (ADR 0012, "the override trap").
+    const warm = {theme: 'warm'};
+    const dark = await m({theme: 'dark'});
+    const rootRule = ':root{--rule:rgb(255, 0, 0)}';
+    check('app :root{--rule}', 'applies on <html>', (await m(warm, [], rootRule)).rule === RED, 'not red');
+    same(
+      'app :root{--rule}, dark wrapper',
+      await m(warm, [{'data-theme': 'dark'}], rootRule),
+      dark,
+      ['rule'],
+      'the dark value (override lost)',
+    );
+    check(
+      'app :root{--rule}, density wrapper',
+      'still applies',
+      (await m(warm, [{'data-density': 'compact'}], rootRule)).rule === RED,
+      'not red',
+    );
+    check(
+      'app :root,[data-theme]{--rule}, dark wrapper',
+      'applies',
+      (await m(warm, [{'data-theme': 'dark'}], ':root,[data-theme]{--rule:rgb(255, 0, 0)}')).rule === RED,
+      'not red',
+    );
+    same(
+      'app body{--rule}, dark wrapper',
+      await m(warm, [{'data-theme': 'dark'}], 'body{--rule:rgb(255, 0, 0)}'),
+      dark,
+      ['rule'],
+      'the dark value (override lost)',
+    );
+    same(
+      'app :root{--focus-ring}, warm/green wrapper',
+      await m(warm, [{'data-theme': 'warm', 'data-accent': 'green'}], ':root{--focus-ring:2px solid rgb(255, 0, 0)}'),
+      await m({theme: 'warm', accent: 'green'}),
+      ['ring'],
+      'the green ring (override lost)',
+    );
+    check(
+      'app [data-theme=dark]{--accent} (brand.css), dark wrapper',
+      'ring follows the brand accent',
+      (await m(warm, [{'data-theme': 'dark'}], '[data-theme="dark"]{--accent:rgb(255, 0, 0)}')).ring === RED,
+      'not red',
+    );
+    same(
+      'app-owned wrapper style="--foreground: blue"',
+      await m(warm, [{style: '--foreground: rgb(0, 0, 255)'}]),
+      await m(warm),
+      ['rule'],
+      'the page value (not derived again)',
+    );
+    // prefers-contrast and forced-colors (utilities.css, a later layer) still win inside every kind of wrapper.
+    const wrappers: Record<string, string>[] = [
+      {'data-theme': 'dark'},
+      {'data-theme': 'warm', 'data-accent': 'green'},
+      {'data-accent': 'green'},
+      {'data-density': 'compact'},
+    ];
+    const plain = (await m(warm)).rule;
+    for (const [feature, value] of [
+      ['prefers-contrast', 'more'],
+      ['forced-colors', 'active'],
+    ] as const) {
+      await media([{name: feature, value}]);
+      check(
+        `${feature}: ${value}`,
+        'the test is not vacuous',
+        (await m(warm)).rule !== plain,
+        'same rule as without it',
+      );
+      for (const w of wrappers) {
+        const theme = w['data-theme'] ?? 'warm';
+        same(
+          `${feature}: ${value}, wrapper ${JSON.stringify(w)} in a warm page`,
+          await m(warm, [w]),
+          await m({theme}),
+          ['rule'],
+          `the ${theme} value`,
+        );
+      }
+      await media([]);
+    }
+  } finally {
+    b4.close();
+  }
+}
+// A non-literal specifier keeps tsc from resolving @monoline/react, which has no types until it is built (CI's check job does not build).
+const {themeScript} = (await import('@monoline/react' as string)) as {
+  themeScript: (o?: Record<string, string>) => string;
+};
+
+if (!dump) {
+  // First paint (ADR 0013): a page with themeScript() in <head> and a hydrated ThemeProvider. A script right after it
+  // records <html>'s computed look synchronously, before anything can paint: theme and accent colours, font, direction,
+  // a radius and a density token. After React has hydrated and run its effects, each must be unchanged (a change is a flash).
+  const fx = mkdtempSync(join(tmpdir(), 'monoline-init-'));
+  copyFileSync(join(root, 'packages/css/dist/core.css'), join(fx, 'core.css'));
+  await esbuild({
+    stdin: {
+      contents:
+        "import {createElement as h} from 'react'; import {hydrateRoot} from 'react-dom/client'; import {ThemeProvider} from '@monoline/react';" +
+        "hydrateRoot(document.getElementById('root'), h(ThemeProvider, window.__props, h('p', null, 'hi')));",
+      resolveDir: root,
+    },
+    bundle: true,
+    outfile: join(fx, 'app.js'),
+    define: {'process.env.NODE_ENV': '"production"'},
+    logLevel: 'error',
+  });
+  const RECORD = `(function(){var d=document.documentElement,c=function(){var s=getComputedStyle(d),p=function(n){return s.getPropertyValue(n).trim()};return {theme:d.getAttribute('data-theme'),accent:d.getAttribute('data-accent'),bg:p('--background'),fill:p('--accent'),font:p('--font-body'),radius:p('--radius-md'),density:p('--s4'),dir:s.direction}};window.__first=c();window.__read=c})()`;
+  const LOOK = ['bg', 'fill', 'font', 'radius', 'density', 'dir'];
+  const cases: {
+    name: string;
+    saved: Record<string, string>;
+    script?: Record<string, string>;
+    props?: object;
+    dark?: boolean;
+    expect: [string, string | null];
+    after?: Record<string, string>;
+    drift?: boolean;
+  }[] = [
+    {name: 'saved dark + green', saved: {theme: 'dark', accent: 'green'}, expect: ['dark', 'green']},
+    {
+      name: 'saved midnight + rose',
+      saved: {theme: 'midnight', accent: 'rose', density: 'compact'},
+      expect: ['midnight', 'rose'],
+    },
+    {
+      name: 'saved system (OS dark) + violet',
+      saved: {theme: 'system', accent: 'violet'},
+      dark: true,
+      expect: ['dark', 'violet'],
+    },
+    {name: 'nothing saved, OS light', saved: {}, expect: ['warm', null]},
+    // The Next.js guide's setup: the app picks an accent in ThemeProvider and passes the same one to themeScript.
+    {
+      name: 'nothing saved, app accent teal',
+      saved: {},
+      script: {accent: 'teal'},
+      props: {accent: 'teal'},
+      expect: ['warm', 'teal'],
+    },
+    {
+      name: 'saved blue beats app accent teal',
+      saved: {accent: 'blue'},
+      script: {accent: 'teal'},
+      props: {accent: 'teal'},
+      expect: ['warm', 'blue'],
+    },
+    {
+      name: 'nothing saved, all five app options',
+      saved: {},
+      script: {accent: 'violet', font: 'serif', radius: 'round', density: 'spacious', dir: 'rtl'},
+      props: {accent: 'violet', font: 'serif', radius: 'round', density: 'spacious', dir: 'rtl'},
+      expect: ['warm', 'violet'],
+      after: {radius: '12px', density: '20px', dir: 'rtl'},
+    },
+    // Deliberate drift: the provider sets dir="rtl" but the script was not told. The check must catch the flip.
+    {
+      name: 'drift: provider dir rtl, script without dir',
+      saved: {},
+      props: {dir: 'rtl'},
+      expect: ['warm', null],
+      drift: true,
+    },
+  ];
+  cases.forEach((c, i) =>
+    writeFileSync(
+      join(fx, `case${i}.html`),
+      `<!doctype html><html lang="en"><head><link rel="stylesheet" href="core.css"><script>${themeScript(c.script)}</script><script>${RECORD}</script><script>window.__props=${JSON.stringify(c.props ?? {})}</script></head><body><div id="root"><p>hi</p></div><script src="app.js"></script></body></html>`,
+    ),
+  );
+  writeFileSync(join(fx, 'seed.html'), '<!doctype html><title>seed</title>');
+  const b5 = await openBrowser({dist: fx});
+  try {
+    for (const [i, c] of cases.entries()) {
+      await b5.cdp('Emulation.setEmulatedMedia', {
+        features: [{name: 'prefers-color-scheme', value: c.dark ? 'dark' : 'light'}],
+      });
+      await b5.navigate(`${b5.base}seed.html`, 200);
+      await b5.evaluate(
+        `(() => { localStorage.clear(); for (const [k, v] of Object.entries(${JSON.stringify(c.saved)})) localStorage.setItem('monoline-' + k, v); })()`,
+      );
+      await b5.navigate(`${b5.base}case${i}.html`, 800); // ThemeProvider always writes data-radius once its effects ran
+      const r = await b5.evaluate(
+        `(() => ({first: window.__first, after: window.__read(), hydrated: document.documentElement.hasAttribute('data-radius')}))()`,
+      );
+      const where = `[theme init: ${c.name}]`;
+      const check = (name: string, ok: boolean, detail: string) => {
+        n++;
+        if (!ok) fails.push(`${where} ${name}: ${detail}`);
+      };
+      check('ThemeProvider hydrated', r.hydrated, 'no data-radius on <html> after load');
+      check(
+        'before first paint, <html> has the expected theme and accent',
+        r.first.theme === c.expect[0] && r.first.accent === c.expect[1],
+        `got ${r.first.theme}/${r.first.accent}, expected ${c.expect.join('/')}`,
+      );
+      const changed = LOOK.filter((k) => r.first[k] !== r.after[k]).map((k) => `${k} ${r.first[k]} -> ${r.after[k]}`);
+      if (c.drift) check('the drift is caught', changed.length > 0, 'first paint and hydrated look are the same');
+      else check('the first paint is the hydrated look', changed.length === 0, changed.join(', '));
+      for (const [k, v] of Object.entries(c.after ?? {}))
+        check(`hydrated ${k}`, r.after[k] === v, `got ${r.after[k]}, expected ${v}`);
+    }
+  } finally {
+    b5.close();
+    rmSync(fx, {recursive: true, force: true});
   }
 }
 if (dump) process.exit(0);

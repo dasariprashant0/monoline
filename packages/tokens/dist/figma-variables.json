@@ -7,8 +7,6 @@
     "--fast",
     "--focus-ring",
     "--hatch",
-    "--heading-1",
-    "--heading-2",
     "--opacity-disabled",
     "--shadow-popover",
     "--shadow-toast",
@@ -4339,33 +4337,6 @@
           }
         },
         {
-          "name": "control/sm",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 36,
-            "compact": 28,
-            "spacious": 44
-          }
-        },
-        {
-          "name": "control/md",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 48,
-            "compact": 36,
-            "spacious": 60
-          }
-        },
-        {
-          "name": "control/lg",
-          "resolvedType": "FLOAT",
-          "valuesByMode": {
-            "comfortable": 56,
-            "compact": 42,
-            "spacious": 70
-          }
-        },
-        {
           "name": "layout/side",
           "resolvedType": "FLOAT",
           "valuesByMode": {
@@ -4489,6 +4460,33 @@
             "comfortable": 1536,
             "compact": 1536,
             "spacious": 1536
+          }
+        },
+        {
+          "name": "control/sm",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 36,
+            "compact": 28,
+            "spacious": 44
+          }
+        },
+        {
+          "name": "control/md",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 48,
+            "compact": 36,
+            "spacious": 60
+          }
+        },
+        {
+          "name": "control/lg",
+          "resolvedType": "FLOAT",
+          "valuesByMode": {
+            "comfortable": 56,
+            "compact": 42,
+            "spacious": 70
           }
         },
         {
@@ -4659,6 +4657,36 @@
             "serif / comfortable": 18,
             "serif / compact": 18,
             "serif / spacious": 18
+          }
+        },
+        {
+          "name": "type/heading-1",
+          "resolvedType": "STRING",
+          "valuesByMode": {
+            "mono / comfortable": "clamp(32px, 4vw, 44px)",
+            "mono / compact": "clamp(32px, 4vw, 44px)",
+            "mono / spacious": "clamp(32px, 4vw, 44px)",
+            "sans / comfortable": "clamp(32px, 4vw, 44px)",
+            "sans / compact": "clamp(32px, 4vw, 44px)",
+            "sans / spacious": "clamp(32px, 4vw, 44px)",
+            "serif / comfortable": "clamp(32px, 4vw, 44px)",
+            "serif / compact": "clamp(32px, 4vw, 44px)",
+            "serif / spacious": "clamp(32px, 4vw, 44px)"
+          }
+        },
+        {
+          "name": "type/heading-2",
+          "resolvedType": "STRING",
+          "valuesByMode": {
+            "mono / comfortable": "clamp(26px, 3vw, 34px)",
+            "mono / compact": "clamp(26px, 3vw, 34px)",
+            "mono / spacious": "clamp(26px, 3vw, 34px)",
+            "sans / comfortable": "clamp(26px, 3vw, 34px)",
+            "sans / compact": "clamp(26px, 3vw, 34px)",
+            "sans / spacious": "clamp(26px, 3vw, 34px)",
+            "serif / comfortable": "clamp(26px, 3vw, 34px)",
+            "serif / compact": "clamp(26px, 3vw, 34px)",
+            "serif / spacious": "clamp(26px, 3vw, 34px)"
           }
         },
         {

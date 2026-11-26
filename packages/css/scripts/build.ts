@@ -8,7 +8,8 @@
 //   dist/monoline.js            optional vanilla behaviours
 //   dist/tokens.json            every token, in the W3C design-tokens shape
 import {cpSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
-import {read, parseTokens, isColor} from './lib.ts';
+import {read} from './lib.ts';
+import {sources} from '../../tokens/scripts/lib.ts';
 import {bundles, minify} from './bundle.ts';
 
 const pkg = JSON.parse(read('package.json'));
@@ -28,11 +29,19 @@ writeFileSync(new URL('index.json', comps), JSON.stringify(b.index, null, 2) + '
 cpSync(new URL('../src/fonts/', import.meta.url), new URL('fonts/', out), {recursive: true});
 cpSync(new URL('../js/monoline.js', import.meta.url), new URL('monoline.js', out));
 
-const {base, themes, accents} = parseTokens();
+// The bare [data-accent] rule is the warm look, so it is filed under warm.
+const {base, themes, accents: parsed} = sources();
+const accents = Object.fromEntries(
+  Object.entries(parsed).map(([a, byTheme]) => [
+    a,
+    Object.fromEntries(Object.entries(byTheme).map(([t, v]) => [t === 'generic' ? 'warm' : t, v])),
+  ]),
+);
+const isColor = (v: string) => /^(#|rgba?\()/.test(v);
 const tok = (v: string) => ({$value: v, ...(isColor(v) ? {$type: 'color'} : {})});
 const map = (o: Record<string, string>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.slice(2), tok(v)]));
 const tokens = {
-  $description: `Monoline ${pkg.version} design tokens, generated from src/tokens.css and src/accents.css.`,
+  $description: `Monoline ${pkg.version} design tokens, generated from packages/tokens/src/tokens.ts (the same values as src/tokens.css and src/accents.css).`,
   base: map(base),
   theme: Object.fromEntries(Object.entries(themes).map(([t, v]) => [t, map(v)])),
   accent: Object.fromEntries(

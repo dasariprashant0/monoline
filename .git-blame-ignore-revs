@@ -1,3 +1,5 @@
 # Formatting-only commits. Use: git config blame.ignoreRevsFile .git-blame-ignore-revs
 # style: format JS/TS with Biome (ADR 0011)
 3e57d7b12423ad5a0e80741e20979c0ae70892cf
+# css: lay out the token CSS the way the generator writes it (ADR 0014)
+5ecadfbb4ffa7b2da63c3baa7660942a624800fe
