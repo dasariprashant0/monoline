@@ -8,7 +8,9 @@
     "dev": "npm run codegen && vite",
     "build": "npm run codegen && vite build",
     "typecheck": "npm run codegen && tsc --noEmit -p . && tsc -p tsconfig.scripts.json",
-    "browser": "node scripts/browser.ts"
+    "browser": "node scripts/browser.ts",
+    "measure": "npm run codegen && node scripts/measure.ts",
+    "ssr": "npm run codegen && node scripts/ssr.ts"
   },
   "devDependencies": {
     "@pandacss/dev": "2.6.0",

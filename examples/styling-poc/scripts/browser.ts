@@ -34,6 +34,11 @@ for (const page of pages) {
   for (let i = 0; i < 100 && !(await evaluate(`!!document.querySelector('[data-check="solid"]')`)); i++)
     await new Promise((r) => setTimeout(r, 50));
   await evaluate(helpers);
+  // The client's class names, before any interaction, for scripts/ssr.ts to compare with the server render.
+  const classes = await evaluate(
+    `[...new Set([...document.querySelectorAll('section.demo, section.demo [class]')].flatMap((e) => [...e.classList]))]`,
+  );
+  writeFileSync(`${dist}shots/${page}.classes.json`, JSON.stringify(classes));
   const rows: [string, boolean, string][] = [];
   const check = async (name: string, expr: string, enforce = true) => {
     const [ok, detail] = await evaluate(`(async () => { ${expr} })()`);
