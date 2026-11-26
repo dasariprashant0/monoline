@@ -1,11 +1,24 @@
 # @monoline/tokens
 
-Monoline's design tokens in the formats design tools and code read: W3C JSON, Figma variables, CSS, TypeScript types and React Native values. All of it is generated from [`packages/css/src`](../css/src) (`tokens.css`, `accents.css`, `options.css`). Edit the CSS, never the output.
+Monoline's design tokens in the formats design tools and code read: W3C JSON, Figma variables, CSS, TypeScript types and React Native values. The source of truth is one TypeScript file, [`src/tokens.ts`](src/tokens.ts) ([ADR 0014](../../docs/decisions/0014-token-source-of-truth.md)). It generates these files and also the token CSS the stylesheets load: [`packages/css/src`](../css/src)`/tokens.css`, `accents.css` and `options.css`. Edit `src/tokens.ts`, never the CSS or the output.
 
 ```bash
-npm run tokens       # regenerate dist/ (CI fails if dist/ is stale)
-npm run test:tokens  # round-trip and figma checks
+npm run tokens       # regenerate the three CSS files and dist/ (CI fails if either is stale)
+npm run test:tokens  # validation, round-trip, staleness and format checks
 ```
+
+## Adding or changing a token
+
+1. Edit [`src/tokens.ts`](src/tokens.ts). Each CSS file is a list of items in the order they are written out:
+   - `{comment}`: a comment on its own line;
+   - `{selector, groups}`: a rule block, with an optional `note` above it;
+   - `{raw}`: CSS kept as written, such as the `options.css` rules that are not tokens.
+
+   A group is `{note?, tokens}`. A token is `'value'` or `['value', 'note']`. `accents.css` is a table with one row of four colours per preset and theme. Reference another token as plain CSS, `var(--name)`.
+2. Run `npm run tokens` and commit `src/tokens.ts`, the three CSS files and `dist/` together.
+3. If a reference names a token that is not declared, `npm run typecheck:scripts` fails with the token's name. `npm run tokens` also fails, with the file, block and token, on cycles, duplicates, fallbacks and malformed `var()`. `npm run check` fails on contrast, and also if the CSS differs from what `src/tokens.ts` generates.
+
+The generator owns the CSS layout: one declaration per line, a blank line between groups and between rules, a token's note on the same line, and other notes above. `accents.css` keeps one line per rule.
 
 ## Files in `dist/`
 
@@ -56,29 +69,25 @@ I could not open Figma from this environment, so none of these steps has been ru
 
 `test/tokens.test.ts` runs with `node:test` and checks that:
 
+- the three CSS files in `packages/css/src` are exactly what `src/tokens.ts` generates (the staleness check), and they parse back with a plain CSS reader to the same blocks and declarations as the source (the round trip);
 - every custom property in `tokens.css`, `accents.css` and `options.css` is in `tokens.json` with the same value;
 - `tokens.css` re-export parses back to the same values as the JSON, and `dist/tokens.css` is what the build writes;
 - Figma colours match a hand calculation (for example `color/ink-2` on warm is the foreground at 70% alpha), and `control/sm` is 36px in comfortable density;
 - `tokens.d.ts` lists the token names;
-- a reference to an undefined token fails the build;
 - `native.json` has 24 colour sets and numbers, and lists every token it leaves out.
 
-`test/validate.test.ts` checks the parser's validation, one case per class (the build stops with the file, block and token):
+`test/validate.test.ts` checks validation of the source, one case per class. The build stops and names the file, block and token. The fixtures are small models in the shape of `src/tokens.ts`.
 
 - a reference to an undefined token (in every theme x accent x option combination);
 - a cycle, also one that only closes when a theme or accent layer applies;
-- the same token twice in one layer (one block, or two blocks with the same selector). A theme or accent overriding a base token is the cascade, not a duplicate;
+- the same token twice in one layer: in two groups, or in two blocks of the same layer, such as `:root` and `:root, [data-theme]`. A theme or accent overriding a base token is the cascade, not a duplicate. Within one group, TypeScript already refuses a repeated key;
 - `var(` that is malformed, names something other than a custom property, or has a fallback. Fallbacks are refused: the token set is closed, so a fallback is dead code or hides a missing token;
 - a selector list of `:root` and bare attributes (`:root, [data-theme], [data-accent]`) is the base layer; any other selector is refused;
 - the contrast rules (`contrastChecks`, run by `npm run check` in `packages/css`) pass on the real tokens and fail on a broken theme colour, accent pair and more-contrast mix.
 
-The same parser builds `@monoline/css/dist/tokens.json` and runs the contrast check (`packages/css/scripts/build.ts`, `check.ts`), so there is one reader of the token CSS.
+Every output reads the model in `src/tokens.ts` through `sources()` in `scripts/lib.ts`: these files, `@monoline/css/dist/tokens.json` (`packages/css/scripts/build.ts`) and the contrast check (`check.ts`). Nothing parses the token CSS to build anything. A misspelt `var(--name)` is caught by the type-level check at the end of `src/tokens.ts`.
 
-CI runs the build and then `git diff --exit-code packages/tokens/dist`, so a stale output fails the check.
-
-## Prototype: DTCG JSON as the source (not used by the build)
-
-`prototype/` holds the evidence for [ADR 0014](../../docs/decisions/0014-token-source-of-truth.md): `monoline.tokens.json` (the token CSS converted once to DTCG by `from-css.ts`) and `to-css.ts`, which generates the three CSS files from it. `test/prototype.test.ts` checks that the generated CSS has the same tokens, selectors and rules and prints the text diff. `npm run tokens` does not read it. If the CSS changes before the ADR is decided, rerun `node packages/tokens/prototype/from-css.ts`.
+CI runs `npm run tokens` and then `git diff --exit-code` on `dist/` and the three CSS files, so a stale output fails.
 
 ## Notes
 
